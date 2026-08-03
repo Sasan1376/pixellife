@@ -43,10 +43,10 @@
   "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Sasan1376/improved-doodle.git"
+    "url": "git+https://github.com/Sasan1376/pixellife.git"
   },
   "bugs": {
-    "url": "https://github.com/Sasan1376/improved-doodle/issues"
+    "url": "https://github.com/Sasan1376/pixellife/issues"
   },
-  "homepage": "https://github.com/Sasan1376/improved-doodle#readme"
+  "homepage": "https://github.com/Sasan1376/pixellife#readme"
 }
