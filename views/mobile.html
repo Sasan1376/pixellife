@@ -1,0 +1,226 @@
+﻿<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>محصولات</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont/dist/tabler-icons.min.css"
+    />
+
+    <style>
+      body {
+        font-family: Vazirmatn;
+        background: #f5f5f5;
+        margin: 0;
+      }
+
+      .digi-header {
+        background: #fff;
+        border-bottom: 1px solid #eee;
+      }
+
+      .digi-topbar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 24px;
+        max-width: 1200px;
+        margin: auto;
+      }
+
+      .digi-logo {
+        color: #ef394e;
+        font-weight: bold;
+        text-decoration: none;
+      }
+
+      .digi-search {
+        flex: 1;
+        display: flex;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 8px;
+      }
+
+      .digi-search input {
+        border: none;
+        flex: 1;
+        outline: none;
+      }
+
+      .digi-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-right: auto;
+      }
+
+      .digi-btn {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #fff;
+        cursor: pointer;
+      }
+
+      .grid {
+        max-width: 1200px;
+        margin: 20px auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+      }
+
+      .card {
+        background: #fff;
+        padding: 16px;
+        border-radius: 10px;
+      }
+
+      .card-name {
+        font-weight: bold;
+        margin-bottom: 6px;
+      }
+
+      .card-brand {
+        font-size: 12px;
+        color: #777;
+      }
+
+      .card-price {
+        color: #ef394e;
+        margin: 10px 0;
+      }
+
+      .cart-btn {
+        position: relative;
+      }
+
+      .cart-count {
+        position: absolute;
+        top: -6px;
+        left: -6px;
+        background: #ef394e;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="digi-header">
+      <div class="digi-topbar">
+        <a href="/" class="digi-logo">دیجی‌شاپ</a>
+
+        <div class="digi-search">
+          <i class="ti ti-search"></i>
+          <input placeholder="جستجو..." />
+        </div>
+
+        <div class="digi-actions">
+          <a href="/login" class="digi-btn">ورود</a>
+
+          <!-- سبد خرید -->
+          <button class="digi-btn cart-btn">
+            <i class="ti ti-shopping-cart"></i>
+            <span class="cart-count" id="cartCount">0</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- محصولات -->
+    <div class="grid">
+      <div class="card product-card">
+        <div class="card-name">گوشی سامسونگ</div>
+        <div class="card-brand">Samsung</div>
+        <div class="card-price">10,000,000 تومان</div>
+        <button class="digi-btn add-to-cart">
+          <i class="ti ti-shopping-cart"></i> افزودن به سبد
+        </button>
+      </div>
+
+      <div class="card product-card">
+        <div class="card-name">لپ‌تاپ ایسوس</div>
+        <div class="card-brand">Asus</div>
+        <div class="card-price">25,000,000 تومان</div>
+        <button class="digi-btn add-to-cart">
+          <i class="ti ti-shopping-cart"></i> افزودن به سبد
+        </button>
+      </div>
+
+      <div class="card product-card">
+        <div class="card-name">هدفون سونی</div>
+        <div class="card-brand">Sony</div>
+        <div class="card-price">5,000,000 تومان</div>
+        <button class="digi-btn add-to-cart">
+          <i class="ti ti-shopping-cart"></i> افزودن به سبد
+        </button>
+      </div>
+    </div>
+
+    <!-- JS -->
+    <script>
+      function updateCartBadge() {
+        const cart = JSON.parse(localStorage.getItem("digishop_cart") || "[]");
+        const count = cart.reduce((sum, item) => sum + item.qty, 0);
+        const badge = document.getElementById("cartCount");
+        if (badge) badge.textContent = count;
+      }
+
+      document.querySelectorAll(".add-to-cart").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+
+          const card = btn.closest(".product-card");
+
+          const product = {
+            id: Date.now(),
+            name: card.querySelector(".card-name").textContent,
+            brand: card.querySelector(".card-brand").textContent,
+            price: card.querySelector(".card-price").textContent,
+            img: "📱",
+            qty: 1,
+          };
+
+          const cart = JSON.parse(
+            localStorage.getItem("digishop_cart") || "[]",
+          );
+          const existing = cart.find((i) => i.name === product.name);
+
+          if (existing) {
+            existing.qty++;
+          } else {
+            cart.push(product);
+          }
+
+          localStorage.setItem("digishop_cart", JSON.stringify(cart));
+
+          updateCartBadge();
+
+          btn.textContent = "✅ افزوده شد";
+
+          setTimeout(() => {
+            btn.innerHTML = '<i class="ti ti-shopping-cart"></i> افزودن به سبد';
+          }, 1500);
+        });
+      });
+
+      updateCartBadge();
+    </script>
+  </body>
+</html>

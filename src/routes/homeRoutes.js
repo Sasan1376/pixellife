@@ -1,0 +1,33 @@
+const express = require("express");
+const router = express.Router();
+const homeController = require("../controllers/homeController");
+
+router.get("/", homeController.index);
+router.get("/mobiles", homeController.mobiles);
+router.get("/login", homeController.login);
+router.get("/cart", homeController.cart);
+router.get("/mobile/apple", homeController.iphone);
+router.get("/iphone", homeController.iphone);
+router.get("/product", homeController.product);
+// Backward-compatible alias for links/bookmarks using the old .html path.
+router.get("/product.html", homeController.product);
+router.get("/samsung", homeController.samsung);
+router.get("/xiaomi", homeController.xiaomi);
+router.get("/ipad", homeController.ipad);
+router.get("/samsungtab", homeController.samsungtab);
+router.get("/xiaomitab", homeController.xiaomitab);
+router.get("/console", homeController.console);
+// Keep shared header/footer links valid until their dedicated pages are added.
+router.get("/offers", homeController.mobiles);
+router.get("/new", homeController.mobiles);
+router.get("/bestsellers", homeController.mobiles);
+router.get("/brands", homeController.mobiles);
+router.get("/blog", homeController.index);
+router.get("/support", homeController.index);
+router.get("/terms", homeController.index);
+router.get("/profile/orders", homeController.index);
+router.get("/profile/wishlist", homeController.index);
+router.get("/profile/addresses", homeController.index);
+router.get("/profile/wallet", homeController.index);
+
+module.exports = router;

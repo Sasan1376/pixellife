@@ -1,0 +1,2975 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>خرید آیفون | دیجی‌شاپ</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"
+    />
+    <style>
+      :root {
+        --blue: #3b82f6;
+        --blue-dark: #2563eb;
+        --blue-light: #eff6ff;
+        --blue-mid: #dbeafe;
+        --white: #ffffff;
+        --bg: #f8fafc;
+        --border: #e2e8f0;
+        --text-1: #0f172a;
+        --text-2: #334155;
+        --text-3: #64748b;
+        --text-4: #94a3b8;
+        --red: #ef4444;
+        --green: #22c55e;
+        --amber: #f59e0b;
+        --radius-sm: 8px;
+        --radius: 12px;
+        --radius-lg: 16px;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
+        --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+        --success-bg: #f0fdf4;
+        --success-border: #bbf7d0;
+        --danger-bg: #fff5f5;
+        --overlay: rgba(15, 23, 42, 0.45);
+        --overlay-soft: rgba(15, 23, 42, 0.25);
+      }
+
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Vazirmatn, Tahoma, sans-serif;
+        direction: rtl;
+        background: var(--bg);
+        color: var(--text-1);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      ul {
+        list-style: none;
+      }
+
+      /* HEADER */
+      .header {
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        padding: 0 32px;
+        position: sticky;
+        top: 0;
+        z-index: 700;
+        box-shadow: var(--shadow-sm);
+      }
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        height: 68px;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+      }
+      .logo-mark {
+        width: 38px;
+        height: 38px;
+        background: var(--blue);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .logo-mark i {
+        color: #fff;
+        font-size: 20px;
+      }
+      .logo-text {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text-1);
+        letter-spacing: -0.5px;
+      }
+      .logo-text span {
+        color: var(--blue);
+      }
+      .search-bar {
+        flex: 1;
+        max-width: 520px;
+        display: flex;
+        border-radius: var(--radius);
+        overflow: hidden;
+        height: 44px;
+        background: var(--bg);
+        border: 1.5px solid var(--border);
+        transition: all var(--transition);
+      }
+      .search-bar:focus-within {
+        border-color: var(--blue);
+        background: var(--white);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+      .search-bar input {
+        flex: 1;
+        border: none;
+        padding: 0 16px;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+        color: var(--text-1);
+        background: transparent;
+      }
+      .search-bar input::placeholder {
+        color: var(--text-4);
+      }
+      .search-btn {
+        padding: 0 20px;
+        background: var(--blue);
+        border: none;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: background var(--transition);
+        white-space: nowrap;
+      }
+      .search-btn:hover {
+        background: var(--blue-dark);
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+        margin-right: auto;
+      }
+
+      .h-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        transition: all var(--transition);
+        border: none;
+        background: transparent;
+        color: var(--text-2);
+        text-decoration: none;
+        position: relative;
+      }
+      .h-btn:hover {
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      .h-btn i {
+        font-size: 22px;
+      }
+
+      .cart-wrap {
+        position: relative;
+      }
+      .cart-badge {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        background: var(--red);
+        color: #fff;
+        font-size: 9px;
+        font-weight: 700;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+      }
+
+      .btn-auth-pill {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 999px;
+        border: 1.5px solid var(--border);
+        background: var(--white);
+        color: var(--text-2);
+        font-size: 13.5px;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: all var(--transition);
+      }
+      .btn-auth-pill:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+        background: var(--blue-light);
+      }
+      .btn-auth-pill i {
+        font-size: 18px;
+      }
+      body.logged-in .btn-auth-pill {
+        display: none;
+      }
+
+      .profile-wrapper {
+        position: relative;
+      }
+      .profile-trigger {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: var(--radius-sm);
+        border: 1.5px solid var(--border);
+        background: var(--white);
+        color: var(--text-2);
+        transition: all var(--transition);
+        cursor: pointer;
+        user-select: none;
+      }
+      body.logged-in .profile-trigger {
+        display: flex;
+      }
+      .profile-trigger:hover,
+      .profile-trigger.open {
+        border-color: var(--blue);
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      .profile-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .profile-trigger-name {
+        font-size: 13px;
+        font-weight: 600;
+        max-width: 72px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .profile-chevron {
+        font-size: 14px;
+        color: var(--text-4);
+        transition: transform var(--transition);
+      }
+      .profile-trigger.open .profile-chevron {
+        transform: rotate(180deg);
+      }
+      .profile-dropdown {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        width: 260px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        z-index: 999;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+        pointer-events: none;
+        transition:
+          opacity 0.2s ease,
+          transform 0.2s ease;
+      }
+      .profile-dropdown.open {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: all;
+      }
+      .pdrop-header {
+        padding: 16px;
+        background: linear-gradient(135deg, var(--blue-light), var(--white));
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .pdrop-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: var(--blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 18px;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .pdrop-info-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-1);
+      }
+      .pdrop-info-mobile {
+        font-size: 12px;
+        color: var(--text-3);
+        direction: ltr;
+        margin-top: 2px;
+      }
+      .pdrop-menu {
+        padding: 6px 0;
+      }
+      .pdrop-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 16px;
+        font-size: 13.5px;
+        color: var(--text-2);
+        text-decoration: none;
+        transition:
+          background var(--transition),
+          color var(--transition);
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: right;
+        font-family: inherit;
+      }
+      .pdrop-item:hover {
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      .pdrop-item:hover .pdrop-item-ico {
+        color: var(--blue);
+      }
+      .pdrop-item-ico {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        color: var(--text-3);
+        flex-shrink: 0;
+        transition: color var(--transition);
+      }
+      .pdrop-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 6px 0;
+      }
+      .pdrop-item.logout {
+        color: var(--red);
+      }
+      .pdrop-item.logout .pdrop-item-ico {
+        color: var(--red);
+        background: var(--danger-bg);
+      }
+      .pdrop-item.logout:hover {
+        background: var(--danger-bg);
+        color: var(--red);
+      }
+
+      /* AUTH MODAL */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: var(--overlay);
+        backdrop-filter: blur(4px);
+        z-index: 9000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.25s ease,
+          visibility 0.25s;
+      }
+      .modal-overlay.open {
+        opacity: 1;
+        visibility: visible;
+      }
+      .modal-box {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        width: 420px;
+        max-width: 92vw;
+        overflow: hidden;
+        transform: translateY(20px) scale(0.97);
+        transition: transform 0.25s ease;
+      }
+      .modal-overlay.open .modal-box {
+        transform: translateY(0) scale(1);
+      }
+      .modal-head {
+        padding: 28px 28px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .modal-head h2 {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--text-1);
+      }
+      .modal-close {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: var(--bg);
+        color: var(--text-3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        transition: all 0.15s;
+        cursor: pointer;
+      }
+      .modal-close:hover {
+        background: var(--danger-bg);
+        color: var(--red);
+      }
+      .modal-body {
+        padding: 24px 28px 28px;
+      }
+      .modal-desc {
+        font-size: 13px;
+        color: var(--text-3);
+        margin-bottom: 20px;
+        line-height: 1.7;
+      }
+      .auth-step {
+        display: none;
+      }
+      .auth-step.active {
+        display: block;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+      .form-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-2);
+        margin-bottom: 6px;
+      }
+      .form-input {
+        width: 100%;
+        height: 46px;
+        padding: 0 14px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-family: inherit;
+        font-size: 14px;
+        color: var(--text-1);
+        background: var(--bg);
+        outline: none;
+        transition: all var(--transition);
+      }
+      .form-input:focus {
+        border-color: var(--blue);
+        background: var(--white);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+      .form-input::placeholder {
+        color: var(--text-4);
+      }
+      .form-input.input-otp {
+        text-align: center;
+        letter-spacing: 10px;
+        font-size: 24px;
+        font-weight: 700;
+      }
+      .form-input.input-error {
+        border-color: var(--red);
+      }
+      .form-error {
+        font-size: 12px;
+        color: var(--red);
+        margin-top: 4px;
+        display: none;
+      }
+      .form-error.show {
+        display: block;
+      }
+
+      .btn-auth {
+        width: 100%;
+        height: 48px;
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 15px;
+        font-weight: 700;
+        transition: all 0.2s;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+      .btn-auth:hover {
+        background: var(--blue-dark);
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+      }
+      .btn-auth:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .btn-auth-outline {
+        width: 100%;
+        height: 48px;
+        background: transparent;
+        color: var(--blue);
+        border: 1.5px solid var(--blue);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.2s;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+      .btn-auth-outline:hover {
+        background: var(--blue-light);
+      }
+      .modal-footer-text {
+        font-size: 12.5px;
+        color: var(--text-4);
+        text-align: center;
+        margin-top: 18px;
+      }
+
+      .method-identifier {
+        text-align: center;
+        padding: 14px;
+        background: var(--bg);
+        border-radius: var(--radius-sm);
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: var(--text-2);
+        font-weight: 600;
+        direction: ltr;
+      }
+      .method-divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 16px 0;
+      }
+      .method-divider::before,
+      .method-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+      .method-divider span {
+        font-size: 12px;
+        color: var(--text-4);
+        white-space: nowrap;
+      }
+      .forgot-link {
+        display: block;
+        text-align: center;
+        margin-top: 12px;
+        font-size: 13px;
+        color: var(--blue);
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .forgot-link:hover {
+        text-decoration: underline;
+      }
+
+      .otp-sent-info {
+        text-align: center;
+        padding: 16px;
+        background: var(--success-bg);
+        border: 1px solid var(--success-border);
+        border-radius: var(--radius-sm);
+      }
+      .otp-sent-info i {
+        font-size: 28px;
+        color: var(--green);
+      }
+      .otp-sent-info p {
+        font-size: 13px;
+        color: var(--text-2);
+        margin-top: 8px;
+        line-height: 1.6;
+      }
+      .otp-timer-row {
+        text-align: center;
+        margin-top: 14px;
+        font-size: 13px;
+        color: var(--text-3);
+      }
+      .otp-timer-row .timer-val {
+        color: var(--blue);
+        font-weight: 700;
+      }
+      .resend-link {
+        background: none;
+        border: none;
+        color: var(--blue);
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .back-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin: 14px auto 0;
+        background: none;
+        border: none;
+        color: var(--text-3);
+        font-family: inherit;
+        font-size: 12.5px;
+        cursor: pointer;
+        padding: 6px 10px;
+        border-radius: 6px;
+        transition: all 0.15s;
+      }
+      .back-link:hover {
+        background: var(--bg);
+        color: var(--blue);
+      }
+
+      .success-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: var(--success-bg);
+        border: 3px solid var(--success-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+      }
+      .success-icon i {
+        font-size: 36px;
+        color: var(--green);
+      }
+      .success-title {
+        text-align: center;
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--text-1);
+        margin-bottom: 8px;
+      }
+      .success-desc {
+        text-align: center;
+        font-size: 13px;
+        color: var(--text-3);
+        line-height: 1.7;
+      }
+
+      .password-wrap {
+        position: relative;
+      }
+      .password-wrap .form-input {
+        padding-left: 44px;
+      }
+      .password-toggle {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-3);
+        cursor: pointer;
+        font-size: 18px;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .password-toggle:hover {
+        color: var(--text-2);
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-6px);
+        }
+        75% {
+          transform: translateX(6px);
+        }
+      }
+      .shake {
+        animation: shake 0.3s ease;
+      }
+
+      /* NAVBAR */
+      .navbar {
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        padding: 0 32px;
+        position: sticky;
+        top: 69px;
+        z-index: 600;
+      }
+      .navbar-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: stretch;
+        height: 46px;
+        position: relative;
+      }
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 0 14px;
+        height: 100%;
+        font-size: 13px;
+        color: var(--text-3);
+        white-space: nowrap;
+        border-bottom: 2px solid transparent;
+        transition: all var(--transition);
+        font-weight: 500;
+        text-decoration: none;
+      }
+      .nav-link:hover {
+        color: var(--blue);
+        border-bottom-color: var(--blue);
+      }
+      .nav-link.active {
+        color: var(--blue);
+        border-bottom-color: var(--blue);
+        font-weight: 600;
+      }
+      .nav-link i {
+        font-size: 16px;
+      }
+      .nav-cats-wrap {
+        height: 100%;
+        display: flex;
+        align-items: stretch;
+        position: relative;
+      }
+      .nav-cats {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 14px;
+        height: 100%;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--text-2);
+        background: transparent;
+        white-space: nowrap;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        transition: all var(--transition);
+      }
+      .nav-cats:hover,
+      .nav-cats.active {
+        color: var(--blue);
+        border-bottom-color: var(--blue);
+      }
+      .nav-cats i.ti-menu-2 {
+        font-size: 19px;
+      }
+      .nav-cats i.ti-chevron-down {
+        font-size: 13px;
+      }
+
+      /* MEGA MENU */
+      .megamenu-panel {
+        position: absolute;
+        top: calc(100% + 1px);
+        right: 0;
+        width: 920px;
+        max-width: calc(100vw - 64px);
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-top: none;
+        border-radius: 0 0 var(--radius) var(--radius);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-8px);
+        pointer-events: none;
+        transition:
+          opacity 0.2s ease,
+          transform 0.2s ease,
+          visibility 0.2s;
+        z-index: 900;
+        overflow: hidden;
+      }
+      .megamenu-panel.open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: all;
+      }
+      .megamenu-cats {
+        width: 250px;
+        flex-shrink: 0;
+        background: var(--bg);
+        border-left: 1px solid var(--border);
+        padding: 10px;
+        max-height: 500px;
+        overflow-y: auto;
+      }
+      .megamenu-cat-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: none;
+        background: transparent;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--text-2);
+        text-align: right;
+        font-family: inherit;
+        transition: all 0.15s;
+      }
+      .megamenu-cat-btn .cat-ico {
+        font-size: 19px;
+        color: var(--text-3);
+        flex-shrink: 0;
+        transition: color 0.15s;
+      }
+      .megamenu-cat-btn .cat-arrow {
+        margin-right: auto;
+        font-size: 13px;
+        color: var(--text-4);
+        transition: color 0.15s;
+      }
+      .megamenu-cat-btn:hover,
+      .megamenu-cat-btn.active {
+        background: var(--white);
+        color: var(--blue);
+        box-shadow: var(--shadow-sm);
+      }
+      .megamenu-cat-btn:hover .cat-ico,
+      .megamenu-cat-btn.active .cat-ico,
+      .megamenu-cat-btn:hover .cat-arrow,
+      .megamenu-cat-btn.active .cat-arrow {
+        color: var(--blue);
+      }
+      .megamenu-content {
+        flex: 1;
+        padding: 24px;
+        max-height: 500px;
+        overflow-y: auto;
+      }
+      .megamenu-content-panel {
+        display: none;
+      }
+      .megamenu-content-panel.active {
+        display: block;
+      }
+      .megamenu-content-title {
+        font-size: 15px;
+        font-weight: 800;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-1);
+      }
+      .megamenu-content-title i {
+        color: var(--blue);
+        font-size: 18px;
+      }
+      .megamenu-links {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2px 24px;
+      }
+      .megamenu-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 9px 10px;
+        border-radius: 8px;
+        font-size: 13px;
+        color: var(--text-2);
+        transition: all 0.15s;
+        text-decoration: none;
+      }
+      .megamenu-link i {
+        font-size: 13px;
+        color: var(--text-4);
+        transition: all 0.15s;
+      }
+      .megamenu-link:hover {
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      .megamenu-link:hover i {
+        color: var(--blue);
+        transform: translateX(-3px);
+      }
+      .megamenu-link.see-all {
+        grid-column: 1 / -1;
+        color: var(--blue);
+        font-weight: 700;
+        border-top: 1px solid var(--border);
+        margin-top: 8px;
+        padding-top: 14px;
+      }
+      .megamenu-backdrop {
+        position: fixed;
+        inset: 0;
+        background: var(--overlay-soft);
+        z-index: 590;
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.2s ease,
+          visibility 0.2s;
+      }
+      .megamenu-backdrop.open {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* PAGE */
+      .page-body {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 28px 32px;
+      }
+
+      /* FOOTER */
+      .footer {
+        background: var(--white);
+        border-top: 1px solid var(--border);
+        padding: 44px 32px 28px;
+        margin-top: 16px;
+      }
+      .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1.5fr repeat(4, 1fr);
+        gap: 36px;
+      }
+      .footer-brand p {
+        font-size: 13px;
+        color: var(--text-3);
+        line-height: 1.9;
+        margin: 12px 0 18px;
+      }
+      .footer-social {
+        display: flex;
+        gap: 8px;
+      }
+      .social-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-sm);
+        background: var(--blue-light);
+        color: var(--blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .social-btn:hover {
+        background: var(--blue);
+        color: #fff;
+      }
+      .footer-col h4 {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: var(--text-1);
+      }
+      .footer-col ul li {
+        padding: 4px 0;
+        font-size: 13px;
+        color: var(--text-3);
+        cursor: pointer;
+        transition: color 0.15s;
+      }
+      .footer-col ul li:hover {
+        color: var(--blue);
+      }
+      .footer-bottom {
+        max-width: 1200px;
+        margin: 28px auto 0;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .footer-bottom p {
+        font-size: 12px;
+        color: var(--text-4);
+      }
+      .footer-trust {
+        display: flex;
+        gap: 8px;
+      }
+      .ftrust {
+        width: 44px;
+        height: 44px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: var(--text-4);
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: var(--text-1);
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+        font-weight: 600;
+        z-index: 9999;
+        opacity: 0;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: var(--shadow-lg);
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .toast i {
+        font-size: 18px;
+        color: var(--green);
+      }
+
+      /* ═══════════════════════════════════════════════
+         IPHONE PAGE — Product Grid & Cards
+         (دقیقاً هم‌سو با دیزاین صفحه سامسونگ)
+         ═══════════════════════════════════════════════ */
+      .iphone-page-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 28px;
+      }
+      .iphone-page-header svg {
+        flex-shrink: 0;
+      }
+      .iphone-page-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text-1);
+      }
+      .iphone-page-subtitle {
+        font-size: 13px;
+        color: var(--text-3);
+        margin-top: 2px;
+      }
+
+      /* کادرها کاملاً به هم چسبیده — هر کارت فقط border-left و border-bottom
+         داره و خود گرید border-right/border-top داره، این‌طوری خط‌ها
+         دقیقاً یک‌بار کشیده میشن (بدون دوتا شدن) و کارت‌ها هم کش نمی‌آیند */
+      .iphone-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 0;
+        border-top: 1px solid var(--border);
+        border-right: 1px solid var(--border);
+      }
+
+      .iphone-card {
+        background: var(--white);
+        border-left: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        border-radius: 0;
+        overflow: hidden;
+        position: relative;
+        transition: box-shadow var(--transition);
+        display: flex;
+        flex-direction: column;
+      }
+      .iphone-card:hover {
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Badges container */
+      .iphone-badges {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        z-index: 2;
+      }
+      .badge-coming-soon {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+      }
+      .badge-coming-soon i {
+        font-size: 12px;
+      }
+      .badge-out-of-stock {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: var(--red);
+        color: #fff;
+        font-size: 10.5px;
+        font-weight: 700;
+      }
+      .badge-out-of-stock i {
+        font-size: 12px;
+      }
+
+      /* Image area — دقیقاً مثل سامسونگ: بدون drop-shadow، فقط multiply */
+      .iphone-card-image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        padding: 50px 14px 10px;
+        height: 220px;
+        position: relative;
+      }
+
+      .iphone-card-image img {
+        max-height: 200px;
+        max-width: 100%;
+        width: auto;
+        object-fit: contain;
+        mix-blend-mode: multiply;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .iphone-card:hover .iphone-card-image svg,
+      .iphone-card:hover .iphone-card-image img {
+        transform: translateY(-4px) scale(1.02);
+      }
+
+      /* Card body */
+      .iphone-card-body {
+        padding: 0 14px 16px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+
+      .iphone-card-name {
+        font-size: 14.5px;
+        font-weight: 700;
+        color: var(--text-1);
+        margin-bottom: 4px;
+      }
+      .iphone-card-desc {
+        font-size: 11.5px;
+        color: var(--text-3);
+        line-height: 1.6;
+        margin-bottom: 10px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      /* Storage options */
+      .iphone-option-group {
+        margin-bottom: 10px;
+      }
+      .iphone-option-label {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--text-3);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .iphone-option-label i {
+        font-size: 12px;
+        color: var(--text-4);
+      }
+      .iphone-storage-options {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+      }
+      .iphone-storage-chip {
+        padding: 4px 9px;
+        border-radius: 999px;
+        border: 1.5px solid var(--border);
+        background: var(--bg);
+        color: var(--text-3);
+        font-size: 10.5px;
+        font-weight: 600;
+        cursor: default;
+        user-select: none;
+        opacity: 0.7;
+        transition: all 0.15s;
+      }
+
+      /* Color options */
+      .iphone-color-options {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .iphone-color-swatch {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid var(--border);
+        cursor: default;
+        user-select: none;
+        opacity: 0.7;
+        transition: all 0.15s;
+        position: relative;
+      }
+      .iphone-color-swatch::after {
+        content: "";
+        position: absolute;
+        inset: 2px;
+        border-radius: 50%;
+        background: inherit;
+      }
+
+      /* Notify button */
+      .iphone-notify-btn {
+        width: 100%;
+        height: 38px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--bg);
+        color: var(--text-4);
+        font-size: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        cursor: not-allowed;
+        margin-top: auto;
+        padding-top: 12px;
+        opacity: 0.6;
+      }
+      .iphone-notify-btn i {
+        font-size: 15px;
+      }
+
+      @media (max-width: 768px) {
+        .header,
+        .navbar {
+          padding: 0 16px;
+        }
+        .page-body {
+          padding: 20px 16px;
+        }
+        .footer-inner {
+          grid-template-columns: 1fr 1fr;
+          gap: 24px;
+        }
+        .footer {
+          padding: 32px 16px 20px;
+        }
+        .btn-auth-pill span.pill-text {
+          display: none;
+        }
+        .btn-auth-pill {
+          padding: 10px;
+          border-radius: 50%;
+        }
+        .profile-trigger-name {
+          display: none;
+        }
+        .nav-link {
+          display: none;
+        }
+        .megamenu-panel {
+          position: fixed;
+          top: 69px;
+          right: 0;
+          left: 0;
+          width: 100%;
+          max-width: 100%;
+          flex-direction: column;
+          max-height: calc(100vh - 69px);
+          border-radius: 0;
+        }
+        .megamenu-cats {
+          width: 100%;
+          border-left: none;
+          border-bottom: 1px solid var(--border);
+          max-height: 220px;
+        }
+        .megamenu-content {
+          max-height: none;
+        }
+
+        /* iPhone page responsive — روی موبایل هم چسبیده با همان خط نازک */
+        .iphone-grid {
+          grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+          gap: 0;
+        }
+        .iphone-page-title {
+          font-size: 18px;
+        }
+        .iphone-card-image {
+          height: 170px;
+          padding: 14px 10px 8px;
+        }
+        .iphone-card-image svg,
+        .iphone-card-image img {
+          max-height: 140px;
+        }
+        .iphone-card-body {
+          padding: 0 10px 12px;
+        }
+        .iphone-card-name {
+          font-size: 13px;
+        }
+      }
+      @media (max-width: 480px) {
+        .footer-inner {
+          grid-template-columns: 1fr;
+        }
+      }
+      /* استایل dropdown سبد خرید */
+      .cart-dropdown {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        width: 340px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.2s ease;
+        padding: 16px;
+      }
+      .cart-wrap:hover .cart-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      /* آیتم‌های داخل سبد */
+      .mini-cart-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .mini-cart-item:last-child {
+        border-bottom: none;
+      }
+      .mini-cart-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+        background: var(--bg);
+      }
+      .mini-cart-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .mini-cart-name {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--text-1);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 4px;
+      }
+      .mini-cart-price {
+        font-size: 12px;
+        color: var(--blue);
+        font-weight: 700;
+      }
+
+      /* دکمه‌های تعداد و حذف */
+      .mini-cart-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+      }
+      .mini-qty-controls {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--bg);
+        border-radius: 6px;
+        padding: 2px;
+      }
+      .mini-qty-btn {
+        width: 22px;
+        height: 22px;
+        border: none;
+        background: var(--white);
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--text-2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+      .mini-qty-val {
+        font-size: 12px;
+        font-weight: 700;
+        min-width: 15px;
+        text-align: center;
+      }
+      .mini-remove-btn {
+        background: none;
+        border: none;
+        color: var(--text-4);
+        cursor: pointer;
+        font-size: 14px;
+        transition: color 0.2s;
+      }
+      .mini-remove-btn:hover {
+        color: var(--red);
+      }
+
+      /* بخش پایینی dropdown */
+      .mini-cart-footer {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 2px solid var(--border);
+      }
+      .mini-cart-total {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .mini-cart-btn-checkout {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        height: 42px;
+        background: var(--red);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        font-size: 13px;
+        text-decoration: none;
+        transition: opacity 0.2s;
+      }
+      .mini-cart-btn-checkout:hover {
+        opacity: 0.9;
+      }
+      .mini-cart-empty {
+        text-align: center;
+        color: var(--text-3);
+        font-size: 13px;
+        padding: 20px 0;
+      }
+    </style>
+    <style>
+      /* Product listing: open, full-width layout */
+      .page-body {
+        max-width: none;
+      }
+      .iphone-grid {
+        border: none;
+      }
+      .iphone-card {
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      /* ایجاد پل نامرئی برای جلوگیری از بسته شدن باکس هنگام حرکت موس */
+      .cart-wrap::before {
+        content: "";
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 60px;
+        height: 15px; /* این فاصله را پر می‌کند */
+        z-index: 999;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- AUTH MODAL -->
+    <div class="modal-overlay" id="loginModal">
+      <div class="modal-box">
+        <div class="modal-head">
+          <h2 id="modalTitle">ورود | ثبت‌نام</h2>
+          <button class="modal-close" id="loginModalClose">
+            <i class="ti ti-x"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="auth-step active" id="stepIdentifier">
+            <p class="modal-desc">شماره موبایل یا ایمیل خود را وارد کنید.</p>
+            <div class="form-group">
+              <label class="form-label">شماره موبایل یا ایمیل</label>
+              <input
+                type="text"
+                class="form-input"
+                id="identifierInput"
+                placeholder="09123456789 یا you@email.com"
+                autocomplete="off"
+                dir="ltr"
+                style="letter-spacing: 1px; font-size: 15px; text-align: center"
+              />
+              <div class="form-error" id="identifierError">
+                شماره موبایل یا ایمیل معتبر نیست
+              </div>
+            </div>
+            <button class="btn-auth" id="continueBtn">
+              <i class="ti ti-arrow-left"></i> ادامه
+            </button>
+            <p class="modal-footer-text">
+              با ورود،
+              <a href="/terms" style="color: var(--blue); font-weight: 600"
+                >قوانین و مقررات</a
+              >
+              دیجی‌شاپ را می‌پذیرید.
+            </p>
+          </div>
+          <div class="auth-step" id="stepMethod">
+            <div class="method-identifier" id="methodIdentifierDisplay">
+              09123456789
+            </div>
+            <p class="modal-desc" style="text-align: center">
+              روش ورود را انتخاب کنید.
+            </p>
+            <button class="btn-auth" id="sendOtpBtn">
+              <i class="ti ti-device-mobile-message"></i> ارسال کد تأیید
+            </button>
+            <button class="btn-auth-outline" id="showPasswordBtn">
+              <i class="ti ti-lock"></i> ورود با رمز عبور
+            </button>
+            <button class="back-link" id="backFromMethod">
+              <i class="ti ti-arrow-right"></i> تغییر شماره/ایمیل
+            </button>
+          </div>
+          <div class="auth-step" id="stepOtp">
+            <div class="otp-sent-info">
+              <i class="ti ti-circle-check"></i>
+              <p>
+                کد ۵ رقمی به
+                <strong
+                  id="otpTarget"
+                  dir="ltr"
+                  style="color: var(--blue)"
+                ></strong>
+                ارسال شد.
+              </p>
+            </div>
+            <div class="form-group" style="margin-top: 20px">
+              <label class="form-label">کد تأیید</label>
+              <input
+                type="text"
+                class="form-input input-otp"
+                id="otpInput"
+                placeholder="• • • • •"
+                maxlength="5"
+                autocomplete="one-time-code"
+                inputmode="numeric"
+                dir="ltr"
+              />
+              <div class="form-error" id="otpError">کد وارد شده صحیح نیست</div>
+            </div>
+            <button class="btn-auth" id="verifyOtpBtn">
+              <i class="ti ti-login"></i> تأیید و ورود
+            </button>
+            <div class="otp-timer-row">
+              <span id="otpTimerTxt"
+                >ارسال مجدد تا
+                <b class="timer-val" id="timerCount">02:00</b></span
+              >
+              <button class="resend-link" id="resendBtn" style="display: none">
+                <i class="ti ti-refresh"></i> ارسال مجدد کد
+              </button>
+            </div>
+            <button class="back-link" id="backFromOtp">
+              <i class="ti ti-arrow-right"></i> بازگشت
+            </button>
+          </div>
+          <div class="auth-step" id="stepPassword">
+            <p class="modal-desc" style="text-align: center">
+              رمز عبور خود را وارد کنید.
+            </p>
+            <div class="form-group">
+              <label class="form-label">رمز عبور</label>
+              <div class="password-wrap">
+                <input
+                  type="password"
+                  class="form-input"
+                  id="passwordInput"
+                  placeholder="••••••"
+                  autocomplete="current-password"
+                  dir="ltr"
+                  style="text-align: left"
+                />
+                <button
+                  type="button"
+                  class="password-toggle"
+                  id="togglePassword"
+                >
+                  <i class="ti ti-eye"></i>
+                </button>
+              </div>
+              <div class="form-error" id="passwordError">
+                رمز عبور اشتباه است
+              </div>
+            </div>
+            <button class="btn-auth" id="passwordLoginBtn">
+              <i class="ti ti-login"></i> ورود
+            </button>
+            <span class="forgot-link" id="forgotPasswordLink"
+              >فراموشی رمز عبور؟</span
+            >
+            <button class="back-link" id="backFromPassword">
+              <i class="ti ti-arrow-right"></i> بازگشت
+            </button>
+          </div>
+          <div class="auth-step" id="stepSuccess">
+            <div class="success-icon">
+              <i class="ti ti-check"></i>
+            </div>
+            <div class="success-title">خوش آمدید!</div>
+            <div class="success-desc" id="successDesc">
+              ورود شما با موفقیت انجام شد.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+      <i class="ti ti-check"></i><span id="toastText"></span>
+    </div>
+
+    <!-- MEGA MENU BACKDROP -->
+    <div class="megamenu-backdrop" id="megamenuBackdrop"></div>
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-inner">
+        <a href="/" class="logo">
+          <div class="logo-mark"><i class="ti ti-shopping-bag"></i></div>
+          <div class="logo-text">دیجی<span>شاپ</span></div>
+        </a>
+        <div class="search-bar">
+          <input
+            type="text"
+            placeholder="جستجو در بیش از ۱ میلیون کالا..."
+            id="searchInput"
+          />
+          <button class="search-btn"><i class="ti ti-search"></i> جستجو</button>
+        </div>
+        <div class="header-actions">
+          <button class="h-btn" aria-label="اعلان‌ها">
+            <i class="ti ti-bell"></i>
+          </button>
+          <button
+            class="btn-auth-pill"
+            id="authPillBtn"
+            onclick="openLoginModal()"
+          >
+            <i class="ti ti-login"></i>
+            <span class="pill-text">ورود | ثبت‌نام</span>
+          </button>
+          <div class="profile-wrapper">
+            <div
+              class="profile-trigger"
+              id="profileTrigger"
+              role="button"
+              tabindex="0"
+            >
+              <div class="profile-avatar" id="profileAvatar">ک</div>
+              <span class="profile-trigger-name" id="profileName">کاربر</span>
+              <i class="ti ti-chevron-down profile-chevron"></i>
+            </div>
+            <div class="profile-dropdown" id="profileDropdown">
+              <div class="pdrop-header">
+                <div class="pdrop-avatar" id="pdropAvatar">ک</div>
+                <div>
+                  <div class="pdrop-info-name" id="pdropName">کاربر</div>
+                  <div class="pdrop-info-mobile" id="pdropMobile"></div>
+                </div>
+              </div>
+              <div class="pdrop-menu">
+                <a href="/profile/orders" class="pdrop-item"
+                  ><div class="pdrop-item-ico">
+                    <i class="ti ti-shopping-bag"></i>
+                  </div>
+                  <span>سفارش‌های من</span></a
+                >
+                <a href="/profile/wishlist" class="pdrop-item"
+                  ><div class="pdrop-item-ico"><i class="ti ti-heart"></i></div>
+                  <span>علاقه‌مندی‌ها</span></a
+                >
+                <a href="/profile/addresses" class="pdrop-item"
+                  ><div class="pdrop-item-ico">
+                    <i class="ti ti-map-pin"></i>
+                  </div>
+                  <span>آدرس‌های من</span></a
+                >
+                <a href="/profile/wallet" class="pdrop-item"
+                  ><div class="pdrop-item-ico">
+                    <i class="ti ti-wallet"></i>
+                  </div>
+                  <span>کیف پول</span></a
+                >
+                <a href="/support" class="pdrop-item"
+                  ><div class="pdrop-item-ico">
+                    <i class="ti ti-headset"></i>
+                  </div>
+                  <span>پشتیبانی</span></a
+                >
+                <div class="pdrop-divider"></div>
+                <button class="pdrop-item logout" id="logoutBtn">
+                  <div class="pdrop-item-ico"><i class="ti ti-logout"></i></div>
+                  <span>خروج از حساب</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="cart-wrap">
+            <a href="/cart" class="h-btn" aria-label="سبد خرید">
+              <i class="ti ti-shopping-cart"></i>
+            </a>
+            <span class="cart-badge" id="cartCount" style="display: none"
+              >0</span
+            >
+
+            <!-- پنجره بازشونده سبد خرید -->
+            <div class="cart-dropdown" id="cartDropdown">
+              <div id="miniCartItems">
+                <!-- آیتم‌ها با جاوااسکریپت لود می‌شوند -->
+              </div>
+              <div
+                class="mini-cart-footer"
+                id="miniCartFooter"
+                style="display: none"
+              >
+                <div class="mini-cart-total">
+                  <span>مجموع:</span>
+                  <span id="miniCartTotalPrice">۰ تومان</span>
+                </div>
+                <a href="cart.html" class="mini-cart-btn-checkout">
+                  <!-- اسلش اول حذف شد -->
+                  <i class="ti ti-check"></i> مشاهده سبد و تسویه حساب
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <div class="navbar-inner">
+        <div class="nav-cats-wrap">
+          <button class="nav-cats" id="catsToggle">
+            <i class="ti ti-menu-2"></i> همه دسته‌بندی‌ها
+            <i class="ti ti-chevron-down"></i>
+          </button>
+          <div class="megamenu-panel" id="megamenuPanel">
+            <div class="megamenu-cats" id="megamenuCats"></div>
+            <div class="megamenu-content" id="megamenuContent"></div>
+          </div>
+        </div>
+        <a href="/" class="nav-link"><i class="ti ti-home"></i> خانه</a>
+        <a href="/offers" class="nav-link"
+          ><i class="ti ti-flame"></i> پیشنهاد ویژه</a
+        >
+        <a href="/new" class="nav-link"
+          ><i class="ti ti-sparkles"></i> تازه‌ها</a
+        >
+        <a href="/bestsellers" class="nav-link"
+          ><i class="ti ti-trending-up"></i> پرفروش‌ترین</a
+        >
+        <a href="/brands" class="nav-link"
+          ><i class="ti ti-building-store"></i> برندها</a
+        >
+        <a href="/blog" class="nav-link"><i class="ti ti-article"></i> مجله</a>
+      </div>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════════
+         PAGE BODY — iPhone Products Only
+         ═══════════════════════════════════════════════ -->
+    <main class="page-body">
+      <!-- Page header -->
+      <div class="iphone-page-header">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"
+            fill="var(--text-2)"
+          />
+        </svg>
+        <div>
+          <div class="iphone-page-title">خرید آیفون</div>
+          <div class="iphone-page-subtitle">
+            آیفون‌های جدید به زودی در دیجی‌شاپ
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Grid — exactly 2 products -->
+      <div class="iphone-grid">
+        <!-- ═══ iPhone 17 ═══ -->
+        <a
+          href="product?id=iphone-17"
+          class="iphone-card"
+          style="color: inherit"
+        >
+          <div class="iphone-badges">
+            <span class="badge-coming-soon">
+              <i class="ti ti-clock"></i> به زودی
+            </span>
+            <span class="badge-out-of-stock">
+              <i class="ti ti-x-circle"></i> ناموجود
+            </span>
+          </div>
+          <div class="iphone-card-image">
+            <img src="/images/apple/iphone 17-3.webp" alt="iPhone 17" />
+          </div>
+          <div class="iphone-card-body">
+            <!-- Apple logo -->
+            <svg
+              width="20"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              style="margin-bottom: 10px; display: block"
+            >
+              <path
+                d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"
+                fill="var(--text-3)"
+              />
+            </svg>
+            <div class="iphone-card-name">iPhone 17</div>
+            <div class="iphone-card-desc">
+              تراشه A19، طراحی کاملاً جدید با فریم آلومینیومی، دوربین ۴۸
+              مگاپیکسلی با قابلیت‌های پیشرفته هوش مصنوعی و نمایشگر ۶.۱ اینچی
+              OLED.
+            </div>
+
+            <!-- Storage -->
+            <div class="iphone-option-group">
+              <div class="iphone-option-label">
+                <i class="ti ti-hard-drive"></i> حافظه داخلی
+              </div>
+              <div class="iphone-storage-options">
+                <span class="iphone-storage-chip">۱۲۸ گیگابایت</span>
+                <span class="iphone-storage-chip">۲۵۶ گیگابایت</span>
+                <span class="iphone-storage-chip">۵۱۲ گیگابایت</span>
+              </div>
+            </div>
+
+            <!-- Colors -->
+            <div class="iphone-option-group">
+              <div class="iphone-option-label">
+                <i class="ti ti-palette"></i> رنگ
+              </div>
+              <div class="iphone-color-options">
+                <div
+                  class="iphone-color-swatch"
+                  style="background: #f5f0e8"
+                  title="تیتانیوم طبیعی"
+                ></div>
+                <div
+                  class="iphone-color-swatch"
+                  style="background: #3b5998"
+                  title="تیتانیوم آبی"
+                ></div>
+                <div
+                  class="iphone-color-swatch"
+                  style="background: #f0f0f0"
+                  title="تیتانیوم سفید"
+                ></div>
+                <div
+                  class="iphone-color-swatch"
+                  style="background: #2c2c2e"
+                  title="تیتانیوم مشکی"
+                ></div>
+              </div>
+            </div>
+
+            <!-- Disabled Notify Button -->
+            <button class="iphone-notify-btn" disabled>
+              <i class="ti ti-bell-off"></i> اطلاع‌رسانی هنگام موجودی
+            </button>
+          </div>
+        </a>
+        <!-- ═══ iPhone 17 Pro ═══ -->
+        <a
+          href="/product?id=iphone-17-pro"
+          class="iphone-card"
+          style="color: inherit"
+        >
+          <div class="iphone-badges">
+            <span class="badge-coming-soon">
+              <i class="ti ti-clock"></i> به زودی
+            </span>
+            <span class="badge-out-of-stock">
+              <i class="ti ti-x-circle"></i> ناموجود
+            </span>
+          </div>
+          <div class="iphone-card-image">
+            <img src="/images/apple/17pro.webp" alt="iPhone 17 Pro" />
+          </div>
+          <div class="iphone-card-body">
+            <!-- Apple logo -->
+            <svg
+              width="20"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              style="margin-bottom: 10px; display: block"
+            >
+              <path
+                d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"
+                fill="var(--text-3)"
+              />
+            </svg>
+            <div class="iphone-card-name">iPhone 17 Pro</div>
+            <div class="iphone-card-desc">
+              تراشه A19 Pro، بدنه تیتانیومی، سیستم دوربین سه‌گانه ۴۸ مگاپیکسلی،
+              نمایشگر ۶.۳ اینچی Super Retina XDR و عملکرد خارق‌العاده در عکاسی و
+              بازی.
+            </div>
+
+            <!-- Storage -->
+            <div class="iphone-option-group">
+              <div class="iphone-option-label">
+                <i class="ti ti-hard-drive"></i> حافظه داخلی
+              </div>
+              <div class="iphone-storage-options">
+                <span class="iphone-storage-chip">۲۵۶ گیگابایت</span>
+                <span class="iphone-storage-chip">۵۱۲ گیگابایت</span>
+                <span class="iphone-storage-chip">۱ ترابایت</span>
+              </div>
+            </div>
+
+            <!-- Colors -->
+            <div class="iphone-option-group">
+              <div class="iphone-option-label">
+                <i class="ti ti-palette"></i> رنگ
+              </div>
+              <div class="iphone-color-options">
+                <div
+                  class="iphone-color-swatch"
+                  style="background: #c4b69c"
+                  title="تیتانیوم طبیعی"
+                ></div>
+                <div
+                  class="iphone-color-swatch"
+                  style="background: #f0ede8"
+                  title="تیتانیوم سفید"
+                ></div>
+                <div
+                  class="iphone-color-swatch"
+                  style="background: #3a3a3c"
+                  title="تیتانیوم مشکی"
+                ></div>
+              </div>
+            </div>
+
+            <!-- Disabled Notify Button -->
+            <button class="iphone-notify-btn" disabled>
+              <i class="ti ti-bell-off"></i> اطلاع‌رسانی هنگام موجودی
+            </button>
+          </div>
+        </a>
+
+        <!-- ═══ iPhone 17 Pro Max ═══ -->
+        <a
+          href="product?id=iphone-17-pro-max"
+          class="iphone-card"
+          style="color: inherit"
+        >
+          <div class="iphone-badges">
+            <span class="badge-coming-soon">
+              <i class="ti ti-clock"></i> به زودی
+            </span>
+            <span class="badge-out-of-stock">
+              <i class="ti ti-x-circle"></i> ناموجود
+            </span>
+          </div>
+          <div class="iphone-card-image">
+            <img src="/images/apple/iphone-17.webp" alt="Galaxy A57" />
+          </div>
+          <div class="iphone-card-body">
+            <!-- Apple logo -->
+            <svg
+              width="20"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              style="margin-bottom: 10px; display: block"
+            >
+              <path
+                d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"
+                fill="var(--text-3)"
+              />
+            </svg>
+            <div class="iphone-card-name">iPhone 17 Pro Max</div>
+            <div class="iphone-card-desc">
+              تراشه A19 Pro، بدنه تیتانیومی، سیستم دوربین سه‌گانه ۴۸ مگاپیکسلی،
+              نمایشگر ۶.۹ اینچی Super Retina XDR و قابلیت‌های حرفه‌ای عکاسی و
+              ویدیو.
+            </div>
+
+            <!-- Storage -->
+            <div class="iphone-option-group">
+              <div class="iphone-option-label">
+                <i class="ti ti-hard-drive"></i> حافظه داخلی
+              </div>
+              <div class="iphone-storage-options">
+                <span class="iphone-storage-chip">۲۵۶ گیگابایت</span>
+                <span class="iphone-storage-chip">۵۱۲ گیگابایت</span>
+                <span class="iphone-storage-chip">۱ ترابایت</span>
+              </div>
+            </div>
+
+            <!-- Colors -->
+            <div class="iphone-option-group">
+              <div class="iphone-option-label">
+                <i class="ti ti-palette"></i> رنگ
+              </div>
+              <div class="iphone-color-options">
+                <div
+                  class="iphone-color-swatch"
+                  style="background: #c4b69c"
+                  title="تیتانیوم طبیعی"
+                ></div>
+                <div
+                  class="iphone-color-swatch"
+                  style="background: #f0ede8"
+                  title="تیتانیوم سفید"
+                ></div>
+                <div
+                  class="iphone-color-swatch"
+                  style="background: #3a3a3c"
+                  title="تیتانیوم مشکی"
+                ></div>
+              </div>
+            </div>
+
+            <!-- Disabled Notify Button -->
+            <button class="iphone-notify-btn" disabled>
+              <i class="ti ti-bell-off"></i> اطلاع‌رسانی هنگام موجودی
+            </button>
+          </div>
+        </a>
+        <!-- ═══ iPhone 17 Air ═══ -->
+        <a
+          href="product.html?id=iphone-17-air"
+          class="iphone-card"
+          style="color: inherit"
+        >
+          <div class="iphone-badges">
+            <span class="badge-coming-soon">
+              <i class="ti ti-clock"></i> به زودی
+            </span>
+            <span class="badge-out-of-stock">
+              <i class="ti ti-x-circle"></i> ناموجود
+            </span>
+          </div>
+          <div class="iphone-card-image">
+            <img src="/images/apple/air.webp" alt="iPhone 17 Air" />
+          </div>
+          <div class="iphone-card-body">
+            <!-- Apple logo -->
+            <svg
+              width="20"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              style="margin-bottom: 10px; display: block"
+            >
+              <path
+                d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"
+                fill="var(--text-3)"
+              />
+            </svg>
+            <div class="iphone-card-name">iPhone 17 Air</div>
+            <div class="iphone-card-desc">
+              بدنه فوق‌العاده نازک و سبک، تراشه A19، نمایشگر ۶.۶ اینچی OLED،
+              دوربین ۴۸ مگاپیکسلی و باتری بهینه‌شده برای بیشترین کارایی.
+            </div>
+
+            <!-- Storage -->
+            <div class="iphone-option-group">
+              <div class="iphone-option-label">
+                <i class="ti ti-hard-drive"></i> حافظه داخلی
+              </div>
+              <div class="iphone-storage-options">
+                <span class="iphone-storage-chip">۲۵۶ گیگابایت</span>
+                <span class="iphone-storage-chip">۵۱۲ گیگابایت</span>
+              </div>
+            </div>
+
+            <!-- Colors -->
+            <div class="iphone-option-group">
+              <div class="iphone-option-label">
+                <i class="ti ti-palette"></i> رنگ
+              </div>
+              <div class="iphone-color-options">
+                <div
+                  class="iphone-color-swatch"
+                  style="background: #e0efff"
+                  title="آبی روشن"
+                ></div>
+                <div
+                  class="iphone-color-swatch"
+                  style="background: #5c5c5c"
+                  title="خاکستری"
+                ></div>
+                <div
+                  class="iphone-color-swatch"
+                  style="background: #f5f5f7"
+                  title="سفید"
+                ></div>
+              </div>
+            </div>
+
+            <!-- Disabled Notify Button -->
+            <button class="iphone-notify-btn" disabled>
+              <i class="ti ti-bell-off"></i> اطلاع‌رسانی هنگام موجودی
+            </button>
+          </div>
+        </a>
+      </div>
+      <!-- End of iphone-grid — nothing else follows -->
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <a href="/" class="logo"
+            ><div class="logo-mark"><i class="ti ti-shopping-bag"></i></div>
+            <div class="logo-text">دیجی<span>شاپ</span></div></a
+          >
+          <p>
+            دیجی‌شاپ، فروشگاه اینترنتی محصولات دیجیتال با بیش از ۱۰ سال تجربه.
+          </p>
+          <div class="footer-social">
+            <div class="social-btn"><i class="ti ti-brand-instagram"></i></div>
+            <div class="social-btn"><i class="ti ti-brand-telegram"></i></div>
+            <div class="social-btn"><i class="ti ti-brand-twitter"></i></div>
+            <div class="social-btn"><i class="ti ti-brand-youtube"></i></div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>دسترسی سریع</h4>
+          <ul>
+            <li>صفحه اصلی</li>
+            <li>پیشنهاد ویژه</li>
+            <li>تازه‌ها</li>
+            <li>پرفروش‌ترین‌ها</li>
+            <li>برندها</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>دسته‌بندی‌ها</h4>
+          <ul>
+            <li>موبایل</li>
+            <li>تبلت</li>
+            <li>هدفون و هندزفری</li>
+            <li>ساعت هوشمند</li>
+            <li>لوازم جانبی</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>خدمات مشتریان</h4>
+          <ul>
+            <li>پیگیری سفارش</li>
+            <li>شرایط بازگشت</li>
+            <li>گارانتی محصولات</li>
+            <li>سوالات متداول</li>
+            <li>تماس با ما</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>درباره ما</h4>
+          <ul>
+            <li>معرفی دیجی‌شاپ</li>
+            <li>فرصت‌های شغلی</li>
+            <li>قوانین و مقررات</li>
+            <li>حریم خصوصی</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© ۱۴۰۴ دیجی‌شاپ — تمامی حقوق محفوظ است.</p>
+        <div class="footer-trust">
+          <div class="ftrust"><i class="ti ti-certificate"></i></div>
+          <div class="ftrust"><i class="ti ti-shield-check"></i></div>
+          <div class="ftrust"><i class="ti ti-star"></i></div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      /* ═══════════════════════════════════════════════
+         TOAST
+         ═══════════════════════════════════════════════ */
+      function showToast(text) {
+        const t = document.getElementById("toast");
+        document.getElementById("toastText").textContent = text;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 3000);
+      }
+
+      /* ═══════════════════════════════════════════════
+         API HELPER
+         ═══════════════════════════════════════════════ */
+      async function apiCall(url, data) {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const json = await res.json();
+        if (!res.ok || !json.success) {
+          throw new Error(json.message || "خطا در ارتباط با سرور");
+        }
+        return json;
+      }
+
+      /* ═══════════════════════════════════════════════
+         AUTH STATE
+         ═══════════════════════════════════════════════ */
+      const MOBILE_RE = /^(\+98|0098|0)?9\d{9}$/;
+
+      function normalizeIdentifier(v) {
+        v = v.trim();
+        if (MOBILE_RE.test(v.replace(/(\+98|0098)/, "0"))) {
+          return v.replace(/(\+98|0098)/, "0");
+        }
+        return v.toLowerCase();
+      }
+
+      function getDisplayName(user) {
+        if (user.mobile) return user.mobile;
+        if (user.email) return user.email;
+        return "کاربر";
+      }
+
+      function applyLogin(user, token) {
+        document.body.classList.add("logged-in");
+        const disp = getDisplayName(user);
+        const ch = disp.replace(/\D/g, "").slice(0, 1) || "ک";
+        document.getElementById("profileAvatar").textContent = ch;
+        document.getElementById("profileName").textContent = disp;
+        document.getElementById("pdropAvatar").textContent = ch;
+        document.getElementById("pdropName").textContent = disp;
+        document.getElementById("pdropMobile").textContent =
+          user.mobile || user.email || "";
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+
+      function applyLogout() {
+        document.body.classList.remove("logged-in");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
+
+      /* Restore session */
+      (function () {
+        try {
+          const u = localStorage.getItem("user");
+          const t = localStorage.getItem("token");
+          if (u && t) applyLogin(JSON.parse(u), t);
+        } catch (e) {}
+      })();
+
+      /* ═══════════════════════════════════════════════
+         AUTH MODAL
+         ═══════════════════════════════════════════════ */
+      const loginModal = document.getElementById("loginModal");
+      const steps = {
+        identifier: document.getElementById("stepIdentifier"),
+        method: document.getElementById("stepMethod"),
+        otp: document.getElementById("stepOtp"),
+        password: document.getElementById("stepPassword"),
+        success: document.getElementById("stepSuccess"),
+      };
+      let currentIdentifier = "";
+      let otpInterval = null;
+
+      function showStep(name) {
+        Object.values(steps).forEach((s) => s.classList.remove("active"));
+        if (steps[name]) steps[name].classList.add("active");
+      }
+
+      function openLoginModal() {
+        showStep("identifier");
+        document.getElementById("identifierInput").value = "";
+        clearErrors();
+        loginModal.classList.add("open");
+        setTimeout(
+          () => document.getElementById("identifierInput").focus(),
+          200,
+        );
+      }
+
+      function closeLoginModal() {
+        loginModal.classList.remove("open");
+        if (otpInterval) clearInterval(otpInterval);
+      }
+
+      function clearErrors() {
+        document
+          .querySelectorAll(".form-error")
+          .forEach((e) => e.classList.remove("show"));
+        document
+          .querySelectorAll(".form-input")
+          .forEach((e) => e.classList.remove("input-error"));
+        document
+          .querySelectorAll(".shake")
+          .forEach((e) => e.classList.remove("shake"));
+      }
+
+      document
+        .getElementById("loginModalClose")
+        .addEventListener("click", closeLoginModal);
+      loginModal.addEventListener("click", (e) => {
+        if (e.target === loginModal) closeLoginModal();
+      });
+
+      /* Step 1: Continue */
+      document.getElementById("continueBtn").addEventListener("click", () => {
+        clearErrors();
+        const val = document.getElementById("identifierInput").value.trim();
+        if (!val) {
+          document
+            .getElementById("identifierInput")
+            .classList.add("input-error");
+          document.getElementById("identifierError").classList.add("show");
+          document
+            .getElementById("identifierInput")
+            .parentElement.classList.add("shake");
+          return;
+        }
+        currentIdentifier = normalizeIdentifier(val);
+        document.getElementById("methodIdentifierDisplay").textContent =
+          currentIdentifier;
+        showStep("method");
+      });
+
+      document
+        .getElementById("identifierInput")
+        .addEventListener("keydown", (e) => {
+          if (e.key === "Enter") document.getElementById("continueBtn").click();
+        });
+
+      /* Back from method */
+      document
+        .getElementById("backFromMethod")
+        .addEventListener("click", () => {
+          showStep("identifier");
+        });
+
+      /* Step 2A: Send OTP */
+      document.getElementById("sendOtpBtn").addEventListener("click", () => {
+        document.getElementById("otpTarget").textContent = currentIdentifier;
+        showStep("otp");
+        document.getElementById("otpInput").value = "";
+        startOtpTimer();
+      });
+
+      /* Step 2B: Password */
+      document
+        .getElementById("showPasswordBtn")
+        .addEventListener("click", () => {
+          showStep("password");
+          document.getElementById("passwordInput").value = "";
+        });
+
+      document
+        .getElementById("backFromPassword")
+        .addEventListener("click", () => {
+          showStep("method");
+        });
+
+      document
+        .getElementById("togglePassword")
+        .addEventListener("click", () => {
+          const inp = document.getElementById("passwordInput");
+          const ico = document
+            .getElementById("togglePassword")
+            .querySelector("i");
+          if (inp.type === "password") {
+            inp.type = "text";
+            ico.className = "ti ti-eye-off";
+          } else {
+            inp.type = "password";
+            ico.className = "ti ti-eye";
+          }
+        });
+
+      document
+        .getElementById("passwordLoginBtn")
+        .addEventListener("click", () => {
+          clearErrors();
+          const pw = document.getElementById("passwordInput").value;
+          if (!pw) {
+            document
+              .getElementById("passwordInput")
+              .classList.add("input-error");
+            document.getElementById("passwordError").classList.add("show");
+            document
+              .getElementById("passwordInput")
+              .parentElement.classList.add("shake");
+            return;
+          }
+          finishLogin();
+        });
+
+      document
+        .getElementById("passwordInput")
+        .addEventListener("keydown", (e) => {
+          if (e.key === "Enter")
+            document.getElementById("passwordLoginBtn").click();
+        });
+
+      /* OTP Timer */
+      function startOtpTimer() {
+        if (otpInterval) clearInterval(otpInterval);
+        let secs = 120;
+        const timerEl = document.getElementById("timerCount");
+        const txtEl = document.getElementById("otpTimerTxt");
+        const resendEl = document.getElementById("resendBtn");
+        txtEl.style.display = "";
+        resendEl.style.display = "none";
+
+        otpInterval = setInterval(() => {
+          secs--;
+          if (secs <= 0) {
+            clearInterval(otpInterval);
+            txtEl.style.display = "none";
+            resendEl.style.display = "";
+            return;
+          }
+          const m = String(Math.floor(secs / 60)).padStart(2, "0");
+          const s = String(secs % 60).padStart(2, "0");
+          timerEl.textContent = m + ":" + s;
+        }, 1000);
+      }
+
+      document.getElementById("resendBtn").addEventListener("click", () => {
+        startOtpTimer();
+        showToast("کد تأیید مجدداً ارسال شد");
+      });
+
+      /* Verify OTP */
+      document.getElementById("verifyOtpBtn").addEventListener("click", () => {
+        clearErrors();
+        const code = document.getElementById("otpInput").value.trim();
+        if (code.length !== 5 || !/^\d{5}$/.test(code)) {
+          document.getElementById("otpInput").classList.add("input-error");
+          document.getElementById("otpError").classList.add("show");
+          document
+            .getElementById("otpInput")
+            .parentElement.classList.add("shake");
+          return;
+        }
+        if (otpInterval) clearInterval(otpInterval);
+        finishLogin();
+      });
+
+      document.getElementById("otpInput").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("verifyOtpBtn").click();
+      });
+
+      document.getElementById("backFromOtp").addEventListener("click", () => {
+        if (otpInterval) clearInterval(otpInterval);
+        showStep("method");
+      });
+
+      /* Finish login (simulated) */
+      function finishLogin() {
+        const isMobile = MOBILE_RE.test(currentIdentifier);
+        const user = isMobile
+          ? { mobile: currentIdentifier }
+          : { email: currentIdentifier };
+        const token = "sim_" + Date.now();
+        applyLogin(user, token);
+        document.getElementById("successDesc").textContent =
+          "ورود با " + currentIdentifier + " با موفقیت انجام شد.";
+        showStep("success");
+        setTimeout(() => {
+          closeLoginModal();
+          showToast("خوش آمدید!");
+        }, 1800);
+      }
+
+      /* Forgot password (simulated) */
+      document
+        .getElementById("forgotPasswordLink")
+        .addEventListener("click", () => {
+          showToast("لینک بازنشانی رمز عبور ارسال شد");
+        });
+
+      /* ═══════════════════════════════════════════════
+         PROFILE DROPDOWN
+         ═══════════════════════════════════════════════ */
+      const profileTrigger = document.getElementById("profileTrigger");
+      const profileDropdown = document.getElementById("profileDropdown");
+
+      profileTrigger.addEventListener("click", () => {
+        const isOpen = profileDropdown.classList.toggle("open");
+        profileTrigger.classList.toggle("open", isOpen);
+      });
+
+      document.addEventListener("click", (e) => {
+        if (
+          !profileTrigger.contains(e.target) &&
+          !profileDropdown.contains(e.target)
+        ) {
+          profileDropdown.classList.remove("open");
+          profileTrigger.classList.remove("open");
+        }
+      });
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        applyLogout();
+        profileDropdown.classList.remove("open");
+        profileTrigger.classList.remove("open");
+        showToast("از حساب خارج شدید");
+      });
+
+      /* ═══════════════════════════════════════════════
+         MEGA MENU
+         ═══════════════════════════════════════════════ */
+      const MEGA_DATA = [
+        {
+          icon: "ti-device-mobile",
+          label: "موبایل",
+          links: [
+            { text: "خرید آیفون", href: "/iphone", icon: "ti-apple" },
+            {
+              text: "خرید گوشی سامسونگ",
+              href: "/samsung",
+              icon: "ti-chevron-left",
+            },
+            {
+              text: "خرید گوشی شیائومی",
+              href: "/xiaomi",
+              icon: "ti-chevron-left",
+            },
+            { text: "هوآوی", href: "#", icon: "ti-chevron-left" },
+            { text: "نوکیا", href: "#", icon: "ti-chevron-left" },
+            {
+              text: "مشاهده همه",
+              href: "#",
+              icon: "ti-arrow-left",
+              seeAll: true,
+            },
+          ],
+        },
+        {
+          icon: "ti-device-tablet",
+          label: "تبلت",
+          links: [
+            { text: "خرید تبلت اپل", href: "/ipad", icon: "ti-chevron-left" },
+            {
+              text: "خرید تبلت سامسونگ",
+              href: "/samsungtab",
+              icon: "ti-chevron-left",
+            },
+            {
+              text: "خرید تبلت شیائومی",
+              href: "/xiaomitab",
+              icon: "ti-chevron-left",
+            },
+            {
+              text: "مشاهده همه",
+              href: "#",
+              icon: "ti-arrow-left",
+              seeAll: true,
+            },
+          ],
+        },
+        {
+          icon: "ti-headphones",
+          label: "هدفون و هندزفری",
+          links: [
+            { text: "ایرپاد", href: "#", icon: "ti-chevron-left" },
+            { text: "هدفون بی‌سیم", href: "#", icon: "ti-chevron-left" },
+            {
+              text: "مشاهده همه",
+              href: "#",
+              icon: "ti-arrow-left",
+              seeAll: true,
+            },
+          ],
+        },
+        {
+          icon: "ti-watch",
+          label: "ساعت هوشمند",
+          links: [
+            { text: "اپل واچ", href: "#", icon: "ti-chevron-left" },
+            { text: "سامسونگ واچ", href: "#", icon: "ti-chevron-left" },
+            {
+              text: "مشاهده همه",
+              href: "#",
+              icon: "ti-arrow-left",
+              seeAll: true,
+            },
+          ],
+        },
+        {
+          icon: "ti-plug",
+          label: "لوازم جانبی",
+          links: [
+            { text: "قاب و کاور", href: "#", icon: "ti-chevron-left" },
+            { text: "گلس محافظ", href: "#", icon: "ti-chevron-left" },
+            {
+              text: "مشاهده همه",
+              href: "#",
+              icon: "ti-arrow-left",
+              seeAll: true,
+            },
+          ],
+        },
+      ];
+
+      const catsToggle = document.getElementById("catsToggle");
+      const megamenuPanel = document.getElementById("megamenuPanel");
+      const megamenuCats = document.getElementById("megamenuCats");
+      const megamenuContent = document.getElementById("megamenuContent");
+      const megamenuBackdrop = document.getElementById("megamenuBackdrop");
+      const navCatsWrap = document.querySelector(".nav-cats-wrap");
+      let megamenuOpen = false;
+      let megamenuCloseTimer = null;
+
+      function buildMegamenu() {
+        MEGA_DATA.forEach((cat, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "megamenu-cat-btn" + (idx === 0 ? " active" : "");
+          btn.innerHTML =
+            '<i class="ti ' +
+            cat.icon +
+            ' cat-ico"></i><span>' +
+            cat.label +
+            '</span><i class="ti ti-chevron-left cat-arrow"></i>';
+          btn.addEventListener("click", () => switchCat(idx));
+          btn.addEventListener("mouseenter", () => switchCat(idx));
+          megamenuCats.appendChild(btn);
+
+          const panel = document.createElement("div");
+          panel.className =
+            "megamenu-content-panel" + (idx === 0 ? " active" : "");
+          panel.innerHTML =
+            '<div class="megamenu-content-title"><i class="ti ' +
+            cat.icon +
+            '"></i> ' +
+            cat.label +
+            '</div><div class="megamenu-links">' +
+            cat.links
+              .map((link) => {
+                const cls = link.seeAll
+                  ? "megamenu-link see-all"
+                  : "megamenu-link";
+                return (
+                  '<a href="' +
+                  link.href +
+                  '" class="' +
+                  cls +
+                  '"><span>' +
+                  link.text +
+                  '</span><i class="ti ' +
+                  link.icon +
+                  '"></i></a>'
+                );
+              })
+              .join("") +
+            "</div>";
+
+          panel.querySelectorAll(".megamenu-link").forEach((link) => {
+            link.addEventListener("click", closeMegamenu);
+          });
+
+          megamenuContent.appendChild(panel);
+        });
+      }
+
+      function switchCat(idx) {
+        megamenuCats
+          .querySelectorAll(".megamenu-cat-btn")
+          .forEach((b, i) => b.classList.toggle("active", i === idx));
+        megamenuContent
+          .querySelectorAll(".megamenu-content-panel")
+          .forEach((p, i) => p.classList.toggle("active", i === idx));
+      }
+
+      function openMegamenu() {
+        clearTimeout(megamenuCloseTimer);
+        megamenuPanel.classList.add("open");
+        megamenuBackdrop.classList.add("open");
+        catsToggle.classList.add("active");
+        megamenuOpen = true;
+      }
+
+      function closeMegamenu() {
+        megamenuPanel.classList.remove("open");
+        megamenuBackdrop.classList.remove("open");
+        catsToggle.classList.remove("active");
+        megamenuOpen = false;
+      }
+
+      function scheduleClose() {
+        clearTimeout(megamenuCloseTimer);
+        megamenuCloseTimer = setTimeout(closeMegamenu, 200);
+      }
+
+      navCatsWrap.addEventListener("mouseenter", openMegamenu);
+      navCatsWrap.addEventListener("mouseleave", scheduleClose);
+
+      catsToggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        megamenuOpen ? closeMegamenu() : openMegamenu();
+      });
+
+      megamenuBackdrop.addEventListener("click", closeMegamenu);
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && megamenuOpen) closeMegamenu();
+      });
+
+      buildMegamenu(); // فقط یک بار فراخوانی شود
+
+      // ═══════════════════════════════════════════
+      // کدهای باکس سبد خرید (Mini Cart)
+      // ═══════════════════════════════════════════
+      function toPersianNum(n) {
+        return n.toLocaleString("fa-IR");
+      }
+      function getItemQty(item) {
+        return item.qty || item.quantity || 1;
+      }
+      function syncCartPage() {
+        if (typeof cartData !== "undefined") {
+          try {
+            cartData = JSON.parse(localStorage.getItem("digishop_cart")) || [];
+            cartData.forEach(function (item) {
+              if (item.quantity === undefined) item.quantity = item.qty || 1;
+              if (item.available === undefined) item.available = true;
+              if (item.originalPrice === undefined)
+                item.originalPrice = item.price || 0;
+              if (item.stock === undefined) item.stock = 99;
+            });
+          } catch (e) {
+            cartData = [];
+          }
+        }
+        if (typeof renderCartItems === "function") renderCartItems();
+        if (typeof updateSummary === "function") updateSummary();
+        if (typeof updateCartBadge === "function") updateCartBadge();
+      }
+      function renderMiniCart() {
+        var cart = [];
+        try {
+          cart = JSON.parse(localStorage.getItem("digishop_cart")) || [];
+        } catch (e) {}
+        var itemsContainer = document.getElementById("miniCartItems");
+        var footer = document.getElementById("miniCartFooter");
+        var badge = document.getElementById("cartCount");
+        if (cart.length === 0) {
+          if (itemsContainer)
+            itemsContainer.innerHTML =
+              '<div class="mini-cart-empty">سبد خرید شما خالی است</div>';
+          if (footer) footer.style.display = "none";
+          if (badge) badge.style.display = "none";
+          syncCartPage();
+          return;
+        }
+        var total = 0;
+        var totalQty = 0;
+        if (itemsContainer) {
+          itemsContainer.innerHTML = cart
+            .map(function (item) {
+              var currentQty = getItemQty(item);
+              var itemTotal = (item.price || 0) * currentQty;
+              total += itemTotal;
+              totalQty += currentQty;
+              return (
+                '<div class="mini-cart-item" data-id="' +
+                item.id +
+                '">' +
+                '<img src="' +
+                (item.image ||
+                  "https://placehold.co/50x50/f1f5f9/94a3b8?text=Img") +
+                '" alt="' +
+                item.name +
+                '" class="mini-cart-img">' +
+                '<div class="mini-cart-info">' +
+                '<div class="mini-cart-name">' +
+                item.name +
+                "</div>" +
+                '<div class="mini-cart-price">' +
+                toPersianNum(item.price || 0) +
+                " تومان</div>" +
+                "</div>" +
+                '<div class="mini-cart-actions">' +
+                '<button class="mini-remove-btn" onclick="removeFromMiniCart(\'' +
+                item.id +
+                '\')"><i class="ti ti-trash"></i></button>' +
+                '<div class="mini-qty-controls">' +
+                '<button class="mini-qty-btn" onclick="changeMiniCartQty(\'' +
+                item.id +
+                "', -1)\">−</button>" +
+                '<span class="mini-qty-val">' +
+                toPersianNum(currentQty) +
+                "</span>" +
+                '<button class="mini-qty-btn" onclick="changeMiniCartQty(\'' +
+                item.id +
+                "', 1)\">+</button>" +
+                "</div>" +
+                "</div>" +
+                "</div>"
+              );
+            })
+            .join("");
+        }
+        if (footer) footer.style.display = "block";
+        var totalEl = document.getElementById("miniCartTotalPrice");
+        if (totalEl) totalEl.textContent = toPersianNum(total) + " تومان";
+        if (badge) {
+          badge.style.display = "flex";
+          badge.textContent = toPersianNum(totalQty);
+        }
+        syncCartPage();
+      }
+      function changeMiniCartQty(id, delta) {
+        var cart = JSON.parse(localStorage.getItem("digishop_cart")) || [];
+        var item = cart.find(function (i) {
+          return String(i.id) === String(id);
+        });
+        if (!item) return;
+        var currentQty = getItemQty(item);
+        currentQty += delta;
+        if (currentQty < 1) currentQty = 1;
+        item.qty = currentQty;
+        item.quantity = currentQty;
+        localStorage.setItem("digishop_cart", JSON.stringify(cart));
+        renderMiniCart();
+      }
+      function removeFromMiniCart(id) {
+        var cart = JSON.parse(localStorage.getItem("digishop_cart")) || [];
+        cart = cart.filter(function (i) {
+          return String(i.id) !== String(id);
+        });
+        localStorage.setItem("digishop_cart", JSON.stringify(cart));
+        renderMiniCart();
+      }
+      document.addEventListener("DOMContentLoaded", renderMiniCart);
+      window.addEventListener("storage", function (e) {
+        if (e.key === "digishop_cart") {
+          renderMiniCart();
+        }
+      });
+    </script>
+  </body>
+</html>
