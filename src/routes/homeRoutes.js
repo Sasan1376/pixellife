@@ -17,6 +17,7 @@ router.get("/ipad", homeController.ipad);
 router.get("/samsungtab", homeController.samsungtab);
 router.get("/xiaomitab", homeController.xiaomitab);
 router.get("/console", homeController.console);
+
 // Keep shared header/footer links valid until their dedicated pages are added.
 router.get("/offers", homeController.mobiles);
 router.get("/new", homeController.mobiles);

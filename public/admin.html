@@ -1,0 +1,1384 @@
+<!doctype html>
+<html lang="fa" dir="rtl" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>پنل مدیریت | PixelLife</title>
+    <link rel="stylesheet" href="/css/admin.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="sidebar-scrim" id="sidebarScrim"></div>
+
+    <div class="app-shell">
+      <!-- ================= SIDEBAR ================= -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar__brand">
+          <div class="sidebar__brand-mark">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M4 7L12 3L20 7V17L12 21L4 17V7Z"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M4 7L12 11L20 7M12 11V21"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="sidebar__brand-name">PixelLife</div>
+            <div class="sidebar__brand-sub">پنل مدیریت</div>
+          </div>
+        </div>
+
+        <nav class="sidebar__scroll">
+          <div class="nav-group">
+            <div class="nav-group__label">کلی</div>
+            <ul>
+              <li>
+                <a
+                  href="#dashboard"
+                  class="nav-link is-active"
+                  data-view="dashboard"
+                >
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <rect
+                      x="3"
+                      y="3"
+                      width="7"
+                      height="9"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                    <rect
+                      x="14"
+                      y="3"
+                      width="7"
+                      height="5"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                    <rect
+                      x="14"
+                      y="12"
+                      width="7"
+                      height="9"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                    <rect
+                      x="3"
+                      y="16"
+                      width="7"
+                      height="5"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                  </svg>
+                  <span>داشبورد</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-group__label">فروشگاه</div>
+            <ul>
+              <li>
+                <a href="#products" class="nav-link" data-view="products">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M20 8L12 3L4 8M20 8V16L12 21M20 8L12 13M12 21L4 16V8M12 21V13M4 8L12 13"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>محصولات</span>
+                </a>
+              </li>
+              <li>
+                <a href="#orders" class="nav-link" data-view="orders">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M3 6H21L19 15H5L3 6ZM3 6L2.4 3H1"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <circle
+                      cx="8"
+                      cy="19"
+                      r="1.4"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                    />
+                    <circle
+                      cx="17"
+                      cy="19"
+                      r="1.4"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                    />
+                  </svg>
+                  <span>سفارش‌ها</span>
+                  <span class="nav-link__badge">12</span>
+                </a>
+              </li>
+              <li>
+                <a href="#categories" class="nav-link" data-view="categories">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <rect
+                      x="3"
+                      y="3"
+                      width="8"
+                      height="8"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                    <rect
+                      x="13"
+                      y="3"
+                      width="8"
+                      height="8"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                    <rect
+                      x="3"
+                      y="13"
+                      width="8"
+                      height="8"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                    <rect
+                      x="13"
+                      y="13"
+                      width="8"
+                      height="8"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                  </svg>
+                  <span>دسته‌بندی‌ها</span>
+                </a>
+              </li>
+              <li>
+                <a href="#brands" class="nav-link" data-view="brands">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 2L14.5 8.5L21 9L16 13.5L17.5 20L12 16.5L6.5 20L8 13.5L3 9L9.5 8.5L12 2Z"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>برندها</span>
+                </a>
+              </li>
+              <li>
+                <a href="#reviews" class="nav-link" data-view="reviews">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M21 11.5C21 16.19 16.97 20 12 20C10.86 20 9.77 19.8 8.77 19.44L3 21L4.6 16.4C3.6 15.06 3 13.35 3 11.5C3 6.81 7.03 3 12 3C16.97 3 21 6.81 21 11.5Z"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>نظرات</span>
+                  <span class="nav-link__badge">5</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-group__label">بازاریابی</div>
+            <ul>
+              <li>
+                <a href="#discounts" class="nav-link" data-view="discounts">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M20 12L12 20L4 12V4H12L20 12Z"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linejoin="round"
+                    />
+                    <circle
+                      cx="8.5"
+                      cy="8.5"
+                      r="1.5"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                    />
+                  </svg>
+                  <span>تخفیف‌ها</span>
+                </a>
+              </li>
+              <li>
+                <a href="#coupons" class="nav-link" data-view="coupons">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M3 9C4.1 9 5 8.1 5 7C5 5.9 4.1 5 3 5V4C3 3.4 3.4 3 4 3H20C20.6 3 21 3.4 21 4V5C19.9 5 19 5.9 19 7C19 8.1 19.9 9 21 9V15C19.9 15 19 15.9 19 17C19 18.1 19.9 19 21 19V20C21 20.6 20.6 21 20 21H4C3.4 21 3 20.6 3 20V19C4.1 19 5 18.1 5 17C5 15.9 4.1 15 3 15V9Z"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>کوپن‌ها</span>
+                </a>
+              </li>
+              <li>
+                <a href="#banners" class="nav-link" data-view="banners">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <rect
+                      x="3"
+                      y="5"
+                      width="18"
+                      height="14"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                    <path
+                      d="M3 15L8 10L12 14L16 9L21 15"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>بنرها</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="nav-group">
+            <div class="nav-group__label">مدیریت</div>
+            <ul>
+              <li>
+                <a href="#users" class="nav-link" data-view="users">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <circle
+                      cx="9"
+                      cy="8"
+                      r="3.2"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                    <path
+                      d="M3 20C3 16.5 5.7 14 9 14C12.3 14 15 16.5 15 20"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M15.5 14.3C18 14.8 20 17 20 20"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  <span>کاربران</span>
+                </a>
+              </li>
+              <li>
+                <a href="#settings" class="nav-link" data-view="settings">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="3.2"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                    <path
+                      d="M19.4 13.5C19.5 13 19.5 12.5 19.4 12L21 10.5L19.5 8L17.5 8.6C17 8.2 16.5 7.9 15.9 7.7L15.4 5.7H12.6L12.1 7.7C11.5 7.9 11 8.2 10.5 8.6L8.5 8L7 10.5L8.6 12C8.5 12.5 8.5 13 8.6 13.5L7 15L8.5 17.5L10.5 16.9C11 17.3 11.5 17.6 12.1 17.8L12.6 19.8H15.4L15.9 17.8C16.5 17.6 17 17.3 17.5 16.9L19.5 17.5L21 15L19.4 13.5Z"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>تنظیمات</span>
+                </a>
+              </li>
+              <li>
+                <a href="#profile" class="nav-link" data-view="profile">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <circle
+                      cx="12"
+                      cy="8"
+                      r="3.5"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
+                    <path
+                      d="M4.5 20C5 16 8 13.5 12 13.5C16 13.5 19 16 19.5 20"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  <span>پروفایل</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <div class="sidebar__footer">
+          <a href="#" class="nav-link" id="logoutBtn">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path
+                d="M9 21H5C3.9 21 3 20.1 3 19V5C3 3.9 3.9 3 5 3H9"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+              <path
+                d="M16 17L21 12L16 7"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M21 12H9"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+            <span>خروج</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- ================= MAIN ================= -->
+      <div class="main" id="main">
+        <!-- ---------- Topbar ---------- -->
+        <header class="topbar">
+          <button
+            class="topbar__toggle"
+            id="sidebarToggle"
+            aria-label="باز و بسته کردن منو"
+          >
+            <svg viewBox="0 0 24 24" fill="none" width="19" height="19">
+              <path
+                d="M4 6H20M4 12H20M4 18H14"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+          <div class="breadcrumb">
+            <b id="crumbCurrent">داشبورد</b><span id="crumbTrail"></span>
+          </div>
+
+          <div class="search-box">
+            <input
+              type="text"
+              placeholder="جستجوی سریع محصول، سفارش، کاربر…"
+              id="globalSearch"
+            />
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle
+                cx="11"
+                cy="11"
+                r="7"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+              <path
+                d="M21 21L16.5 16.5"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+
+          <div class="topbar__actions">
+            <button
+              class="theme-switch"
+              id="themeSwitch"
+              aria-label="تغییر پوسته"
+            >
+              <span class="theme-switch__thumb">
+                <svg viewBox="0 0 24 24" fill="none" id="themeIcon">
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="4"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M12 2V4M12 20V22M4 12H2M22 12H20M5 5L6.5 6.5M19 19L17.5 17.5M19 5L17.5 6.5M5 19L6.5 17.5"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </span>
+            </button>
+            <button class="icon-btn" id="notifBtn" aria-label="اعلان‌ها">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 3C9 3 7 5.5 7 8.5V12L5 16H19L17 12V8.5C17 5.5 15 3 12 3Z"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M9.5 19C9.9 20 10.9 21 12 21C13.1 21 14.1 20 14.5 19"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span class="icon-btn__dot"></span>
+            </button>
+            <div class="profile-chip" id="profileChip">
+              <img src="https://i.pravatar.cc/80?img=13" alt="مدیر" />
+              <div>
+                <div class="profile-chip__name">سامان رضایی</div>
+                <div class="profile-chip__role">مدیر ارشد</div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- ================= VIEW: DASHBOARD ================= -->
+        <section class="view is-active" id="view-dashboard">
+          <div class="view__head">
+            <div>
+              <h1 class="view__title">سلام سامان 👋</h1>
+              <p class="view__desc">
+                خلاصه‌ای از عملکرد فروشگاه در ۳۰ روز اخیر
+              </p>
+            </div>
+            <div class="chip-tabs" data-range-tabs>
+              <button class="is-active" data-range="7">۷ روز</button>
+              <button data-range="30">۳۰ روز</button>
+              <button data-range="90">۹۰ روز</button>
+            </div>
+          </div>
+
+          <div class="stat-grid" id="statGrid"><!-- injected by JS --></div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel__head">
+                <div class="panel__title">
+                  <span class="pixel-cluster"
+                    ><span></span><span></span><span></span><span></span></span
+                  >روند فروش
+                </div>
+                <div class="chip-tabs" data-sales-tabs>
+                  <button class="is-active" data-metric="revenue">درآمد</button>
+                  <button data-metric="orders">سفارش</button>
+                </div>
+              </div>
+              <div class="panel__chart"><canvas id="chartSales"></canvas></div>
+            </div>
+            <div class="panel">
+              <div class="panel__head">
+                <div class="panel__title">
+                  <span class="pixel-cluster"
+                    ><span></span><span></span><span></span><span></span></span
+                  >برترین دسته‌ها
+                </div>
+              </div>
+              <div class="panel__chart panel__chart--sm">
+                <canvas id="chartCategories"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel__head">
+                <div class="panel__title">
+                  <span class="pixel-cluster"
+                    ><span></span><span></span><span></span><span></span></span
+                  >درآمد ماهانه
+                </div>
+              </div>
+              <div class="panel__chart">
+                <canvas id="chartMonthly"></canvas>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel__head">
+                <div class="panel__title">
+                  <span class="pixel-cluster"
+                    ><span></span><span></span><span></span><span></span></span
+                  >فعالیت‌های اخیر
+                </div>
+              </div>
+              <div class="activity-list" id="activityList"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel__head">
+              <div class="panel__title">
+                <span class="pixel-cluster"
+                  ><span></span><span></span><span></span><span></span></span
+                >برترین برندها
+              </div>
+            </div>
+            <div class="panel__chart panel__chart--sm">
+              <canvas id="chartBrands"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW: PRODUCTS ================= -->
+        <section class="view" id="view-products">
+          <div class="view__head">
+            <div>
+              <h1 class="view__title">محصولات</h1>
+              <p class="view__desc">مدیریت کامل کالاها، موجودی و تصاویر</p>
+            </div>
+            <button class="btn btn--primary" id="btnAddProduct">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 5V19M5 12H19"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              افزودن محصول
+            </button>
+          </div>
+
+          <div class="toolbar">
+            <div class="toolbar__search">
+              <input
+                type="text"
+                placeholder="جستجوی محصول…"
+                id="productSearch"
+              />
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="7"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                />
+                <path
+                  d="M21 21L16.5 16.5"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+            <select class="select" id="filterCategory">
+              <option value="">همه دسته‌ها</option>
+            </select>
+            <select class="select" id="filterBrand">
+              <option value="">همه برندها</option>
+            </select>
+            <select class="select" id="filterAvailability">
+              <option value="">همه وضعیت‌ها</option>
+              <option value="in">موجود</option>
+              <option value="out">ناموجود</option>
+              <option value="low">موجودی کم</option>
+            </select>
+            <div class="toolbar__spacer"></div>
+            <button class="btn btn--ghost btn--sm" id="btnExport">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 3V15M12 15L7 10M12 15L17 10"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M4 18V19C4 20.1 4.9 21 6 21H18C19.1 21 20 20.1 20 19V18"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+              </svg>
+              خروجی
+            </button>
+          </div>
+
+          <div class="bulk-bar" id="bulkBar">
+            <span
+              ><span class="bulk-bar__count" id="bulkCount">0</span> مورد انتخاب
+              شده</span
+            >
+            <button class="btn btn--danger btn--sm" id="btnBulkDelete">
+              حذف گروهی
+            </button>
+            <button class="btn btn--ghost btn--sm" id="btnBulkCancel">
+              لغو انتخاب
+            </button>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>
+                    <input
+                      type="checkbox"
+                      class="head-checkbox"
+                      id="headCheckbox"
+                    />
+                  </th>
+                  <th data-sort="name">محصول</th>
+                  <th data-sort="brand">برند</th>
+                  <th data-sort="category">دسته</th>
+                  <th data-sort="price">قیمت</th>
+                  <th data-sort="stock">موجودی</th>
+                  <th>وضعیت</th>
+                  <th data-sort="date">تاریخ ثبت</th>
+                  <th>عملیات</th>
+                </tr>
+              </thead>
+              <tbody id="productsBody">
+                <!-- rows injected by JS -->
+              </tbody>
+            </table>
+            <div class="pagination">
+              <div class="pagination__info" id="productsPageInfo"></div>
+              <div class="pagination__pages" id="productsPager"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW: ORDERS ================= -->
+        <section class="view" id="view-orders">
+          <div class="view__head">
+            <div>
+              <h1 class="view__title">سفارش‌ها</h1>
+              <p class="view__desc">پیگیری و مدیریت وضعیت سفارش‌های مشتریان</p>
+            </div>
+          </div>
+          <div class="toolbar">
+            <div class="toolbar__search">
+              <input
+                type="text"
+                placeholder="جستجو با شماره سفارش یا مشتری…"
+                id="orderSearch"
+              />
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="7"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                />
+                <path
+                  d="M21 21L16.5 16.5"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+            <select class="select" id="filterOrderStatus">
+              <option value="">همه وضعیت‌ها</option>
+              <option value="pending">در انتظار</option>
+              <option value="paid">پرداخت‌شده</option>
+              <option value="shipped">ارسال‌شده</option>
+              <option value="delivered">تحویل‌شده</option>
+              <option value="cancelled">لغو‌شده</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>شماره سفارش</th>
+                  <th>مشتری</th>
+                  <th>مبلغ کل</th>
+                  <th>وضعیت پرداخت</th>
+                  <th>وضعیت ارسال</th>
+                  <th>تاریخ</th>
+                  <th>عملیات</th>
+                </tr>
+              </thead>
+              <tbody id="ordersBody"></tbody>
+            </table>
+            <div class="pagination">
+              <div class="pagination__info" id="ordersPageInfo"></div>
+              <div class="pagination__pages" id="ordersPager"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW: USERS ================= -->
+        <section class="view" id="view-users">
+          <div class="view__head">
+            <div>
+              <h1 class="view__title">کاربران</h1>
+              <p class="view__desc">مشتریان و اعضای پنل مدیریت</p>
+            </div>
+          </div>
+          <div class="toolbar">
+            <div class="toolbar__search">
+              <input type="text" placeholder="جستجوی کاربر…" id="userSearch" />
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="7"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                />
+                <path
+                  d="M21 21L16.5 16.5"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>کاربر</th>
+                  <th>ایمیل</th>
+                  <th>تلفن</th>
+                  <th>نقش</th>
+                  <th>وضعیت</th>
+                  <th>عملیات</th>
+                </tr>
+              </thead>
+              <tbody id="usersBody"></tbody>
+            </table>
+            <div class="pagination">
+              <div class="pagination__info" id="usersPageInfo"></div>
+              <div class="pagination__pages" id="usersPager"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW: CATEGORIES ================= -->
+        <section class="view" id="view-categories">
+          <div class="view__head">
+            <div>
+              <h1 class="view__title">دسته‌بندی‌ها</h1>
+              <p class="view__desc">ساختار درختی دسته‌بندی محصولات</p>
+            </div>
+            <button class="btn btn--primary" id="btnAddCategory">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 5V19M5 12H19"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              افزودن دسته
+            </button>
+          </div>
+          <div class="panel">
+            <div class="category-tree" id="categoryTree"></div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW: BRANDS ================= -->
+        <section class="view" id="view-brands">
+          <div class="view__head">
+            <div>
+              <h1 class="view__title">برندها</h1>
+              <p class="view__desc">مدیریت برندهای موجود در فروشگاه</p>
+            </div>
+            <button class="btn btn--primary" id="btnAddBrand">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 5V19M5 12H19"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              افزودن برند
+            </button>
+          </div>
+          <div class="stat-grid" id="brandsGrid"></div>
+        </section>
+
+        <!-- ================= VIEW: REVIEWS ================= -->
+        <section class="view" id="view-reviews">
+          <div class="view__head">
+            <div>
+              <h1 class="view__title">نظرات مشتریان</h1>
+              <p class="view__desc">بررسی، تایید یا رد نظرات ثبت‌شده</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>مشتری</th>
+                  <th>محصول</th>
+                  <th>امتیاز</th>
+                  <th>متن نظر</th>
+                  <th>وضعیت</th>
+                  <th>عملیات</th>
+                </tr>
+              </thead>
+              <tbody id="reviewsBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ================= VIEW: DISCOUNTS ================= -->
+        <section class="view" id="view-discounts">
+          <div class="view__head">
+            <div>
+              <h1 class="view__title">تخفیف‌ها</h1>
+              <p class="view__desc">تخفیف‌های فعال روی محصولات و دسته‌ها</p>
+            </div>
+            <button class="btn btn--primary" id="btnAddDiscount">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 5V19M5 12H19"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              تخفیف جدید
+            </button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>عنوان</th>
+                  <th>نوع</th>
+                  <th>میزان</th>
+                  <th>شروع</th>
+                  <th>پایان</th>
+                  <th>وضعیت</th>
+                  <th>عملیات</th>
+                </tr>
+              </thead>
+              <tbody id="discountsBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ================= VIEW: COUPONS ================= -->
+        <section class="view" id="view-coupons">
+          <div class="view__head">
+            <div>
+              <h1 class="view__title">کوپن‌ها</h1>
+              <p class="view__desc">کدهای تخفیف قابل استفاده در سبد خرید</p>
+            </div>
+            <button class="btn btn--primary" id="btnAddCoupon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 5V19M5 12H19"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              کوپن جدید
+            </button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>کد</th>
+                  <th>نوع</th>
+                  <th>مقدار</th>
+                  <th>تعداد استفاده</th>
+                  <th>انقضا</th>
+                  <th>وضعیت</th>
+                  <th>عملیات</th>
+                </tr>
+              </thead>
+              <tbody id="couponsBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ================= VIEW: BANNERS ================= -->
+        <section class="view" id="view-banners">
+          <div class="view__head">
+            <div>
+              <h1 class="view__title">بنرها</h1>
+              <p class="view__desc">بنرهای تبلیغاتی صفحه اصلی و دسته‌ها</p>
+            </div>
+            <button class="btn btn--primary" id="btnAddBanner">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 5V19M5 12H19"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              افزودن بنر
+            </button>
+          </div>
+          <div
+            class="gallery-grid"
+            id="bannerGrid"
+            style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))"
+          ></div>
+        </section>
+
+        <!-- ================= VIEW: SETTINGS ================= -->
+        <section class="view" id="view-settings">
+          <div class="view__head">
+            <div>
+              <h1 class="view__title">تنظیمات</h1>
+              <p class="view__desc">پیکربندی کلی فروشگاه</p>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel__head">
+                <div class="panel__title">اطلاعات فروشگاه</div>
+              </div>
+              <div class="form-grid">
+                <div class="field field--full">
+                  <label>نام فروشگاه</label
+                  ><input type="text" value="PixelLife" />
+                </div>
+                <div class="field field--full">
+                  <label>لوگو</label>
+                  <div class="dropzone" id="logoDropzone">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M12 16V4M12 4L7 9M12 4L17 9"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M4 16V18C4 19.1 4.9 20 6 20H18C19.1 20 20 19.1 20 18V16"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                    <div>تصویر را بکشید یا کلیک کنید</div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>ایمیل پشتیبانی</label
+                  ><input type="email" value="support@pixellife.ir" />
+                </div>
+                <div class="field">
+                  <label>تلفن پشتیبانی</label
+                  ><input type="text" value="021-91234567" />
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel__head">
+                <div class="panel__title">شبکه‌های اجتماعی</div>
+              </div>
+              <div class="form-grid form-grid--single">
+                <div class="field">
+                  <label>اینستاگرام</label
+                  ><input type="text" placeholder="آدرس صفحه اینستاگرام" />
+                </div>
+                <div class="field">
+                  <label>تلگرام</label
+                  ><input type="text" placeholder="آدرس کانال تلگرام" />
+                </div>
+                <div class="field">
+                  <label>واتساپ</label
+                  ><input type="text" placeholder="شماره واتساپ" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel__head">
+                <div class="panel__title">حمل‌ونقل و پرداخت</div>
+              </div>
+              <div class="form-grid form-grid--single">
+                <div class="field-check">
+                  <div class="switch">
+                    <input type="checkbox" checked /><span
+                      class="switch__dot"
+                    ></span>
+                  </div>
+                  ارسال اکسپرس فعال باشد
+                </div>
+                <div class="field-check">
+                  <div class="switch">
+                    <input type="checkbox" checked /><span
+                      class="switch__dot"
+                    ></span>
+                  </div>
+                  درگاه پرداخت آنلاین فعال باشد
+                </div>
+                <div class="field">
+                  <label>هزینه ارسال پیش‌فرض (تومان)</label
+                  ><input type="number" value="45000" />
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel__head">
+                <div class="panel__title">مالیات و سئو</div>
+              </div>
+              <div class="form-grid form-grid--single">
+                <div class="field">
+                  <label>درصد مالیات بر ارزش افزوده</label
+                  ><input type="number" value="9" />
+                </div>
+                <div class="field">
+                  <label>عنوان متا (SEO)</label
+                  ><input
+                    type="text"
+                    placeholder="عنوان صفحه اصلی برای موتورهای جستجو"
+                  />
+                </div>
+                <div class="field">
+                  <label>توضیحات متا (SEO)</label
+                  ><textarea
+                    placeholder="توضیح کوتاه فروشگاه برای گوگل"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: flex-end">
+            <button class="btn btn--primary" id="btnSaveSettings">
+              ذخیره تنظیمات
+            </button>
+          </div>
+        </section>
+
+        <!-- ================= VIEW: PROFILE ================= -->
+        <section class="view" id="view-profile">
+          <div class="view__head">
+            <div>
+              <h1 class="view__title">پروفایل من</h1>
+              <p class="view__desc">اطلاعات حساب مدیریتی شما</p>
+            </div>
+          </div>
+          <div class="panel" style="max-width: 520px">
+            <div class="form-grid">
+              <div class="field field--full">
+                <label>نام و نام خانوادگی</label
+                ><input type="text" value="سامان رضایی" />
+              </div>
+              <div class="field">
+                <label>ایمیل</label
+                ><input type="email" value="saman@pixellife.ir" />
+              </div>
+              <div class="field">
+                <label>تلفن همراه</label
+                ><input type="text" value="0912xxxxxxx" />
+              </div>
+              <div class="field field--full">
+                <label>رمز عبور جدید</label
+                ><input
+                  type="password"
+                  placeholder="در صورت تمایل به تغییر، وارد کنید"
+                />
+              </div>
+            </div>
+            <div
+              style="margin-top: 16px; display: flex; justify-content: flex-end"
+            >
+              <button class="btn btn--primary">به‌روزرسانی پروفایل</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: PRODUCT FORM ================= -->
+    <div class="modal-overlay" id="modalProduct">
+      <div class="modal modal--lg">
+        <div class="modal__head">
+          <div class="modal__title" id="productModalTitle">
+            افزودن محصول جدید
+          </div>
+          <button class="modal__close" data-close-modal>
+            <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+              <path
+                d="M6 6L18 18M18 6L6 18"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+        <div class="modal__body">
+          <form id="productForm" novalidate>
+            <input type="hidden" id="productId" />
+            <div class="form-grid">
+              <div class="field field--full">
+                <label>نام محصول <span class="req">*</span></label>
+                <input type="text" id="pName" required />
+                <div class="field__error">وارد کردن نام محصول الزامی است</div>
+              </div>
+              <div class="field">
+                <label>برند <span class="req">*</span></label>
+                <select id="pBrand" required></select>
+                <div class="field__error">انتخاب برند الزامی است</div>
+              </div>
+              <div class="field">
+                <label>دسته‌بندی <span class="req">*</span></label>
+                <select id="pCategory" required></select>
+                <div class="field__error">انتخاب دسته الزامی است</div>
+              </div>
+              <div class="field">
+                <label>قیمت (تومان) <span class="req">*</span></label>
+                <input type="number" id="pPrice" min="0" required />
+                <div class="field__error">قیمت معتبر وارد کنید</div>
+              </div>
+              <div class="field">
+                <label>تخفیف (٪)</label>
+                <input
+                  type="number"
+                  id="pDiscount"
+                  min="0"
+                  max="100"
+                  value="0"
+                />
+              </div>
+              <div class="field">
+                <label>موجودی انبار <span class="req">*</span></label>
+                <input type="number" id="pStock" min="0" required />
+                <div class="field__error">موجودی معتبر وارد کنید</div>
+              </div>
+              <div class="field">
+                <label>وضعیت موجودی</label>
+                <select id="pAvailability">
+                  <option value="in">موجود</option>
+                  <option value="out">ناموجود</option>
+                </select>
+              </div>
+              <div class="field field--full">
+                <label>توضیحات</label>
+                <textarea
+                  id="pDescription"
+                  placeholder="توضیح کامل محصول…"
+                ></textarea>
+              </div>
+              <div class="field field--full">
+                <label>مشخصات فنی</label>
+                <textarea
+                  id="pSpecs"
+                  placeholder="هر مشخصه در یک خط، مثال: رنگ: مشکی"
+                ></textarea>
+              </div>
+              <div class="field field--full field-check">
+                <div class="switch">
+                  <input type="checkbox" id="pFeatured" /><span
+                    class="switch__dot"
+                  ></span>
+                </div>
+                محصول ویژه (نمایش در صفحه اصلی)
+              </div>
+              <div class="field field--full">
+                <label>تصاویر محصول</label>
+                <div class="dropzone" id="productDropzone">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 16V4M12 4L7 9M12 4L17 9"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M4 16V18C4 19.1 4.9 20 6 20H18C19.1 20 20 19.1 20 18V16"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  <div>تصاویر را بکشید و رها کنید یا کلیک کنید</div>
+                  <input
+                    type="file"
+                    id="productImageInput"
+                    accept="image/*"
+                    multiple
+                    hidden
+                  />
+                </div>
+                <div class="gallery-grid" id="productGallery"></div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal__foot">
+          <button class="btn btn--ghost" data-close-modal>انصراف</button>
+          <button class="btn btn--primary" id="btnSaveProduct">
+            ذخیره محصول
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: PRODUCT VIEW ================= -->
+    <div class="modal-overlay" id="modalProductView">
+      <div class="modal">
+        <div class="modal__head">
+          <div class="modal__title">جزئیات محصول</div>
+          <button class="modal__close" data-close-modal>
+            <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+              <path
+                d="M6 6L18 18M18 6L6 18"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+        <div class="modal__body" id="productViewBody"></div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: CONFIRM DELETE ================= -->
+    <div class="modal-overlay" id="modalConfirm">
+      <div class="modal modal--sm">
+        <div class="modal__body" style="text-align: center; padding-top: 30px">
+          <div
+            style="
+              width: 60px;
+              height: 60px;
+              border-radius: 16px;
+              background: rgba(255, 92, 114, 0.12);
+              color: var(--coral);
+              display: grid;
+              place-items: center;
+              margin: 0 auto 16px;
+            "
+          >
+            <svg viewBox="0 0 24 24" fill="none" width="26" height="26">
+              <path
+                d="M12 9V13M12 17H12.01M10.3 3.9L2.5 17.5C2 18.3 2.6 19.5 3.6 19.5H20.4C21.4 19.5 22 18.3 21.5 17.5L13.7 3.9C13.2 3 11.8 3 10.3 3.9Z"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <div
+            class="modal__title"
+            id="confirmTitle"
+            style="margin-bottom: 8px"
+          >
+            حذف این مورد؟
+          </div>
+          <p
+            style="color: var(--text-secondary); font-size: 13px"
+            id="confirmMessage"
+          >
+            این عملیات قابل بازگشت نیست.
+          </p>
+        </div>
+        <div class="modal__foot" style="justify-content: center">
+          <button class="btn btn--ghost" data-close-modal>انصراف</button>
+          <button class="btn btn--danger" id="btnConfirmAction">
+            بله، حذف کن
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: ORDER DETAILS ================= -->
+    <div class="modal-overlay" id="modalOrder">
+      <div class="modal modal--lg">
+        <div class="modal__head">
+          <div class="modal__title" id="orderModalTitle">جزئیات سفارش</div>
+          <button class="modal__close" data-close-modal>
+            <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+              <path
+                d="M6 6L18 18M18 6L6 18"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+        <div class="modal__body" id="orderModalBody"></div>
+        <div class="modal__foot">
+          <button class="btn btn--ghost" id="btnPrintInvoice">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path
+                d="M6 9V3H18V9M6 18H4C3.4 18 3 17.6 3 17V11C3 10.4 3.4 10 4 10H20C20.6 10 21 10.4 21 11V17C21 17.6 20.6 18 20 18H18M6 18V21H18V18M6 18H18"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linejoin="round"
+              />
+            </svg>
+            چاپ فاکتور
+          </button>
+          <button class="btn btn--primary" data-close-modal>بستن</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: GENERIC FORM (category/brand/coupon/discount/banner) ================= -->
+    <div class="modal-overlay" id="modalGeneric">
+      <div class="modal">
+        <div class="modal__head">
+          <div class="modal__title" id="genericModalTitle">افزودن</div>
+          <button class="modal__close" data-close-modal>
+            <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+              <path
+                d="M6 6L18 18M18 6L6 18"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+        <div class="modal__body" id="genericModalBody"></div>
+        <div class="modal__foot">
+          <button class="btn btn--ghost" data-close-modal>انصراف</button>
+          <button class="btn btn--primary" id="btnSaveGeneric">ذخیره</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast-stack" id="toastStack"></div>
+
+    <script src="/js/admin.js"></script>
+  </body>
+</html>
