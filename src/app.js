@@ -10,7 +10,8 @@ const env = require("./config/env");
 const errorHandler = require("./middleware/errorHandler");
 
 const { SitemapStream, streamToPromise } = require("sitemap");
-const Product = require("./models/product");
+const Product = require("./models/Product");
+
 const app = express();
 
 // =======================
@@ -64,7 +65,7 @@ app.use("/admin", adminRoutes);
 // Products API
 app.use("/api/products", productRoutes);
 
-// Public
+// Public folder
 app.use(express.static("public"));
 
 // =======================
@@ -88,12 +89,15 @@ app.get("/sitemap.xml", async (req, res) => {
     const products = await Product.find({});
 
     console.log("Sitemap Products:", products.length);
+
     products.forEach((product) => {
       console.log("Product:", product.name);
 
       sitemap.write({
         url: `/product/${product._id}`,
+
         changefreq: "weekly",
+
         priority: 0.8,
       });
     });
