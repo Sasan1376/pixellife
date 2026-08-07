@@ -109,12 +109,18 @@ app.get("/sitemap.xml", async (req, res) => {
     res.header("Content-Type", "application/xml");
 
     res.send(xml.toString());
-  } catch (error) {
-    console.error("Sitemap Error:", error);
+} catch (error) {
 
-    res.status(500).send("Sitemap generation failed");
-  }
-});
+  console.error("========== SITEMAP ERROR ==========");
+  console.error(error);
+  console.error(error.stack);
+  console.error("====================================");
+
+  res.status(500).send(
+    error.message
+  );
+
+}
 
 // =======================
 // Health Check
