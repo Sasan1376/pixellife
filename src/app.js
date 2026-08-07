@@ -1,4 +1,5 @@
 const dns = require("dns");
+
 dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
 
 const express = require("express");
@@ -79,29 +80,31 @@ app.get("/sitemap.xml", async (req, res) => {
     });
 
     // صفحه اصلی
+
     sitemap.write({
-      url: `/product/${product.slug}`,
-      changefreq: "weekly",
-      priority: 0.8,
+      url: "/",
+      changefreq: "daily",
+      priority: 1,
     });
 
     // محصولات MongoDB
+
     const products = await Product.find({});
 
-    console.log("Sitemap Products:", products.length);
+    console.log("PRODUCT COUNT:", products.length);
+
     products.forEach((product) => {
-      console.log("Sitemap Product:", product.name, product.slug);
+      console.log("PRODUCT:", product.name, product.slug);
 
-      if (product.slug) {
-        sitemap.write({
-          url: `/product/${product.slug}`,
+      sitemap.write({
+        url: `/product/${product.slug || product._id}`,
 
-          changefreq: "weekly",
+        changefreq: "weekly",
 
-          priority: 0.8,
-        });
-      }
+        priority: 0.8,
+      });
     });
+
     sitemap.end();
 
     const xml = await streamToPromise(sitemap);
@@ -109,18 +112,18 @@ app.get("/sitemap.xml", async (req, res) => {
     res.header("Content-Type", "application/xml");
 
     res.send(xml.toString());
-} catch (error) {
+  } catch (error) {
+    console.error("========== SITEMAP ERROR ==========");
 
-  console.error("========== SITEMAP ERROR ==========");
-  console.error(error);
-  console.error(error.stack);
-  console.error("====================================");
+    console.error(error);
 
-  res.status(500).send(
-    error.message
-  );
+    console.error(error.stack);
 
-}
+    console.error("====================================");
+
+    res.status(500).send(error.message);
+  }
+});
 
 // =======================
 // Health Check
