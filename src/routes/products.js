@@ -55,6 +55,8 @@ router.get("/id/:id", async (req, res) => {
 // =======================
 
 router.get("/:slug", async (req, res) => {
+  console.log("SLUG ROUTE:", req.params.slug);
+
   try {
     const product = await Product.findOne({
       slug: req.params.slug,
