@@ -59,6 +59,8 @@ app.use("/admin", adminRoutes);
 // محصولات فروشگاه
 app.use("/api/products", productRoutes);
 
+app.use(express.static("public"));
+
 // =======================
 // Health Check
 // =======================
@@ -85,7 +87,6 @@ app.use((req, res, next) => {
 // =======================
 // Error Handler
 // =======================
-
 app.use(errorHandler);
 
 // =======================

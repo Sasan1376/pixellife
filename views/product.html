@@ -104,6 +104,7 @@
         color: var(--text-1);
         font-size: 14px;
         line-height: 1.7;
+        overflow-x: hidden; /* این خط را اضافه کنید */
       }
       a {
         text-decoration: none;
@@ -2686,20 +2687,33 @@
         }
         .page-body {
           padding: 16px 16px 100px;
+          background: #f8fafc; /* پس‌زمینه خاکستری خیلی روشن برای موبایل */
+        }
+        /* در موبایل، کادرها باید دیده شوند تا به هم نریزند */
+        .section-block {
+          background: var(--white);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-lg);
+          padding: 20px;
+          margin-bottom: 16px;
         }
         .product-layout {
           grid-template-columns: 1fr;
           padding: 0;
           gap: 24px;
+          background: var(--white);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-lg);
+          padding: 16px;
         }
         .gallery-main {
-          min-height: 280px;
+          min-height: 300px;
         }
         .gallery-main svg {
           max-height: 260px;
         }
         .product-title {
-          font-size: px;
+          font-size: 16px; /* خطای px اصلاح شد */
         }
         .btn-auth-pill span.pill-text {
           display: none;
@@ -2713,9 +2727,6 @@
         }
         .nav-link {
           display: none;
-        }
-        .section-block {
-          padding: 20px;
         }
         .specs-row {
           grid-template-columns: 140px 1fr;
@@ -2741,31 +2752,40 @@
           padding: 0 14px;
           font-size: 12px;
         }
+        /* مخفی کردن متن دکمه جستجو در هدر موبایل برای جلوگیری از به هم ریختگی */
+        .search-btn span {
+          display: none;
+        }
+        .search-bar {
+          max-width: 100%;
+        }
       }
     </style>
     <style>
-      /* Product detail: open layout inspired by Digikala */
-      .page-body {
-        max-width: none;
-        width: 100%;
-        box-sizing: border-box;
-        padding-left: clamp(16px, 4vw, 64px);
-        padding-right: clamp(16px, 4vw, 64px);
-      }
-      .product-layout,
-      .section-block {
-        background: transparent;
-        border: none;
-        border-radius: 0;
-        box-shadow: none;
-      }
-      .section-block {
-        padding-left: 0;
-        padding-right: 0;
-      }
-      .specs-table-wrap {
-        border: none;
-        border-radius: 0;
+      /* Product detail: open layout inspired by Digikala - فقط برای دسکتاپ */
+      @media (min-width: 861px) {
+        .page-body {
+          max-width: none;
+          width: 100%;
+          box-sizing: border-box;
+          padding-left: clamp(16px, 4vw, 64px);
+          padding-right: clamp(16px, 4vw, 64px);
+        }
+        .product-layout,
+        .section-block {
+          background: transparent;
+          border: none;
+          border-radius: 0;
+          box-shadow: none;
+        }
+        .section-block {
+          padding-left: 0;
+          padding-right: 0;
+        }
+        .specs-table-wrap {
+          border: none;
+          border-radius: 0;
+        }
       }
     </style>
   </head>

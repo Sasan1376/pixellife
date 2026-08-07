@@ -1611,12 +1611,45 @@
       }
 
       /* — بخش کد تخفیف — */
-      .cart-coupon-section {
-        background: var(--white);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        padding: 20px;
-        margin-top: 16px;
+
+      .cart-section-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-1);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .cart-section-title i {
+        color: var(--blue);
+        font-size: 16px;
+      }
+      .address-box {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .address-radio,
+      .delivery-radio,
+      .payment-radio {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: var(--bg);
+      }
+      .btn-add-address {
+        padding: 8px;
+        font-size: 12px;
+      }
+      .delivery-options label {
+        min-width: 140px;
       }
       .cart-section-title {
         font-size: 14px;
@@ -1740,13 +1773,54 @@
         margin-top: 12px;
       }
 
-      /* — اطلاعات ارسال — */
-      .cart-shipping-section {
+      /* — بخش‌های سبد (کوچک و فشرک شده) — */
+      .cart-coupon-section,
+      .cart-shipping-section,
+      .cart-payments-section {
         background: var(--white);
         border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        padding: 20px;
-        margin-top: 16px;
+        border-radius: var(--radius);
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .cart-section-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-1);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .cart-section-title i {
+        color: var(--blue);
+        font-size: 16px;
+      }
+      .address-box {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .address-radio,
+      .delivery-radio,
+      .payment-radio {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: var(--bg);
+      }
+      .btn-add-address {
+        padding: 8px;
+        font-size: 12px;
+      }
+      .delivery-options label {
+        min-width: 140px;
       }
       /* — استایل‌های آدرس و زمان ارسال — */
       .address-box {
@@ -3325,26 +3399,7 @@
               <div id="couponAppliedTag" style="display: none"></div>
             </div>
 
-            <!-- کارت هدیه -->
-            <div class="cart-gift-section">
-              <div class="cart-section-title">
-                <i class="ti ti-gift"></i> کارت هدیه
-              </div>
-              <div class="coupon-row">
-                <input
-                  type="text"
-                  class="coupon-input"
-                  id="giftInput"
-                  placeholder="کد کارت هدیه را وارد کنید..."
-                  autocomplete="off"
-                />
-                <button class="btn-coupon" id="giftBtn">
-                  <i class="ti ti-check"></i> اعمال
-                </button>
-              </div>
-              <div class="coupon-msg" id="giftMsg" style="display: none"></div>
-              <div id="giftAppliedTag" style="display: none"></div>
-            </div>
+            <!-- آدرس و زمان ارسال -->
 
             <!-- آدرس و زمان ارسال -->
             <div class="cart-shipping-section">
@@ -3361,13 +3416,6 @@
                       تهران، خیابان ولیعصر، بالاتر از میدان ونک، کوچه بهار، پلاک
                       ۱۲، واحد ۳
                     </p>
-                  </div>
-                </label>
-                <label class="address-radio">
-                  <input type="radio" name="address" />
-                  <div class="address-content">
-                    <strong>محل کار</strong>
-                    <p>تهران، شیخ بهایی، نبش کوچه نسترن، برج پایتخت، طبقه ۷</p>
                   </div>
                 </label>
                 <button class="btn-add-address">
@@ -3388,45 +3436,6 @@
                     <span class="d-desc">تحویل ۳ تا ۵ روز کاری (رایگان)</span>
                   </span>
                 </label>
-                <label class="delivery-radio">
-                  <input type="radio" name="delivery" />
-                  <span>
-                    <span class="d-title"
-                      ><i class="ti ti-bolt"></i> ارسال فوری</span
-                    >
-                    <span class="d-desc">تحویل ۲۴ ساعته (۳۰,۰۰۰ تومان)</span>
-                  </span>
-                </label>
-                <label class="delivery-radio">
-                  <input type="radio" name="delivery" />
-                  <span>
-                    <span class="d-title"
-                      ><i class="ti ti-sun"></i> صبح روز بعد</span
-                    >
-                    <span class="d-desc">تحویل ۸ تا ۱۲ صبح (۲۰,۰۰۰ تومان)</span>
-                  </span>
-                </label>
-              </div>
-            </div>
-
-            <!-- نشان‌های امنیتی -->
-            <div class="cart-security-section">
-              <div class="cart-section-title">
-                <i class="ti ti-shield-check"></i> خرید امن
-              </div>
-              <div class="security-badges">
-                <div class="security-badge">
-                  <i class="ti ti-lock"></i><span>SSL Secure</span>
-                </div>
-                <div class="security-badge">
-                  <i class="ti ti-refresh"></i><span>ضمانت بازگشت وجه</span>
-                </div>
-                <div class="security-badge">
-                  <i class="ti ti-credit-card"></i><span>پرداخت امن</span>
-                </div>
-                <div class="security-badge">
-                  <i class="ti ti-badge-check"></i><span>فروشگاه معتبر</span>
-                </div>
               </div>
             </div>
 
@@ -3443,26 +3452,6 @@
                     <span>
                       پرداخت آنلاین (درگاه بانکی)
                       <div class="p-desc">پرداخت با تمام کارت‌های شتاب</div>
-                    </span>
-                  </div>
-                </label>
-                <label class="payment-radio">
-                  <input type="radio" name="payment" />
-                  <div class="payment-card">
-                    <i class="ti ti-wallet"></i>
-                    <span>
-                      کیف پول دیجی‌شاپ
-                      <div class="p-desc">موجودی: ۱۵۰,۰۰۰ تومان</div>
-                    </span>
-                  </div>
-                </label>
-                <label class="payment-radio">
-                  <input type="radio" name="payment" />
-                  <div class="payment-card">
-                    <i class="ti ti-cash"></i>
-                    <span>
-                      پرداخت در محل (نقدی/کارت)
-                      <div class="p-desc">فقط برای ارسال پستی در تهران</div>
                     </span>
                   </div>
                 </label>
@@ -3503,13 +3492,7 @@
                 >
                   <span>تخفیف کد</span><span class="val" id="sumCoupon">۰</span>
                 </div>
-                <div
-                  class="summary-row gift-discount"
-                  id="sumGiftRow"
-                  style="display: none"
-                >
-                  <span>کارت هدیه</span><span class="val" id="sumGift">۰</span>
-                </div>
+
                 <div class="summary-divider"></div>
                 <div class="summary-total-row">
                   <span class="summary-total-label">مبلغ قابل پرداخت</span>
@@ -3711,6 +3694,7 @@
       }
 
       /* ═══ رندر آیتم‌های سبد ═══ */
+      /* ═══ رندر آیتم‌های سبد ═══ */
       function renderCartItems() {
         const list = document.getElementById("cartItemsList");
         list.innerHTML = "";
@@ -3721,6 +3705,13 @@
         }
 
         cartData.forEach((item, idx) => {
+          // نرمال‌سازی دیتا برای جلوگیری از خطا
+          if (item.quantity === undefined) item.quantity = item.qty || 1;
+          if (item.originalPrice === undefined)
+            item.originalPrice = item.price || 0;
+          if (item.stock === undefined) item.stock = 99;
+          if (item.available === undefined) item.available = true;
+
           const card = document.createElement("div");
           card.className =
             "cart-item-card" + (!item.available ? " unavailable" : "");
@@ -3744,35 +3735,24 @@
             stockIcon = "ti-alert-circle";
           }
 
+          // استفاده از '${item.id}' برای جلوگیری از خطای آی‌دی
           card.innerHTML = `
-            <div class="cart-item-img-wrap" onclick="openQuickView(${item.id})" aria-label="مشاهده سریع ${item.name}">
+            <div class="cart-item-img-wrap" onclick="openQuickView('${item.id}')" aria-label="مشاهده سریع ${item.name}">
               <img src="${item.image}" alt="${item.name}" loading="lazy" />
               <div class="cart-item-quick-view"><i class="ti ti-eye"></i></div>
             </div>
             <div class="cart-item-info">
-              <div class="cart-item-brand">${item.brand}</div>
+              <div class="cart-item-brand">${item.brand || ""}</div>
               <div class="cart-item-name">${item.name}</div>
               <div class="cart-item-variants">
-                <span class="cart-item-variant-tag">رنگ: <strong>${item.color}</strong></span>
-                <span class="cart-item-variant-tag">${item.variant}</span>
-                <span class="cart-item-variant-tag">${item.warranty}</span>
+                <span class="cart-item-variant-tag">رنگ: <strong>${item.color || "—"}</strong></span>
+                <span class="cart-item-variant-tag">${item.variant || "—"}</span>
+                <span class="cart-item-variant-tag">${item.warranty || "—"}</span>
               </div>
               <div class="cart-item-stock ${stockClass}"><i class="ti ${stockIcon}"></i> ${stockText}</div>
               <div class="cart-item-ops">
-                <button class="cart-op-btn danger" onclick="removeItem(${item.id})" aria-label="حذف محصول">
+                <button class="cart-op-btn danger" onclick="removeItem('${item.id}')" aria-label="حذف محصول">
                   <i class="ti ti-trash"></i><span class="op-tooltip">حذف</span>
-                </button>
-                <button class="cart-op-btn" onclick="saveForLater(${item.id})" aria-label="ذخیره برای بعد">
-                  <i class="ti ti-bookmark"></i><span class="op-tooltip">ذخیره برای بعد</span>
-                </button>
-                <button class="cart-op-btn" onclick="moveToWishlist(${item.id})" aria-label="افزودن به علاقه‌مندی">
-                  <i class="ti ti-heart"></i><span class="op-tooltip">علاقه‌مندی</span>
-                </button>
-                <button class="cart-op-btn" onclick="addToCompare(${item.id})" aria-label="مقایسه محصول">
-                  <i class="ti ti-scale"></i><span class="op-tooltip">مقایسه</span>
-                </button>
-                <button class="cart-op-btn" onclick="openQuickView(${item.id})" aria-label="مشاهده سریع">
-                  <i class="ti ti-eye"></i><span class="op-tooltip">مشاهده سریع</span>
                 </button>
               </div>
             </div>
@@ -3784,9 +3764,9 @@
                 <div class="cart-item-total-price">جمع: <strong>${priceText(totalItemPrice)}</strong></div>
               </div>
               <div class="qty-selector" role="group" aria-label="تعداد محصول">
-                <button class="qty-btn" onclick="changeQty(${item.id},-1)" ${item.quantity <= 1 || !item.available ? "disabled" : ""} aria-label="کاهش تعداد"><i class="ti ti-minus"></i></button>
-                <input type="number" class="qty-value" value="${item.quantity}" min="1" max="${item.stock}" onchange="setQty(${item.id},this.value)" aria-label="تعداد" ${!item.available ? "disabled" : ""} />
-                <button class="qty-btn" onclick="changeQty(${item.id},1)" ${item.quantity >= item.stock || !item.available ? "disabled" : ""} aria-label="افزایش تعداد"><i class="ti ti-plus"></i></button>
+                <button class="qty-btn" onclick="changeQty('${item.id}',-1)" ${item.quantity <= 1 || !item.available ? "disabled" : ""} aria-label="کاهش تعداد"><i class="ti ti-minus"></i></button>
+                <input type="number" class="qty-value" value="${item.quantity}" min="1" max="${item.stock}" onchange="setQty('${item.id}',this.value)" aria-label="تعداد" ${!item.available ? "disabled" : ""} />
+                <button class="qty-btn" onclick="changeQty('${item.id}',1)" ${item.quantity >= item.stock || !item.available ? "disabled" : ""} aria-label="افزایش تعداد"><i class="ti ti-plus"></i></button>
               </div>
             </div>
           `;
@@ -3853,15 +3833,6 @@
           couponRow.style.display = "none";
         }
 
-        const giftRow = document.getElementById("sumGiftRow");
-        if (giftDiscount > 0) {
-          giftRow.style.display = "flex";
-          document.getElementById("sumGift").textContent =
-            "−" + priceText(giftDiscount);
-        } else {
-          giftRow.style.display = "none";
-        }
-
         document.getElementById("sumTotal").innerHTML =
           formatPrice(total) + " <small>تومان</small>";
 
@@ -3887,7 +3858,8 @@
 
       /* ═══ تعداد ═══ */
       function changeQty(id, delta) {
-        const item = cartData.find((i) => i.id === id);
+        // تبدیل آی‌دی به استرینگ برای تطابق دقیق
+        const item = cartData.find((i) => String(i.id) === String(id));
         if (!item || !item.available) return;
         const newQty = item.quantity + delta;
         if (newQty < 1 || newQty > item.stock) return;
@@ -3897,7 +3869,7 @@
       }
 
       function setQty(id, val) {
-        const item = cartData.find((i) => i.id === id);
+        const item = cartData.find((i) => String(i.id) === String(id));
         if (!item || !item.available) return;
         let n = parseInt(val, 10);
         if (isNaN(n) || n < 1) n = 1;
@@ -3912,7 +3884,7 @@
       let lastRemovedItem = null;
 
       function removeItem(id) {
-        const idx = cartData.findIndex((i) => i.id === id);
+        const idx = cartData.findIndex((i) => String(i.id) === String(id));
         if (idx === -1) return;
 
         const card = document.querySelector(`.cart-item-card[data-id="${id}"]`);
@@ -3958,23 +3930,6 @@
         renderCartItems();
         showToast("محصول به سبد خرید بازگردانده شد");
       });
-
-      /* ═══ عملیات آیتم ═══ */
-      function saveForLater(id) {
-        const item = cartData.find((i) => i.id === id);
-        if (!item) return;
-        removeItem(id);
-        showToast('محصول در "ذخیره برای بعد" قرار گرفت');
-      }
-      function moveToWishlist(id) {
-        const item = cartData.find((i) => i.id === id);
-        if (!item) return;
-        removeItem(id);
-        showToast("محصول به علاقه‌مندی‌ها اضافه شد");
-      }
-      function addToCompare(id) {
-        showToast("محصول به لیست مقایسه اضافه شد");
-      }
 
       /* ═══ Quick View ═══ */
       function openQuickView(id) {
@@ -4099,81 +4054,6 @@
         document.getElementById("couponRow").style.display = "flex";
         updateSummary();
         showToast("کد تخفیف حذف شد");
-      }
-
-      /* ═══ کارت هدیه ═══ */
-      document.getElementById("giftBtn").addEventListener("click", applyGift);
-      document.getElementById("giftInput").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") applyGift();
-      });
-
-      function applyGift() {
-        const input = document.getElementById("giftInput");
-        const msg = document.getElementById("giftMsg");
-        const code = input.value.trim().toUpperCase();
-
-        input.classList.remove("input-error", "input-success");
-        msg.style.display = "none";
-
-        if (!code) {
-          input.classList.add("input-error");
-          msg.className = "coupon-msg error";
-          msg.style.display = "flex";
-          msg.innerHTML =
-            '<i class="ti ti-alert-circle"></i> لطفاً کد کارت هدیه را وارد کنید';
-          return;
-        }
-
-        if (appliedGift) {
-          input.classList.add("input-error");
-          msg.className = "coupon-msg error";
-          msg.style.display = "flex";
-          msg.innerHTML =
-            '<i class="ti ti-alert-circle"></i> قبلاً یک کارت هدیه اعمال شده است';
-          return;
-        }
-
-        /* کارت‌های هدیه نمونه: هر کد که با GC- شروع شود معتبر است */
-        if (!code.startsWith("GC-")) {
-          input.classList.add("input-error");
-          msg.className = "coupon-msg error";
-          msg.style.display = "flex";
-          msg.innerHTML =
-            '<i class="ti ti-alert-circle"></i> کد کارت هدیه نامعتبر است';
-          input.classList.add("shake");
-          setTimeout(() => input.classList.remove("shake"), 300);
-          return;
-        }
-
-        giftDiscount = 500000;
-        appliedGift = code;
-        input.classList.add("input-success");
-        msg.className = "coupon-msg success";
-        msg.style.display = "flex";
-        msg.innerHTML =
-          '<i class="ti ti-circle-check"></i> کارت هدیه با موفقیت اعمال شد';
-
-        document.getElementById("giftAppliedTag").style.display = "block";
-        document.getElementById("giftAppliedTag").innerHTML = `
-          <div class="coupon-applied-tag">
-            <i class="ti ti-gift"></i> کارت هدیه ۵۰۰,۰۰۰ تومانی
-            <button onclick="removeGift()" aria-label="حذف کارت هدیه"><i class="ti ti-x"></i></button>
-          </div>
-        `;
-        updateSummary();
-      }
-
-      function removeGift() {
-        giftDiscount = 0;
-        appliedGift = null;
-        document.getElementById("giftInput").value = "";
-        document
-          .getElementById("giftInput")
-          .classList.remove("input-error", "input-success");
-        document.getElementById("giftMsg").style.display = "none";
-        document.getElementById("giftAppliedTag").style.display = "none";
-        updateSummary();
-        showToast("کارت هدیه حذف شد");
       }
 
       /* ═══ حالت سبد خالی ═══ */
