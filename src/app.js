@@ -10,6 +10,7 @@ const env = require("./config/env");
 const errorHandler = require("./middleware/errorHandler");
 
 const { SitemapStream, streamToPromise } = require("sitemap");
+const Product = require("./models/product");
 
 const app = express();
 
@@ -64,7 +65,7 @@ app.use("/admin", adminRoutes);
 // Products API
 app.use("/api/products", productRoutes);
 
-// Public folder
+// Public
 app.use(express.static("public"));
 
 // =======================
@@ -77,10 +78,24 @@ app.get("/sitemap.xml", async (req, res) => {
       hostname: "https://pixellife.ir",
     });
 
+    // صفحه اصلی
     sitemap.write({
       url: "/",
       changefreq: "daily",
       priority: 1,
+    });
+
+    // محصولات MongoDB
+    const products = await Product.find();
+
+    products.forEach((product) => {
+      sitemap.write({
+        url: `/product/${product._id}`,
+
+        changefreq: "weekly",
+
+        priority: 0.8,
+      });
     });
 
     sitemap.end();
@@ -93,7 +108,7 @@ app.get("/sitemap.xml", async (req, res) => {
   } catch (error) {
     console.error("Sitemap Error:", error);
 
-    res.status(500).send("Cannot generate sitemap");
+    res.status(500).send("Sitemap generation failed");
   }
 });
 
