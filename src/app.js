@@ -80,9 +80,9 @@ app.get("/sitemap.xml", async (req, res) => {
 
     // صفحه اصلی
     sitemap.write({
-      url: "/",
-      changefreq: "daily",
-      priority: 1,
+      url: `/product/${product.slug}`,
+      changefreq: "weekly",
+      priority: 0.8,
     });
 
     // محصولات MongoDB
@@ -94,7 +94,7 @@ app.get("/sitemap.xml", async (req, res) => {
       console.log("Product:", product.name);
 
       sitemap.write({
-        url: `/product/${product._id}`,
+        url: `/product/${product.slug}`,
 
         changefreq: "weekly",
 

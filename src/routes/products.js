@@ -44,4 +44,15 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+router.get("/:slug", async (req, res) => {
+  const product = await Product.findOne({
+    slug: req.params.slug,
+  });
+
+  res.json({
+    success: true,
+    product,
+  });
+});
+
 module.exports = router;
