@@ -89,19 +89,19 @@ app.get("/sitemap.xml", async (req, res) => {
     const products = await Product.find({});
 
     console.log("Sitemap Products:", products.length);
-
     products.forEach((product) => {
-      console.log("Product:", product.name);
+      console.log("Sitemap Product:", product.name, product.slug);
 
-      sitemap.write({
-        url: `/product/${product.slug}`,
+      if (product.slug) {
+        sitemap.write({
+          url: `/product/${product.slug}`,
 
-        changefreq: "weekly",
+          changefreq: "weekly",
 
-        priority: 0.8,
-      });
+          priority: 0.8,
+        });
+      }
     });
-
     sitemap.end();
 
     const xml = await streamToPromise(sitemap);
