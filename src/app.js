@@ -9,6 +9,8 @@ const connectDB = require("./db");
 const env = require("./config/env");
 const errorHandler = require("./middleware/errorHandler");
 
+const { SitemapStream, streamToPromise } = require("sitemap");
+
 const app = express();
 
 // =======================
@@ -25,11 +27,14 @@ app.use(
   }),
 );
 
-// فایل‌های استاتیک (تصاویر محصولات)
+// =======================
+// Static Files
+// =======================
+
 app.use(express.static(path.join(__dirname, "../public")));
 
 // =======================
-// اتصال MongoDB Atlas
+// MongoDB Connection
 // =======================
 
 connectDB();
@@ -44,22 +49,53 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const adminRoutes = require("./routes/admin");
 const productRoutes = require("./routes/products");
 
-// صفحه اصلی
+// Home
 app.use("/", homeRoutes);
 
-// ثبت نام و ورود کاربران
+// Authentication
 app.use("/api/auth", authRoutes);
 
-// نظرات محصولات
+// Reviews
 app.use("/api/reviews", reviewRoutes);
 
-// پنل مدیریت ادمین
+// Admin Panel
 app.use("/admin", adminRoutes);
 
-// محصولات فروشگاه
+// Products API
 app.use("/api/products", productRoutes);
 
+// Public folder
 app.use(express.static("public"));
+
+// =======================
+// Sitemap
+// =======================
+
+app.get("/sitemap.xml", async (req, res) => {
+  try {
+    const sitemap = new SitemapStream({
+      hostname: "https://pixellife.ir",
+    });
+
+    sitemap.write({
+      url: "/",
+      changefreq: "daily",
+      priority: 1,
+    });
+
+    sitemap.end();
+
+    const xml = await streamToPromise(sitemap);
+
+    res.header("Content-Type", "application/xml");
+
+    res.send(xml.toString());
+  } catch (error) {
+    console.error("Sitemap Error:", error);
+
+    res.status(500).send("Cannot generate sitemap");
+  }
+});
 
 // =======================
 // Health Check
@@ -68,7 +104,9 @@ app.use(express.static("public"));
 app.get("/api/health", (req, res) => {
   res.json({
     success: true,
+
     message: "سرور PixelLife فعال است",
+
     timestamp: new Date().toISOString(),
   });
 });
@@ -80,6 +118,7 @@ app.get("/api/health", (req, res) => {
 app.use((req, res, next) => {
   res.status(404).json({
     success: false,
+
     message: "مسیر مورد نظر پیدا نشد",
   });
 });
@@ -87,6 +126,7 @@ app.use((req, res, next) => {
 // =======================
 // Error Handler
 // =======================
+
 app.use(errorHandler);
 
 // =======================
@@ -102,5 +142,3 @@ app.listen(PORT, () => {
 
   console.log(`📱 Products API: http://localhost:${PORT}/api/products`);
 });
-
-module.exports = app;
