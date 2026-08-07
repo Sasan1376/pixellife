@@ -11,7 +11,6 @@ const errorHandler = require("./middleware/errorHandler");
 
 const { SitemapStream, streamToPromise } = require("sitemap");
 const Product = require("./models/product");
-
 const app = express();
 
 // =======================
@@ -86,14 +85,15 @@ app.get("/sitemap.xml", async (req, res) => {
     });
 
     // محصولات MongoDB
-    const products = await Product.find();
+    const products = await Product.find({});
 
+    console.log("Sitemap Products:", products.length);
     products.forEach((product) => {
+      console.log("Product:", product.name);
+
       sitemap.write({
         url: `/product/${product._id}`,
-
         changefreq: "weekly",
-
         priority: 0.8,
       });
     });
