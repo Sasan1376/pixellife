@@ -11,6 +11,7 @@ const env = require("./config/env");
 const errorHandler = require("./middleware/errorHandler");
 
 const { SitemapStream, streamToPromise } = require("sitemap");
+
 const Product = require("./models/Product");
 
 const app = express();
@@ -50,24 +51,31 @@ const authRoutes = require("./routes/authRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const adminRoutes = require("./routes/admin");
 const productRoutes = require("./routes/products");
+const productPageRoutes = require("./routes/productPage");
 
-// Home
+// Home Page
+
 app.use("/", homeRoutes);
 
 // Authentication
+
 app.use("/api/auth", authRoutes);
 
 // Reviews
+
 app.use("/api/reviews", reviewRoutes);
 
 // Admin Panel
+
 app.use("/admin", adminRoutes);
 
 // Products API
+
 app.use("/api/products", productRoutes);
 
-// Public folder
-app.use(express.static("public"));
+// Product SEO Pages
+
+app.use("/product", productPageRoutes);
 
 // =======================
 // Sitemap
@@ -83,7 +91,9 @@ app.get("/sitemap.xml", async (req, res) => {
 
     sitemap.write({
       url: "/",
+
       changefreq: "daily",
+
       priority: 1,
     });
 
@@ -91,18 +101,18 @@ app.get("/sitemap.xml", async (req, res) => {
 
     const products = await Product.find({});
 
-    console.log("PRODUCT COUNT:", products.length);
+    console.log("Sitemap Products:", products.length);
 
     products.forEach((product) => {
-      console.log("PRODUCT:", product.name, product.slug);
+      if (product.slug) {
+        sitemap.write({
+          url: `/product/${product.slug}`,
 
-      sitemap.write({
-        url: `/product/${product.slug || product._id}`,
+          changefreq: "weekly",
 
-        changefreq: "weekly",
-
-        priority: 0.8,
-      });
+          priority: 0.8,
+        });
+      }
     });
 
     sitemap.end();
@@ -113,15 +123,9 @@ app.get("/sitemap.xml", async (req, res) => {
 
     res.send(xml.toString());
   } catch (error) {
-    console.error("========== SITEMAP ERROR ==========");
+    console.error("Sitemap Error:", error);
 
-    console.error(error);
-
-    console.error(error.stack);
-
-    console.error("====================================");
-
-    res.status(500).send(error.message);
+    res.status(500).send("Sitemap generation failed");
   }
 });
 
@@ -169,4 +173,6 @@ app.listen(PORT, () => {
   console.log(`🌐 Admin Panel: http://localhost:${PORT}/admin`);
 
   console.log(`📱 Products API: http://localhost:${PORT}/api/products`);
+
+  console.log(`🛒 Product Pages: http://localhost:${PORT}/product/:slug`);
 });
