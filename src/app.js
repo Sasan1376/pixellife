@@ -31,43 +31,50 @@ app.use(
 );
 
 // =======================
-// Static Files
-// =======================
-
-app.use(express.static(path.join(__dirname, "../public")));
-// =======================
-// Maintenance Mode (حالت بروزرسانی)
+// Maintenance Mode (حالت بروزرسانی هوشمند)
 // =======================
 app.use((req, res, next) => {
-  // ۱. اجازه دسترسی به پنل ادمین و API ها
+  // ۱. اجازه دسترسی به پنل ادمین، API ها و فایل‌های استاتیک (عکس، CSS، JS)
   if (
     req.path.startsWith("/admin") ||
     req.path.startsWith("/api") ||
-    req.path.startsWith("/product") ||
-    req.path === "/sitemap.xml"
+    /\.(css|js|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2)$/.test(req.path)
   ) {
     return next();
   }
 
-  // ۲. اجازه دسترسی فقط به فایل‌های عکس، CSS و JS (نه فایل‌های HTML)
-  if (
-    /\.(css|js|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)$/.test(
-      req.path,
-    )
-  ) {
-    return next();
+  // ۲. خواندن کوکی‌های مرورگر کاربر
+  const cookies = req.headers.cookie
+    ? req.headers.cookie.split(";").reduce((acc, c) => {
+        const [key, val] = c.trim().split("=");
+        acc[key] = val;
+        return acc;
+      }, {})
+    : {};
+
+  // ۳. آدرس مخفی برای شما: اگر وارد آدرس pixellife.ir/?bypass=sasan1376 شدید
+  if (req.query.bypass === "sasan1376") {
+    // یک کوکی برای ۷ روز در مرورگر شما ذخیره می‌شود
+    res.setHeader(
+      "Set-Cookie",
+      "maintenance_bypass=sasan1376; Path=/; Max-Age=604800",
+    );
+    return next(); // اجازه دیدن سایت
   }
 
-  // ۳. برای تمام صفحات دیگر (حتی product.html یا new.html)، صفحه بروزرسانی را نشان بده
+  // ۴. اگر کوکی در مرورگر وجود داشت (یعنی قبلا آدرس مخفی را زده‌اید)
+  if (cookies.maintenance_bypass === "sasan1376") {
+    return next(); // اجازه دیدن سایت
+  }
+
+  // ۵. برای بقیه مردم، صفحه بروزرسانی را نشان بده
   return res.send(`
     <!doctype html>
     <html lang="fa" dir="rtl">
       <head>
         <meta charset="UTF-8" />
         <title>در حال بروزرسانی | پیکسل لایف</title>
-        <style>
-          body { overflow: hidden !important; height: 100vh !important; margin: 0; }
-        </style>
+        <style>body { overflow: hidden !important; height: 100vh !important; margin: 0; }</style>
       </head>
       <body>
         <div style="position: fixed; inset: 0; background: #f8fafc; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Tahoma, sans-serif; text-align: center; padding: 20px;">
