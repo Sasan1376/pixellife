@@ -40,7 +40,12 @@ app.use(express.static(path.join(__dirname, "../public")));
 // =======================
 app.use((req, res, next) => {
   // ۱. اجازه دسترسی به پنل ادمین و API ها
-  if (req.path.startsWith("/admin") || req.path.startsWith("/api")) {
+  if (
+    req.path.startsWith("/admin") ||
+    req.path.startsWith("/api") ||
+    req.path.startsWith("/product") ||
+    req.path === "/sitemap.xml"
+  ) {
     return next();
   }
 
