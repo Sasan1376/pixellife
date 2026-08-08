@@ -29,7 +29,8 @@ app.use(
     extended: true,
   }),
 );
-
+// فایل‌های استاتیک (تصاویر محصولات و لوگو)
+app.use(express.static(path.join(__dirname, "../public")));
 // =======================
 // Maintenance Mode (حالت بروزرسانی هوشمند)
 // =======================
