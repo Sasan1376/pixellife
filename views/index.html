@@ -1470,7 +1470,130 @@
           height: 350px;
         }
       }
+      /* ═══ SERVICES (خدمات سایت) ═══ */
+      .services-section {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 40px;
+        padding: 24px 20px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+      }
+      .service-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .service-item i {
+        font-size: 32px;
+        color: var(--blue);
+        flex-shrink: 0;
+      }
+      .service-item h4 {
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 2px;
+        color: var(--text-1);
+      }
+      .service-item p {
+        font-size: 11.5px;
+        color: var(--text-3);
+      }
 
+      /* ═══ PRODUCT GRID (شبکه محصولات) ═══ */
+      .product-section { margin-bottom: 40px; }
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .section-header h2 {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--text-1);
+        position: relative;
+        padding-right: 12px;
+      }
+      .section-header h2::before {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 20px;
+        background: var(--blue);
+        border-radius: 4px;
+      }
+      .see-all-btn {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--blue);
+        transition: color 0.2s;
+      }
+      .see-all-btn:hover { color: var(--blue-dark); }
+
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+      .product-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        text-align: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .product-card:hover {
+        box-shadow: var(--shadow);
+        transform: translateY(-4px);
+        border-color: var(--blue-mid);
+      }
+      .product-card img {
+        width: 100%;
+        height: 150px;
+        object-fit: contain;
+        margin-bottom: 16px;
+        mix-blend-mode: multiply;
+      }
+      .product-card h3 {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-2);
+        margin-bottom: 12px;
+        min-height: 40px;
+      }
+      .product-price {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--text-1);
+        direction: ltr;
+      }
+      .product-price span { font-size: 11px; font-weight: 500; color: var(--text-3); }
+
+      /* ═══ SIMPLE BANNER (بنر ساده) ═══ */
+      .simple-banner {
+        margin-bottom: 40px;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+      }
+      .simple-banner img { width: 100%; display: block; }
+
+      /* ریسپانسیو موبایل */
+      @media (max-width: 768px) {
+        .services-section { grid-template-columns: repeat(2, 1fr); gap: 24px 16px; }
+        .product-grid { grid-template-columns: repeat(2, 1fr); }
+      }
       @media (max-width: 768px) {
         .header,
         .navbar {
@@ -1541,6 +1664,7 @@
           justify-content: flex-start;
           padding: 15px;
         }
+        
         .category-item {
           min-width: 90px;
         }
@@ -2112,7 +2236,8 @@
         </div>
       </section>
 
-      <!-- ═══ CATEGORY ICONS ═══ -->
+
+            <!-- ═══ CATEGORY ICONS ═══ -->
       <section class="categories-section">
         <div class="category-item">
           <div class="category-circle"><i class="ti ti-device-mobile"></i></div>
@@ -2137,7 +2262,85 @@
           <span class="category-title">ساعت هوشمند</span>
         </div>
       </section>
-    </main>
+
+      <!-- ═══ کدهای جدید را دقیقاً اینجا کپی کنید ═══ -->
+      <!-- ═══ SERVICES SECTION (خدمات سایت) ═══ -->
+      <section class="services-section">
+        <div class="service-item">
+          <i class="ti ti-truck-delivery"></i>
+          <div>
+            <h4>ارسال سریع</h4>
+            <p>تحویل ۱ تا ۳ روزه در سراسر کشور</p>
+          </div>
+        </div>
+        <div class="service-item">
+          <i class="ti ti-refresh"></i>
+          <div>
+            <h4>ضمانت بازگشت</h4>
+            <p>۷ روز فرصت برای بازگشت کالا</p>
+          </div>
+        </div>
+        <div class="service-item">
+          <i class="ti ti-shield-check"></i>
+          <div>
+            <h4>ضمانت اصالت</h4>
+            <p>تضمین اصل بودن کالاها</p>
+          </div>
+        </div>
+        <div class="service-item">
+          <i class="ti ti-headset"></i>
+          <div>
+            <h4>پشتیبانی</h4>
+            <p>پاسخگویی در ساعات کاری</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ PRODUCT GRID (محصولات منتخب) ═══ -->
+      <section class="product-section">
+        <div class="section-header">
+          <h2>محصولات منتخب</h2>
+          <a href="/products" class="see-all-btn">مشاهده همه</a>
+        </div>
+        
+        <div class="product-grid">
+          <!-- محصول ۱ -->
+          <div class="product-card" onclick="window.location.href='/product?id=1'">
+            <img src="https://placehold.co/150x150/f1f5f9/94a3b8?text=Product+1" alt="محصول">
+            <h3>نام محصول نمونه برای تست ظاهر سایت</h3>
+            <div class="product-price">۲,۵۰۰,۰۰۰ <span>تومان</span></div>
+          </div>
+          <!-- محصول ۲ -->
+          <div class="product-card" onclick="window.location.href='/product?id=2'">
+            <img src="https://placehold.co/150x150/f1f5f9/94a3b8?text=Product+2" alt="محصول">
+            <h3>نام محصول نمونه برای تست ظاهر سایت</h3>
+            <div class="product-price">۳,۸۰۰,۰۰۰ <span>تومان</span></div>
+          </div>
+          <!-- محصول ۳ -->
+          <div class="product-card" onclick="window.location.href='/product?id=3'">
+            <img src="https://placehold.co/150x150/f1f5f9/94a3b8?text=Product+3" alt="محصول">
+            <h3>نام محصول نمونه برای تست ظاهر سایت</h3>
+            <div class="product-price">۱,۲۰۰,۰۰۰ <span>تومان</span></div>
+          </div>
+          <!-- محصول ۴ -->
+          <div class="product-card" onclick="window.location.href='/product?id=4'">
+            <img src="https://placehold.co/150x150/f1f5f9/94a3b8?text=Product+4" alt="محصول">
+            <h3>نام محصول نمونه برای تست ظاهر سایت</h3>
+            <div class="product-price">۴,۹۰۰,۰۰۰ <span>تومان</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ SIMPLE BANNER (بنر ساده) ═══ -->
+      <section class="simple-banner">
+        <a href="/brands">
+          <img src="https://placehold.co/1200x200/eff6ff/3b82f6?text=Brands+Banner" alt="بنر برندها">
+        </a>
+      </section>
+      <!-- ═══ پایان کدهای جدید ═══ -->
+
+    </main> <!-- <- تگ main اینجا بسته می‌شود -->
+    
 
     <!-- FOOTER -->
     <footer class="footer">
