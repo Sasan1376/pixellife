@@ -1432,8 +1432,14 @@
     </style>
     <style>
       /* Product listing: open, full-width layout */
-      .page-body { max-width: none; }
-      .prod-card { border: none; border-radius: 0; box-shadow: none; }
+      .page-body {
+        max-width: none;
+      }
+      .prod-card {
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+      }
     </style>
   </head>
   <body>
@@ -2582,5 +2588,6 @@
           if (e.key === "Enter" && e.target.value.trim()) e.target.blur();
         });
     </script>
+    <script src="/auth-modal.js"></script>
   </body>
 </html>

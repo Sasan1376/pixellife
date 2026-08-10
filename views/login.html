@@ -1703,6 +1703,29 @@
         .features-bar { grid-template-columns: 1fr; }
         .footer-inner { grid-template-columns: 1fr; }
       }
+            /* OTP Timer Styles */
+      .otp-timer-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin: 16px 0;
+        font-size: 13px;
+        color: var(--text-3);
+      }
+      .btn-back {
+        width: 100%;
+        background: transparent;
+        border: none;
+        color: var(--text-3);
+        font-size: 12.5px;
+        margin-top: 12px;
+        transition: color 0.2s;
+        font-family: inherit;
+      }
+      .btn-back:hover {
+        color: var(--blue);
+      }
     </style>
   </head>
   <body>
@@ -1715,10 +1738,164 @@
             <i class="ti ti-x"></i>
           </button>
         </div>
-        <div class="modal-body">
-          <p class="modal-desc">
-            شماره موبایل و نام خود را وارد کنید تا وارد حساب کاربری شوید.
+                <div class="modal-body">
+          <!-- مرحله اول: ورود شماره موبایل -->
+          <div id="step1">
+            <div class="form-group">
+              <label class="form-label">نام و نام خانوادگی</label>
+              <input type="text" class="form-input" id="nameInput" placeholder="مثلاً علی رضایی" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">شماره موبایل</label>
+              <input type="tel" class="form-input" id="mobileInput" placeholder="09xxxxxxxxx" dir="ltr" style="text-align: right;" />
+              <div class="form-error" id="mobileError">لطفاً شماره موبایل معتبر وارد کنید (۱۱ رقم).</div>
+            </div>
+            <button class="btn-login-submit" id="sendOtpBtn">
+              ارسال کد تایید
+              <i class="ti ti-arrow-left"></i>
+            </button>
+          </div>
+
+          <!-- مرحله دوم: وارد کردن کد تایید -->
+          <div id="step2" style="display: none;">
+            <p class="modal-desc">
+              کد ۴ رقمی به شماره <span id="mobileDisplay" style="font-weight: 700; color: var(--text-1); direction: ltr;"></span> ارسال شد.
+            </p>
+            <div class="form-group">
+              <label class="form-label">کد تایید را وارد کنید</label>
+              <input type="text" class="form-input" id="otpInput" placeholder="----" dir="ltr" maxlength="4" style="text-align: center; letter-spacing: 8px; font-size: 20px; font-weight: 700;" />
+              <div class="form-error" id="otpError">کد وارد شده اشتباه است.</div>
+            </div>
+            
+            <div class="otp-timer-wrap">
+              <span id="timerText" style="direction: ltr; font-weight: 700; color: var(--blue);"></span>
+              <a href="#" id="resendBtn" style="display: none; color: var(--blue); font-weight: 600;">ارسال مجدد کد</a>
+            </div>
+
+            <button class="btn-login-submit" id="verifyOtpBtn">
+              تایید و ورود
+              <i class="ti ti-check"></i>
+            </button>
+            <button class="btn-back" id="backBtn">تغییر شماره موبایل</button>
+          </div>
+          
+          <p class="modal-footer-text">
+            با ورود به دیجی‌شاپ، <a>قوانین و مقررات</a> را می‌پذیرم.
           </p>
-          <div class="form-group">
-            <label class="form-label">نام و نام خانوادگی</label>
-            <input
+        </div>
+      </div>
+    </div>
+</div>
+    <!-- ══════════ PAGE BODY ══════════ -->          
+
+          
+    <!-- در اینجا بقیه بخش‌های سایت شما مثل هدر، اسلایدر، محصولات و... قرار می‌گیرد -->
+    <!-- اگر کدهای بخش بدنه اصلی را دارید، آن‌ها را اینجا قرار دهید -->
+
+    <!-- ══════════ SCRIPTS ══════════ -->
+    <script>
+      // ──── مدیریت مودال لاگین و کد تایید ────
+      const sendOtpBtn = document.getElementById('sendOtpBtn');
+      const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+      const backBtn = document.getElementById('backBtn');
+      const resendBtn = document.getElementById('resendBtn');
+      
+      const step1 = document.getElementById('step1');
+      const step2 = document.getElementById('step2');
+      
+      const mobileInput = document.getElementById('mobileInput');
+      const mobileError = document.getElementById('mobileError');
+      const mobileDisplay = document.getElementById('mobileDisplay');
+      const otpInput = document.getElementById('otpInput');
+      const otpError = document.getElementById('otpError');
+      
+      const timerText = document.getElementById('timerText');
+      let timerInterval;
+
+      // ارسال کد و انتقال به مرحله دوم
+      sendOtpBtn.addEventListener('click', function() {
+        const mobileValue = mobileInput.value.trim();
+        // اعتبارسنجی ساده شماره موبایل ایران
+        if(!/^09[0-9]{9}$/.test(mobileValue)) {
+          mobileError.classList.add('show');
+          return;
+        }
+        mobileError.classList.remove('show');
+        
+        // نمایش شماره در مرحله دوم
+        mobileDisplay.textContent = mobileValue;
+        
+        // تغییر مرحله
+        step1.style.display = 'none';
+        step2.style.display = 'block';
+        
+        // شروع تایمر (۱۲۰ ثانیه = ۲ دقیقه)
+        startTimer(120); 
+      });
+
+      // تایید کد و ورود
+      verifyOtpBtn.addEventListener('click', function() {
+        const otpValue = otpInput.value.trim();
+        if(otpValue.length < 4) {
+          otpError.classList.add('show');
+          return;
+        }
+        otpError.classList.remove('show');
+        
+        // در اینجا باید کد به سرور ارسال شود
+        // برای تست، هر کدی قبول می‌شود
+        
+        clearInterval(timerInterval);
+        alert('ورود با موفقیت انجام شد!');
+        document.getElementById('loginModal').classList.remove('open');
+      });
+
+      // بازگشت به مرحله اول
+      backBtn.addEventListener('click', function() {
+        clearInterval(timerInterval);
+        step2.style.display = 'none';
+        step1.style.display = 'block';
+        otpInput.value = '';
+      });
+
+      // ارسال مجدد کد
+      resendBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        startTimer(120);
+      });
+
+      // تابع ساخت تایمر معکوس
+      function startTimer(duration) {
+        let timer = duration, minutes, seconds;
+        timerText.style.display = 'block';
+        resendBtn.style.display = 'none';
+        
+        clearInterval(timerInterval);
+        
+        timerInterval = setInterval(function() {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            timerText.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                clearInterval(timerInterval);
+                timerText.style.display = 'none';
+                resendBtn.style.display = 'block';
+            }
+        }, 1000);
+      }
+
+      // بستن مودال
+      document.getElementById('loginModalClose').addEventListener('click', function() {
+        document.getElementById('loginModal').classList.remove('open');
+        clearInterval(timerInterval);
+      });
+    </script>
+    <script src="/auth-modal.js"></script>
+</body>
+</html>
+
