@@ -43,6 +43,8 @@ app.use((req, res, next) => {
   if (
     req.path.startsWith("/admin") ||
     req.path.startsWith("/api") ||
+    req.path === "/contact" ||
+    req.path === "/support" ||
     /\.(css|js|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2)$/.test(req.path)
   ) {
     return next();
@@ -107,7 +109,10 @@ const productPageRoutes = require("./routes/productPage");
 
 // Home Page
 app.use("/", homeRoutes);
-
+// Contact Page (تماس با ما)
+app.get("/contact", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/contact.html"));
+});
 // Authentication
 app.use("/api/auth", authRoutes);
 

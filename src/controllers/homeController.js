@@ -4,6 +4,31 @@ const homeController = {
   index: (req, res) => {
     res.sendFile(path.join(__dirname, "../../views/index.html"));
   },
+  contact: (req, res) => {
+    res.sendFile(path.join(__dirname, "../../views/contact.html"));
+  },
+  submitContact: (req, res) => {
+    const { name, phone, email, subject, message } = req.body || {};
+
+    if (!name || !phone || !subject || !message) {
+      return res.status(400).json({
+        success: false,
+        message: "لطفاً همه فیلدهای ضروری را تکمیل کنید.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "پیام شما با موفقیت ثبت شد.",
+      data: {
+        name,
+        phone,
+        email: email || null,
+        subject,
+        message,
+      },
+    });
+  },
   mobiles: (req, res) => {
     res.sendFile(path.join(__dirname, "../../views/mobile.html"));
   },
