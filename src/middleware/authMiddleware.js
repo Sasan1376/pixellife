@@ -34,3 +34,8 @@ exports.protect = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.isAdmin = (req, res, next) => {
+  if (req.user?.role !== "admin") return next(new ApiError(403, "دسترسی غیرمجاز"));
+  next();
+};

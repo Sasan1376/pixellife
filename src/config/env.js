@@ -14,6 +14,7 @@ const env = {
 
   kavehNegarApiKey: process.env.KAVEH_NEGAR_API_KEY,
   kavehNegarSender: process.env.KAVEH_NEGAR_SENDER || "2000660110",
+  kavehNegarOtpTemplate: process.env.KAVEH_NEGAR_OTP_TEMPLATE,
 
   otpLength: parseInt(process.env.OTP_LENGTH, 10) || 5,
   otpExpiryMinutes: parseInt(process.env.OTP_EXPIRY_MINUTES, 10) || 2,

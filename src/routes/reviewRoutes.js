@@ -1,5 +1,6 @@
 const express = require("express");
 const Review = require("../models/review");
+const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.get("/:productId", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", protect, async (req, res) => {
   try {
     const review = await Review.create(req.body);
     res.status(201).json({ success: true, review });

@@ -4333,11 +4333,20 @@
         });
 
       /* Step 2A: Send OTP */
-      document.getElementById("sendOtpBtn").addEventListener("click", () => {
-        document.getElementById("otpTarget").textContent = currentIdentifier;
-        showStep("otp");
-        document.getElementById("otpInput").value = "";
-        startOtpTimer();
+      document.getElementById("sendOtpBtn").addEventListener("click", async () => {
+        try {
+          await apiCall("/api/auth/send-otp", {
+            identifier: currentIdentifier,
+            type: "login",
+            channel: "sms",
+          });
+          document.getElementById("otpTarget").textContent = currentIdentifier;
+          showStep("otp");
+          document.getElementById("otpInput").value = "";
+          startOtpTimer();
+        } catch (error) {
+          showToast(error.message || "خطا در ارسال پیامک");
+        }
       });
 
       /* Step 2B: Password */
@@ -4372,7 +4381,7 @@
 
       document
         .getElementById("passwordLoginBtn")
-        .addEventListener("click", () => {
+        .addEventListener("click", async () => {
           clearErrors();
           const pw = document.getElementById("passwordInput").value;
           if (!pw) {
@@ -4385,7 +4394,15 @@
               .parentElement.classList.add("shake");
             return;
           }
-          finishLogin();
+          try {
+            const json = await apiCall("/api/auth/login", {
+              identifier: currentIdentifier,
+              password: pw,
+            });
+            finishLogin(json.user, json.token);
+          } catch (error) {
+            showToast(error.message || "خطا در ورود");
+          }
         });
 
       document
@@ -4419,13 +4436,21 @@
         }, 1000);
       }
 
-      document.getElementById("resendBtn").addEventListener("click", () => {
-        startOtpTimer();
-        showToast("کد تأیید مجدداً ارسال شد");
+      document.getElementById("resendBtn").addEventListener("click", async () => {
+        try {
+          await apiCall("/api/auth/resend-otp", {
+            identifier: currentIdentifier,
+            type: "login",
+          });
+          startOtpTimer();
+          showToast("کد تأیید مجدداً ارسال شد");
+        } catch (error) {
+          showToast(error.message || "خطا در ارسال مجدد کد");
+        }
       });
 
       /* Verify OTP */
-      document.getElementById("verifyOtpBtn").addEventListener("click", () => {
+      document.getElementById("verifyOtpBtn").addEventListener("click", async () => {
         clearErrors();
         const code = document.getElementById("otpInput").value.trim();
         if (code.length !== 5 || !/^\d{5}$/.test(code)) {
@@ -4436,8 +4461,16 @@
             .parentElement.classList.add("shake");
           return;
         }
-        if (otpInterval) clearInterval(otpInterval);
-        finishLogin();
+        try {
+          const json = await apiCall("/api/auth/verify-login-otp", {
+            identifier: currentIdentifier,
+            code,
+          });
+          if (otpInterval) clearInterval(otpInterval);
+          finishLogin(json.user, json.token);
+        } catch (error) {
+          showToast(error.message || "کد تأیید نادرست است");
+        }
       });
 
       document.getElementById("otpInput").addEventListener("keydown", (e) => {
@@ -4449,14 +4482,14 @@
         showStep("method");
       });
 
-      /* Finish login (simulated) */
-      function finishLogin() {
-        const isMobile = MOBILE_RE.test(currentIdentifier);
-        const user = isMobile
-          ? { mobile: currentIdentifier }
-          : { email: currentIdentifier };
-        const token = "sim_" + Date.now();
+      function finishLogin(user, token) {
+        user =
+          user ||
+          (MOBILE_RE.test(currentIdentifier)
+            ? { mobile: currentIdentifier }
+            : { email: currentIdentifier });
         applyLogin(user, token);
+        localStorage.setItem("user", JSON.stringify(user));
         document.getElementById("successDesc").textContent =
           "ورود با " + currentIdentifier + " با موفقیت انجام شد.";
         showStep("success");

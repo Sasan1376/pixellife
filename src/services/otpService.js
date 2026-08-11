@@ -26,6 +26,9 @@ const otpService = {
   async createAndSend(identifier, type, channel = "sms") {
     const expiryMinutes = env.otpExpiryMinutes;
 
+    const recentOtp = await OTP.findOne({ identifier, type, createdAt: { $gte: new Date(Date.now() - 60 * 1000) } });
+    if (recentOtp) throw new ApiError(429, "لطفاً کمی صبر کنید");
+
     // حذف کدهای قبلی برای این شناسه و نوع
     await OTP.deleteMany({ identifier, type, isUsed: false });
 

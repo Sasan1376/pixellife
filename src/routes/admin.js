@@ -7,7 +7,10 @@ const Product = require("../models/Product");
 const upload = require("../utils/upload");
 const fs = require("fs");
 const path = require("path");
+const { protect, isAdmin } = require("../middleware/authMiddleware");
 // داشبورد ادمین
+
+router.use(protect, isAdmin);
 
 router.get("/", (req, res) => {
   // مسیر پوشه public را مشخص می‌کنیم تا admin.html نمایش داده شود

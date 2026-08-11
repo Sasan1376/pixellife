@@ -4,6 +4,18 @@ const tokenService = require("../services/tokenService");
 const otpService = require("../services/otpService");
 const ApiError = require("../utils/ApiError");
 
+const normalizeIdentifier = (identifier) => {
+  if (typeof identifier !== "string") return identifier;
+  const normalized = identifier.trim()
+    .replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit))
+    .replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit))
+    .replace(/[\s-]/g, "");
+  if (/^\+989\d{9}$/.test(normalized)) return `0${normalized.slice(3)}`;
+  if (/^00989\d{9}$/.test(normalized)) return `0${normalized.slice(4)}`;
+  if (/^989\d{9}$/.test(normalized)) return `0${normalized.slice(2)}`;
+  return normalized;
+};
+
 /**
  * کمک‌کننده: پیدا کردن کاربر بر اساس identifier (موبایل یا ایمیل)
  */
@@ -32,7 +44,7 @@ const getChannel = (identifier) => {
 // ============================================================
 exports.checkUser = async (req, res, next) => {
   try {
-    const { identifier } = req.body;
+    const identifier = normalizeIdentifier(req.body.identifier);
 
     const user = await findUserByIdentifier(identifier);
 
@@ -66,8 +78,10 @@ exports.checkUser = async (req, res, next) => {
 // ============================================================
 exports.sendOtp = async (req, res, next) => {
   try {
-    const { identifier, type } = req.body;
+    const { type } = req.body;
+    const identifier = normalizeIdentifier(req.body.identifier);
     const channel = getChannel(identifier);
+    if (channel === "email") return next(new ApiError(400, "ورود با ایمیل هنوز فعال نیست"));
 
     // بررسی وجود کاربر
     const user = await findUserByIdentifier(identifier);
@@ -98,7 +112,8 @@ exports.sendOtp = async (req, res, next) => {
 // ============================================================
 exports.verifyLoginOtp = async (req, res, next) => {
   try {
-    const { identifier, code } = req.body;
+    const { code } = req.body;
+    const identifier = normalizeIdentifier(req.body.identifier);
 
     // بررسی وجود کاربر
     const user = await findUserByIdentifier(identifier);
@@ -128,6 +143,7 @@ exports.verifyLoginOtp = async (req, res, next) => {
 
     // ساخت توکن
     const token = tokenService.generateToken(user._id);
+    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 30 * 24 * 60 * 60 * 1000 });
 
     res.json({
       success: true,
@@ -151,7 +167,8 @@ exports.verifyLoginOtp = async (req, res, next) => {
 // ============================================================
 exports.login = async (req, res, next) => {
   try {
-    const { identifier, password } = req.body;
+    const { password } = req.body;
+    const identifier = normalizeIdentifier(req.body.identifier);
 
     // جستجوی کاربر
     const user = await findUserByIdentifier(identifier, true);
@@ -176,6 +193,7 @@ exports.login = async (req, res, next) => {
 
     // ساخت توکن
     const token = tokenService.generateToken(user._id);
+    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 30 * 24 * 60 * 60 * 1000 });
 
     res.json({
       success: true,
@@ -199,7 +217,7 @@ exports.login = async (req, res, next) => {
 // ============================================================
 exports.forgotPassword = async (req, res, next) => {
   try {
-    const { identifier } = req.body;
+    const identifier = normalizeIdentifier(req.body.identifier);
 
     const user = await findUserByIdentifier(identifier);
     if (!user) {
@@ -223,7 +241,8 @@ exports.forgotPassword = async (req, res, next) => {
 // ============================================================
 exports.verifyForgotOtp = async (req, res, next) => {
   try {
-    const { identifier, code } = req.body;
+    const { code } = req.body;
+    const identifier = normalizeIdentifier(req.body.identifier);
 
     // فقط بررسی صحت کد بدون isUsed کردن
     const otpRecord = await OTP.findOne({
@@ -251,7 +270,8 @@ exports.verifyForgotOtp = async (req, res, next) => {
 // ============================================================
 exports.resetPassword = async (req, res, next) => {
   try {
-    const { identifier, code, password } = req.body;
+    const { code, password } = req.body;
+    const identifier = normalizeIdentifier(req.body.identifier);
 
     const user = await findUserByIdentifier(identifier);
     if (!user) {
@@ -267,6 +287,7 @@ exports.resetPassword = async (req, res, next) => {
 
     // ساخت توکن جدید
     const token = tokenService.generateToken(user._id);
+    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 30 * 24 * 60 * 60 * 1000 });
 
     res.json({
       success: true,
@@ -283,8 +304,10 @@ exports.resetPassword = async (req, res, next) => {
 // ============================================================
 exports.resendOtp = async (req, res, next) => {
   try {
-    const { identifier, type } = req.body;
+    const { type } = req.body;
+    const identifier = normalizeIdentifier(req.body.identifier);
     const channel = getChannel(identifier);
+    if (channel === "email") return next(new ApiError(400, "ورود با ایمیل هنوز فعال نیست"));
 
     // برای نوع register/login: کاربر باید وجود داشته باشد
     if (type === "register" || type === "login") {
