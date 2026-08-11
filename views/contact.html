@@ -224,6 +224,31 @@
         color: var(--muted);
         line-height: 1.8;
       }
+      .feedback {
+        display: none;
+        margin-top: 14px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        font-size: 14px;
+        line-height: 1.7;
+        border: 1px solid transparent;
+      }
+      .feedback.is-success {
+        display: block;
+        background: #ecfdf5;
+        color: #047857;
+        border-color: #a7f3d0;
+      }
+      .feedback.is-error {
+        display: block;
+        background: #fef2f2;
+        color: #b91c1c;
+        border-color: #fecaca;
+      }
+      .btn[disabled] {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
       @media (max-width: 900px) {
         .shell {
           grid-template-columns: 1fr;
@@ -295,7 +320,7 @@
         <div class="panel">
           <h2>فرم تماس</h2>
           <p>پیام خود را بفرستید تا تیم پشتیبانی بررسی کند و با شما ارتباط بگیرد.</p>
-          <form method="post" action="/api/contact">
+          <form id="contactForm">
             <div class="row">
               <div>
                 <label for="name">نام و نام خانوادگی</label>
@@ -318,13 +343,64 @@
               <label for="message">پیام</label>
               <textarea id="message" name="message" placeholder="متن پیام خود را بنویسید..." required></textarea>
             </div>
-            <button class="btn" type="submit">ارسال پیام</button>
+            <button class="btn" id="submitBtn" type="submit">ارسال پیام</button>
           </form>
+          <div class="feedback" id="formFeedback" aria-live="polite"></div>
           <div class="note">
             این صفحه فعلاً ساده و سبک نگه داشته شده تا بدون مصرف اضافه، با routeهای فعلی سایت هماهنگ شود.
           </div>
         </div>
       </section>
     </main>
+    <script>
+      const form = document.getElementById("contactForm");
+      const feedback = document.getElementById("formFeedback");
+      const submitBtn = document.getElementById("submitBtn");
+
+      const showFeedback = (message, type) => {
+        feedback.className = `feedback is-${type}`;
+        feedback.textContent = message;
+      };
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        feedback.className = "feedback";
+        feedback.textContent = "";
+        submitBtn.disabled = true;
+        submitBtn.textContent = "در حال ارسال...";
+
+        try {
+          const formData = new FormData(form);
+          const payload = Object.fromEntries(formData.entries());
+
+          const response = await fetch("/api/contact", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok || !data.success) {
+            showFeedback(
+              data.message || "ارسال پیام ناموفق بود. دوباره تلاش کنید.",
+              "error",
+            );
+            return;
+          }
+
+          form.reset();
+          showFeedback(data.message || "پیام شما با موفقیت ثبت شد.", "success");
+        } catch (error) {
+          showFeedback("خطا در ارتباط با سرور. دوباره تلاش کنید.", "error");
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "ارسال پیام";
+        }
+      });
+    </script>
   </body>
 </html>
