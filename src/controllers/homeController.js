@@ -1,4 +1,5 @@
 const path = require("path");
+const ContactMessage = require("../models/ContactMessage");
 
 const homeController = {
   index: (req, res) => {
@@ -7,27 +8,40 @@ const homeController = {
   contact: (req, res) => {
     res.sendFile(path.join(__dirname, "../../views/contact.html"));
   },
-  submitContact: (req, res) => {
+  submitContact: async (req, res) => {
     const { name, phone, email, subject, message } = req.body || {};
 
     if (!name || !phone || !subject || !message) {
       return res.status(400).json({
         success: false,
-        message: "لطفاً همه فیلدهای ضروری را تکمیل کنید.",
+        message: "لطفا همه فیلدهای ضروری را تکمیل کنید.",
       });
     }
 
-    return res.status(200).json({
-      success: true,
-      message: "پیام شما با موفقیت ثبت شد.",
-      data: {
+    try {
+      const savedMessage = await ContactMessage.create({
         name,
         phone,
         email: email || null,
         subject,
         message,
-      },
-    });
+      });
+
+      return res.status(201).json({
+        success: true,
+        message: "پیام شما با موفقیت ثبت شد.",
+        data: {
+          id: savedMessage._id,
+        },
+      });
+    } catch (error) {
+      console.error("Contact form save error:", error);
+
+      return res.status(500).json({
+        success: false,
+        message: "خطا در ثبت پیام. دوباره تلاش کنید.",
+      });
+    }
   },
   mobiles: (req, res) => {
     res.sendFile(path.join(__dirname, "../../views/mobile.html"));

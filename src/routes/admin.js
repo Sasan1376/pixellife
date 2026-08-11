@@ -13,8 +13,12 @@ const { protect, isAdmin } = require("../middleware/authMiddleware");
 router.use(protect, isAdmin);
 
 router.get("/", (req, res) => {
-  // مسیر پوشه public را مشخص می‌کنیم تا admin.html نمایش داده شود
-  res.sendFile(path.join(__dirname, "../../public/admin.html"));
+  // پنل اصلی ادمین از پوشه جدید public/admin سرو می‌شود
+  res.sendFile(path.join(__dirname, "../../public/admin/index.html"));
+});
+
+router.get("/index.html", (req, res) => {
+  res.redirect("/admin");
 });
 
 // نمایش فرم افزودن محصول
