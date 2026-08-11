@@ -34,66 +34,9 @@ app.use(
 // فایل‌های استاتیک (تصاویر محصولات و لوگو)
 app.use(express.static(path.join(__dirname, "../public")));
 // =======================
-// Maintenance Mode (حالت بروزرسانی هوشمند)
+// Public site access
 // =======================
-app.use((req, res, next) => {
-  // ۱. اجازه دسترسی به پنل ادمین، API ها و فایل‌های استاتیک (عکس، CSS، JS)
-  if (
-    req.path.startsWith("/admin") ||
-    req.path.startsWith("/api") ||
-    /\.(css|js|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2)$/.test(req.path)
-  ) {
-    return next();
-  }
-
-  // ۲. خواندن کوکی‌های مرورگر کاربر
-  const cookies = req.headers.cookie
-    ? req.headers.cookie.split(";").reduce((acc, c) => {
-        const [key, val] = c.trim().split("=");
-        acc[key] = val;
-        return acc;
-      }, {})
-    : {};
-
-  // ۳. آدرس مخفی برای شما: اگر وارد آدرس pixellife.ir/?bypass=sasan1376 شدید
-  if (req.query.bypass === "sasan1376") {
-    // یک کوکی برای ۷ روز در مرورگر شما ذخیره می‌شود
-    res.setHeader(
-      "Set-Cookie",
-      "maintenance_bypass=sasan1376; Path=/; Max-Age=604800",
-    );
-    return next(); // اجازه دیدن سایت
-  }
-
-  // ۴. اگر کوکی در مرورگر وجود داشت (یعنی قبلا آدرس مخفی را زده‌اید)
-  if (cookies.maintenance_bypass === "sasan1376") {
-    return next(); // اجازه دیدن سایت
-  }
-
-  // ۵. برای بقیه مردم، صفحه بروزرسانی را نشان بده
-  return res.send(`
-    <!doctype html>
-    <html lang="fa" dir="rtl">
-      <head>
-        <meta charset="UTF-8" />
-        <title>در حال بروزرسانی | پیکسل لایف</title>
-        <style>body { overflow: hidden !important; height: 100vh !important; margin: 0; }</style>
-      </head>
-      <body>
-        <div style="position: fixed; inset: 0; background: #f8fafc; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Tahoma, sans-serif; text-align: center; padding: 20px;">
-          <div style="background: #ffffff; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); max-width: 450px; border: 1px solid #e2e8f0;">
-            <img src="/images/maintenance.png?v=4" alt="PixelLife" style="width: 120px; height: 120px; margin-bottom: 24px; object-fit: contain;">
-            <h1 style="color: #3b82f6; font-size: 24px; font-weight: 800; margin-bottom: 16px;">سایت در حال بروزرسانی است</h1>
-            <p style="color: #334155; font-size: 15px; line-height: 1.8; margin-bottom: 0;">
-              تیم پیکسل‌لایف در حال بهبود و تکمیل فروشگاه است.<br>
-              خیلی زود با تجربه‌ای بهتر برمی‌گردیم!
-            </p>
-          </div>
-        </div>
-      </body>
-    </html>
-  `);
-});
+app.use((req, res, next) => next());
 
 // =======================
 // MongoDB Connection
