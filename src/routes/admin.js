@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 console.log("ADMIN ROUTE LOADED");
 const Product = require("../models/Product");
+const User = require("../models/User");
 const upload = require("../utils/upload");
 const fs = require("fs");
 const path = require("path");
@@ -45,11 +46,33 @@ router.post("/products", async (req, res) => {
 });
 
 // دریافت کاربران
-router.get("/users", (req, res) => {
-  res.json({
-    users: ["علی", "رضا", "سارا"],
-  });
+router.get("/users", async (req, res) => {
+  try {
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.max(parseInt(req.query.limit, 10) || 20, 1);
+    const skip = (page - 1) * limit;
+
+    const users = await User.find({})
+      .select("-password")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const count = await User.countDocuments();
+
+    res.json({
+      success: true,
+      count,
+      users,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 });
+
 // نمایش همه محصولات
 router.get("/products", async (req, res) => {
   try {
@@ -67,6 +90,7 @@ router.get("/products", async (req, res) => {
     });
   }
 });
+
 // ویرایش محصول
 router.put("/products/:id", async (req, res) => {
   try {
@@ -94,6 +118,7 @@ router.put("/products/:id", async (req, res) => {
     });
   }
 });
+
 // حذف محصول
 router.delete("/products/:id", async (req, res) => {
   try {
@@ -118,6 +143,7 @@ router.delete("/products/:id", async (req, res) => {
     });
   }
 });
+
 // آپلود تصویر محصول
 router.post("/products/:id/image", upload.single("image"), async (req, res) => {
   console.log("FILE:", req.file);
@@ -157,6 +183,7 @@ router.post("/products/:id/image", upload.single("image"), async (req, res) => {
     });
   }
 });
+
 // دریافت تصاویر یک محصول
 router.get("/products/:id/images", async (req, res) => {
   try {
@@ -180,6 +207,7 @@ router.get("/products/:id/images", async (req, res) => {
     });
   }
 });
+
 // حذف تصویر محصول
 router.delete("/products/:id/images", async (req, res) => {
   try {
@@ -216,4 +244,5 @@ router.delete("/products/:id/images", async (req, res) => {
     });
   }
 });
+
 module.exports = router;
