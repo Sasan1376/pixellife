@@ -466,7 +466,7 @@
             <p
               class="mt-1 text-[1.7rem] font-extrabold leading-none text-white"
             >
-              <span data-counter="9821">۰</span
+              <span data-counter="9821" id="totalCustomersCounter">۰</span
               ><span class="text-base font-semibold text-slate-500"> نفر</span>
             </p>
             <div class="mt-4 h-12"><canvas id="customerSpark1"></canvas></div>
@@ -591,7 +591,10 @@
                     <th class="px-4 py-3 font-medium">سطح</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-white/[0.04]">
+                <tbody
+                  class="divide-y divide-white/[0.04]"
+                  id="customersTableBody"
+                >
                   <tr class="order-row">
                     <td class="px-6 py-4">
                       <div class="flex items-center gap-3">
@@ -857,5 +860,6 @@
     <script src="assets/js/chart.min.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/pages.js"></script>
+    <script src="assets/js/customers.js"></script>
   </body>
 </html>

@@ -4166,6 +4166,73 @@
         },
       };
 
+      /* ══════════════════════════════════════════════════════════
+         تبدیل محصول واقعی دیتابیس (src/models/Product.js) به همان
+         ساختاری که کد رندر این صفحه از آبجکت هاردکد PRODUCTS انتظار دارد.
+         این تابع باعث می‌شود بدون تغییر در بقیه‌ی منطق صفحه، داده‌ی
+         واقعی MongoDB نمایش داده شود.
+         ══════════════════════════════════════════════════════════ */
+      function parseSpecsString(specsStr) {
+        // اسکیمای دیتابیس، specs را به‌صورت رشته نگه می‌دارد نه آبجکت.
+        // اگر به فرم JSON ذخیره شده باشد همان را برمی‌گردانیم، در غیر
+        // این صورت هر خط را به‌صورت "کلید: مقدار" پارس می‌کنیم.
+        if (!specsStr || typeof specsStr !== "string") return {};
+        try {
+          const parsed = JSON.parse(specsStr);
+          if (parsed && typeof parsed === "object") return parsed;
+        } catch (e) {}
+        const result = {};
+        specsStr
+          .split(/\n|\r/)
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .forEach((line) => {
+            const idx = line.indexOf(":");
+            if (idx > -1) {
+              const key = line.slice(0, idx).trim();
+              const val = line.slice(idx + 1).trim();
+              if (key && val) result[key] = val;
+            }
+          });
+        if (Object.keys(result).length === 0) {
+          result["مشخصات"] = specsStr;
+        }
+        return result;
+      }
+
+      function brandToTabletFlag(category) {
+        return /تبلت|tablet|ipad/i.test(category || "");
+      }
+
+      function mapDbProductToView(doc) {
+        const oldPrice =
+          doc.discount && doc.discount > 0
+            ? Math.round(doc.price / (1 - doc.discount / 100))
+            : 0;
+        return {
+          brand: doc.brand,
+          brandLogo: "",
+          name: doc.name,
+          rating: "۰",
+          reviews: "۰",
+          desc: doc.description || "",
+          comingSoon: false,
+          outOfStock: doc.availability === "out" || doc.stock === 0,
+          price: doc.price,
+          oldPrice: oldPrice,
+          storages: ["استاندارد"],
+          warranties: ["گارانتی ۱۸ ماهه شرکتی"],
+          colors: [{ name: "پیش‌فرض", hex: "#334155" }],
+          svg: phoneSvg("#1a1a2e", "#1e3a5f", "#2d1b4e"),
+          images: Array.isArray(doc.images) ? doc.images : [],
+          reviewImages: [],
+          isTablet: brandToTabletFlag(doc.category),
+          specs: parseSpecsString(doc.specs),
+          _fromDb: true,
+          _dbId: doc._id,
+        };
+      }
+
       const themeToggleBtn = document.getElementById("themeToggle");
       const themeIcon = document.getElementById("themeIcon");
       function updateThemeIcon(theme) {
@@ -4333,21 +4400,24 @@
         });
 
       /* Step 2A: Send OTP */
-      document.getElementById("sendOtpBtn").addEventListener("click", async () => {
-        try {
-          await apiCall("/api/auth/send-otp", {
-            identifier: currentIdentifier,
-            type: "login",
-            channel: "sms",
-          });
-          document.getElementById("otpTarget").textContent = currentIdentifier;
-          showStep("otp");
-          document.getElementById("otpInput").value = "";
-          startOtpTimer();
-        } catch (error) {
-          showToast(error.message || "خطا در ارسال پیامک");
-        }
-      });
+      document
+        .getElementById("sendOtpBtn")
+        .addEventListener("click", async () => {
+          try {
+            await apiCall("/api/auth/send-otp", {
+              identifier: currentIdentifier,
+              type: "login",
+              channel: "sms",
+            });
+            document.getElementById("otpTarget").textContent =
+              currentIdentifier;
+            showStep("otp");
+            document.getElementById("otpInput").value = "";
+            startOtpTimer();
+          } catch (error) {
+            showToast(error.message || "خطا در ارسال پیامک");
+          }
+        });
 
       /* Step 2B: Password */
       document
@@ -4436,42 +4506,46 @@
         }, 1000);
       }
 
-      document.getElementById("resendBtn").addEventListener("click", async () => {
-        try {
-          await apiCall("/api/auth/resend-otp", {
-            identifier: currentIdentifier,
-            type: "login",
-          });
-          startOtpTimer();
-          showToast("کد تأیید مجدداً ارسال شد");
-        } catch (error) {
-          showToast(error.message || "خطا در ارسال مجدد کد");
-        }
-      });
+      document
+        .getElementById("resendBtn")
+        .addEventListener("click", async () => {
+          try {
+            await apiCall("/api/auth/resend-otp", {
+              identifier: currentIdentifier,
+              type: "login",
+            });
+            startOtpTimer();
+            showToast("کد تأیید مجدداً ارسال شد");
+          } catch (error) {
+            showToast(error.message || "خطا در ارسال مجدد کد");
+          }
+        });
 
       /* Verify OTP */
-      document.getElementById("verifyOtpBtn").addEventListener("click", async () => {
-        clearErrors();
-        const code = document.getElementById("otpInput").value.trim();
-        if (code.length !== 5 || !/^\d{5}$/.test(code)) {
-          document.getElementById("otpInput").classList.add("input-error");
-          document.getElementById("otpError").classList.add("show");
-          document
-            .getElementById("otpInput")
-            .parentElement.classList.add("shake");
-          return;
-        }
-        try {
-          const json = await apiCall("/api/auth/verify-login-otp", {
-            identifier: currentIdentifier,
-            code,
-          });
-          if (otpInterval) clearInterval(otpInterval);
-          finishLogin(json.user, json.token);
-        } catch (error) {
-          showToast(error.message || "کد تأیید نادرست است");
-        }
-      });
+      document
+        .getElementById("verifyOtpBtn")
+        .addEventListener("click", async () => {
+          clearErrors();
+          const code = document.getElementById("otpInput").value.trim();
+          if (code.length !== 5 || !/^\d{5}$/.test(code)) {
+            document.getElementById("otpInput").classList.add("input-error");
+            document.getElementById("otpError").classList.add("show");
+            document
+              .getElementById("otpInput")
+              .parentElement.classList.add("shake");
+            return;
+          }
+          try {
+            const json = await apiCall("/api/auth/verify-login-otp", {
+              identifier: currentIdentifier,
+              code,
+            });
+            if (otpInterval) clearInterval(otpInterval);
+            finishLogin(json.user, json.token);
+          } catch (error) {
+            showToast(error.message || "کد تأیید نادرست است");
+          }
+        });
 
       document.getElementById("otpInput").addEventListener("keydown", (e) => {
         if (e.key === "Enter") document.getElementById("verifyOtpBtn").click();
@@ -4743,114 +4817,140 @@
         }
       }
 
-      const productId = new URLSearchParams(location.search).get("id");
-      const product = PRODUCTS[productId];
-      const pageBody = document.getElementById("pageBody");
-      const stickyCard = document.getElementById("stickyPurchaseCard");
-
-      let selectedStorage,
-        selectedColor,
-        selectedWarranty,
-        qty = 1;
-      let galleryIndex = 0;
-      let isWished = false;
-
-      function starsHtml(ratingStr, size) {
-        const n = Math.round(
-          parseFloat(
-            ratingStr.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)),
-          ),
-        );
-        let html = "";
-        for (let i = 0; i < 5; i++) {
-          html += `<i class="ti ${i < n ? "ti-star-filled" : "ti-star"}"${size ? ` style="font-size:${size}"` : ""}></i>`;
+      const searchParams = new URLSearchParams(location.search);
+      const productId = searchParams.get("id") || searchParams.get("slug");
+      (async function () {
+        let product = null;
+        try {
+          const isMongoId = /^[a-f0-9]{24}$/i.test(productId || "");
+          const apiUrl = isMongoId
+            ? `/api/products/id/${productId}`
+            : `/api/products/${productId}`;
+          const apiRes = await fetch(apiUrl);
+          if (apiRes.ok) {
+            const apiData = await apiRes.json();
+            if (apiData.success && apiData.product) {
+              product = mapDbProductToView(apiData.product);
+            }
+          }
+        } catch (e) {
+          console.warn("خطا در دریافت محصول از سرور:", e);
         }
-        return html;
-      }
+        if (!product) {
+          product = PRODUCTS[productId];
+          if (product) {
+            console.warn("fallback به داده استاتیک برای شناسه:", productId);
+          }
+        }
+        const pageBody = document.getElementById("pageBody");
+        const stickyCard = document.getElementById("stickyPurchaseCard");
 
-      if (!product) {
-        document.title = "محصول یافت نشد | دیجی‌شاپ";
-        pageBody.innerHTML = `
+        let selectedStorage,
+          selectedColor,
+          selectedWarranty,
+          qty = 1;
+        let galleryIndex = 0;
+        let isWished = false;
+
+        function starsHtml(ratingStr, size) {
+          const n = Math.round(
+            parseFloat(
+              ratingStr.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)),
+            ),
+          );
+          let html = "";
+          for (let i = 0; i < 5; i++) {
+            html += `<i class="ti ${i < n ? "ti-star-filled" : "ti-star"}"${size ? ` style="font-size:${size}"` : ""}></i>`;
+          }
+          return html;
+        }
+
+        if (!product) {
+          document.title = "محصول یافت نشد | دیجی‌شاپ";
+          pageBody.innerHTML = `
           <div class="not-found">
             <i class="ti ti-mood-sad"></i>
             <h2>محصول مورد نظر پیدا نشد</h2>
             <p>ممکن است لینک اشتباه باشد یا محصول حذف شده باشد.</p>
             <a href="/iphone"><i class="ti ti-arrow-right"></i> بازگشت به صفحه آیفون</a>
           </div>`;
-      } else {
-        document.title = product.name + " | دیجی‌شاپ";
-        document.getElementById("breadcrumbCurrent").textContent = product.name;
-        const brandLink = document.getElementById("breadcrumbBrandLink");
-        const categoryLink = document.getElementById("breadcrumbCategoryLink");
-        if (product.brand === "سامسونگ") {
-          const categoryUrl = product.isTablet ? "/samsungtab" : "/samsung";
-          brandLink.href = "/samsung";
-          brandLink.textContent = "سامسونگ";
-          categoryLink.href = categoryUrl;
-          categoryLink.textContent = product.isTablet
-            ? "تبلت سامسونگ"
-            : "گوشی موبایل سامسونگ";
-        } else if (product.brand === "شیائومی") {
-          const categoryUrl = product.isTablet ? "/xiaomitab" : "/xiaomi";
-          brandLink.href = "/xiaomi";
-          brandLink.textContent = "شیائومی";
-          categoryLink.href = categoryUrl;
-          categoryLink.textContent = product.isTablet
-            ? "تبلت شیائومی"
-            : "گوشی موبایل شیائومی";
         } else {
-          brandLink.href = "/iphone";
-          brandLink.textContent = "اپل";
-          categoryLink.href = "/iphone";
-          categoryLink.textContent = product.isTablet
-            ? "تبلت اپل"
-            : "گوشی موبایل اپل";
-        }
-
-        selectedStorage = product.storages[0];
-        selectedColor = product.colors[0];
-        selectedWarranty = product.warranties ? product.warranties[0] : null;
-        const galleryTotal = galleryCount(product);
-        const wishlist = getWishlist();
-        isWished = wishlist.includes(productId);
-        const discountPct =
-          product.oldPrice && product.price
-            ? Math.round(100 - (product.price / product.oldPrice) * 100)
-            : 0;
-        const reviewArticle =
-          product.reviewArticle || genericReviewArticle(product);
-        let demoReviews = [];
-        // تابع دریافت نظرات از سرور واقعی
-        async function fetchReviews() {
-          try {
-            const response = await fetch(`/api/reviews/${productId}`);
-            const data = await response.json();
-
-            // اگر نظری در دیتابیس بود، آن‌ها را نشان بده، در غیر این صورت نظرات پیش‌فرض
-            if (data.length > 0) {
-              // تبدیل داده‌های دیتابیس به فرمت مورد نیاز صفحه
-              demoReviews = data.map((r) => ({
-                name: r.userName,
-                verified: r.verified,
-                rating: r.rating,
-                date: new Date(r.date).toLocaleDateString("fa-IR"),
-                comment: r.comment,
-                pros: r.pros,
-                cons: r.cons,
-                helpful: r.helpful,
-                reply: r.reply,
-              }));
-            } else {
-              demoReviews = genericReviews(product.name);
-            }
-            renderReviews(); // رندر کردن نظرات در صفحه
-          } catch (error) {
-            console.error("Error fetching reviews:", error);
-            demoReviews = genericReviews(product.name);
-            renderReviews();
+          document.title = product.name + " | دیجی‌شاپ";
+          document.getElementById("breadcrumbCurrent").textContent =
+            product.name;
+          const brandLink = document.getElementById("breadcrumbBrandLink");
+          const categoryLink = document.getElementById(
+            "breadcrumbCategoryLink",
+          );
+          if (product.brand === "سامسونگ") {
+            const categoryUrl = product.isTablet ? "/samsungtab" : "/samsung";
+            brandLink.href = "/samsung";
+            brandLink.textContent = "سامسونگ";
+            categoryLink.href = categoryUrl;
+            categoryLink.textContent = product.isTablet
+              ? "تبلت سامسونگ"
+              : "گوشی موبایل سامسونگ";
+          } else if (product.brand === "شیائومی") {
+            const categoryUrl = product.isTablet ? "/xiaomitab" : "/xiaomi";
+            brandLink.href = "/xiaomi";
+            brandLink.textContent = "شیائومی";
+            categoryLink.href = categoryUrl;
+            categoryLink.textContent = product.isTablet
+              ? "تبلت شیائومی"
+              : "گوشی موبایل شیائومی";
+          } else {
+            brandLink.href = "/iphone";
+            brandLink.textContent = "اپل";
+            categoryLink.href = "/iphone";
+            categoryLink.textContent = product.isTablet
+              ? "تبلت اپل"
+              : "گوشی موبایل اپل";
           }
-        }
-        pageBody.innerHTML = `
+
+          selectedStorage = product.storages[0];
+          selectedColor = product.colors[0];
+          selectedWarranty = product.warranties ? product.warranties[0] : null;
+          const galleryTotal = galleryCount(product);
+          const wishlist = getWishlist();
+          isWished = wishlist.includes(productId);
+          const discountPct =
+            product.oldPrice && product.price
+              ? Math.round(100 - (product.price / product.oldPrice) * 100)
+              : 0;
+          const reviewArticle =
+            product.reviewArticle || genericReviewArticle(product);
+          let demoReviews = [];
+          // تابع دریافت نظرات از سرور واقعی
+          async function fetchReviews() {
+            try {
+              const response = await fetch(`/api/reviews/${productId}`);
+              const data = await response.json();
+
+              // اگر نظری در دیتابیس بود، آن‌ها را نشان بده، در غیر این صورت نظرات پیش‌فرض
+              if (data.length > 0) {
+                // تبدیل داده‌های دیتابیس به فرمت مورد نیاز صفحه
+                demoReviews = data.map((r) => ({
+                  name: r.userName,
+                  verified: r.verified,
+                  rating: r.rating,
+                  date: new Date(r.date).toLocaleDateString("fa-IR"),
+                  comment: r.comment,
+                  pros: r.pros,
+                  cons: r.cons,
+                  helpful: r.helpful,
+                  reply: r.reply,
+                }));
+              } else {
+                demoReviews = genericReviews(product.name);
+              }
+              renderReviews(); // رندر کردن نظرات در صفحه
+            } catch (error) {
+              console.error("Error fetching reviews:", error);
+              demoReviews = genericReviews(product.name);
+              renderReviews();
+            }
+          }
+          pageBody.innerHTML = `
           <div class="product-layout">
             <div class="product-gallery">
               <div class="gallery-main" id="galleryMain">
@@ -5153,279 +5253,297 @@
           </div>
         `;
 
-        function specIcon(label) {
-          const map = {
-            نمایشگر: "ti-device-mobile",
-            پردازنده: "ti-cpu",
-            "پردازنده گرافیکی": "ti-device-desktop-analytics",
-            "حافظه رم": "ti-brain",
-            "حافظه داخلی": "ti-hard-drive",
-            دوربین: "ti-camera",
-            باتری: "ti-battery-4",
-            شارژ: "ti-bolt",
-            سیستم‌عامل: "ti-brand-android",
-            شبکه: "ti-antenna",
-            بلوتوث: "ti-bluetooth",
-            وای‌فای: "ti-wifi",
-            "پورت شارژ": "ti-usb",
-            وزن: "ti-weight",
-            ابعاد: "ti-ruler-2",
-            "سیم کارت": "ti-sim",
-            "مقاومت آب": "ti-droplet",
-            "حافظه جانبی": "ti-device-sd-card",
-          };
-          return map[label] || "ti-info-circle";
-        }
-
-        document
-          .querySelectorAll("#specsTableWrap .specs-label")
-          .forEach((el) => {
-            const label = el.textContent.trim();
-            const icon = el.querySelector("i");
-            if (icon) icon.className = "ti " + specIcon(label);
-          });
-
-        pushRecentlyViewed(productId);
-
-        const galleryImgHolder = document.getElementById("galleryImgHolder");
-        const galleryThumbs = document.querySelectorAll(".gallery-thumb");
-        function setGalleryIndex(idx) {
-          galleryIndex = ((idx % galleryTotal) + galleryTotal) % galleryTotal;
-          galleryImgHolder.innerHTML = productImageHtml(product, galleryIndex);
-          galleryThumbs.forEach((t, i) =>
-            t.classList.toggle("active", i === galleryIndex),
-          );
-        }
-        document
-          .getElementById("galPrevBtn")
-          .addEventListener("click", () => setGalleryIndex(galleryIndex - 1));
-        document
-          .getElementById("galNextBtn")
-          .addEventListener("click", () => setGalleryIndex(galleryIndex + 1));
-        galleryThumbs.forEach((t) =>
-          t.addEventListener("click", () => {
-            setGalleryIndex(parseInt(t.dataset.idx, 10));
-            openFullscreen();
-          }),
-        );
-
-        const fsGallery = document.getElementById("fullscreenGallery");
-        const fsImageWrap = document.getElementById("fsImageWrap");
-        const fsCounter = document.getElementById("fsCounter");
-        const fsThumbs = document.getElementById("fsThumbs");
-        fsThumbs.innerHTML = Array.from({ length: galleryTotal })
-          .map(
-            (_, i) =>
-              `<button class="fullscreen-thumb${i === 0 ? " active" : ""}" data-idx="${i}">${productImageHtml(product, i)}</button>`,
-          )
-          .join("");
-        function updateFullscreenThumbs() {
-          fsThumbs
-            .querySelectorAll(".fullscreen-thumb")
-            .forEach((thumb, i) =>
-              thumb.classList.toggle("active", i === galleryIndex),
-            );
-        }
-        function openFullscreen() {
-          fsImageWrap.innerHTML = productImageHtml(product, galleryIndex);
-          fsCounter.textContent = `${galleryIndex + 1} / ${galleryTotal}`;
-          updateFullscreenThumbs();
-          fsGallery.classList.add("open");
-        }
-        fsThumbs.addEventListener("click", (e) => {
-          const thumb = e.target.closest(".fullscreen-thumb");
-          if (!thumb) return;
-          setGalleryIndex(parseInt(thumb.dataset.idx, 10));
-          openFullscreen();
-        });
-        document
-          .getElementById("galleryMain")
-          .addEventListener("click", (e) => {
-            if (e.target.closest(".gallery-nav-btn")) return;
-            openFullscreen();
-          });
-        document
-          .getElementById("fsCloseBtn")
-          .addEventListener("click", () => fsGallery.classList.remove("open"));
-        document.getElementById("fsPrevBtn").addEventListener("click", () => {
-          setGalleryIndex(galleryIndex - 1);
-          openFullscreen();
-        });
-        document.getElementById("fsNextBtn").addEventListener("click", () => {
-          setGalleryIndex(galleryIndex + 1);
-          openFullscreen();
-        });
-        fsGallery.addEventListener("click", (e) => {
-          if (e.target === fsGallery) fsGallery.classList.remove("open");
-        });
-        document.addEventListener("keydown", (e) => {
-          if (!fsGallery.classList.contains("open")) return;
-          if (e.key === "Escape") fsGallery.classList.remove("open");
-          if (e.key === "ArrowLeft") {
-            setGalleryIndex(galleryIndex + 1);
-            openFullscreen();
+          function specIcon(label) {
+            const map = {
+              نمایشگر: "ti-device-mobile",
+              پردازنده: "ti-cpu",
+              "پردازنده گرافیکی": "ti-device-desktop-analytics",
+              "حافظه رم": "ti-brain",
+              "حافظه داخلی": "ti-hard-drive",
+              دوربین: "ti-camera",
+              باتری: "ti-battery-4",
+              شارژ: "ti-bolt",
+              سیستم‌عامل: "ti-brand-android",
+              شبکه: "ti-antenna",
+              بلوتوث: "ti-bluetooth",
+              وای‌فای: "ti-wifi",
+              "پورت شارژ": "ti-usb",
+              وزن: "ti-weight",
+              ابعاد: "ti-ruler-2",
+              "سیم کارت": "ti-sim",
+              "مقاومت آب": "ti-droplet",
+              "حافظه جانبی": "ti-device-sd-card",
+            };
+            return map[label] || "ti-info-circle";
           }
-          if (e.key === "ArrowRight") {
+
+          document
+            .querySelectorAll("#specsTableWrap .specs-label")
+            .forEach((el) => {
+              const label = el.textContent.trim();
+              const icon = el.querySelector("i");
+              if (icon) icon.className = "ti " + specIcon(label);
+            });
+
+          pushRecentlyViewed(productId);
+
+          const galleryImgHolder = document.getElementById("galleryImgHolder");
+          const galleryThumbs = document.querySelectorAll(".gallery-thumb");
+          function setGalleryIndex(idx) {
+            galleryIndex = ((idx % galleryTotal) + galleryTotal) % galleryTotal;
+            galleryImgHolder.innerHTML = productImageHtml(
+              product,
+              galleryIndex,
+            );
+            galleryThumbs.forEach((t, i) =>
+              t.classList.toggle("active", i === galleryIndex),
+            );
+          }
+          document
+            .getElementById("galPrevBtn")
+            .addEventListener("click", () => setGalleryIndex(galleryIndex - 1));
+          document
+            .getElementById("galNextBtn")
+            .addEventListener("click", () => setGalleryIndex(galleryIndex + 1));
+          galleryThumbs.forEach((t) =>
+            t.addEventListener("click", () => {
+              setGalleryIndex(parseInt(t.dataset.idx, 10));
+              openFullscreen();
+            }),
+          );
+
+          const fsGallery = document.getElementById("fullscreenGallery");
+          const fsImageWrap = document.getElementById("fsImageWrap");
+          const fsCounter = document.getElementById("fsCounter");
+          const fsThumbs = document.getElementById("fsThumbs");
+          fsThumbs.innerHTML = Array.from({ length: galleryTotal })
+            .map(
+              (_, i) =>
+                `<button class="fullscreen-thumb${i === 0 ? " active" : ""}" data-idx="${i}">${productImageHtml(product, i)}</button>`,
+            )
+            .join("");
+          function updateFullscreenThumbs() {
+            fsThumbs
+              .querySelectorAll(".fullscreen-thumb")
+              .forEach((thumb, i) =>
+                thumb.classList.toggle("active", i === galleryIndex),
+              );
+          }
+          function openFullscreen() {
+            fsImageWrap.innerHTML = productImageHtml(product, galleryIndex);
+            fsCounter.textContent = `${galleryIndex + 1} / ${galleryTotal}`;
+            updateFullscreenThumbs();
+            fsGallery.classList.add("open");
+          }
+          fsThumbs.addEventListener("click", (e) => {
+            const thumb = e.target.closest(".fullscreen-thumb");
+            if (!thumb) return;
+            setGalleryIndex(parseInt(thumb.dataset.idx, 10));
+            openFullscreen();
+          });
+          document
+            .getElementById("galleryMain")
+            .addEventListener("click", (e) => {
+              if (e.target.closest(".gallery-nav-btn")) return;
+              openFullscreen();
+            });
+          document
+            .getElementById("fsCloseBtn")
+            .addEventListener("click", () =>
+              fsGallery.classList.remove("open"),
+            );
+          document.getElementById("fsPrevBtn").addEventListener("click", () => {
             setGalleryIndex(galleryIndex - 1);
             openFullscreen();
-          }
-        });
-
-        document
-          .getElementById("storageOptions")
-          .addEventListener("click", (e) => {
-            const btn = e.target.closest(".storage-chip");
-            if (!btn) return;
-            document
-              .querySelectorAll(".storage-chip")
-              .forEach((c) => c.classList.remove("active"));
-            btn.classList.add("active");
-            selectedStorage = btn.dataset.val;
-            document.getElementById("storageVal").textContent = selectedStorage;
           });
-
-        document
-          .getElementById("colorOptions")
-          .addEventListener("click", (e) => {
-            const sw = e.target.closest(".color-swatch");
-            if (!sw) return;
-            document
-              .querySelectorAll(".color-swatch")
-              .forEach((c) => c.classList.remove("active"));
-            sw.classList.add("active");
-            selectedColor = { name: sw.dataset.name, hex: sw.style.background };
-            document.getElementById("colorVal").textContent =
-              selectedColor.name;
+          document.getElementById("fsNextBtn").addEventListener("click", () => {
+            setGalleryIndex(galleryIndex + 1);
+            openFullscreen();
           });
-
-        const warrantyOptionsEl = document.getElementById("warrantyOptions");
-        if (warrantyOptionsEl) {
-          warrantyOptionsEl.addEventListener("click", (e) => {
-            const btn = e.target.closest(".warranty-chip");
-            if (!btn) return;
-            document
-              .querySelectorAll(".warranty-chip")
-              .forEach((c) => c.classList.remove("active"));
-            btn.classList.add("active");
-            selectedWarranty = btn.dataset.val;
-            document.getElementById("warrantyVal").textContent =
-              selectedWarranty;
+          fsGallery.addEventListener("click", (e) => {
+            if (e.target === fsGallery) fsGallery.classList.remove("open");
           });
-        }
-
-        const qtyValEl = document.getElementById("qtyVal");
-        document.getElementById("qtyMinusBtn").addEventListener("click", () => {
-          qty = Math.max(1, qty - 1);
-          qtyValEl.textContent = qty;
-        });
-        document.getElementById("qtyPlusBtn").addEventListener("click", () => {
-          qty = Math.min(10, qty + 1);
-          qtyValEl.textContent = qty;
-        });
-
-        document.getElementById("wishBtn").addEventListener("click", (e) => {
-          const btn = e.currentTarget;
-          let list = getWishlist();
-          isWished = !isWished;
-          if (isWished) {
-            if (!list.includes(productId)) list.push(productId);
-            btn.classList.add("active");
-            btn.querySelector("i").className = "ti ti-heart-filled";
-            showToast("به علاقه‌مندی‌ها اضافه شد");
-          } else {
-            list = list.filter((x) => x !== productId);
-            btn.classList.remove("active");
-            btn.querySelector("i").className = "ti ti-heart";
-            showToast("از علاقه‌مندی‌ها حذف شد");
-          }
-          saveWishlist(list);
-        });
-        document.getElementById("compareBtn").addEventListener("click", () => {
-          showToast("محصول به لیست مقایسه اضافه شد");
-        });
-        document.getElementById("shareBtn").addEventListener("click", () => {
-          if (navigator.share) {
-            navigator
-              .share({ title: product.name, url: location.href })
-              .catch(() => {});
-          } else {
-            navigator.clipboard?.writeText(location.href);
-            showToast("لینک محصول کپی شد");
-          }
-        });
-
-        document
-          .getElementById("scrollToReviewsBtn")
-          .addEventListener("click", () => {
-            document
-              .getElementById("customerReviewsSection")
-              .scrollIntoView({ behavior: "smooth", block: "start" });
-          });
-        const btnMoreSpecs = document.getElementById("btnMoreSpecs");
-        if (btnMoreSpecs) {
-          btnMoreSpecs.addEventListener("click", () => {
-            const fullSpecsSection =
-              document.getElementById("fullSpecsSection");
-            if (fullSpecsSection) {
-              fullSpecsSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
+          document.addEventListener("keydown", (e) => {
+            if (!fsGallery.classList.contains("open")) return;
+            if (e.key === "Escape") fsGallery.classList.remove("open");
+            if (e.key === "ArrowLeft") {
+              setGalleryIndex(galleryIndex + 1);
+              openFullscreen();
+            }
+            if (e.key === "ArrowRight") {
+              setGalleryIndex(galleryIndex - 1);
+              openFullscreen();
             }
           });
-        }
 
-        const specsToggleBtn = document.getElementById("specsToggleBtn");
-        if (specsToggleBtn) {
-          let expanded = false;
-          specsToggleBtn.addEventListener("click", () => {
-            expanded = !expanded;
-            document
-              .querySelectorAll("#specsTableWrap .hidden-spec")
-              .forEach(
-                (row) => (row.style.display = expanded ? "grid" : "none"),
-              );
-            specsToggleBtn.innerHTML = expanded
-              ? '<i class="ti ti-chevron-up"></i> بستن مشخصات'
-              : '<i class="ti ti-chevron-down"></i> نمایش کامل مشخصات';
+          document
+            .getElementById("storageOptions")
+            .addEventListener("click", (e) => {
+              const btn = e.target.closest(".storage-chip");
+              if (!btn) return;
+              document
+                .querySelectorAll(".storage-chip")
+                .forEach((c) => c.classList.remove("active"));
+              btn.classList.add("active");
+              selectedStorage = btn.dataset.val;
+              document.getElementById("storageVal").textContent =
+                selectedStorage;
+            });
+
+          document
+            .getElementById("colorOptions")
+            .addEventListener("click", (e) => {
+              const sw = e.target.closest(".color-swatch");
+              if (!sw) return;
+              document
+                .querySelectorAll(".color-swatch")
+                .forEach((c) => c.classList.remove("active"));
+              sw.classList.add("active");
+              selectedColor = {
+                name: sw.dataset.name,
+                hex: sw.style.background,
+              };
+              document.getElementById("colorVal").textContent =
+                selectedColor.name;
+            });
+
+          const warrantyOptionsEl = document.getElementById("warrantyOptions");
+          if (warrantyOptionsEl) {
+            warrantyOptionsEl.addEventListener("click", (e) => {
+              const btn = e.target.closest(".warranty-chip");
+              if (!btn) return;
+              document
+                .querySelectorAll(".warranty-chip")
+                .forEach((c) => c.classList.remove("active"));
+              btn.classList.add("active");
+              selectedWarranty = btn.dataset.val;
+              document.getElementById("warrantyVal").textContent =
+                selectedWarranty;
+            });
+          }
+
+          const qtyValEl = document.getElementById("qtyVal");
+          document
+            .getElementById("qtyMinusBtn")
+            .addEventListener("click", () => {
+              qty = Math.max(1, qty - 1);
+              qtyValEl.textContent = qty;
+            });
+          document
+            .getElementById("qtyPlusBtn")
+            .addEventListener("click", () => {
+              qty = Math.min(10, qty + 1);
+              qtyValEl.textContent = qty;
+            });
+
+          document.getElementById("wishBtn").addEventListener("click", (e) => {
+            const btn = e.currentTarget;
+            let list = getWishlist();
+            isWished = !isWished;
+            if (isWished) {
+              if (!list.includes(productId)) list.push(productId);
+              btn.classList.add("active");
+              btn.querySelector("i").className = "ti ti-heart-filled";
+              showToast("به علاقه‌مندی‌ها اضافه شد");
+            } else {
+              list = list.filter((x) => x !== productId);
+              btn.classList.remove("active");
+              btn.querySelector("i").className = "ti ti-heart";
+              showToast("از علاقه‌مندی‌ها حذف شد");
+            }
+            saveWishlist(list);
           });
-        }
+          document
+            .getElementById("compareBtn")
+            .addEventListener("click", () => {
+              showToast("محصول به لیست مقایسه اضافه شد");
+            });
+          document.getElementById("shareBtn").addEventListener("click", () => {
+            if (navigator.share) {
+              navigator
+                .share({ title: product.name, url: location.href })
+                .catch(() => {});
+            } else {
+              navigator.clipboard?.writeText(location.href);
+              showToast("لینک محصول کپی شد");
+            }
+          });
 
-        const reviewsListEl = document.getElementById("reviewsList");
-        let reviewsShown = 2;
-        function updateRatingBreakdown() {
-          const total = demoReviews.length;
-          const counts = [5, 4, 3, 2, 1].map(
-            (rating) =>
-              demoReviews.filter((review) => Number(review.rating) === rating)
-                .length,
-          );
+          document
+            .getElementById("scrollToReviewsBtn")
+            .addEventListener("click", () => {
+              document
+                .getElementById("customerReviewsSection")
+                .scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+          const btnMoreSpecs = document.getElementById("btnMoreSpecs");
+          if (btnMoreSpecs) {
+            btnMoreSpecs.addEventListener("click", () => {
+              const fullSpecsSection =
+                document.getElementById("fullSpecsSection");
+              if (fullSpecsSection) {
+                fullSpecsSection.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              }
+            });
+          }
 
-          counts.forEach((count, index) => {
-            const rating = 5 - index;
-            const percentage = total ? Math.round((count / total) * 100) : 0;
-            const bar = document.querySelector(`[data-rating-bar="${rating}"]`);
-            const label = document.querySelector(
-              `[data-rating-count="${rating}"]`,
+          const specsToggleBtn = document.getElementById("specsToggleBtn");
+          if (specsToggleBtn) {
+            let expanded = false;
+            specsToggleBtn.addEventListener("click", () => {
+              expanded = !expanded;
+              document
+                .querySelectorAll("#specsTableWrap .hidden-spec")
+                .forEach(
+                  (row) => (row.style.display = expanded ? "grid" : "none"),
+                );
+              specsToggleBtn.innerHTML = expanded
+                ? '<i class="ti ti-chevron-up"></i> بستن مشخصات'
+                : '<i class="ti ti-chevron-down"></i> نمایش کامل مشخصات';
+            });
+          }
+
+          const reviewsListEl = document.getElementById("reviewsList");
+          let reviewsShown = 2;
+          function updateRatingBreakdown() {
+            const total = demoReviews.length;
+            const counts = [5, 4, 3, 2, 1].map(
+              (rating) =>
+                demoReviews.filter((review) => Number(review.rating) === rating)
+                  .length,
             );
-            if (bar) bar.style.width = `${percentage}%`;
-            if (label)
-              label.textContent = `${percentage.toLocaleString("fa-IR")}٪`;
-          });
-        }
 
-        function renderReviews() {
-          const sortMode = document.getElementById("reviewsSortSelect").value;
-          let sorted = [...demoReviews];
-          if (sortMode === "helpful")
-            sorted.sort((a, b) => b.helpful - a.helpful);
-          if (sortMode === "highest")
-            sorted.sort((a, b) => b.rating - a.rating);
-          if (sortMode === "lowest") sorted.sort((a, b) => a.rating - b.rating);
-          const visible = sorted.slice(0, reviewsShown);
-          reviewsListEl.innerHTML = visible
-            .map(
-              (r) => `
+            counts.forEach((count, index) => {
+              const rating = 5 - index;
+              const percentage = total ? Math.round((count / total) * 100) : 0;
+              const bar = document.querySelector(
+                `[data-rating-bar="${rating}"]`,
+              );
+              const label = document.querySelector(
+                `[data-rating-count="${rating}"]`,
+              );
+              if (bar) bar.style.width = `${percentage}%`;
+              if (label)
+                label.textContent = `${percentage.toLocaleString("fa-IR")}٪`;
+            });
+          }
+
+          function renderReviews() {
+            const sortMode = document.getElementById("reviewsSortSelect").value;
+            let sorted = [...demoReviews];
+            if (sortMode === "helpful")
+              sorted.sort((a, b) => b.helpful - a.helpful);
+            if (sortMode === "highest")
+              sorted.sort((a, b) => b.rating - a.rating);
+            if (sortMode === "lowest")
+              sorted.sort((a, b) => a.rating - b.rating);
+            const visible = sorted.slice(0, reviewsShown);
+            reviewsListEl.innerHTML = visible
+              .map(
+                (r) => `
             <div class="review-card">
               <div class="review-card-head">
                 <div class="review-avatar">${r.name.trim().charAt(0)}</div>
@@ -5453,180 +5571,183 @@
                   : ""
               }
             </div>`,
-            )
-            .join("");
-          updateRatingBreakdown();
-          document.getElementById("loadMoreReviewsBtn").style.display =
-            reviewsShown >= sorted.length ? "none" : "block";
-          reviewsListEl.querySelectorAll(".helpful-btn").forEach((btn) => {
-            btn.addEventListener("click", () => {
-              if (btn.classList.contains("liked")) return;
-              btn.classList.add("liked");
-              const span = btn.querySelector("span");
-              span.textContent = parseInt(span.textContent, 10) + 1;
-            });
-          });
-        }
-        renderReviews();
-        document
-          .getElementById("reviewsSortSelect")
-          .addEventListener("change", () => {
-            reviewsShown = 2;
-            renderReviews();
-          });
-        document
-          .getElementById("loadMoreReviewsBtn")
-          .addEventListener("click", () => {
-            reviewsShown += 2;
-            renderReviews();
-          });
-
-        /* ══ REAL REVIEW SYSTEM LOGIC ══ */
-        const reviewModal = document.getElementById("reviewModal");
-        const reviewModalClose = document.getElementById("reviewModalClose");
-        const submitReviewBtn = document.getElementById("submitReviewBtn");
-        const starRatingInput = document.getElementById("starRatingInput");
-        let currentReviewRating = 5;
-
-        function openReviewModal() {
-          reviewModal.classList.add("open");
-          currentReviewRating = 5;
-          updateStarInput(5);
-          document.getElementById("reviewCommentInput").value = "";
-          document.getElementById("reviewProsInput").value = "";
-          document.getElementById("reviewConsInput").value = "";
-        }
-
-        function closeReviewModal() {
-          reviewModal.classList.remove("open");
-        }
-
-        function updateStarInput(val) {
-          starRatingInput.querySelectorAll("i").forEach((s, idx) => {
-            s.classList.toggle("active", idx < val);
-            s.className = idx < val ? "ti ti-star-filled active" : "ti ti-star";
-          });
-        }
-
-        document
-          .getElementById("writeReviewBtn")
-          .addEventListener("click", openReviewModal);
-        reviewModalClose.addEventListener("click", closeReviewModal);
-        reviewModal.addEventListener("click", (e) => {
-          if (e.target === reviewModal) closeReviewModal();
-        });
-
-        starRatingInput.addEventListener("click", (e) => {
-          const star = e.target.closest("i");
-          if (!star) return;
-          currentReviewRating = parseInt(star.dataset.val, 10);
-          updateStarInput(currentReviewRating);
-        });
-
-        submitReviewBtn.addEventListener("click", async () => {
-          const comment = document
-            .getElementById("reviewCommentInput")
-            .value.trim();
-          if (!comment) {
-            showToast("لطفا متن نظر خود را وارد کنید");
-            return;
-          }
-          const prosText = document
-            .getElementById("reviewProsInput")
-            .value.trim();
-          const consText = document
-            .getElementById("reviewConsInput")
-            .value.trim();
-
-          let userName = "کاربر مهمان";
-          try {
-            const u = JSON.parse(localStorage.getItem("user"));
-            if (u) userName = u.mobile || u.email || "کاربر";
-          } catch (e) {}
-
-          const newReview = {
-            productId: productId,
-            userName: userName,
-            rating: currentReviewRating,
-            comment: comment,
-            pros: prosText ? [prosText] : [],
-            cons: consText ? [consText] : [],
-            verified: false,
-            helpful: 0,
-            reply: null,
-          };
-
-          try {
-            submitReviewBtn.disabled = true;
-            submitReviewBtn.innerHTML =
-              '<i class="ti ti-loader ti-spin"></i> در حال ثبت...';
-
-            const response = await fetch("/api/reviews", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(newReview),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok || !data.success) {
-              throw new Error(data.error || "ثبت نظر ناموفق بود");
-            }
-
-            if (data.success) {
-              demoReviews.unshift({
-                name: data.review.userName,
-                verified: data.review.verified,
-                rating: data.review.rating,
-                date: "همین الان",
-                comment: data.review.comment,
-                pros: data.review.pros,
-                cons: data.review.cons,
-                helpful: data.review.helpful,
-                reply: data.review.reply,
+              )
+              .join("");
+            updateRatingBreakdown();
+            document.getElementById("loadMoreReviewsBtn").style.display =
+              reviewsShown >= sorted.length ? "none" : "block";
+            reviewsListEl.querySelectorAll(".helpful-btn").forEach((btn) => {
+              btn.addEventListener("click", () => {
+                if (btn.classList.contains("liked")) return;
+                btn.classList.add("liked");
+                const span = btn.querySelector("span");
+                span.textContent = parseInt(span.textContent, 10) + 1;
               });
+            });
+          }
+          renderReviews();
+          document
+            .getElementById("reviewsSortSelect")
+            .addEventListener("change", () => {
+              reviewsShown = 2;
               renderReviews();
+            });
+          document
+            .getElementById("loadMoreReviewsBtn")
+            .addEventListener("click", () => {
+              reviewsShown += 2;
+              renderReviews();
+            });
 
-              const reviewsCountEl =
-                document.getElementById("scrollToReviewsBtn");
-              if (reviewsCountEl) {
-                const newCount =
-                  (parseInt(
-                    product.reviews.replace(/[۰-۹]/g, (d) =>
-                      "۰۱۲۳۴۵۶۷۸۹".indexOf(d),
-                    ),
-                  ) || 0) + 1;
-                product.reviews = newCount.toLocaleString("fa-IR");
-                reviewsCountEl.textContent = `(${product.reviews} نظر)`;
+          /* ══ REAL REVIEW SYSTEM LOGIC ══ */
+          const reviewModal = document.getElementById("reviewModal");
+          const reviewModalClose = document.getElementById("reviewModalClose");
+          const submitReviewBtn = document.getElementById("submitReviewBtn");
+          const starRatingInput = document.getElementById("starRatingInput");
+          let currentReviewRating = 5;
+
+          function openReviewModal() {
+            reviewModal.classList.add("open");
+            currentReviewRating = 5;
+            updateStarInput(5);
+            document.getElementById("reviewCommentInput").value = "";
+            document.getElementById("reviewProsInput").value = "";
+            document.getElementById("reviewConsInput").value = "";
+          }
+
+          function closeReviewModal() {
+            reviewModal.classList.remove("open");
+          }
+
+          function updateStarInput(val) {
+            starRatingInput.querySelectorAll("i").forEach((s, idx) => {
+              s.classList.toggle("active", idx < val);
+              s.className =
+                idx < val ? "ti ti-star-filled active" : "ti ti-star";
+            });
+          }
+
+          document
+            .getElementById("writeReviewBtn")
+            .addEventListener("click", openReviewModal);
+          reviewModalClose.addEventListener("click", closeReviewModal);
+          reviewModal.addEventListener("click", (e) => {
+            if (e.target === reviewModal) closeReviewModal();
+          });
+
+          starRatingInput.addEventListener("click", (e) => {
+            const star = e.target.closest("i");
+            if (!star) return;
+            currentReviewRating = parseInt(star.dataset.val, 10);
+            updateStarInput(currentReviewRating);
+          });
+
+          submitReviewBtn.addEventListener("click", async () => {
+            const comment = document
+              .getElementById("reviewCommentInput")
+              .value.trim();
+            if (!comment) {
+              showToast("لطفا متن نظر خود را وارد کنید");
+              return;
+            }
+            const prosText = document
+              .getElementById("reviewProsInput")
+              .value.trim();
+            const consText = document
+              .getElementById("reviewConsInput")
+              .value.trim();
+
+            let userName = "کاربر مهمان";
+            try {
+              const u = JSON.parse(localStorage.getItem("user"));
+              if (u) userName = u.mobile || u.email || "کاربر";
+            } catch (e) {}
+
+            const newReview = {
+              productId: productId,
+              userName: userName,
+              rating: currentReviewRating,
+              comment: comment,
+              pros: prosText ? [prosText] : [],
+              cons: consText ? [consText] : [],
+              verified: false,
+              helpful: 0,
+              reply: null,
+            };
+
+            try {
+              submitReviewBtn.disabled = true;
+              submitReviewBtn.innerHTML =
+                '<i class="ti ti-loader ti-spin"></i> در حال ثبت...';
+
+              const response = await fetch("/api/reviews", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newReview),
+              });
+
+              const data = await response.json();
+
+              if (!response.ok || !data.success) {
+                throw new Error(data.error || "ثبت نظر ناموفق بود");
               }
 
-              closeReviewModal();
-              showToast("نظر شما با موفقیت در دیتابیس ثبت شد");
+              if (data.success) {
+                demoReviews.unshift({
+                  name: data.review.userName,
+                  verified: data.review.verified,
+                  rating: data.review.rating,
+                  date: "همین الان",
+                  comment: data.review.comment,
+                  pros: data.review.pros,
+                  cons: data.review.cons,
+                  helpful: data.review.helpful,
+                  reply: data.review.reply,
+                });
+                renderReviews();
 
-              document
-                .getElementById("customerReviewsSection")
-                .scrollIntoView({ behavior: "smooth", block: "start" });
+                const reviewsCountEl =
+                  document.getElementById("scrollToReviewsBtn");
+                if (reviewsCountEl) {
+                  const newCount =
+                    (parseInt(
+                      product.reviews.replace(/[۰-۹]/g, (d) =>
+                        "۰۱۲۳۴۵۶۷۸۹".indexOf(d),
+                      ),
+                    ) || 0) + 1;
+                  product.reviews = newCount.toLocaleString("fa-IR");
+                  reviewsCountEl.textContent = `(${product.reviews} نظر)`;
+                }
+
+                closeReviewModal();
+                showToast("نظر شما با موفقیت در دیتابیس ثبت شد");
+
+                document
+                  .getElementById("customerReviewsSection")
+                  .scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            } catch (error) {
+              showToast("خطا در ارتباط با سرور");
+            } finally {
+              submitReviewBtn.disabled = false;
+              submitReviewBtn.innerHTML = '<i class="ti ti-check"></i> ثبت نظر';
             }
-          } catch (error) {
-            showToast("خطا در ارتباط با سرور");
-          } finally {
-            submitReviewBtn.disabled = false;
-            submitReviewBtn.innerHTML = '<i class="ti ti-check"></i> ثبت نظر';
-          }
-        });
-
-        document.querySelectorAll(".faq-item").forEach((item) => {
-          item.querySelector(".faq-question").addEventListener("click", () => {
-            const wasOpen = item.classList.contains("open");
-            document
-              .querySelectorAll(".faq-item")
-              .forEach((i) => i.classList.remove("open"));
-            if (!wasOpen) item.classList.add("open");
           });
-        });
 
-        function miniCard(id, p) {
-          return `
+          document.querySelectorAll(".faq-item").forEach((item) => {
+            item
+              .querySelector(".faq-question")
+              .addEventListener("click", () => {
+                const wasOpen = item.classList.contains("open");
+                document
+                  .querySelectorAll(".faq-item")
+                  .forEach((i) => i.classList.remove("open"));
+                if (!wasOpen) item.classList.add("open");
+              });
+          });
+
+          function miniCard(id, p) {
+            return `
             <div class="slider-card">
               <a href="/product?id=${id}" style="color:inherit">
                 <div class="slider-card-image">${productImageHtml(p, 0)}</div>
@@ -5643,122 +5764,123 @@
                 </div>
               </div>
             </div>`;
-        }
+          }
 
-        const relatedIds = Object.keys(PRODUCTS).filter(
-          (id) =>
-            id !== productId &&
-            (PRODUCTS[id].brand === product.brand ||
-              !!PRODUCTS[id].isTablet === !!product.isTablet),
-        );
-        document.getElementById("relatedSlider").innerHTML = relatedIds
-          .slice(0, 8)
-          .map((id) => miniCard(id, PRODUCTS[id]))
-          .join("");
-
-        const recentIds = getRecentlyViewed().filter(
-          (id) => id !== productId && PRODUCTS[id],
-        );
-        if (recentIds.length) {
-          document.getElementById("recentlyViewedBlock").style.display = "";
-          document.getElementById("recentSlider").innerHTML = recentIds
+          const relatedIds = Object.keys(PRODUCTS).filter(
+            (id) =>
+              id !== productId &&
+              (PRODUCTS[id].brand === product.brand ||
+                !!PRODUCTS[id].isTablet === !!product.isTablet),
+          );
+          document.getElementById("relatedSlider").innerHTML = relatedIds
             .slice(0, 8)
             .map((id) => miniCard(id, PRODUCTS[id]))
             .join("");
-        }
 
-        document.querySelectorAll(".slider-add-btn").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const id = btn.dataset.id;
-            const p = PRODUCTS[id];
-            if (!p || p.outOfStock) {
-              showToast("این محصول در حال حاضر ناموجود است");
-              return;
-            }
-            const cart = getCart();
-            const existing = cart.find((item) => item.id === id);
-            if (existing) existing.qty = (existing.qty || 1) + 1;
-            else
-              cart.push({
-                id,
-                name: p.name,
-                storage: p.storages[0],
-                color: p.colors[0].name,
-                price: p.price,
-                qty: 1,
-              });
-            saveCart(cart);
-            showToast("به سبد خرید اضافه شد");
-          });
-        });
-        document.querySelectorAll(".slider-wish-btn").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const id = btn.dataset.id;
-            let list = getWishlist();
-            if (!list.includes(id)) {
-              list.push(id);
-              saveWishlist(list);
-              btn.querySelector("i").className = "ti ti-heart-filled";
-              showToast("به علاقه‌مندی‌ها اضافه شد");
-            }
-          });
-        });
-        document.querySelectorAll(".slider-nav-btn").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const track = document.getElementById(btn.dataset.slider);
-            const dir = btn.classList.contains("slider-nav-next") ? -1 : 1;
-            track.scrollBy({ left: dir * 220, behavior: "smooth" });
-          });
-        });
-
-        const notifyBtn = document.getElementById("notifyBtn");
-        if (notifyBtn) {
-          notifyBtn.addEventListener("click", () => {
-            showToast("به محض موجود شدن به شما اطلاع می‌دهیم");
-          });
-        }
-
-        function addCurrentToCart() {
-          const cart = getCart();
-          const existing = cart.find(
-            (item) =>
-              item.id === productId &&
-              item.storage === selectedStorage &&
-              item.color === selectedColor.name,
+          const recentIds = getRecentlyViewed().filter(
+            (id) => id !== productId && PRODUCTS[id],
           );
-          if (existing) {
-            existing.qty = (existing.qty || 1) + qty;
-          } else {
-            cart.push({
-              id: productId,
-              name: product.name,
-              storage: selectedStorage,
-              color: selectedColor.name,
-              warranty: selectedWarranty,
-              price: product.price,
-              qty: qty,
+          if (recentIds.length) {
+            document.getElementById("recentlyViewedBlock").style.display = "";
+            document.getElementById("recentSlider").innerHTML = recentIds
+              .slice(0, 8)
+              .map((id) => miniCard(id, PRODUCTS[id]))
+              .join("");
+          }
+
+          document.querySelectorAll(".slider-add-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const id = btn.dataset.id;
+              const p = PRODUCTS[id];
+              if (!p || p.outOfStock) {
+                showToast("این محصول در حال حاضر ناموجود است");
+                return;
+              }
+              const cart = getCart();
+              const existing = cart.find((item) => item.id === id);
+              if (existing) existing.qty = (existing.qty || 1) + 1;
+              else
+                cart.push({
+                  id,
+                  name: p.name,
+                  storage: p.storages[0],
+                  color: p.colors[0].name,
+                  price: p.price,
+                  qty: 1,
+                });
+              saveCart(cart);
+              showToast("به سبد خرید اضافه شد");
+            });
+          });
+          document.querySelectorAll(".slider-wish-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const id = btn.dataset.id;
+              let list = getWishlist();
+              if (!list.includes(id)) {
+                list.push(id);
+                saveWishlist(list);
+                btn.querySelector("i").className = "ti ti-heart-filled";
+                showToast("به علاقه‌مندی‌ها اضافه شد");
+              }
+            });
+          });
+          document.querySelectorAll(".slider-nav-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const track = document.getElementById(btn.dataset.slider);
+              const dir = btn.classList.contains("slider-nav-next") ? -1 : 1;
+              track.scrollBy({ left: dir * 220, behavior: "smooth" });
+            });
+          });
+
+          const notifyBtn = document.getElementById("notifyBtn");
+          if (notifyBtn) {
+            notifyBtn.addEventListener("click", () => {
+              showToast("به محض موجود شدن به شما اطلاع می‌دهیم");
             });
           }
-          saveCart(cart);
-        }
-        const addCartBtn = document.getElementById("addCartBtn");
-        if (addCartBtn) {
-          addCartBtn.addEventListener("click", () => {
-            addCurrentToCart();
-            showToast("به سبد خرید اضافه شد");
-          });
-        }
-        const buyNowBtn = document.getElementById("buyNowBtn");
-        if (buyNowBtn) {
-          buyNowBtn.addEventListener("click", () => {
-            addCurrentToCart();
-            location.href = "cart.html";
-          });
-        }
 
-        // بارگذاری نظرات ذخیره‌شده پس از آماده‌شدن صفحه
-        fetchReviews();
-      }
+          function addCurrentToCart() {
+            const cart = getCart();
+            const existing = cart.find(
+              (item) =>
+                item.id === productId &&
+                item.storage === selectedStorage &&
+                item.color === selectedColor.name,
+            );
+            if (existing) {
+              existing.qty = (existing.qty || 1) + qty;
+            } else {
+              cart.push({
+                id: productId,
+                name: product.name,
+                storage: selectedStorage,
+                color: selectedColor.name,
+                warranty: selectedWarranty,
+                price: product.price,
+                qty: qty,
+              });
+            }
+            saveCart(cart);
+          }
+          const addCartBtn = document.getElementById("addCartBtn");
+          if (addCartBtn) {
+            addCartBtn.addEventListener("click", () => {
+              addCurrentToCart();
+              showToast("به سبد خرید اضافه شد");
+            });
+          }
+          const buyNowBtn = document.getElementById("buyNowBtn");
+          if (buyNowBtn) {
+            buyNowBtn.addEventListener("click", () => {
+              addCurrentToCart();
+              location.href = "cart.html";
+            });
+          }
+
+          // بارگذاری نظرات ذخیره‌شده پس از آماده‌شدن صفحه
+          fetchReviews();
+        }
+      })();
     </script>
     <script src="/auth-modal.js"></script>
   </body>
