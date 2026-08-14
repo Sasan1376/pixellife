@@ -103,7 +103,7 @@ connectDB();
 const homeRoutes = require("./routes/homeRoutes");
 const authRoutes = require("./routes/authRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
-const adminRoutes = require("./routes/admin");
+// const adminRoutes = require("./routes/admin");
 const productRoutes = require("./routes/products");
 const productPageRoutes = require("./routes/productPage");
 
@@ -120,7 +120,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/reviews", reviewRoutes);
 
 // Admin Panel
-app.use("/admin", adminRoutes);
+// app.use("/admin", adminRoutes);
 
 // Products API
 app.use("/api/products", productRoutes);
