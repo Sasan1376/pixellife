@@ -1910,7 +1910,7 @@
         </div>
       </div>
 
-      <!-- Product Grid — exactly 2 products -->
+      <!-- Product Grid — exactly 4 products -->
       <div class="iphone-grid">
         <!-- ═══ iPhone 17 ═══ -->
         <a
@@ -2093,7 +2093,7 @@
             </span>
           </div>
           <div class="iphone-card-image">
-            <img src="/images/apple/iphone-17.webp" alt="Galaxy A57" />
+            <img src="/images/apple/iphone-17.webp" alt="iPhone 17 Pro Max" />
           </div>
           <div class="iphone-card-body">
             <!-- Apple logo -->
@@ -2471,21 +2471,24 @@
         });
 
       /* Step 2A: Send OTP */
-      document.getElementById("sendOtpBtn").addEventListener("click", async () => {
-        try {
-          await apiCall("/api/auth/send-otp", {
-            identifier: currentIdentifier,
-            type: "login",
-            channel: "sms",
-          });
-          document.getElementById("otpTarget").textContent = currentIdentifier;
-          showStep("otp");
-          document.getElementById("otpInput").value = "";
-          startOtpTimer();
-        } catch (error) {
-          showToast(error.message || "خطا در ارسال پیامک");
-        }
-      });
+      document
+        .getElementById("sendOtpBtn")
+        .addEventListener("click", async () => {
+          try {
+            await apiCall("/api/auth/send-otp", {
+              identifier: currentIdentifier,
+              type: "login",
+              channel: "sms",
+            });
+            document.getElementById("otpTarget").textContent =
+              currentIdentifier;
+            showStep("otp");
+            document.getElementById("otpInput").value = "";
+            startOtpTimer();
+          } catch (error) {
+            showToast(error.message || "خطا در ارسال پیامک");
+          }
+        });
 
       /* Step 2B: Password */
       document
@@ -2574,42 +2577,46 @@
         }, 1000);
       }
 
-      document.getElementById("resendBtn").addEventListener("click", async () => {
-        try {
-          await apiCall("/api/auth/resend-otp", {
-            identifier: currentIdentifier,
-            type: "login",
-          });
-          startOtpTimer();
-          showToast("کد تأیید مجدداً ارسال شد");
-        } catch (error) {
-          showToast(error.message || "خطا در ارسال مجدد کد");
-        }
-      });
+      document
+        .getElementById("resendBtn")
+        .addEventListener("click", async () => {
+          try {
+            await apiCall("/api/auth/resend-otp", {
+              identifier: currentIdentifier,
+              type: "login",
+            });
+            startOtpTimer();
+            showToast("کد تأیید مجدداً ارسال شد");
+          } catch (error) {
+            showToast(error.message || "خطا در ارسال مجدد کد");
+          }
+        });
 
       /* Verify OTP */
-      document.getElementById("verifyOtpBtn").addEventListener("click", async () => {
-        clearErrors();
-        const code = document.getElementById("otpInput").value.trim();
-        if (code.length !== 5 || !/^\d{5}$/.test(code)) {
-          document.getElementById("otpInput").classList.add("input-error");
-          document.getElementById("otpError").classList.add("show");
-          document
-            .getElementById("otpInput")
-            .parentElement.classList.add("shake");
-          return;
-        }
-        try {
-          const json = await apiCall("/api/auth/verify-login-otp", {
-            identifier: currentIdentifier,
-            code,
-          });
-          if (otpInterval) clearInterval(otpInterval);
-          finishLogin(json.user, json.token);
-        } catch (error) {
-          showToast(error.message || "کد تأیید نادرست است");
-        }
-      });
+      document
+        .getElementById("verifyOtpBtn")
+        .addEventListener("click", async () => {
+          clearErrors();
+          const code = document.getElementById("otpInput").value.trim();
+          if (code.length !== 5 || !/^\d{5}$/.test(code)) {
+            document.getElementById("otpInput").classList.add("input-error");
+            document.getElementById("otpError").classList.add("show");
+            document
+              .getElementById("otpInput")
+              .parentElement.classList.add("shake");
+            return;
+          }
+          try {
+            const json = await apiCall("/api/auth/verify-login-otp", {
+              identifier: currentIdentifier,
+              code,
+            });
+            if (otpInterval) clearInterval(otpInterval);
+            finishLogin(json.user, json.token);
+          } catch (error) {
+            showToast(error.message || "کد تأیید نادرست است");
+          }
+        });
 
       document.getElementById("otpInput").addEventListener("keydown", (e) => {
         if (e.key === "Enter") document.getElementById("verifyOtpBtn").click();
