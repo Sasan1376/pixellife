@@ -38,7 +38,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 // =======================
 // Maintenance Mode (حالت بروزرسانی هوشمند)
 // =======================
-/*
+
 app.use((req, res, next) => {
   // ۱. اجازه دسترسی به پنل ادمین، API ها و فایل‌های استاتیک (عکس، CSS، JS)
   if (
@@ -67,7 +67,7 @@ app.use((req, res, next) => {
   }
 
   // ۴. برای بقیه مردم، صفحه بروزرسانی را نشان بده
-   return res.send(`
+  return res.send(`
     <!doctype html>
     <html lang="fa" dir="rtl">
       <head>
@@ -89,9 +89,7 @@ app.use((req, res, next) => {
       </body>
     </html>
   `);
-
 });
-*/
 
 // =======================
 // MongoDB Connection
