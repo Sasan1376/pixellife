@@ -1503,7 +1503,9 @@
       }
 
       /* ═══ PRODUCT GRID (شبکه محصولات) ═══ */
-      .product-section { margin-bottom: 40px; }
+      .product-section {
+        margin-bottom: 40px;
+      }
       .section-header {
         display: flex;
         justify-content: space-between;
@@ -1534,7 +1536,9 @@
         color: var(--blue);
         transition: color 0.2s;
       }
-      .see-all-btn:hover { color: var(--blue-dark); }
+      .see-all-btn:hover {
+        color: var(--blue-dark);
+      }
 
       .product-grid {
         display: grid;
@@ -1578,7 +1582,11 @@
         color: var(--text-1);
         direction: ltr;
       }
-      .product-price span { font-size: 11px; font-weight: 500; color: var(--text-3); }
+      .product-price span {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text-3);
+      }
 
       /* ═══ SIMPLE BANNER (بنر ساده) ═══ */
       .simple-banner {
@@ -1587,12 +1595,20 @@
         overflow: hidden;
         box-shadow: var(--shadow-sm);
       }
-      .simple-banner img { width: 100%; display: block; }
+      .simple-banner img {
+        width: 100%;
+        display: block;
+      }
 
       /* ریسپانسیو موبایل */
       @media (max-width: 768px) {
-        .services-section { grid-template-columns: repeat(2, 1fr); gap: 24px 16px; }
-        .product-grid { grid-template-columns: repeat(2, 1fr); }
+        .services-section {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 24px 16px;
+        }
+        .product-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
       }
       @media (max-width: 768px) {
         .header,
@@ -1664,7 +1680,7 @@
           justify-content: flex-start;
           padding: 15px;
         }
-        
+
         .category-item {
           min-width: 90px;
         }
@@ -1821,8 +1837,7 @@
       }
     </style>
   </head>
-  
-
+  <body>
     <!-- ══════════ AUTH MODAL (Digikala Style) ══════════ -->
     <div class="modal-overlay" id="loginModal">
       <div class="modal-box">
@@ -2236,31 +2251,44 @@
         </div>
       </section>
 
-
-            <!-- ═══ CATEGORY ICONS ═══ -->
+      <!-- ═══ CATEGORY ICONS ═══ -->
       <section class="categories-section">
-        <div class="category-item">
+        <a href="/mobiles" class="category-item">
           <div class="category-circle"><i class="ti ti-device-mobile"></i></div>
           <span class="category-title">موبایل</span>
-        </div>
-        <div class="category-item">
+        </a>
+        <a href="/ipad" class="category-item">
           <div class="category-circle"><i class="ti ti-device-tablet"></i></div>
           <span class="category-title">تبلت</span>
-        </div>
-        <div class="category-item">
+        </a>
+        <a
+          href="#"
+          class="category-item"
+          onclick="
+            event.preventDefault();
+            showToast('این بخش به‌زودی اضافه می‌شود');
+          "
+        >
           <div class="category-circle"><i class="ti ti-headphones"></i></div>
           <span class="category-title">هدفون</span>
-        </div>
-        <div class="category-item">
+        </a>
+        <a href="/console" class="category-item">
           <div class="category-circle">
             <i class="ti ti-device-gamepad-2"></i>
           </div>
           <span class="category-title">کنسول بازی</span>
-        </div>
-        <div class="category-item">
+        </a>
+        <a
+          href="#"
+          class="category-item"
+          onclick="
+            event.preventDefault();
+            showToast('این بخش به‌زودی اضافه می‌شود');
+          "
+        >
           <div class="category-circle"><i class="ti ti-device-watch"></i></div>
           <span class="category-title">ساعت هوشمند</span>
-        </div>
+        </a>
       </section>
 
       <!-- ═══ کدهای جدید را دقیقاً اینجا کپی کنید ═══ -->
@@ -2302,29 +2330,53 @@
           <h2>محصولات منتخب</h2>
           <a href="/products" class="see-all-btn">مشاهده همه</a>
         </div>
-        
+
         <div class="product-grid">
           <!-- محصول ۱ -->
-          <div class="product-card" onclick="window.location.href='/product?id=1'">
-            <img src="https://placehold.co/150x150/f1f5f9/94a3b8?text=Product+1" alt="محصول">
+          <div
+            class="product-card"
+            onclick="window.location.href = '/product?id=1'"
+          >
+            <img
+              src="https://placehold.co/150x150/f1f5f9/94a3b8?text=Product+1"
+              alt="محصول"
+            />
             <h3>نام محصول نمونه برای تست ظاهر سایت</h3>
             <div class="product-price">۲,۵۰۰,۰۰۰ <span>تومان</span></div>
           </div>
           <!-- محصول ۲ -->
-          <div class="product-card" onclick="window.location.href='/product?id=2'">
-            <img src="https://placehold.co/150x150/f1f5f9/94a3b8?text=Product+2" alt="محصول">
+          <div
+            class="product-card"
+            onclick="window.location.href = '/product?id=2'"
+          >
+            <img
+              src="https://placehold.co/150x150/f1f5f9/94a3b8?text=Product+2"
+              alt="محصول"
+            />
             <h3>نام محصول نمونه برای تست ظاهر سایت</h3>
             <div class="product-price">۳,۸۰۰,۰۰۰ <span>تومان</span></div>
           </div>
           <!-- محصول ۳ -->
-          <div class="product-card" onclick="window.location.href='/product?id=3'">
-            <img src="https://placehold.co/150x150/f1f5f9/94a3b8?text=Product+3" alt="محصول">
+          <div
+            class="product-card"
+            onclick="window.location.href = '/product?id=3'"
+          >
+            <img
+              src="https://placehold.co/150x150/f1f5f9/94a3b8?text=Product+3"
+              alt="محصول"
+            />
             <h3>نام محصول نمونه برای تست ظاهر سایت</h3>
             <div class="product-price">۱,۲۰۰,۰۰۰ <span>تومان</span></div>
           </div>
           <!-- محصول ۴ -->
-          <div class="product-card" onclick="window.location.href='/product?id=4'">
-            <img src="https://placehold.co/150x150/f1f5f9/94a3b8?text=Product+4" alt="محصول">
+          <div
+            class="product-card"
+            onclick="window.location.href = '/product?id=4'"
+          >
+            <img
+              src="https://placehold.co/150x150/f1f5f9/94a3b8?text=Product+4"
+              alt="محصول"
+            />
             <h3>نام محصول نمونه برای تست ظاهر سایت</h3>
             <div class="product-price">۴,۹۰۰,۰۰۰ <span>تومان</span></div>
           </div>
@@ -2334,13 +2386,15 @@
       <!-- ═══ SIMPLE BANNER (بنر ساده) ═══ -->
       <section class="simple-banner">
         <a href="/brands">
-          <img src="https://placehold.co/1200x200/eff6ff/3b82f6?text=Brands+Banner" alt="بنر برندها">
+          <img
+            src="https://placehold.co/1200x200/eff6ff/3b82f6?text=Brands+Banner"
+            alt="بنر برندها"
+          />
         </a>
       </section>
       <!-- ═══ پایان کدهای جدید ═══ -->
-
-    </main> <!-- <- تگ main اینجا بسته می‌شود -->
-    
+    </main>
+    <!-- <- تگ main اینجا بسته می‌شود -->
 
     <!-- FOOTER -->
     <footer class="footer">
