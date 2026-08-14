@@ -211,7 +211,6 @@ const PORT = env.port || 3000;
 
 app.listen(PORT, () => {
   console.log(`✅ PixelLife Server running on port ${PORT}`);
-  console.log(`🌐 Admin Panel: http://localhost:${PORT}/admin`);
   console.log(`📱 Products API: http://localhost:${PORT}/api/products`);
   console.log(`🛒 Product Pages: http://localhost:${PORT}/product/:slug`);
 });
