@@ -55,12 +55,13 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
-productSchema.pre("save", async function () {
-  if (this.isModified("name")) {
-    this.slug = slugify(`${this.name}-${this._id.toString().slice(-4)}`, {
+productSchema.pre("validate", function (next) {
+  if (this.isModified("name") && !this.slug) {
+    this.slug = slugify(`${this.name}-${Date.now()}`, {
       lower: true,
       strict: true,
     });
   }
+  next();
 });
 module.exports = mongoose.model("Product", productSchema);

@@ -1,0 +1,127 @@
+const express = require("express");
+const router = express.Router();
+
+const Product = require("../models/Product");
+const upload = require("../utils/upload");
+const requireAdmin = require("../middleware/adminAuth");
+
+router.use(requireAdmin);
+
+router.get("/products", async (req, res) => {
+  try {
+    const products = await Product.find().sort({ createdAt: -1 });
+    res.json({ success: true, products });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.post("/products", upload.array("images", 5), async (req, res) => {
+  try {
+    const {
+      name,
+      brand,
+      category,
+      price,
+      discount,
+      description,
+      specs,
+      featured,
+      stock,
+      availability,
+    } = req.body;
+
+    if (!name || !brand || !price) {
+      return res
+        .status(400)
+        .json({ success: false, message: "نام، برند و قیمت الزامی هستند" });
+    }
+
+    const uploadedImages = (req.files || []).map(
+      (f) => "/uploads/products/" + f.filename,
+    );
+
+    const product = new Product({
+      name,
+      brand,
+      category: category || "عمومی",
+      price: Number(price),
+      discount: Number(discount) || 0,
+      description,
+      specs,
+      featured: featured === "true" || featured === "on" || featured === true,
+      stock: Number(stock) || 0,
+      availability: availability || "in",
+      images: uploadedImages,
+    });
+
+    await product.save();
+    res.json({ success: true, product });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.put("/products/:id", upload.array("images", 5), async (req, res) => {
+  try {
+    const {
+      name,
+      brand,
+      category,
+      price,
+      discount,
+      description,
+      specs,
+      featured,
+      stock,
+      availability,
+    } = req.body;
+
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "محصول پیدا نشد" });
+    }
+
+    if (name) product.name = name;
+    if (brand) product.brand = brand;
+    if (category) product.category = category;
+    if (price) product.price = Number(price);
+    if (discount !== undefined) product.discount = Number(discount) || 0;
+    if (description !== undefined) product.description = description;
+    if (specs !== undefined) product.specs = specs;
+    if (stock !== undefined) product.stock = Number(stock) || 0;
+    if (availability) product.availability = availability;
+    product.featured =
+      featured === "true" || featured === "on" || featured === true;
+
+    const newImages = (req.files || []).map(
+      (f) => "/uploads/products/" + f.filename,
+    );
+    if (newImages.length > 0) {
+      product.images = [...(product.images || []), ...newImages];
+    }
+
+    await product.save();
+    res.json({ success: true, product });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.delete("/products/:id", async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "محصول پیدا نشد" });
+    }
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+module.exports = router;

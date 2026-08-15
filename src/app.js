@@ -6,7 +6,7 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
-
+const session = require("express-session");
 const connectDB = require("./db");
 const env = require("./config/env");
 const errorHandler = require("./middleware/errorHandler");
@@ -34,11 +34,28 @@ app.use(
 
 // فایل‌های استاتیک (تصاویر محصولات و لوگو)
 app.use(express.static(path.join(__dirname, "../public")));
+// فایل‌های استاتیک قالب AdminLTE (فقط برای پنل ادمین)
+app.use(
+  "/vendor/adminlte",
+  express.static(path.join(__dirname, "../node_modules/admin-lte/dist")),
+);
 
+// سشن برای ورود ادمین
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "pixellife-admin-secret-change-me",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 8,
+      httpOnly: true,
+    },
+  }),
+);
 // =======================
 // Maintenance Mode (حالت بروزرسانی هوشمند)
 // =======================
-
+/*
 app.use((req, res, next) => {
   // ۱. اجازه دسترسی به پنل ادمین، API ها و فایل‌های استاتیک (عکس، CSS، JS)
   if (
@@ -90,7 +107,7 @@ app.use((req, res, next) => {
     </html>
   `);
 });
-
+*/
 // =======================
 // MongoDB Connection
 // =======================
@@ -104,7 +121,8 @@ connectDB();
 const homeRoutes = require("./routes/homeRoutes");
 const authRoutes = require("./routes/authRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
-// const adminRoutes = require("./routes/admin");
+const adminRoutes = require("./routes/admin");
+const adminApiRoutes = require("./routes/adminApi");
 const productRoutes = require("./routes/products");
 const productPageRoutes = require("./routes/productPage");
 
@@ -121,8 +139,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/reviews", reviewRoutes);
 
 // Admin Panel
-// app.use("/admin", adminRoutes);
-
+app.use("/admin/api", adminApiRoutes);
+app.use("/admin", adminRoutes);
 // Products API
 app.use("/api/products", productRoutes);
 

@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مدیریت محصولات | پنل ادمین پیکسل‌لایف</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css"
+    />
+    <link rel="stylesheet" href="/vendor/adminlte/css/adminlte.rtl.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"
+    />
+    <style>
+      body {
+        font-family: Vazirmatn, Tahoma, sans-serif;
+      }
+      .app-header,
+      .app-sidebar {
+        font-family: Vazirmatn, Tahoma, sans-serif;
+      }
+      .brand-link {
+        font-weight: 800;
+      }
+      .brand-link span {
+        color: #3b82f6;
+      }
+      .prod-thumb {
+        width: 44px;
+        height: 44px;
+        object-fit: contain;
+        background: #f8fafc;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+      }
+      .featured-badge {
+        cursor: pointer;
+      }
+      #toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: #0f172a;
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        z-index: 9999;
+        opacity: 0;
+        transition: all 0.3s ease;
+      }
+      #toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    </style>
+  </head>
+  <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+    <div class="app-wrapper">
+      <nav class="app-header navbar navbar-expand bg-white border-bottom">
+        <div class="container-fluid">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                data-lte-toggle="sidebar"
+                href="#"
+                role="button"
+              >
+                <i class="ti ti-menu-2"></i>
+              </a>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <button class="btn btn-sm btn-outline-danger" id="logoutBtn">
+                <i class="ti ti-logout"></i> خروج
+              </button>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <aside class="app-sidebar bg-dark shadow" data-bs-theme="dark">
+        <div class="sidebar-brand">
+          <a href="/admin/products" class="brand-link">
+            <span class="brand-text">پیکسل<span>لایف</span></span>
+          </a>
+        </div>
+        <div class="sidebar-wrapper">
+          <nav class="mt-2">
+            <ul
+              class="nav sidebar-menu flex-column"
+              data-lte-toggle="treeview"
+              role="menu"
+            >
+              <li class="nav-item">
+                <a href="/admin/products" class="nav-link active">
+                  <i class="nav-icon ti ti-device-mobile"></i>
+                  <p>محصولات</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/" class="nav-link" target="_blank">
+                  <i class="nav-icon ti ti-external-link"></i>
+                  <p>مشاهده‌ی سایت</p>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </aside>
+
+      <main class="app-main">
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row align-items-center">
+              <div class="col-sm-6">
+                <h3 class="mb-0">مدیریت محصولات</h3>
+              </div>
+              <div class="col-sm-6 text-end">
+                <button class="btn btn-primary" id="openAddModalBtn">
+                  <i class="ti ti-plus"></i> افزودن محصول
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-content">
+          <div class="container-fluid">
+            <div class="card">
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle">
+                    <thead>
+                      <tr>
+                        <th>عکس</th>
+                        <th>نام محصول</th>
+                        <th>برند</th>
+                        <th>قیمت (تومان)</th>
+                        <th>موجودی</th>
+                        <th>منتخب</th>
+                        <th>عملیات</th>
+                      </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                      <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                          در حال بارگذاری...
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal fade" id="productModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <form id="productForm">
+            <div class="modal-header">
+              <h5 class="modal-title" id="productModalTitle">افزودن محصول</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="productId" />
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">نام محصول *</label>
+                  <input type="text" class="form-control" id="fName" required />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">برند *</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="fBrand"
+                    required
+                    placeholder="مثلاً Apple، Samsung"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">دسته‌بندی</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="fCategory"
+                    placeholder="موبایل، تبلت، ..."
+                  />
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">قیمت (تومان) *</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="fPrice"
+                    required
+                    min="0"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">تخفیف (٪)</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="fDiscount"
+                    min="0"
+                    max="100"
+                    value="0"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">موجودی (تعداد)</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="fStock"
+                    min="0"
+                    value="0"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">وضعیت موجودی</label>
+                  <select class="form-select" id="fAvailability">
+                    <option value="in">موجود</option>
+                    <option value="out">ناموجود</option>
+                  </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="fFeatured"
+                    />
+                    <label class="form-check-label" for="fFeatured"
+                      >محصول منتخب (صفحه اصلی)</label
+                    >
+                  </div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">توضیحات</label>
+                  <textarea
+                    class="form-control"
+                    id="fDescription"
+                    rows="3"
+                  ></textarea>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">مشخصات فنی</label>
+                  <textarea
+                    class="form-control"
+                    id="fSpecs"
+                    rows="2"
+                  ></textarea>
+                </div>
+                <div class="col-12">
+                  <label class="form-label"
+                    >تصاویر محصول (می‌توانید چند عکس انتخاب کنید)</label
+                  >
+                  <input
+                    type="file"
+                    class="form-control"
+                    id="fImages"
+                    accept="image/*"
+                    multiple
+                  />
+                  <div class="form-text">
+                    در حالت ویرایش، عکس‌های جدید به عکس‌های قبلی اضافه می‌شوند.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                انصراف
+              </button>
+              <button type="submit" class="btn btn-primary" id="saveProductBtn">
+                <i class="ti ti-check"></i> ذخیره
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/adminlte/js/adminlte.min.js"></script>
+    <script>
+      const productModalEl = document.getElementById("productModal");
+      const productModal = new bootstrap.Modal(productModalEl);
+      const tableBody = document.getElementById("productsTableBody");
+
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2500);
+      }
+
+      function toPersianPrice(n) {
+        return Number(n || 0).toLocaleString("fa-IR");
+      }
+
+      async function loadProducts() {
+        tableBody.innerHTML =
+          '<tr><td colspan="7" class="text-center text-muted py-4">در حال بارگذاری...</td></tr>';
+        try {
+          const res = await fetch("/admin/api/products");
+          const json = await res.json();
+          if (!json.success) throw new Error(json.message);
+
+          if (json.products.length === 0) {
+            tableBody.innerHTML =
+              '<tr><td colspan="7" class="text-center text-muted py-4">هنوز محصولی ثبت نشده است.</td></tr>';
+            return;
+          }
+
+          tableBody.innerHTML = json.products
+            .map((p) => {
+              const img =
+                (p.images && p.images[0]) ||
+                "https://placehold.co/60x60/f1f5f9/94a3b8?text=%D8%B9%DA%A9%D8%B3";
+              return `
+                <tr data-id="${p._id}">
+                  <td><img src="${img}" class="prod-thumb" alt=""></td>
+                  <td>${p.name}</td>
+                  <td>${p.brand}</td>
+                  <td>${toPersianPrice(p.price)}</td>
+                  <td>${toPersianPrice(p.stock)}</td>
+                  <td>
+                    <span class="badge featured-badge ${p.featured ? "bg-success" : "bg-secondary"}" onclick="toggleFeatured('${p._id}', ${!p.featured})">
+                      ${p.featured ? "بله" : "خیر"}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick='openEditModal(${JSON.stringify(p)})'>
+                      <i class="ti ti-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${p._id}')">
+                      <i class="ti ti-trash"></i>
+                    </button>
+                  </td>
+                </tr>`;
+            })
+            .join("");
+        } catch (err) {
+          tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">${err.message}</td></tr>`;
+        }
+      }
+
+      async function toggleFeatured(id, newValue) {
+        try {
+          const fd = new FormData();
+          fd.append("featured", newValue);
+          const res = await fetch("/admin/api/products/" + id, {
+            method: "PUT",
+            body: fd,
+          });
+          const json = await res.json();
+          if (!json.success) throw new Error(json.message);
+          loadProducts();
+        } catch (err) {
+          showToast(err.message);
+        }
+      }
+
+      async function deleteProduct(id) {
+        if (!confirm("محصول حذف شود؟ این عملیات قابل بازگشت نیست.")) return;
+        try {
+          const res = await fetch("/admin/api/products/" + id, {
+            method: "DELETE",
+          });
+          const json = await res.json();
+          if (!json.success) throw new Error(json.message);
+          showToast("محصول حذف شد");
+          loadProducts();
+        } catch (err) {
+          showToast(err.message);
+        }
+      }
+
+      function resetForm() {
+        document.getElementById("productForm").reset();
+        document.getElementById("productId").value = "";
+        document.getElementById("productModalTitle").textContent =
+          "افزودن محصول";
+      }
+
+      function openEditModal(p) {
+        resetForm();
+        document.getElementById("productModalTitle").textContent =
+          "ویرایش محصول";
+        document.getElementById("productId").value = p._id;
+        document.getElementById("fName").value = p.name || "";
+        document.getElementById("fBrand").value = p.brand || "";
+        document.getElementById("fCategory").value = p.category || "";
+        document.getElementById("fPrice").value = p.price || 0;
+        document.getElementById("fDiscount").value = p.discount || 0;
+        document.getElementById("fStock").value = p.stock || 0;
+        document.getElementById("fAvailability").value = p.availability || "in";
+        document.getElementById("fFeatured").checked = !!p.featured;
+        document.getElementById("fDescription").value = p.description || "";
+        document.getElementById("fSpecs").value = p.specs || "";
+        productModal.show();
+      }
+
+      document
+        .getElementById("openAddModalBtn")
+        .addEventListener("click", () => {
+          resetForm();
+          productModal.show();
+        });
+
+      document
+        .getElementById("productForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const id = document.getElementById("productId").value;
+          const fd = new FormData();
+          fd.append("name", document.getElementById("fName").value);
+          fd.append("brand", document.getElementById("fBrand").value);
+          fd.append("category", document.getElementById("fCategory").value);
+          fd.append("price", document.getElementById("fPrice").value);
+          fd.append("discount", document.getElementById("fDiscount").value);
+          fd.append("stock", document.getElementById("fStock").value);
+          fd.append(
+            "availability",
+            document.getElementById("fAvailability").value,
+          );
+          fd.append("featured", document.getElementById("fFeatured").checked);
+          fd.append(
+            "description",
+            document.getElementById("fDescription").value,
+          );
+          fd.append("specs", document.getElementById("fSpecs").value);
+
+          const files = document.getElementById("fImages").files;
+          for (let i = 0; i < files.length; i++) fd.append("images", files[i]);
+
+          const btn = document.getElementById("saveProductBtn");
+          btn.disabled = true;
+          try {
+            const url = id
+              ? "/admin/api/products/" + id
+              : "/admin/api/products";
+            const method = id ? "PUT" : "POST";
+            const res = await fetch(url, { method, body: fd });
+            const json = await res.json();
+            if (!json.success) throw new Error(json.message);
+            showToast(id ? "محصول ویرایش شد" : "محصول اضافه شد");
+            productModal.hide();
+            loadProducts();
+          } catch (err) {
+            showToast(err.message);
+          } finally {
+            btn.disabled = false;
+          }
+        });
+
+      document
+        .getElementById("logoutBtn")
+        .addEventListener("click", async () => {
+          await fetch("/admin/logout", { method: "POST" });
+          window.location.href = "/admin/login";
+        });
+
+      loadProducts();
+    </script>
+  </body>
+</html>
