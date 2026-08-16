@@ -1686,154 +1686,175 @@
           min-width: 90px;
         }
       }
+
+      /* استایل dropdown سبد خرید — از داخل مدیا کوئری موبایل بیرون آورده شد
+         تا در همه‌ی سایزها (دسکتاپ و موبایل) کار کند */
+      .cart-dropdown {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        width: 340px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.2s ease;
+        padding: 16px;
+      }
+      .cart-wrap:hover .cart-dropdown,
+      .cart-wrap.open .cart-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      /* آیتم‌های داخل سبد */
+      .mini-cart-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .mini-cart-item:last-child {
+        border-bottom: none;
+      }
+      .mini-cart-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+        background: var(--bg);
+      }
+      .mini-cart-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .mini-cart-name {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--text-1);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 4px;
+      }
+      .mini-cart-price {
+        font-size: 12px;
+        color: var(--blue);
+        font-weight: 700;
+      }
+
+      /* دکمه‌های تعداد و حذف */
+      .mini-cart-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+      }
+      .mini-qty-controls {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--bg);
+        border-radius: 6px;
+        padding: 2px;
+      }
+      .mini-qty-btn {
+        width: 22px;
+        height: 22px;
+        border: none;
+        background: var(--white);
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--text-2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+      .mini-qty-val {
+        font-size: 12px;
+        font-weight: 700;
+        min-width: 15px;
+        text-align: center;
+      }
+      .mini-remove-btn {
+        background: none;
+        border: none;
+        color: var(--text-4);
+        cursor: pointer;
+        font-size: 14px;
+        transition: color 0.2s;
+      }
+      .mini-remove-btn:hover {
+        color: var(--red);
+      }
+
+      /* بخش پایینی dropdown */
+      .mini-cart-footer {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 2px solid var(--border);
+      }
+      .mini-cart-total {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .mini-cart-btn-checkout {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        height: 42px;
+        background: var(--red);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        font-size: 13px;
+        text-decoration: none;
+        transition: opacity 0.2s;
+      }
+      .mini-cart-btn-checkout:hover {
+        opacity: 0.9;
+      }
+      .mini-cart-empty {
+        text-align: center;
+        color: var(--text-3);
+        font-size: 13px;
+        padding: 20px 0;
+      }
+
       @media (max-width: 480px) {
         .footer-inner {
           grid-template-columns: 1fr;
         }
-        /* استایل dropdown سبد خرید */
+        /* روی موبایل، دراپ‌داون سبد را به یک شیت پایین‌صفحه تبدیل می‌کنیم
+           چون hover روی تاچ معنی ندارد و کلیک باید آن را باز/بسته کند */
         .cart-dropdown {
-          position: absolute;
-          top: calc(100% + 10px);
+          position: fixed;
+          top: auto;
+          bottom: 0;
           left: 0;
-          width: 340px;
-          background: var(--white);
-          border: 1px solid var(--border);
-          border-radius: var(--radius);
-          box-shadow: var(--shadow-lg);
-          z-index: 1000;
-          opacity: 0;
-          visibility: hidden;
-          transform: translateY(-10px);
-          transition: all 0.2s ease;
-          padding: 16px;
-        }
-        .cart-wrap:hover .cart-dropdown {
-          opacity: 1;
-          visibility: visible;
-          transform: translateY(0);
-        }
-
-        /* آیتم‌های داخل سبد */
-        .mini-cart-item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 10px 0;
-          border-bottom: 1px solid var(--border);
-        }
-        .mini-cart-item:last-child {
-          border-bottom: none;
-        }
-        .mini-cart-img {
-          width: 50px;
-          height: 50px;
-          border-radius: 8px;
-          object-fit: cover;
-          background: var(--bg);
-        }
-        .mini-cart-info {
-          flex: 1;
-          min-width: 0;
-        }
-        .mini-cart-name {
-          font-size: 12.5px;
-          font-weight: 700;
-          color: var(--text-1);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          margin-bottom: 4px;
-        }
-        .mini-cart-price {
-          font-size: 12px;
-          color: var(--blue);
-          font-weight: 700;
-        }
-
-        /* دکمه‌های تعداد و حذف */
-        .mini-cart-actions {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 6px;
-        }
-        .mini-qty-controls {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          background: var(--bg);
-          border-radius: 6px;
-          padding: 2px;
-        }
-        .mini-qty-btn {
-          width: 22px;
-          height: 22px;
-          border: none;
-          background: var(--white);
-          border-radius: 4px;
-          cursor: pointer;
-          font-weight: 700;
-          color: var(--text-2);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 12px;
-        }
-        .mini-qty-val {
-          font-size: 12px;
-          font-weight: 700;
-          min-width: 15px;
-          text-align: center;
-        }
-        .mini-remove-btn {
-          background: none;
-          border: none;
-          color: var(--text-4);
-          cursor: pointer;
-          font-size: 14px;
-          transition: color 0.2s;
-        }
-        .mini-remove-btn:hover {
-          color: var(--red);
-        }
-
-        /* بخش پایینی dropdown */
-        .mini-cart-footer {
-          margin-top: 16px;
-          padding-top: 16px;
-          border-top: 2px solid var(--border);
-        }
-        .mini-cart-total {
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 12px;
-          font-size: 14px;
-          font-weight: 700;
-        }
-        .mini-cart-btn-checkout {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
+          right: 0;
           width: 100%;
-          height: 42px;
-          background: var(--red);
-          color: #fff;
-          border: none;
-          border-radius: var(--radius-sm);
-          font-weight: 700;
-          font-size: 13px;
-          text-decoration: none;
-          transition: opacity 0.2s;
+          border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+          transform: translateY(100%);
+          max-height: 80vh;
+          overflow-y: auto;
         }
-        .mini-cart-btn-checkout:hover {
-          opacity: 0.9;
-        }
-        .mini-cart-empty {
-          text-align: center;
-          color: var(--text-3);
-          font-size: 13px;
-          padding: 20px 0;
+        .cart-wrap.open .cart-dropdown {
+          transform: translateY(0);
         }
       }
     </style>
@@ -2101,8 +2122,8 @@
             </div>
           </div>
 
-          <div class="cart-wrap">
-            <a href="/cart" class="h-btn" aria-label="سبد خرید">
+          <div class="cart-wrap" id="cartWrap">
+            <a href="/cart" class="h-btn" id="cartBtn" aria-label="سبد خرید">
               <i class="ti ti-shopping-cart"></i>
             </a>
             <span class="cart-badge" id="cartCount" style="display: none"
@@ -3053,11 +3074,22 @@
       });
 
       /* ══ SEARCH ══ */
+      function performSearch() {
+        const q = document.getElementById("searchInput").value.trim();
+        if (!q) return;
+        window.location.href = "/search.html?q=" + encodeURIComponent(q);
+      }
       document
         .getElementById("searchInput")
         .addEventListener("keydown", (e) => {
-          if (e.key === "Enter" && e.target.value.trim()) e.target.blur();
+          if (e.key === "Enter" && e.target.value.trim()) {
+            e.target.blur();
+            performSearch();
+          }
         });
+      document
+        .querySelector(".search-btn")
+        .addEventListener("click", performSearch);
 
       /* ═══ HERO SLIDER LOGIC ═══ */
       const heroTrack = document.getElementById("heroTrack");
@@ -3190,6 +3222,133 @@
         }
       }
       loadFeaturedProducts();
+
+      /* ══ MINI CART (سبد خرید کوچک هدر) ══
+         این بخش سبد را از localStorage می‌خواند (کلید digishop_cart، آرایه‌ای از
+         { id, name, price, image, qty }) و آیتم‌ها/جمع‌کل/تعداد را رندر می‌کند.
+         با هر تغییر در سبد (افزودن/حذف/تغییر تعداد) باید cartUpdated dispatch شود
+         تا این بخش خودش را رفرش کند — از جاهای دیگر سایت هم صدا زده می‌شود. */
+      const CART_KEY = "digishop_cart";
+
+      function getCart() {
+        try {
+          const raw = localStorage.getItem(CART_KEY);
+          const arr = raw ? JSON.parse(raw) : [];
+          return Array.isArray(arr) ? arr : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function saveCart(cart) {
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        renderMiniCart();
+      }
+
+      function formatToman(n) {
+        return Number(n || 0).toLocaleString("fa-IR") + " تومان";
+      }
+
+      function renderMiniCart() {
+        const cart = getCart();
+        const itemsWrap = document.getElementById("miniCartItems");
+        const footer = document.getElementById("miniCartFooter");
+        const countBadge = document.getElementById("cartCount");
+        const totalPriceEl = document.getElementById("miniCartTotalPrice");
+
+        const totalQty = cart.reduce((s, it) => s + (Number(it.qty) || 0), 0);
+        if (totalQty > 0) {
+          countBadge.textContent = totalQty > 99 ? "99+" : totalQty;
+          countBadge.style.display = "flex";
+        } else {
+          countBadge.style.display = "none";
+        }
+
+        if (cart.length === 0) {
+          itemsWrap.innerHTML =
+            '<div class="mini-cart-empty"><i class="ti ti-shopping-cart-off" style="font-size:24px;display:block;margin-bottom:8px;"></i>سبد خرید شما خالی است</div>';
+          footer.style.display = "none";
+          return;
+        }
+
+        footer.style.display = "block";
+        const totalPrice = cart.reduce(
+          (s, it) => s + (Number(it.price) || 0) * (Number(it.qty) || 0),
+          0,
+        );
+        totalPriceEl.textContent = formatToman(totalPrice);
+
+        itemsWrap.innerHTML = cart
+          .map(
+            (it) => `
+            <div class="mini-cart-item" data-id="${it.id}">
+              <img class="mini-cart-img" src="${it.image || "https://placehold.co/50x50/f1f5f9/94a3b8?text=%20"}" alt="${it.name}">
+              <div class="mini-cart-info">
+                <div class="mini-cart-name">${it.name}</div>
+                <div class="mini-cart-price">${formatToman(it.price)}</div>
+              </div>
+              <div class="mini-cart-actions">
+                <button class="mini-remove-btn" data-action="remove" data-id="${it.id}" aria-label="حذف">
+                  <i class="ti ti-trash"></i>
+                </button>
+                <div class="mini-qty-controls">
+                  <button class="mini-qty-btn" data-action="inc" data-id="${it.id}">+</button>
+                  <span class="mini-qty-val">${it.qty}</span>
+                  <button class="mini-qty-btn" data-action="dec" data-id="${it.id}">−</button>
+                </div>
+              </div>
+            </div>`,
+          )
+          .join("");
+      }
+
+      function changeQty(id, delta) {
+        const cart = getCart();
+        const idx = cart.findIndex((it) => String(it.id) === String(id));
+        if (idx === -1) return;
+        cart[idx].qty = (Number(cart[idx].qty) || 0) + delta;
+        if (cart[idx].qty <= 0) cart.splice(idx, 1);
+        saveCart(cart);
+      }
+
+      function removeFromCart(id) {
+        const cart = getCart().filter((it) => String(it.id) !== String(id));
+        saveCart(cart);
+      }
+
+      document
+        .getElementById("miniCartItems")
+        .addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-action]");
+          if (!btn) return;
+          const id = btn.dataset.id;
+          const action = btn.dataset.action;
+          if (action === "inc") changeQty(id, 1);
+          else if (action === "dec") changeQty(id, -1);
+          else if (action === "remove") removeFromCart(id);
+        });
+
+      // باز/بسته شدن سبد با کلیک روی موبایل (hover روی دسکتاپ از CSS می‌آید)
+      const cartWrap = document.getElementById("cartWrap");
+      const cartBtn = document.getElementById("cartBtn");
+      cartBtn.addEventListener("click", (e) => {
+        if (window.matchMedia("(max-width: 480px)").matches) {
+          e.preventDefault();
+          cartWrap.classList.toggle("open");
+        }
+      });
+      document.addEventListener("click", (e) => {
+        if (!cartWrap.contains(e.target)) cartWrap.classList.remove("open");
+      });
+
+      // اگر سایر صفحات با dispatchEvent(new Event('cartUpdated')) خبر بدهند،
+      // سبد کوچک هدر خودش را آپدیت می‌کند
+      window.addEventListener("cartUpdated", renderMiniCart);
+      window.addEventListener("storage", (e) => {
+        if (e.key === CART_KEY) renderMiniCart();
+      });
+
+      renderMiniCart();
     </script>
     <script src="/auth-modal.js"></script>
   </body>
