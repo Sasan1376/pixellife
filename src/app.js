@@ -125,6 +125,7 @@ const adminRoutes = require("./routes/admin");
 const adminApiRoutes = require("./routes/adminApi");
 const productRoutes = require("./routes/products");
 const productPageRoutes = require("./routes/productPage");
+const testEmailRoutes = require("./routes/testEmail");
 
 // Home Page
 app.use("/", homeRoutes);
@@ -146,6 +147,9 @@ app.use("/api/products", productRoutes);
 
 // Product SEO Pages
 app.use("/product", productPageRoutes);
+
+// Test Email (موقت — بعد از تایید کارکرد حذف شود)
+app.use("/api/test-email", testEmailRoutes);
 
 // =======================
 // Sitemap
