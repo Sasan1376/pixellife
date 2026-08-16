@@ -3183,6 +3183,15 @@
 
       // Start Autoplay
       startAutoSlide();
+      /* ══ ESCAPE HTML — جلوگیری از XSS هنگام درج داده‌های داینامیک (اسم محصول،
+         اسم آیتم سبد و...) داخل innerHTML. همیشه قبل از قرار دادن هر متنی که از
+         API یا localStorage می‌آید از این تابع عبور بده. ══ */
+      function escapeHtml(str) {
+        const div = document.createElement("div");
+        div.textContent = str == null ? "" : String(str);
+        return div.innerHTML;
+      }
+
       /* ══ محصولات منتخب (از دیتابیس واقعی) ══ */
       async function loadFeaturedProducts() {
         const grid = document.getElementById("featuredProductsGrid");
@@ -3204,14 +3213,17 @@
 
           grid.innerHTML = products
             .map((p) => {
-              const img =
+              const img = escapeHtml(
                 (p.images && p.images[0]) ||
-                "https://placehold.co/150x150/f1f5f9/94a3b8?text=No+Image";
+                  "https://placehold.co/150x150/f1f5f9/94a3b8?text=No+Image",
+              );
               const price = Number(p.price).toLocaleString("fa-IR");
+              const name = escapeHtml(p.name);
+              const slug = escapeHtml(p.slug);
               return `
-                <a href="/product/${p.slug}" class="product-card">
-                  <img src="${img}" alt="${p.name}">
-                  <h3>${p.name}</h3>
+                <a href="/product/${slug}" class="product-card">
+                  <img src="${img}" alt="${name}">
+                  <h3>${name}</h3>
                   <div class="product-price">${price} <span>تومان</span></div>
                 </a>`;
             })
@@ -3279,26 +3291,32 @@
         totalPriceEl.textContent = formatToman(totalPrice);
 
         itemsWrap.innerHTML = cart
-          .map(
-            (it) => `
-            <div class="mini-cart-item" data-id="${it.id}">
-              <img class="mini-cart-img" src="${it.image || "https://placehold.co/50x50/f1f5f9/94a3b8?text=%20"}" alt="${it.name}">
+          .map((it) => {
+            const id = escapeHtml(it.id);
+            const name = escapeHtml(it.name);
+            const image = escapeHtml(
+              it.image || "https://placehold.co/50x50/f1f5f9/94a3b8?text=%20",
+            );
+            const qty = escapeHtml(it.qty);
+            return `
+            <div class="mini-cart-item" data-id="${id}">
+              <img class="mini-cart-img" src="${image}" alt="${name}">
               <div class="mini-cart-info">
-                <div class="mini-cart-name">${it.name}</div>
+                <div class="mini-cart-name">${name}</div>
                 <div class="mini-cart-price">${formatToman(it.price)}</div>
               </div>
               <div class="mini-cart-actions">
-                <button class="mini-remove-btn" data-action="remove" data-id="${it.id}" aria-label="حذف">
+                <button class="mini-remove-btn" data-action="remove" data-id="${id}" aria-label="حذف">
                   <i class="ti ti-trash"></i>
                 </button>
                 <div class="mini-qty-controls">
-                  <button class="mini-qty-btn" data-action="inc" data-id="${it.id}">+</button>
-                  <span class="mini-qty-val">${it.qty}</span>
-                  <button class="mini-qty-btn" data-action="dec" data-id="${it.id}">−</button>
+                  <button class="mini-qty-btn" data-action="inc" data-id="${id}">+</button>
+                  <span class="mini-qty-val">${qty}</span>
+                  <button class="mini-qty-btn" data-action="dec" data-id="${id}">−</button>
                 </div>
               </div>
-            </div>`,
-          )
+            </div>`;
+          })
           .join("");
       }
 
