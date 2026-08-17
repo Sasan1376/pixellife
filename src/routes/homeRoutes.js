@@ -28,9 +28,10 @@ router.get("/brands", homeController.mobiles);
 router.get("/blog", homeController.index);
 router.get("/support", homeController.contact);
 router.get("/terms", homeController.index);
-router.get("/profile/orders", homeController.index);
-router.get("/profile/wishlist", homeController.index);
-router.get("/profile/addresses", homeController.index);
-router.get("/profile/wallet", homeController.index);
+router.get("/profile", homeController.profile);
+router.get("/profile/orders", homeController.profile);
+router.get("/profile/wishlist", homeController.profile);
+router.get("/profile/addresses", homeController.profile);
+router.get("/profile/wallet", homeController.profile);
 
 module.exports = router;

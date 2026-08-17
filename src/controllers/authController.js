@@ -364,7 +364,7 @@ exports.resendOtp = async (req, res, next) => {
 // ============================================================
 exports.completeProfile = async (req, res, next) => {
   try {
-    const { firstName, lastName } = req.body;
+    const { firstName, lastName, nationalCode, birthDate } = req.body;
 
     const user = await User.findById(req.user._id);
     if (!user) {
@@ -373,6 +373,8 @@ exports.completeProfile = async (req, res, next) => {
 
     user.firstName = firstName;
     user.lastName = lastName;
+    if (nationalCode !== undefined) user.nationalCode = nationalCode;
+    if (birthDate !== undefined) user.birthDate = birthDate || null;
     await user.save({ validateBeforeSave: false });
 
     res.json({
@@ -384,6 +386,33 @@ exports.completeProfile = async (req, res, next) => {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
+        nationalCode: user.nationalCode,
+        birthDate: user.birthDate,
+        isVerified: user.isVerified,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ============================================================
+// دریافت اطلاعات کاربر جاری (Me)
+// ============================================================
+exports.me = async (req, res, next) => {
+  try {
+    const user = req.user;
+    res.json({
+      success: true,
+      user: {
+        id: user._id,
+        mobile: user.mobile,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        nationalCode: user.nationalCode,
+        birthDate: user.birthDate,
         isVerified: user.isVerified,
         role: user.role,
       },

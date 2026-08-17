@@ -55,7 +55,7 @@ app.use(
 // =======================
 // Maintenance Mode (حالت بروزرسانی هوشمند)
 // =======================
-/*
+
 app.use((req, res, next) => {
   // ۱. اجازه دسترسی به پنل ادمین، API ها و فایل‌های استاتیک (عکس، CSS، JS)
   if (
@@ -107,7 +107,7 @@ app.use((req, res, next) => {
     </html>
   `);
 });
-*/
+
 // =======================
 // MongoDB Connection
 // =======================
@@ -121,6 +121,7 @@ connectDB();
 const homeRoutes = require("./routes/homeRoutes");
 const authRoutes = require("./routes/authRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const addressRoutes = require("./routes/addressRoutes");
 const adminRoutes = require("./routes/admin");
 const adminApiRoutes = require("./routes/adminApi");
 const productRoutes = require("./routes/products");
@@ -138,6 +139,9 @@ app.use("/api/auth", authRoutes);
 
 // Reviews
 app.use("/api/reviews", reviewRoutes);
+
+// Addresses (آدرس‌های کاربر)
+app.use("/api/addresses", addressRoutes);
 
 // Admin Panel
 app.use("/admin/api", adminApiRoutes);

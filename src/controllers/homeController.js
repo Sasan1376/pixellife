@@ -76,6 +76,9 @@ const homeController = {
   console: (req, res) => {
     res.sendFile(path.join(__dirname, "../../views/console.html"));
   },
+  profile: (req, res) => {
+    res.sendFile(path.join(__dirname, "../../views/profile.html"));
+  },
 };
 
 module.exports = homeController;

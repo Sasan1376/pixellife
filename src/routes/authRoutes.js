@@ -74,6 +74,9 @@ router.post(
   authController.completeProfile,
 );
 
+// ----- دریافت اطلاعات کاربر جاری -----
+router.get("/me", protect, authController.me);
+
 // ----- خروج -----
 router.get("/logout", authController.logout);
 

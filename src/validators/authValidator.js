@@ -103,11 +103,26 @@ exports.resetPasswordValidator = [
   passwordValidation(),
 ];
 
+const nationalCodeValidation = () =>
+  body("nationalCode")
+    .optional({ checkFalsy: true })
+    .trim()
+    .matches(/^\d{10}$/)
+    .withMessage("کد ملی باید ۱۰ رقم باشد");
+
+const birthDateValidation = () =>
+  body("birthDate")
+    .optional({ checkFalsy: true })
+    .isISO8601()
+    .withMessage("تاریخ تولد معتبر نیست");
+
 exports.resendOtpValidator = [identifierValidation(), otpTypeValidation()];
 
 exports.completeProfileValidator = [
   firstNameValidation(),
   lastNameValidation(),
+  nationalCodeValidation(),
+  birthDateValidation(),
 ];
 
 /**
