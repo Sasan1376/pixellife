@@ -1174,9 +1174,16 @@
         align-items: center;
         justify-content: center;
         height: 44px;
+        min-width: 44px; /* اضافه شد تا کادر جمع نشود */
+        padding: 4px; /* اضافه شد تا لوگو از لبه‌ها فاصله داشته باشد */
+        border: 1px solid var(--border); /* یکدست شدن با سایر آیکون‌ها */
+        border-radius: var(--radius-sm);
+        background: var(--bg); /* یکدست شدن با سایر آیکون‌ها */
       }
       .ftrust-enamad img {
-        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        height: auto;
         width: auto;
         object-fit: contain;
         border-radius: var(--radius-sm);
@@ -2449,12 +2456,13 @@
           <div class="ftrust"><i class="ti ti-shield-check"></i></div>
           <div class="ftrust"><i class="ti ti-star"></i></div>
 
-          <!-- کد اصلاح شده با اضافه شدن <a در ابتدای آن -->
+          <!-- کد اصلاح شده لوگو اینماد -->
           <a
             referrerpolicy="origin"
             target="_blank"
             href="https://trustseal.enamad.ir/?id=7320810&Code=NumFm2BnHAPz2uqVZohNfj7I6jfqOEE5"
             class="ftrust-enamad"
+            title="نماد اعتماد الکترونیکی"
           >
             <img
               referrerpolicy="origin"
