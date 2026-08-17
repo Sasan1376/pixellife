@@ -4,18 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>جزئیات محصول | دیجی‌شاپ</title>
-    <script>
-      (function () {
-        try {
-          var saved = localStorage.getItem("theme");
-          var systemDark =
-            window.matchMedia &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches;
-          var theme = saved || (systemDark ? "dark" : "light");
-          document.documentElement.setAttribute("data-theme", theme);
-        } catch (e) {}
-      })();
-    </script>
+
     <link
       href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
@@ -53,30 +42,7 @@
         --overlay: rgba(15, 23, 42, 0.45);
         --overlay-soft: rgba(15, 23, 42, 0.25);
       }
-      [data-theme="dark"] {
-        --blue: #3b82f6;
-        --blue-dark: #60a5fa;
-        --blue-light: rgba(59, 130, 246, 0.16);
-        --blue-mid: rgba(59, 130, 246, 0.28);
-        --white: #1e293b;
-        --bg: #0f172a;
-        --border: #334155;
-        --text-1: #f1f5f9;
-        --text-2: #cbd5e1;
-        --text-3: #94a3b8;
-        --text-4: #64748b;
-        --red: #f87171;
-        --green: #4ade80;
-        --amber: #fbbf24;
-        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
-        --shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
-        --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
-        --success-bg: rgba(34, 197, 94, 0.12);
-        --success-border: rgba(34, 197, 94, 0.35);
-        --danger-bg: rgba(248, 113, 113, 0.12);
-        --overlay: rgba(0, 0, 0, 0.6);
-        --overlay-soft: rgba(0, 0, 0, 0.4);
-      }
+
       *,
       *::before,
       *::after {
@@ -3070,9 +3036,6 @@
           <button class="search-btn"><i class="ti ti-search"></i> جستجو</button>
         </div>
         <div class="header-actions">
-          <button class="h-btn theme-toggle" id="themeToggle">
-            <i class="ti ti-moon" id="themeIcon"></i>
-          </button>
           <button class="h-btn"><i class="ti ti-bell"></i></button>
           <button class="btn-auth-pill" id="authPillBtn">
             <i class="ti ti-login"></i>
@@ -4262,25 +4225,6 @@
         };
       }
 
-      const themeToggleBtn = document.getElementById("themeToggle");
-      const themeIcon = document.getElementById("themeIcon");
-      function updateThemeIcon(theme) {
-        themeIcon.className = theme === "dark" ? "ti ti-sun" : "ti ti-moon";
-      }
-      function setTheme(theme) {
-        document.documentElement.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-        updateThemeIcon(theme);
-      }
-      updateThemeIcon(
-        document.documentElement.getAttribute("data-theme") || "light",
-      );
-      themeToggleBtn.addEventListener("click", () => {
-        const current =
-          document.documentElement.getAttribute("data-theme") || "light";
-        setTheme(current === "dark" ? "light" : "dark");
-      });
-
       /* ══ API HELPER ══ */
       async function apiCall(url, data) {
         const res = await fetch(url, {
@@ -4798,6 +4742,7 @@
         localStorage.setItem("digishop_cart", JSON.stringify(cart));
         updateCartBadge();
       }
+
       function updateCartBadge() {
         const cart = getCart();
         const count = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
