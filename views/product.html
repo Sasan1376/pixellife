@@ -7,7 +7,7 @@
     <script>
       (function () {
         try {
-          var saved = "light";
+          var saved = localStorage.getItem("theme");
           var systemDark =
             window.matchMedia &&
             window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -22,7 +22,7 @@
     />
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/dist/tabler-icons.min.css"
     />
     <style>
       :root {
@@ -237,10 +237,7 @@
       .h-btn i {
         font-size: 22px;
       }
-      .theme-toggle {
-        display: none !important;
-        overflow: hidden;
-      }
+
       .theme-toggle i {
         transition:
           transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
@@ -826,7 +823,7 @@
       .gallery-main svg,
       .gallery-main img {
         max-height: 500px;
-        max-width: 600%;
+        max-width: 100%;
         width: auto;
         object-fit: contain;
         mix-blend-mode: multiply;
@@ -4204,29 +4201,61 @@
         return /تبلت|tablet|ipad/i.test(category || "");
       }
 
+      function toFaDigits(n) {
+        return Number(n || 0).toLocaleString("fa-IR");
+      }
+
       function mapDbProductToView(doc) {
-        const oldPrice =
+        const isTablet = brandToTabletFlag(doc.category);
+        const oldPriceFromDiscount =
           doc.discount && doc.discount > 0
             ? Math.round(doc.price / (1 - doc.discount / 100))
             : 0;
+        // اگر خود دیتابیس oldPrice/compareAtPrice داشت، همان معتبرتر است
+        const oldPrice =
+          doc.oldPrice || doc.compareAtPrice || oldPriceFromDiscount;
+
+        // رنگ‌ها/حافظه‌ها را از دیتابیس بخوان اگر موجود بود، وگرنه یک گزینه واحد بساز
+        // (نه یک برچسب جعلی "استاندارد"/"پیش‌فرض" که روی همه محصولات یکسان دیده شود)
+        const storages =
+          Array.isArray(doc.storages) && doc.storages.length
+            ? doc.storages
+            : doc.capacity
+              ? [doc.capacity]
+              : ["یک گزینه"];
+
+        const colors =
+          Array.isArray(doc.colors) && doc.colors.length
+            ? doc.colors.map((c) =>
+                typeof c === "string" ? { name: c, hex: "#334155" } : c,
+              )
+            : [{ name: doc.color || "یک رنگ", hex: doc.colorHex || "#334155" }];
+
         return {
-          brand: doc.brand,
+          brand: doc.brand || "نامشخص",
           brandLogo: "",
           name: doc.name,
-          rating: "۰",
-          reviews: "۰",
+          // به‌جای هاردکد صفر، اگر سرور rating/reviewCount می‌فرستد از همان استفاده کن
+          rating: doc.rating ? String(doc.rating) : "۰",
+          reviews: doc.reviewCount != null ? toFaDigits(doc.reviewCount) : "۰",
           desc: doc.description || "",
-          comingSoon: false,
+          comingSoon: !!doc.comingSoon,
           outOfStock: doc.availability === "out" || doc.stock === 0,
           price: doc.price,
           oldPrice: oldPrice,
-          storages: ["استاندارد"],
-          warranties: ["گارانتی ۱۸ ماهه شرکتی"],
-          colors: [{ name: "پیش‌فرض", hex: "#334155" }],
-          svg: phoneSvg("#1a1a2e", "#1e3a5f", "#2d1b4e"),
+          storages: storages,
+          warranties:
+            Array.isArray(doc.warranties) && doc.warranties.length
+              ? doc.warranties
+              : ["گارانتی ۱۸ ماهه شرکتی"],
+          colors: colors,
+          // شکل SVG بر اساس دسته‌بندی واقعی، نه همیشه گوشی
+          svg: isTablet
+            ? tabletSvg("#1a1a2e", "#1e3a5f", "#2d1b4e")
+            : phoneSvg("#1a1a2e", "#1e3a5f", "#2d1b4e"),
           images: Array.isArray(doc.images) ? doc.images : [],
-          reviewImages: [],
-          isTablet: brandToTabletFlag(doc.category),
+          reviewImages: Array.isArray(doc.reviewImages) ? doc.reviewImages : [],
+          isTablet: isTablet,
           specs: parseSpecsString(doc.specs),
           _fromDb: true,
           _dbId: doc._id,
@@ -4818,7 +4847,10 @@
       }
 
       const searchParams = new URLSearchParams(location.search);
-      const productId = searchParams.get("id") || searchParams.get("slug");
+      const requestedId = searchParams.get("id") || searchParams.get("slug");
+      // شناسه‌ی نهایی که در cart/wishlist/recently-viewed ذخیره می‌شود، بعد از
+      // دریافت پاسخ سرور با canonicalProductId جایگزین می‌شود (پایین‌تر)
+      let productId = requestedId;
       (async function () {
         let product = null;
         try {
@@ -4831,6 +4863,7 @@
             const apiData = await apiRes.json();
             if (apiData.success && apiData.product) {
               product = mapDbProductToView(apiData.product);
+              productId = String(apiData.product._id); // یکتا و ثابت برای همیشه
             }
           }
         } catch (e) {
@@ -4843,7 +4876,6 @@
           }
         }
         const pageBody = document.getElementById("pageBody");
-        const stickyCard = document.getElementById("stickyPurchaseCard");
 
         let selectedStorage,
           selectedColor,
@@ -4882,29 +4914,25 @@
           const categoryLink = document.getElementById(
             "breadcrumbCategoryLink",
           );
-          if (product.brand === "سامسونگ") {
-            const categoryUrl = product.isTablet ? "/samsungtab" : "/samsung";
-            brandLink.href = "/samsung";
-            brandLink.textContent = "سامسونگ";
-            categoryLink.href = categoryUrl;
-            categoryLink.textContent = product.isTablet
-              ? "تبلت سامسونگ"
-              : "گوشی موبایل سامسونگ";
-          } else if (product.brand === "شیائومی") {
-            const categoryUrl = product.isTablet ? "/xiaomitab" : "/xiaomi";
-            brandLink.href = "/xiaomi";
-            brandLink.textContent = "شیائومی";
-            categoryLink.href = categoryUrl;
-            categoryLink.textContent = product.isTablet
-              ? "تبلت شیائومی"
-              : "گوشی موبایل شیائومی";
+          const BRAND_ROUTES = {
+            سامسونگ: { phone: "/samsung", tablet: "/samsungtab" },
+            شیائومی: { phone: "/xiaomi", tablet: "/xiaomitab" },
+            اپل: { phone: "/iphone", tablet: "/ipad" },
+          };
+          const brandRoute = BRAND_ROUTES[product.brand];
+          if (brandRoute) {
+            const url = product.isTablet ? brandRoute.tablet : brandRoute.phone;
+            brandLink.href = url;
+            brandLink.textContent = product.brand;
+            categoryLink.href = url;
+            categoryLink.textContent = `${product.isTablet ? "تبلت" : "گوشی موبایل"} ${product.brand}`;
           } else {
-            brandLink.href = "/iphone";
-            brandLink.textContent = "اپل";
-            categoryLink.href = "/iphone";
-            categoryLink.textContent = product.isTablet
-              ? "تبلت اپل"
-              : "گوشی موبایل اپل";
+            // برند ناشناخته/جدید از پنل ادمین — به‌جای فرض اشتباه "اپل"
+            const genericUrl = product.isTablet ? "/tablets" : "/mobiles";
+            brandLink.href = genericUrl;
+            brandLink.textContent = product.brand || "برند";
+            categoryLink.href = genericUrl;
+            categoryLink.textContent = `${product.isTablet ? "تبلت" : "گوشی موبایل"} ${product.brand || ""}`;
           }
 
           selectedStorage = product.storages[0];
@@ -5254,27 +5282,30 @@
         `;
 
           function specIcon(label) {
-            const map = {
-              نمایشگر: "ti-device-mobile",
-              پردازنده: "ti-cpu",
-              "پردازنده گرافیکی": "ti-device-desktop-analytics",
-              "حافظه رم": "ti-brain",
-              "حافظه داخلی": "ti-hard-drive",
-              دوربین: "ti-camera",
-              باتری: "ti-battery-4",
-              شارژ: "ti-bolt",
-              سیستم‌عامل: "ti-brand-android",
-              شبکه: "ti-antenna",
-              بلوتوث: "ti-bluetooth",
-              وای‌فای: "ti-wifi",
-              "پورت شارژ": "ti-usb",
-              وزن: "ti-weight",
-              ابعاد: "ti-ruler-2",
-              "سیم کارت": "ti-sim",
-              "مقاومت آب": "ti-droplet",
-              "حافظه جانبی": "ti-device-sd-card",
-            };
-            return map[label] || "ti-info-circle";
+            const rules = [
+              [/نمایشگر|صفحه/, "ti-device-mobile"],
+              [/گرافیک|GPU/i, "ti-device-desktop-analytics"],
+              [/پردازنده|CPU|چیپست/i, "ti-cpu"],
+              [/رم|RAM/i, "ti-brain"],
+              [/حافظه داخلی|ROM|ظرفیت/i, "ti-hard-drive"],
+              [/دوربین/, "ti-camera"],
+              [/باتری/, "ti-battery-4"],
+              [/شارژ/, "ti-bolt"],
+              [/سیستم[\s\u200c]?عامل|OS/i, "ti-brand-android"],
+              [/شبکه|5G|4G/i, "ti-antenna"],
+              [/بلوتوث/, "ti-bluetooth"],
+              [/وای[\s\u200c]?فای|wifi/i, "ti-wifi"],
+              [/پورت|USB/i, "ti-usb"],
+              [/وزن/, "ti-weight"],
+              [/ابعاد|اندازه/, "ti-ruler-2"],
+              [/سیم[\s\u200c]?کارت|SIM/i, "ti-sim"],
+              [/آب|IP6/i, "ti-droplet"],
+              [/جانبی|SD|کارت حافظه/i, "ti-device-sd-card"],
+              [/رنگ/, "ti-palette"],
+              [/گارانتی/, "ti-shield-check"],
+            ];
+            const match = rules.find(([re]) => re.test(label));
+            return match ? match[1] : "ti-info-circle";
           }
 
           document
@@ -5766,16 +5797,44 @@
             </div>`;
           }
 
-          const relatedIds = Object.keys(PRODUCTS).filter(
-            (id) =>
-              id !== productId &&
-              (PRODUCTS[id].brand === product.brand ||
-                !!PRODUCTS[id].isTablet === !!product.isTablet),
-          );
-          document.getElementById("relatedSlider").innerHTML = relatedIds
-            .slice(0, 8)
-            .map((id) => miniCard(id, PRODUCTS[id]))
-            .join("");
+          async function loadRelatedProducts() {
+            try {
+              const res = await fetch(
+                `/api/products?brand=${encodeURIComponent(product.brand)}&exclude=${productId}&limit=8`,
+              );
+              if (res.ok) {
+                const data = await res.json();
+                if (
+                  data.success &&
+                  Array.isArray(data.products) &&
+                  data.products.length
+                ) {
+                  const mapped = data.products.map((d) => [
+                    String(d._id),
+                    mapDbProductToView(d),
+                  ]);
+                  document.getElementById("relatedSlider").innerHTML = mapped
+                    .map(([id, p]) => miniCard(id, p))
+                    .join("");
+                  return;
+                }
+              }
+            } catch (e) {
+              console.warn("محصولات مشابه از سرور دریافت نشد:", e);
+            }
+            // fallback فقط وقتی سرور چیزی نداد
+            const relatedIds = Object.keys(PRODUCTS).filter(
+              (id) =>
+                id !== productId &&
+                (PRODUCTS[id].brand === product.brand ||
+                  !!PRODUCTS[id].isTablet === !!product.isTablet),
+            );
+            document.getElementById("relatedSlider").innerHTML = relatedIds
+              .slice(0, 8)
+              .map((id) => miniCard(id, PRODUCTS[id]))
+              .join("");
+          }
+          loadRelatedProducts();
 
           const recentIds = getRecentlyViewed().filter(
             (id) => id !== productId && PRODUCTS[id],
@@ -5882,6 +5941,5 @@
         }
       })();
     </script>
-    <script src="/auth-modal.js"></script>
   </body>
 </html>
