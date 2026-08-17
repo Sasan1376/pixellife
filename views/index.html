@@ -3090,7 +3090,7 @@
       });
 
       function updateSlider() {
-        heroTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+        heroTrack.style.transform = `translateX(${currentSlide * 100}%)`;
         document.querySelectorAll(".hero-dot").forEach((dot, i) => {
           dot.classList.toggle("active", i === currentSlide);
         });
