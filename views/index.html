@@ -1223,7 +1223,6 @@
         gap: 16px;
         margin-bottom: 40px;
       }
-      .hero-section > a { display: none !important; }
       .hero-slider-container {
         position: relative;
         border-radius: var(--radius-lg);
@@ -2202,25 +2201,30 @@
 
     <!-- PAGE BODY -->
     <main class="page-body">
-      <!-- ═══ HERO SECTION ═══ -->
-      <!-- ═══ HERO SECTION (بنر اصلی ریسپانسیو) ═══ -->
+        <!-- ═══ HERO SECTION (اسلایدر ریسپانسیو با دو عکس) ═══ -->
       <section class="hero-section">
-        <div class="hero-slider-container" id="heroSlider">
+        <div class="hero-slider-container" id="heroSlider" style="height: auto; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);">
           <div class="hero-slider-track" id="heroTrack">
-            <a class="hero-slide" href="/iphone" aria-label="iPhone 17" style="background-image: url('/images/iphone17_banner.png');"></a>
-            <a class="hero-slide" href="/samsung" aria-label="Samsung Galaxy S26 Ultra" style="background-image: url('/images/samsung-s26-banner.png');"></a>
+            
+            <!-- اسلاید اول (آیفون) -->
+            <a class="hero-slide" href="/iphone" style="min-width: 100%; display: block; padding: 0; height: auto;">
+              <img src="/images/iphone17_banner.png" alt="بنر آیفون ۱۷" style="width: 100%; height: auto; display: block;">
+            </a>
+            
+            <!-- اسلاید دوم (سامسونگ) -->
+            <a class="hero-slide" href="/samsung" style="min-width: 100%; display: block; padding: 0; height: auto;">
+              <img src="/images/samsung-s26-banner.png" alt="بنر سامسونگ S26" style="width: 100%; height: auto; display: block;">
+            </a>
+
           </div>
-          <button class="hero-nav-btn prev" id="heroPrev" aria-label="Previous banner">&#10094;</button>
-          <button class="hero-nav-btn next" id="heroNext" aria-label="Next banner">&#10095;</button>
-          <div class="hero-dots" id="heroDots" aria-label="Banner slides"></div>
+
+          <!-- Navigation Buttons -->
+          <button class="hero-nav-btn prev" id="heroPrev"><i class="ti ti-chevron-right"></i></button>
+          <button class="hero-nav-btn next" id="heroNext"><i class="ti ti-chevron-left"></i></button>
+
+          <!-- Dots -->
+          <div class="hero-dots" id="heroDots"></div>
         </div>
-        <a href="/iphone" style="display: block; width: 100%; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);">
-          <img 
-            src="/images/iphone17_banner.png" 
-            alt="بنر پیشنهاد ویژه آیفون ۱۷" 
-            style="width: 100%; height: auto; display: block;" 
-          />
-        </a>
       </section>
 
       <!-- ═══ CATEGORY ICONS ═══ -->
