@@ -27,8 +27,16 @@
         margin: 0;
         font-family: Vazirmatn, Tahoma, sans-serif;
         background:
-          radial-gradient(circle at top right, rgba(37, 99, 235, 0.14), transparent 30%),
-          radial-gradient(circle at bottom left, rgba(14, 165, 233, 0.12), transparent 28%),
+          radial-gradient(
+            circle at top right,
+            rgba(37, 99, 235, 0.14),
+            transparent 30%
+          ),
+          radial-gradient(
+            circle at bottom left,
+            rgba(14, 165, 233, 0.12),
+            transparent 28%
+          ),
           var(--bg);
         color: var(--text);
       }
@@ -72,7 +80,11 @@
         width: 220px;
         height: 220px;
         border-radius: 50%;
-        background: linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(14, 165, 233, 0.06));
+        background: linear-gradient(
+          135deg,
+          rgba(37, 99, 235, 0.18),
+          rgba(14, 165, 233, 0.06)
+        );
         pointer-events: none;
       }
       .brand {
@@ -188,7 +200,9 @@
         font: inherit;
         background: #fff;
         outline: none;
-        transition: border-color 0.2s, box-shadow 0.2s;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
       }
       input:focus,
       textarea:focus {
@@ -275,8 +289,12 @@
       <section class="shell">
         <div class="hero">
           <div>
-            <div class="brand"><span class="brand-dot"></span>پشتیبانی پیکسل لایف</div>
-            <h1>هر سوالی درباره خرید، سفارش یا خدمات داشتید، اینجا کنارتان هستیم.</h1>
+            <div class="brand">
+              <span class="brand-dot"></span>پشتیبانی پیکسل لایف
+            </div>
+            <h1>
+              هر سوالی درباره خرید، سفارش یا خدمات داشتید، اینجا کنارتان هستیم.
+            </h1>
             <p class="lead">
               برای پیگیری سفارش، هماهنگی درباره محصولات، یا هر سوال فنی و عمومی،
               بهترین راه این است که از فرم همین صفحه پیام بگذارید یا مستقیم با
@@ -300,7 +318,7 @@
           </div>
 
           <div class="links">
-            <a class="link-card" href="mailto:support@pixellife.ir">
+            <a class="link-card" href="mailto:info@pixellife.ir">
               <span class="link-ico">✉</span>
               <span>
                 <strong>ایمیل</strong>
@@ -319,35 +337,66 @@
 
         <div class="panel">
           <h2>فرم تماس</h2>
-          <p>پیام خود را بفرستید تا تیم پشتیبانی بررسی کند و با شما ارتباط بگیرد.</p>
+          <p>
+            پیام خود را بفرستید تا تیم پشتیبانی بررسی کند و با شما ارتباط بگیرد.
+          </p>
           <form id="contactForm">
             <div class="row">
               <div>
                 <label for="name">نام و نام خانوادگی</label>
-                <input id="name" name="name" type="text" placeholder="مثلاً علی رضایی" required />
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="مثلاً علی رضایی"
+                  required
+                />
               </div>
               <div>
                 <label for="phone">شماره تماس</label>
-                <input id="phone" name="phone" type="tel" placeholder="0912..." required />
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  placeholder="0912..."
+                  required
+                />
               </div>
             </div>
             <div>
               <label for="email">ایمیل</label>
-              <input id="email" name="email" type="email" placeholder="name@example.com" />
+              <input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="name@example.com"
+              />
             </div>
             <div>
               <label for="subject">موضوع</label>
-              <input id="subject" name="subject" type="text" placeholder="مثلاً پیگیری سفارش" required />
+              <input
+                id="subject"
+                name="subject"
+                type="text"
+                placeholder="مثلاً پیگیری سفارش"
+                required
+              />
             </div>
             <div>
               <label for="message">پیام</label>
-              <textarea id="message" name="message" placeholder="متن پیام خود را بنویسید..." required></textarea>
+              <textarea
+                id="message"
+                name="message"
+                placeholder="متن پیام خود را بنویسید..."
+                required
+              ></textarea>
             </div>
             <button class="btn" id="submitBtn" type="submit">ارسال پیام</button>
           </form>
           <div class="feedback" id="formFeedback" aria-live="polite"></div>
           <div class="note">
-            این صفحه فعلاً ساده و سبک نگه داشته شده تا بدون مصرف اضافه، با routeهای فعلی سایت هماهنگ شود.
+            این صفحه فعلاً ساده و سبک نگه داشته شده تا بدون مصرف اضافه، با
+            routeهای فعلی سایت هماهنگ شود.
           </div>
         </div>
       </section>
