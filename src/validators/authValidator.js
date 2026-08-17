@@ -61,6 +61,25 @@ const otpTypeValidation = () =>
     .isIn(["register", "login", "forgot"])
     .withMessage("نوع کد تأیید نامعتبر است");
 
+/**
+ * اعتبارسنجی تکمیل اطلاعات کاربری (نام و نام خانوادگی)
+ */
+const firstNameValidation = () =>
+  body("firstName")
+    .trim()
+    .notEmpty()
+    .withMessage("نام الزامی است")
+    .isLength({ min: 2, max: 50 })
+    .withMessage("نام باید بین ۲ تا ۵۰ کاراکتر باشد");
+
+const lastNameValidation = () =>
+  body("lastName")
+    .trim()
+    .notEmpty()
+    .withMessage("نام خانوادگی الزامی است")
+    .isLength({ min: 2, max: 50 })
+    .withMessage("نام خانوادگی باید بین ۲ تا ۵۰ کاراکتر باشد");
+
 // --- Validators برای هر Endpoint ---
 
 exports.checkUserValidator = [identifierValidation()];
@@ -73,7 +92,10 @@ exports.loginValidator = [identifierValidation(), passwordValidation()];
 
 exports.forgotPasswordValidator = [identifierValidation()];
 
-exports.verifyForgotOtpValidator = [identifierValidation(), otpCodeValidation()];
+exports.verifyForgotOtpValidator = [
+  identifierValidation(),
+  otpCodeValidation(),
+];
 
 exports.resetPasswordValidator = [
   identifierValidation(),
@@ -82,6 +104,11 @@ exports.resetPasswordValidator = [
 ];
 
 exports.resendOtpValidator = [identifierValidation(), otpTypeValidation()];
+
+exports.completeProfileValidator = [
+  firstNameValidation(),
+  lastNameValidation(),
+];
 
 /**
  * میدلور بررسی نتایج Validation

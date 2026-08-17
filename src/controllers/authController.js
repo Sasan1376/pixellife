@@ -6,7 +6,8 @@ const ApiError = require("../utils/ApiError");
 
 const normalizeIdentifier = (identifier) => {
   if (typeof identifier !== "string") return identifier;
-  const normalized = identifier.trim()
+  const normalized = identifier
+    .trim()
     .replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit))
     .replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit))
     .replace(/[\s-]/g, "");
@@ -81,7 +82,8 @@ exports.sendOtp = async (req, res, next) => {
     const { type } = req.body;
     const identifier = normalizeIdentifier(req.body.identifier);
     const channel = getChannel(identifier);
-    if (channel === "email") return next(new ApiError(400, "ورود با ایمیل هنوز فعال نیست"));
+    if (channel === "email")
+      return next(new ApiError(400, "ورود با ایمیل هنوز فعال نیست"));
 
     // بررسی وجود کاربر
     const user = await findUserByIdentifier(identifier);
@@ -143,16 +145,26 @@ exports.verifyLoginOtp = async (req, res, next) => {
 
     // ساخت توکن
     const token = tokenService.generateToken(user._id);
-    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 30 * 24 * 60 * 60 * 1000 });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    const needsProfile = !user.firstName || !user.lastName;
 
     res.json({
       success: true,
       message: "ورود موفق",
       token,
+      needsProfile,
       user: {
         id: user._id,
         mobile: user.mobile,
         email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
         isVerified: user.isVerified,
         role: user.role,
       },
@@ -193,7 +205,12 @@ exports.login = async (req, res, next) => {
 
     // ساخت توکن
     const token = tokenService.generateToken(user._id);
-    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 30 * 24 * 60 * 60 * 1000 });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
 
     res.json({
       success: true,
@@ -287,7 +304,12 @@ exports.resetPassword = async (req, res, next) => {
 
     // ساخت توکن جدید
     const token = tokenService.generateToken(user._id);
-    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 30 * 24 * 60 * 60 * 1000 });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
 
     res.json({
       success: true,
@@ -307,7 +329,8 @@ exports.resendOtp = async (req, res, next) => {
     const { type } = req.body;
     const identifier = normalizeIdentifier(req.body.identifier);
     const channel = getChannel(identifier);
-    if (channel === "email") return next(new ApiError(400, "ورود با ایمیل هنوز فعال نیست"));
+    if (channel === "email")
+      return next(new ApiError(400, "ورود با ایمیل هنوز فعال نیست"));
 
     // برای نوع register/login: کاربر باید وجود داشته باشد
     if (type === "register" || type === "login") {
@@ -330,6 +353,40 @@ exports.resendOtp = async (req, res, next) => {
     res.json({
       success: true,
       message: "کد تأیید جدید ارسال شد",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ============================================================
+// تکمیل اطلاعات کاربری (نام و نام خانوادگی)
+// ============================================================
+exports.completeProfile = async (req, res, next) => {
+  try {
+    const { firstName, lastName } = req.body;
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return next(new ApiError(404, "کاربر یافت نشد"));
+    }
+
+    user.firstName = firstName;
+    user.lastName = lastName;
+    await user.save({ validateBeforeSave: false });
+
+    res.json({
+      success: true,
+      message: "اطلاعات کاربری با موفقیت ذخیره شد",
+      user: {
+        id: user._id,
+        mobile: user.mobile,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isVerified: user.isVerified,
+        role: user.role,
+      },
     });
   } catch (error) {
     next(error);

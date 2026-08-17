@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
+const { protect } = require("../middleware/authMiddleware");
 const {
   checkUserValidator,
   sendOtpValidator,
@@ -10,6 +11,7 @@ const {
   verifyForgotOtpValidator,
   resetPasswordValidator,
   resendOtpValidator,
+  completeProfileValidator,
   validate,
 } = require("../validators/authValidator");
 
@@ -22,12 +24,7 @@ router.post(
 );
 
 // ----- مرحله ۲: ارسال کد تأیید -----
-router.post(
-  "/send-otp",
-  sendOtpValidator,
-  validate,
-  authController.sendOtp,
-);
+router.post("/send-otp", sendOtpValidator, validate, authController.sendOtp);
 
 // ----- مرحله ۳: تأیید OTP و ورود -----
 router.post(
@@ -66,6 +63,15 @@ router.post(
   resendOtpValidator,
   validate,
   authController.resendOtp,
+);
+
+// ----- تکمیل اطلاعات کاربری (نام و نام خانوادگی) -----
+router.post(
+  "/complete-profile",
+  protect,
+  completeProfileValidator,
+  validate,
+  authController.completeProfile,
 );
 
 // ----- خروج -----

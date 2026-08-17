@@ -9,6 +9,16 @@ const userSchema = new mongoose.Schema(
       sparse: true,
       match: [/^(\+98|0098|0)?9[0-9]{9}$/, "شماره موبایل معتبر نیست"],
     },
+    firstName: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    lastName: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     email: {
       type: String,
       unique: true,

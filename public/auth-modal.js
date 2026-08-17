@@ -181,6 +181,37 @@
       color: #1e293b;
     }
 
+    .shared-auth-row {
+      display: flex;
+      gap: 12px;
+    }
+    .shared-auth-row .shared-auth-field {
+      flex: 1;
+      min-width: 0;
+    }
+
+    #sharedAuthModal .shared-auth-field input {
+      text-align: right;
+    }
+
+    #sharedAuthModal input[readonly] {
+      direction: ltr;
+      text-align: center;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .shared-auth-hint {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-top: 8px;
+      color: #94a3b8;
+      font-size: 12.5px;
+    }
+    .shared-auth-hint svg { flex-shrink: 0; }
+
     .shared-auth-otp-input {
       text-align: center !important;
       direction: ltr !important;
@@ -411,6 +442,110 @@
     startTimer();
   }
 
+  // ─── مرحله ۳: تکمیل اطلاعات کاربری ───
+  function showProfileStep() {
+    clearInterval(timerInterval);
+    content.innerHTML = `
+      <h2 id="sharedAuthTitle">تکمیل اطلاعات کاربری</h2>
+      <form id="sharedAuthProfileForm">
+        <div class="shared-auth-row">
+          <div class="shared-auth-field">
+            <label for="sharedAuthFirstName">نام</label>
+            <input
+              id="sharedAuthFirstName"
+              type="text"
+              autocomplete="given-name"
+              placeholder="نام"
+              maxlength="50"
+              required
+            />
+          </div>
+          <div class="shared-auth-field">
+            <label for="sharedAuthLastName">نام خانوادگی</label>
+            <input
+              id="sharedAuthLastName"
+              type="text"
+              autocomplete="family-name"
+              placeholder="نام خانوادگی"
+              maxlength="50"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="shared-auth-field" style="margin-top:18px;">
+          <label for="sharedAuthMobileReadonly">تلفن همراه</label>
+          <input
+            id="sharedAuthMobileReadonly"
+            type="text"
+            value="${currentIdentifier}"
+            readonly
+          />
+          <div class="shared-auth-hint">
+            <span>شماره تلفن همراه قابل ویرایش نمی‌باشد</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+        </div>
+
+        <div id="sharedAuthError" class="shared-auth-error"></div>
+        <button type="submit" id="sharedAuthProfileSubmit">ذخیره تغییرات</button>
+      </form>
+    `;
+
+    const firstNameInput = document.getElementById("sharedAuthFirstName");
+    firstNameInput.focus();
+
+    document
+      .getElementById("sharedAuthProfileForm")
+      .addEventListener("submit", saveProfile);
+  }
+
+  // ─── ذخیره اطلاعات کاربری ───
+  async function saveProfile(event) {
+    event.preventDefault();
+    clearError();
+
+    const firstNameInput = document.getElementById("sharedAuthFirstName");
+    const lastNameInput = document.getElementById("sharedAuthLastName");
+    const button = document.getElementById("sharedAuthProfileSubmit");
+
+    const firstName = firstNameInput.value.trim();
+    const lastName = lastNameInput.value.trim();
+
+    if (firstName.length < 2 || lastName.length < 2) {
+      showError("لطفاً نام و نام خانوادگی را به‌درستی وارد کنید.");
+      return;
+    }
+
+    setLoading(button, true, "ذخیره تغییرات");
+
+    try {
+      await apiRequest("/api/auth/complete-profile", { firstName, lastName });
+
+      clearInterval(timerInterval);
+      document.body.classList.add("logged-in");
+
+      content.innerHTML = `
+        <h2 id="sharedAuthTitle">ورود موفق ✓</h2>
+        <p>اطلاعات شما ذخیره شد. در حال بروزرسانی...</p>
+      `;
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 800);
+    } catch (error) {
+      console.error("Save Profile Error:", error);
+      showError(
+        error.message || "ذخیره اطلاعات انجام نشد. لطفاً دوباره تلاش کنید.",
+      );
+      setLoading(button, false, "ذخیره تغییرات");
+    }
+  }
+
   // ─── ارسال OTP ───
   async function sendOtp(event) {
     event.preventDefault();
@@ -486,6 +621,12 @@
 
       clearInterval(timerInterval);
       document.body.classList.add("logged-in");
+
+      // اگر کاربر نام و نام خانوادگی ثبت نکرده، مرحله تکمیل اطلاعات را نشان بده
+      if (result.needsProfile) {
+        showProfileStep();
+        return;
+      }
 
       content.innerHTML = `
         <h2 id="sharedAuthTitle">ورود موفق ✓</h2>
