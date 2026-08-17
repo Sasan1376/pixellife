@@ -2388,25 +2388,25 @@
         updateThemeIcon(current);
       }
       if (themeToggleBtn) {
-      themeToggleBtn.addEventListener("click", () => {
-        const current =
-          document.documentElement.getAttribute("data-theme") || "light";
-        setTheme(current === "dark" ? "light" : "dark");
-      });
-
-      async function apiCall(url, data) {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "same-origin",
-          body: JSON.stringify(data),
+        themeToggleBtn.addEventListener("click", () => {
+          const current =
+            document.documentElement.getAttribute("data-theme") || "light";
+          setTheme(current === "dark" ? "light" : "dark");
         });
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok || !json.success) {
-          throw new Error(json.message || "خطا در ارتباط با سرور");
+
+        async function apiCall(url, data) {
+          const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
+            body: JSON.stringify(data),
+          });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok || !json.success) {
+            throw new Error(json.message || "خطا در ارتباط با سرور");
+          }
+          return json;
         }
-        return json;
-      }
       }
       if (window.matchMedia) {
         window
@@ -2441,7 +2441,14 @@
         return v.toLowerCase();
       }
       function getDisplayName(user) {
-        return user.mobile || user.email || "کاربر";
+        const fullName = [user.firstName, user.lastName]
+          .filter(Boolean)
+          .join(" ")
+          .trim();
+        if (fullName) return fullName;
+        if (user.mobile) return user.mobile;
+        if (user.email) return user.email;
+        return "کاربر";
       }
       function applyLogin(user) {
         document.body.classList.add("logged-in");
@@ -2538,21 +2545,24 @@
         .getElementById("backFromMethod")
         .addEventListener("click", () => showStep("stepIdentifier"));
 
-      document.getElementById("sendOtpBtn").addEventListener("click", async () => {
-        try {
-          await apiCall("/api/auth/send-otp", {
-            identifier: currentIdentifier,
-            type: "login",
-            channel: "sms",
-          });
-          document.getElementById("otpTarget").textContent = currentIdentifier;
-          showStep("stepOtp");
-          document.getElementById("otpInput").value = "";
-          startOtpTimer();
-        } catch (error) {
-          showToast(error.message || "خطا در ارسال پیامک");
-        }
-      });
+      document
+        .getElementById("sendOtpBtn")
+        .addEventListener("click", async () => {
+          try {
+            await apiCall("/api/auth/send-otp", {
+              identifier: currentIdentifier,
+              type: "login",
+              channel: "sms",
+            });
+            document.getElementById("otpTarget").textContent =
+              currentIdentifier;
+            showStep("stepOtp");
+            document.getElementById("otpInput").value = "";
+            startOtpTimer();
+          } catch (error) {
+            showToast(error.message || "خطا در ارسال پیامک");
+          }
+        });
       document
         .getElementById("showPasswordBtn")
         .addEventListener("click", () => {
@@ -2627,37 +2637,41 @@
           timerEl.textContent = m + ":" + s;
         }, 1000);
       }
-      document.getElementById("resendBtn").addEventListener("click", async () => {
-        try {
-          await apiCall("/api/auth/resend-otp", {
-            identifier: currentIdentifier,
-            type: "login",
-          });
-          startOtpTimer();
-          showToast("کد تأیید مجدداً ارسال شد");
-        } catch (error) {
-          showToast(error.message || "خطا در ارسال مجدد کد");
-        }
-      });
-      document.getElementById("verifyOtpBtn").addEventListener("click", async () => {
-        clearErrors();
-        const code = document.getElementById("otpInput").value.trim();
-        if (code.length !== 5 || !/^\d{5}$/.test(code)) {
-          document.getElementById("otpInput").classList.add("input-error");
-          document.getElementById("otpError").classList.add("show");
-          return;
-        }
-        try {
-          const json = await apiCall("/api/auth/verify-login-otp", {
-            identifier: currentIdentifier,
-            code,
-          });
-          if (otpInterval) clearInterval(otpInterval);
-          finishLogin(json.user, json.token);
-        } catch (error) {
-          showToast(error.message || "کد تأیید نادرست است");
-        }
-      });
+      document
+        .getElementById("resendBtn")
+        .addEventListener("click", async () => {
+          try {
+            await apiCall("/api/auth/resend-otp", {
+              identifier: currentIdentifier,
+              type: "login",
+            });
+            startOtpTimer();
+            showToast("کد تأیید مجدداً ارسال شد");
+          } catch (error) {
+            showToast(error.message || "خطا در ارسال مجدد کد");
+          }
+        });
+      document
+        .getElementById("verifyOtpBtn")
+        .addEventListener("click", async () => {
+          clearErrors();
+          const code = document.getElementById("otpInput").value.trim();
+          if (code.length !== 5 || !/^\d{5}$/.test(code)) {
+            document.getElementById("otpInput").classList.add("input-error");
+            document.getElementById("otpError").classList.add("show");
+            return;
+          }
+          try {
+            const json = await apiCall("/api/auth/verify-login-otp", {
+              identifier: currentIdentifier,
+              code,
+            });
+            if (otpInterval) clearInterval(otpInterval);
+            finishLogin(json.user, json.token);
+          } catch (error) {
+            showToast(error.message || "کد تأیید نادرست است");
+          }
+        });
       document.getElementById("otpInput").addEventListener("keydown", (e) => {
         if (e.key === "Enter") document.getElementById("verifyOtpBtn").click();
       });

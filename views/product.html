@@ -4251,6 +4251,11 @@
       }
 
       function getDisplayName(user) {
+        const fullName = [user.firstName, user.lastName]
+          .filter(Boolean)
+          .join(" ")
+          .trim();
+        if (fullName) return fullName;
         if (user.mobile) return user.mobile;
         if (user.email) return user.email;
         return "کاربر";
@@ -4264,8 +4269,10 @@
         document.getElementById("profileName").textContent = disp;
         document.getElementById("pdropAvatar").textContent = ch;
         document.getElementById("pdropName").textContent = disp;
-        const fmt = disp.replace(/(\d{4})(\d{3})(\d{4})/, "$1 $2 $3");
-        document.getElementById("pdropMobile").textContent = fmt;
+        const mobileRaw = user.mobile || "";
+        const fmt = mobileRaw.replace(/(\d{4})(\d{3})(\d{4})/, "$1 $2 $3");
+        document.getElementById("pdropMobile").textContent =
+          fmt || user.email || "";
         if (token) localStorage.setItem("authToken", token);
         localStorage.setItem("user", JSON.stringify(user));
       }

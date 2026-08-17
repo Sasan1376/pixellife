@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="fa" dir="rtl">
   <head>
@@ -2212,84 +2211,15 @@
     <!-- PAGE BODY -->
     <main class="page-body">
       <!-- ═══ HERO SECTION ═══ -->
+      <!-- ═══ HERO SECTION (بنر اصلی ریسپانسیو) ═══ -->
       <section class="hero-section">
-        <!-- Center Slider -->
-        <div class="hero-slider-container" id="heroSlider">
-          <div class="hero-slider-track" id="heroTrack">
-            <!-- Slide 1 -->
-            <!-- Slide 6 (ادغام بنر چپ) -->
-            <div
-              class="hero-slide"
-              style="
-                background-image: url(&quot;https://placehold.co/1000x500/1e293b/ffffff?text=Special+Discounts&quot;);
-              "
-            >
-              <div class="hero-slide-content">
-                <h2 class="hero-slide-title">تخفیف‌های ویژه</h2>
-                <p class="hero-slide-desc">
-                  فرصت طلایی برای خرید! تا ۵۰٪ تخفیف روی محصولات منتخب.
-                </p>
-                <button class="hero-slide-btn">مشاهده تخفیف‌ها</button>
-              </div>
-            </div>
-            <!-- Slide 7 (ادغام بنر راست) -->
-            <div
-              class="hero-slide"
-              style="
-                background-image: url(&quot;https://placehold.co/1000x500/831843/ffffff?text=New+Arrivals&quot;);
-              "
-            >
-              <div class="hero-slide-content">
-                <h2 class="hero-slide-title">تازه‌ها</h2>
-                <p class="hero-slide-desc">
-                  اولین نفری باش که جدیدترین محصولات را خرید می‌کنی.
-                </p>
-                <button class="hero-slide-btn">خرید کنید</button>
-              </div>
-            </div>
-            <!-- Slide 4 -->
-            <div
-              class="hero-slide"
-              style="
-                background-image: url(&quot;https://placehold.co/1000x500/334155/ffffff?text=MacBook+Air+M5&quot;);
-              "
-            >
-              <div class="hero-slide-content">
-                <h2 class="hero-slide-title">مک‌بوک ایر M5</h2>
-                <p class="hero-slide-desc">
-                  نازک‌تر، سبک‌تر و به شدت قدرتمندتر از همیشه.
-                </p>
-                <button class="hero-slide-btn">خرید محصول</button>
-              </div>
-            </div>
-            <!-- Slide 5 -->
-            <div
-              class="hero-slide"
-              style="
-                background-image: url(&quot;https://placehold.co/1000x500/0f172a/3b82f6?text=PlayStation+5+Pro&quot;);
-              "
-            >
-              <div class="hero-slide-content">
-                <h2 class="hero-slide-title">پلی‌استیشن ۵ پرو</h2>
-                <p class="hero-slide-desc">
-                  واقعیت گرایی جدید در دنیای بازی‌های ویدیویی.
-                </p>
-                <button class="hero-slide-btn">همین حالا بخرید</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Navigation Buttons -->
-          <button class="hero-nav-btn prev" id="heroPrev">
-            <i class="ti ti-chevron-right"></i>
-          </button>
-          <button class="hero-nav-btn next" id="heroNext">
-            <i class="ti ti-chevron-left"></i>
-          </button>
-
-          <!-- Dots -->
-          <div class="hero-dots" id="heroDots"></div>
-        </div>
+        <a href="/iphone" style="display: block; width: 100%; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);">
+          <img 
+            src="/banners/iphone-17-family.png" 
+            alt="بنر پیشنهاد ویژه آیفون ۱۷" 
+            style="width: 100%; height: auto; display: block;" 
+          />
+        </a>
       </section>
 
       <!-- ═══ CATEGORY ICONS ═══ -->
@@ -2559,11 +2489,6 @@
       }
 
       function getDisplayName(user) {
-        const fullName = [user.firstName, user.lastName]
-          .filter(Boolean)
-          .join(" ")
-          .trim();
-        if (fullName) return fullName;
         if (user.mobile) return user.mobile;
         if (user.email) return user.email;
         return "کاربر";
@@ -2577,9 +2502,8 @@
         document.getElementById("profileName").textContent = disp;
         document.getElementById("pdropAvatar").textContent = ch;
         document.getElementById("pdropName").textContent = disp;
-        const mobileRaw = user.mobile || "";
-        const fmt = mobileRaw.replace(/(\d{4})(\d{3})(\d{4})/, "$1 $2 $3");
-        document.getElementById("pdropMobile").textContent = fmt || user.email || "";
+        const fmt = disp.replace(/(\d{4})(\d{3})(\d{4})/, "$1 $2 $3");
+        document.getElementById("pdropMobile").textContent = fmt;
         if (token) localStorage.setItem("authToken", token);
         localStorage.setItem("user", JSON.stringify(user));
       }
