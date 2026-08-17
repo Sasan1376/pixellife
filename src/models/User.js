@@ -19,6 +19,19 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    nationalCode: {
+      type: String,
+      trim: true,
+      default: "",
+      validate: {
+        validator: (v) => !v || /^\d{10}$/.test(v),
+        message: "کد ملی باید ۱۰ رقم باشد",
+      },
+    },
+    birthDate: {
+      type: Date,
+      default: null,
+    },
     email: {
       type: String,
       unique: true,
