@@ -1624,6 +1624,35 @@
         display: block;
       }
 
+      .home-promo-placeholders {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin: 32px 0 40px;
+      }
+      .home-promo-placeholder {
+        min-height: 190px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px dashed var(--border);
+        border-radius: 24px;
+        background: var(--bg);
+        color: var(--text-4);
+        font-size: 14px;
+        transition: border-color 0.2s ease, background 0.2s ease;
+      }
+      .home-promo-placeholder:hover {
+        border-color: var(--blue);
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      @media (max-width: 768px) {
+        .home-promo-placeholders {
+          grid-template-columns: 1fr;
+        }
+      }
+
       /* ریسپانسیو موبایل */
       @media (max-width: 768px) {
         .services-section {
@@ -2332,6 +2361,12 @@
       </section>
 
       <!-- ═══ SIMPLE BANNER (بنر ساده) ═══ -->
+      <section class="home-promo-placeholders" aria-label="Future promotional banners">
+        <a class="home-promo-placeholder" href="/iphone">Banner placeholder 1</a>
+        <a class="home-promo-placeholder" href="/samsung">Banner placeholder 2</a>
+        <a class="home-promo-placeholder" href="/console">Banner placeholder 3</a>
+      </section>
+
       <section class="simple-banner">
         <a href="/brands">
           <img
