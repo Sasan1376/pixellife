@@ -3111,13 +3111,15 @@
         navCatsWrap.addEventListener("mouseleave", scheduleClose);
       }
 
+      let lastHeaderHeight = "";
       function updateHeaderHeight() {
         const header = document.querySelector(".header");
         if (header) {
-          document.documentElement.style.setProperty(
-            "--header-height",
-            `${header.getBoundingClientRect().height}px`,
-          );
+          const height = `${Math.ceil(header.getBoundingClientRect().height)}px`;
+          if (height !== lastHeaderHeight) {
+            lastHeaderHeight = height;
+            document.documentElement.style.setProperty("--header-height", height);
+          }
         }
       }
       updateHeaderHeight();
