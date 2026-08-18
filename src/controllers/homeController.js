@@ -118,76 +118,6 @@ const MOBILE_HERO_FIX = `
   }
 </style>`;
 
-const BRANDS_SECTION = `
-      <section class="brands-showcase" aria-label="برندها">
-        <style>
-          .brands-showcase {
-            margin: 0 0 40px;
-            padding: 0;
-            background: transparent;
-            border: 0;
-            border-radius: 0;
-          }
-          .brands-showcase-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            align-items: center;
-            gap: 32px;
-          }
-          .brand-showcase-card {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 110px;
-            padding: 0;
-            background: transparent;
-            border: 0;
-            border-radius: 0;
-            box-shadow: none;
-            transition: transform 0.2s ease;
-          }
-          .brand-showcase-card:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: none;
-          }
-          .brand-showcase-card img {
-            display: block;
-            width: 100%;
-            max-width: 220px;
-            height: 100px;
-            object-fit: contain;
-          }
-          @media (max-width: 640px) {
-            .brands-showcase {
-              margin-bottom: 30px;
-            }
-            .brands-showcase-grid {
-              grid-template-columns: repeat(3, minmax(0, 1fr));
-              gap: 16px;
-            }
-            .brand-showcase-card {
-              min-height: 78px;
-            }
-            .brand-showcase-card img {
-              height: 64px;
-              max-width: 100%;
-            }
-          }
-        </style>
-
-        <div class="brands-showcase-grid">
-          <a class="brand-showcase-card" href="/iphone" aria-label="محصولات اپل">
-            <img src="/images/brands/apple.svg?v=3" alt="Apple" loading="lazy" />
-          </a>
-          <a class="brand-showcase-card" href="/samsung" aria-label="محصولات سامسونگ">
-            <img src="/images/brands/samsung.svg?v=3" alt="Samsung" loading="lazy" />
-          </a>
-          <a class="brand-showcase-card" href="/xiaomi" aria-label="محصولات شیائومی">
-            <img src="/images/brands/xiaomi.svg?v=3" alt="Xiaomi" loading="lazy" />
-          </a>
-        </div>
-      </section>`;
-
 function injectEnamad(html) {
   if (!html || html.includes("trustseal.enamad.ir")) return html;
 
@@ -312,9 +242,11 @@ const homeController = {
         `\n${featuredProductsSection}\n      $1`,
       );
 
+      // Remove the obsolete simple Brands banner. The newer "برندهای محبوب"
+      // section already present in index.html remains untouched.
       html = html.replace(
         /\s*<section class="simple-banner">[\s\S]*?<\/section>/,
-        `\n${BRANDS_SECTION}`,
+        "\n",
       );
 
       res.type("html").send(html);
