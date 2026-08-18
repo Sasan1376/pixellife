@@ -119,81 +119,71 @@ const MOBILE_HERO_FIX = `
 </style>`;
 
 const BRANDS_SECTION = `
-      <section class="brands-showcase" aria-labelledby="brandsShowcaseTitle">
+      <section class="brands-showcase" aria-label="برندها">
         <style>
           .brands-showcase {
             margin: 0 0 40px;
-            padding: 26px;
-            border-radius: 24px;
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-            border: 1px solid #bfdbfe;
-          }
-          .brands-showcase h2 {
-            margin: 0 0 20px;
-            text-align: center;
-            font-size: 20px;
-            font-weight: 800;
-            color: #1e3a8a;
+            padding: 0;
+            background: transparent;
+            border: 0;
+            border-radius: 0;
           }
           .brands-showcase-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 16px;
+            align-items: center;
+            gap: 32px;
           }
           .brand-showcase-card {
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 150px;
-            padding: 18px;
-            background: #ffffff;
-            border: 1px solid rgba(59, 130, 246, 0.16);
-            border-radius: 18px;
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.08);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            min-height: 110px;
+            padding: 0;
+            background: transparent;
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+            transition: transform 0.2s ease;
           }
           .brand-showcase-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.14);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: none;
           }
           .brand-showcase-card img {
             display: block;
             width: 100%;
             max-width: 220px;
-            height: 110px;
+            height: 100px;
             object-fit: contain;
           }
           @media (max-width: 640px) {
             .brands-showcase {
-              padding: 18px 14px;
-              border-radius: 18px;
+              margin-bottom: 30px;
             }
             .brands-showcase-grid {
               grid-template-columns: repeat(3, minmax(0, 1fr));
-              gap: 8px;
+              gap: 16px;
             }
             .brand-showcase-card {
-              min-height: 98px;
-              padding: 8px;
-              border-radius: 14px;
+              min-height: 78px;
             }
             .brand-showcase-card img {
-              height: 76px;
+              height: 64px;
               max-width: 100%;
             }
           }
         </style>
 
-        <h2 id="brandsShowcaseTitle">برندها</h2>
         <div class="brands-showcase-grid">
           <a class="brand-showcase-card" href="/iphone" aria-label="محصولات اپل">
-            <img src="/images/brands/apple.svg" alt="Apple" loading="lazy" />
+            <img src="/images/brands/apple.svg?v=3" alt="Apple" loading="lazy" />
           </a>
           <a class="brand-showcase-card" href="/samsung" aria-label="محصولات سامسونگ">
-            <img src="/images/brands/samsung.svg" alt="Samsung" loading="lazy" />
+            <img src="/images/brands/samsung.svg?v=3" alt="Samsung" loading="lazy" />
           </a>
           <a class="brand-showcase-card" href="/xiaomi" aria-label="محصولات شیائومی">
-            <img src="/images/brands/xiaomi.svg" alt="Xiaomi" loading="lazy" />
+            <img src="/images/brands/xiaomi.svg?v=3" alt="Xiaomi" loading="lazy" />
           </a>
         </div>
       </section>`;
@@ -244,24 +234,20 @@ const homeController = {
     try {
       let html = fs.readFileSync(indexPath, "utf8");
 
-      // Keep the desktop hero unchanged, but fit the banner to its real aspect ratio on mobile.
       if (html.includes("</head>")) {
         html = html.replace("</head>", `${MOBILE_HERO_FIX}\n</head>`);
       }
 
-      // Remove the old dynamic Featured Products section from the homepage output.
       html = html.replace(
         /\s*<!-- ═══ PRODUCT GRID \(محصولات منتخب\) ═══ -->[\s\S]*?(?=\s*<!-- ═══ SIMPLE BANNER \(بنر ساده\) ═══ -->)/,
         "\n",
       );
 
-      // Remove its old client-side loader so reloads stay stable.
       html = html.replace(
         /\s*\/\* ══ محصولات منتخب \(از دیتابیس واقعی\) ══ \*\/[\s\S]*?\s*loadFeaturedProducts\(\);/,
         "\n",
       );
 
-      // Add one stable, static featured-products row. No extra JS, timers or observers.
       const featuredProductsSection = `
       <!-- ═══ FEATURED PRODUCTS (محصولات منتخب ثابت) ═══ -->
       <section class="product-section" aria-labelledby="featuredProductsTitle">
@@ -326,13 +312,11 @@ const homeController = {
         `\n${featuredProductsSection}\n      $1`,
       );
 
-      // Replace the old blue Brands placeholder with three linked brand-logo cards.
       html = html.replace(
         /\s*<section class="simple-banner">[\s\S]*?<\/section>/,
         `\n${BRANDS_SECTION}`,
       );
 
-      // index.html already contains the official Enamad badge in its footer.
       res.type("html").send(html);
     } catch (error) {
       console.error("Homepage render error:", error);
