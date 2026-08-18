@@ -2670,13 +2670,48 @@
           margin-bottom: 16px;
         }
         .product-layout {
-          grid-template-columns: 1fr;
-          padding: 0;
+          grid-template-columns: minmax(0, 1fr);
+          min-width: 0;
+          max-width: 100%;
+          padding: 16px;
           gap: 24px;
           background: var(--white);
           border: 1px solid var(--border);
           border-radius: var(--radius-lg);
-          padding: 16px;
+        }
+
+        /*
+         * Keep long product specifications from widening the page on small screens.
+         * Grid children use min-width:auto by default, which lets long unbroken text
+         * push the whole product card outside of the viewport in RTL layouts.
+         */
+        .product-gallery,
+        .product-info-col,
+        .quick-specs-card,
+        .quick-specs-grid,
+        .quick-spec-item {
+          min-width: 0;
+          max-width: 100%;
+        }
+        .quick-specs-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .quick-spec-label,
+        .quick-spec-value {
+          max-width: 100%;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+        }
+        .storage-options,
+        .color-options,
+        .warranty-options {
+          max-width: 100%;
+        }
+        .storage-chip,
+        .warranty-chip {
+          max-width: 100%;
+          white-space: normal;
+          text-align: center;
         }
         .gallery-main {
           min-height: 300px;
