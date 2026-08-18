@@ -1655,6 +1655,36 @@
         border-radius: 22px;
         display: block;
       }
+      .home-brands-section {
+        margin: 8px 0 40px;
+      }
+      .home-brands-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+      .home-brand-card {
+        min-height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--white);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .home-brand-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+      }
+      .home-brand-card img {
+        max-width: 100%;
+        max-height: 105px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+      }
       .home-promo-placeholder.has-image {
         padding: 0;
         border: none;
@@ -1663,6 +1693,9 @@
       @media (max-width: 768px) {
         .home-promo-placeholders {
           grid-template-columns: 1fr;
+        }
+        .home-brands-grid {
+          grid-template-columns: repeat(2, 1fr);
         }
       }
 
@@ -2380,6 +2413,27 @@
           <img src="/images/samsung-a57-promo.png" alt="Samsung Galaxy A57" />
         </a>
         <a class="home-promo-placeholder" href="/console">Banner placeholder 3</a>
+      </section>
+
+      <section class="home-brands-section" aria-label="Popular brands">
+        <div class="section-header">
+          <h2>برندهای محبوب</h2>
+          <a href="/brands" class="see-all-btn">مشاهده همه</a>
+        </div>
+        <div class="home-brands-grid">
+          <a class="home-brand-card" href="/xiaomi">
+            <img src="/images/xiaomi-logo.png" alt="Xiaomi" />
+          </a>
+          <a class="home-brand-card" href="/iphone">
+            <img src="/images/apple-logo.png" alt="Apple" />
+          </a>
+          <a class="home-brand-card" href="/samsung">
+            <img src="/images/samsung-logo.png" alt="Samsung" />
+          </a>
+          <a class="home-brand-card" href="#">
+            <img src="/images/Nokia-Logo.png" alt="Nokia" />
+          </a>
+        </div>
       </section>
 
       <section class="simple-banner">
