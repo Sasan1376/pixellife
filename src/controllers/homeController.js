@@ -152,7 +152,7 @@ const MOBILE_BOTTOM_NAV_HTML = `
     <svg class="mobile-bottom-nav__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-6h6v6"/></svg>
     <span>خانه</span>
   </a>
-  <a class="mobile-bottom-nav__item" data-nav="categories" href="/mobiles" aria-label="دسته‌بندی‌ها">
+  <a class="mobile-bottom-nav__item" data-nav="categories" href="/categories" aria-label="دسته‌بندی‌ها">
     <svg class="mobile-bottom-nav__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>
     <span>دسته‌بندی‌ها</span>
   </a>
@@ -381,6 +381,7 @@ const homeController = {
     }
   },
   mobiles: (req, res) => sendViewWithEnamad(res, "mobile.html"),
+  categories: (req, res) => sendViewWithEnamad(res, "categories.html"),
   login: (req, res) => sendViewWithEnamad(res, "login.html"),
   cart: (req, res) => sendViewWithEnamad(res, "cart.html"),
   iphone: (req, res) => sendViewWithEnamad(res, "iphone.html"),
