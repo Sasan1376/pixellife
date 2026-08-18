@@ -6,6 +6,7 @@ router.get("/", homeController.index);
 router.get("/contact", homeController.contact);
 router.post("/api/contact", homeController.submitContact);
 router.get("/mobiles", homeController.mobiles);
+router.get("/categories", homeController.categories);
 router.get("/login", homeController.login);
 router.get("/cart", homeController.cart);
 router.get("/mobile/apple", homeController.iphone);
