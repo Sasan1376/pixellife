@@ -1647,6 +1647,14 @@
         background: var(--blue-light);
         color: var(--blue);
       }
+      .home-promo-placeholder img {
+        width: 100%;
+        height: 100%;
+        min-height: 190px;
+        object-fit: cover;
+        border-radius: 22px;
+        display: block;
+      }
       @media (max-width: 768px) {
         .home-promo-placeholders {
           grid-template-columns: 1fr;
@@ -2363,7 +2371,9 @@
       <!-- ═══ SIMPLE BANNER (بنر ساده) ═══ -->
       <section class="home-promo-placeholders" aria-label="Future promotional banners">
         <a class="home-promo-placeholder" href="/iphone">Banner placeholder 1</a>
-        <a class="home-promo-placeholder" href="/samsung">Banner placeholder 2</a>
+        <a class="home-promo-placeholder" href="/samsung">
+          <img src="/images/samsung-a57-promo.png" alt="Samsung Galaxy A57" />
+        </a>
         <a class="home-promo-placeholder" href="/console">Banner placeholder 3</a>
       </section>
 
