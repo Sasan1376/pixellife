@@ -2,6 +2,100 @@ const path = require("path");
 const fs = require("fs");
 const ContactMessage = require("../models/ContactMessage");
 
+const ENAMAD_URL =
+  "https://trustseal.enamad.ir/?id=7320810&Code=NumFm2BnHAPz2uqVZohNfj7I6jfqOEE5";
+const ENAMAD_LOGO =
+  "https://trustseal.enamad.ir/logo.aspx?id=7320810&Code=NumFm2BnHAPz2uqVZohNfj7I6jfqOEE5";
+
+const ENAMAD_STYLE = `
+<style id="shared-enamad-style">
+  .ftrust-enamad {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    min-width: 120px;
+    padding: 6px;
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: var(--radius-sm, 8px);
+    background: var(--bg, #f8fafc);
+    box-sizing: border-box;
+  }
+  .ftrust-enamad img {
+    max-width: 100%;
+    max-height: 48px;
+    height: auto;
+    width: auto;
+    object-fit: contain;
+    display: block;
+  }
+  .standalone-enamad-wrap {
+    display: flex;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 22px auto;
+    padding: 0 20px;
+  }
+</style>`;
+
+const ENAMAD_HTML = `
+<a
+  referrerpolicy="origin"
+  target="_blank"
+  rel="noopener"
+  href="${ENAMAD_URL}"
+  class="ftrust-enamad"
+  title="نماد اعتماد الکترونیکی"
+>
+  <img
+    referrerpolicy="origin"
+    src="${ENAMAD_LOGO}"
+    alt="نماد اعتماد الکترونیکی"
+    width="120"
+    height="50"
+    style="cursor: pointer; display: block; max-height: 48px; width: auto;"
+  />
+</a>`;
+
+function injectEnamad(html) {
+  if (!html || html.includes("trustseal.enamad.ir")) return html;
+
+  if (html.includes("</head>")) {
+    html = html.replace("</head>", `${ENAMAD_STYLE}\n</head>`);
+  }
+
+  const footerTrustPattern =
+    /(<div[^>]*class=["'][^"']*\bfooter-trust\b[^"']*["'][^>]*>)/i;
+
+  if (footerTrustPattern.test(html)) {
+    return html.replace(footerTrustPattern, `$1\n${ENAMAD_HTML}`);
+  }
+
+  const wrappedBadge = `<div class="standalone-enamad-wrap">${ENAMAD_HTML}</div>`;
+
+  if (html.includes("</footer>")) {
+    return html.replace("</footer>", `${wrappedBadge}\n</footer>`);
+  }
+
+  if (html.includes("</body>")) {
+    return html.replace("</body>", `${wrappedBadge}\n</body>`);
+  }
+
+  return `${html}\n${wrappedBadge}`;
+}
+
+function sendViewWithEnamad(res, fileName) {
+  const filePath = path.join(__dirname, `../../views/${fileName}`);
+
+  try {
+    const html = injectEnamad(fs.readFileSync(filePath, "utf8"));
+    res.type("html").send(html);
+  } catch (error) {
+    console.error(`View render error (${fileName}):`, error);
+    res.status(500).send("خطا در بارگذاری صفحه");
+  }
+}
+
 const homeController = {
   index: (req, res) => {
     const indexPath = path.join(__dirname, "../../views/index.html");
@@ -86,15 +180,14 @@ const homeController = {
         `\n${featuredProductsSection}\n      $1`,
       );
 
+      // index.html already contains the official Enamad badge in its footer.
       res.type("html").send(html);
     } catch (error) {
       console.error("Homepage render error:", error);
       res.status(500).send("خطا در بارگذاری صفحه اصلی");
     }
   },
-  contact: (req, res) => {
-    res.sendFile(path.join(__dirname, "../../views/contact.html"));
-  },
+  contact: (req, res) => sendViewWithEnamad(res, "contact.html"),
   submitContact: async (req, res) => {
     const { name, phone, email, subject, message } = req.body || {};
 
@@ -130,42 +223,18 @@ const homeController = {
       });
     }
   },
-  mobiles: (req, res) => {
-    res.sendFile(path.join(__dirname, "../../views/mobile.html"));
-  },
-  login: (req, res) => {
-    res.sendFile(path.join(__dirname, "../../views/login.html"));
-  },
-  cart: (req, res) => {
-    res.sendFile(path.join(__dirname, "../../views/cart.html"));
-  },
-  iphone: (req, res) => {
-    res.sendFile(path.join(__dirname, "../../views/iphone.html"));
-  },
-  product: (req, res) => {
-    res.sendFile(path.join(__dirname, "../../views/product.html"));
-  },
-  samsung: (req, res) => {
-    res.sendFile(path.join(__dirname, "../../views/samsung.html"));
-  },
-  xiaomi: (req, res) => {
-    res.sendFile(path.join(__dirname, "../../views/xiaomi.html"));
-  },
-  samsungtab: (req, res) => {
-    res.sendFile(path.join(__dirname, "../../views/samsungtab.html"));
-  },
-  ipad: (req, res) => {
-    res.sendFile(path.join(__dirname, "../../views/ipad.html"));
-  },
-  xiaomitab: (req, res) => {
-    res.sendFile(path.join(__dirname, "../../views/xiaomitab.html"));
-  },
-  console: (req, res) => {
-    res.sendFile(path.join(__dirname, "../../views/console.html"));
-  },
-  profile: (req, res) => {
-    res.sendFile(path.join(__dirname, "../../views/profile.html"));
-  },
+  mobiles: (req, res) => sendViewWithEnamad(res, "mobile.html"),
+  login: (req, res) => sendViewWithEnamad(res, "login.html"),
+  cart: (req, res) => sendViewWithEnamad(res, "cart.html"),
+  iphone: (req, res) => sendViewWithEnamad(res, "iphone.html"),
+  product: (req, res) => sendViewWithEnamad(res, "product.html"),
+  samsung: (req, res) => sendViewWithEnamad(res, "samsung.html"),
+  xiaomi: (req, res) => sendViewWithEnamad(res, "xiaomi.html"),
+  samsungtab: (req, res) => sendViewWithEnamad(res, "samsungtab.html"),
+  ipad: (req, res) => sendViewWithEnamad(res, "ipad.html"),
+  xiaomitab: (req, res) => sendViewWithEnamad(res, "xiaomitab.html"),
+  console: (req, res) => sendViewWithEnamad(res, "console.html"),
+  profile: (req, res) => sendViewWithEnamad(res, "profile.html"),
 };
 
 module.exports = homeController;
