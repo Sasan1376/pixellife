@@ -975,6 +975,7 @@
         text-align: right;
         font-family: inherit;
         transition: all 0.15s;
+        touch-action: manipulation;
       }
       .megamenu-cat-btn .cat-ico {
         font-size: 19px;
@@ -3017,6 +3018,13 @@
         catBtn.addEventListener("click", (event) => {
           event.stopPropagation();
           activateCat();
+        });
+        catBtn.addEventListener("pointerup", (event) => {
+          if (event.pointerType === "touch") {
+            event.preventDefault();
+            event.stopPropagation();
+            activateCat();
+          }
         });
         if (hoverMedia.matches) {
           catBtn.addEventListener("mouseenter", activateCat);
