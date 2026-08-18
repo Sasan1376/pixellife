@@ -118,6 +118,25 @@ const MOBILE_HERO_FIX = `
   }
 </style>`;
 
+const PROFILE_DROPDOWN_LAYER_FIX = `
+<style id="profile-dropdown-layer-fix">
+  .header {
+    z-index: 1400 !important;
+  }
+
+  .profile-wrapper {
+    z-index: 1500 !important;
+  }
+
+  .profile-dropdown {
+    z-index: 1600 !important;
+  }
+
+  .navbar {
+    z-index: 700 !important;
+  }
+</style>`;
+
 function injectEnamad(html) {
   if (!html || html.includes("trustseal.enamad.ir")) return html;
 
@@ -165,7 +184,10 @@ const homeController = {
       let html = fs.readFileSync(indexPath, "utf8");
 
       if (html.includes("</head>")) {
-        html = html.replace("</head>", `${MOBILE_HERO_FIX}\n</head>`);
+        html = html.replace(
+          "</head>",
+          `${MOBILE_HERO_FIX}\n${PROFILE_DROPDOWN_LAYER_FIX}\n</head>`,
+        );
       }
 
       html = html.replace(
