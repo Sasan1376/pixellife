@@ -57,6 +57,67 @@ const ENAMAD_HTML = `
   />
 </a>`;
 
+const MOBILE_HERO_FIX = `
+<style id="mobile-hero-fit-fix">
+  @media (max-width: 768px) {
+    .hero-section {
+      margin-bottom: 22px !important;
+    }
+
+    .hero-slider-container {
+      height: auto !important;
+      aspect-ratio: 1136 / 400;
+      min-height: 0 !important;
+      border-radius: 14px !important;
+    }
+
+    .hero-slider-track {
+      height: 100% !important;
+    }
+
+    .hero-slide {
+      height: 100% !important;
+      min-height: 0 !important;
+      padding: 0 !important;
+      align-items: stretch !important;
+    }
+
+    .hero-slide img {
+      width: 100% !important;
+      height: 100% !important;
+      display: block !important;
+      object-fit: cover !important;
+      object-position: center !important;
+    }
+
+    .hero-nav-btn {
+      width: 32px !important;
+      height: 32px !important;
+    }
+
+    .hero-nav-btn.prev {
+      right: 8px !important;
+    }
+
+    .hero-nav-btn.next {
+      left: 8px !important;
+    }
+
+    .hero-dots {
+      bottom: 8px !important;
+    }
+
+    .hero-dot {
+      width: 7px !important;
+      height: 7px !important;
+    }
+
+    .hero-dot.active {
+      width: 20px !important;
+    }
+  }
+</style>`;
+
 function injectEnamad(html) {
   if (!html || html.includes("trustseal.enamad.ir")) return html;
 
@@ -102,6 +163,11 @@ const homeController = {
 
     try {
       let html = fs.readFileSync(indexPath, "utf8");
+
+      // Keep the desktop hero unchanged, but fit the banner to its real aspect ratio on mobile.
+      if (html.includes("</head>")) {
+        html = html.replace("</head>", `${MOBILE_HERO_FIX}\n</head>`);
+      }
 
       // Remove the old dynamic Featured Products section from the homepage output.
       html = html.replace(
