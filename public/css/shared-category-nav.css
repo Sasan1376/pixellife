@@ -188,7 +188,7 @@
 }
 .megamenu-links {
   display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+  grid-template-columns: 1fr !important;
   gap: 2px 24px !important;
 }
 .megamenu-link {
