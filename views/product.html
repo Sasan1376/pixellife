@@ -2594,6 +2594,15 @@
         align-items: center;
         justify-content: center;
       }
+      /* Fallback animation for the loading icon; this class is not provided by Tabler's webfont. */
+      .ti-spin {
+        display: inline-block;
+        animation: icon-spin 0.8s linear infinite;
+      }
+      @keyframes icon-spin {
+        to { transform: rotate(360deg); }
+      }
+
       @keyframes shake {
         0%,
         100% {
@@ -4936,7 +4945,7 @@
               <div class="gallery-main" id="galleryMain">
                 <div class="product-badges">
                   ${product.comingSoon ? '<span class="badge-coming-soon"><i class="ti ti-clock"></i> به زودی</span>' : ""}
-                  ${product.outOfStock ? '<span class="badge-out-of-stock"><i class="ti ti-x-circle"></i> ناموجود</span>' : ""}
+                  ${product.outOfStock ? '<span class="badge-out-of-stock"><i class="ti ti-circle-x"></i> ناموجود</span>' : ""}
                   ${discountPct > 0 ? `<span class="badge-discount"><i class="ti ti-tag"></i> ${discountPct}% تخفیف</span>` : ""}
                 </div>
                 <button class="gallery-nav-btn gallery-nav-prev" id="galPrevBtn"><i class="ti ti-chevron-right"></i></button>
@@ -4994,7 +5003,7 @@
               </div>
 
               <div class="option-group">
-                <div class="option-label"><i class="ti ti-hard-drive"></i> حافظه داخلی: <span class="selected-val" id="storageVal">${selectedStorage}</span></div>
+                <div class="option-label"><i class="ti ti-device-sd-card"></i> حافظه داخلی: <span class="selected-val" id="storageVal">${selectedStorage}</span></div>
                 <div class="storage-options" id="storageOptions">
                   ${product.storages
                     .map(
@@ -5239,7 +5248,7 @@
               [/گرافیک|GPU/i, "ti-device-desktop-analytics"],
               [/پردازنده|CPU|چیپست/i, "ti-cpu"],
               [/رم|RAM/i, "ti-brain"],
-              [/حافظه داخلی|ROM|ظرفیت/i, "ti-hard-drive"],
+              [/حافظه داخلی|ROM|ظرفیت/i, "ti-device-sd-card"],
               [/دوربین/, "ti-camera"],
               [/باتری/, "ti-battery-4"],
               [/شارژ/, "ti-bolt"],
@@ -5250,7 +5259,7 @@
               [/پورت|USB/i, "ti-usb"],
               [/وزن/, "ti-weight"],
               [/ابعاد|اندازه/, "ti-ruler-2"],
-              [/سیم[\s\u200c]?کارت|SIM/i, "ti-sim"],
+              [/سیم[\s\u200c]?کارت|SIM/i, "ti-device-sim"],
               [/آب|IP6/i, "ti-droplet"],
               [/جانبی|SD|کارت حافظه/i, "ti-device-sd-card"],
               [/رنگ/, "ti-palette"],
@@ -5531,7 +5540,7 @@
               <div class="review-card-head">
                 <div class="review-avatar">${r.name.trim().charAt(0)}</div>
                 <div>
-                  <div class="review-user-name">${r.name} ${r.verified ? '<span class="verified-badge"><i class="ti ti-rosette-discount-check"></i> خرید تایید شده</span>' : ""}</div>
+                  <div class="review-user-name">${r.name} ${r.verified ? '<span class="verified-badge"><i class="ti ti-discount-check"></i> خرید تایید شده</span>' : ""}</div>
                   <div class="review-date">${r.date}</div>
                 </div>
               </div>
