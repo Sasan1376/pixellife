@@ -3,8 +3,8 @@
     window.location.pathname === "/" ||
     window.location.pathname === "/index.html";
 
-  // Keep the profile menu above the sticky category/navbar only on the homepage.
   if (isHomePage) {
+    // Keep the profile menu above the sticky category/navbar.
     const profileLayerFix = document.createElement("style");
     profileLayerFix.id = "profile-layer-fix";
     profileLayerFix.textContent = `
@@ -13,34 +13,54 @@
     `;
     document.head.appendChild(profileLayerFix);
 
-    // In the featured-products section, keep only the real canonical iPhone 17 Pro Max card.
-    // The card itself is still rendered from the real products API, so its image/name/price stay in sync with the database.
-    const keepCanonicalFeaturedIphone = () => {
+    // Keep exactly one real iPhone 17 card in Featured Products.
+    // Prefer the canonical database card; if the duplicate has a wrong slug,
+    // use the iPhone 17 card content and normalize its link to the canonical route.
+    const enforceSingleFeaturedIphone = () => {
       const grid = document.getElementById("featuredProductsGrid");
-      if (!grid) return false;
+      if (!grid) return;
 
-      const canonicalCard = grid.querySelector(
-        'a.product-card[href="/product/iphone-17-pro-max"]',
+      const cards = Array.from(grid.querySelectorAll("a.product-card"));
+      if (!cards.length) return;
+
+      if (
+        cards.length === 1 &&
+        cards[0].getAttribute("href") === "/product/iphone-17-pro-max"
+      ) {
+        return;
+      }
+
+      let iphoneCard = cards.find(
+        (card) =>
+          card.getAttribute("href") === "/product/iphone-17-pro-max",
       );
 
-      if (!canonicalCard) return false;
+      if (!iphoneCard) {
+        iphoneCard = cards.find((card) => {
+          const name = card.querySelector("h3")?.textContent || "";
+          const href = card.getAttribute("href") || "";
+          return /iphone\s*17/i.test(name) || /iphone-17/i.test(href);
+        });
+      }
 
-      const onlyCard = canonicalCard.cloneNode(true);
+      if (!iphoneCard) return;
+
+      const onlyCard = iphoneCard.cloneNode(true);
+      onlyCard.setAttribute("href", "/product/iphone-17-pro-max");
       grid.replaceChildren(onlyCard);
-      return true;
     };
 
     const startFeaturedProductsFix = () => {
       const grid = document.getElementById("featuredProductsGrid");
       if (!grid) return;
 
-      if (keepCanonicalFeaturedIphone()) return;
+      const observer = new MutationObserver(enforceSingleFeaturedIphone);
+      observer.observe(grid, { childList: true, subtree: false });
 
-      const observer = new MutationObserver(() => {
-        if (keepCanonicalFeaturedIphone()) observer.disconnect();
-      });
-
-      observer.observe(grid, { childList: true });
+      enforceSingleFeaturedIphone();
+      setTimeout(enforceSingleFeaturedIphone, 250);
+      setTimeout(enforceSingleFeaturedIphone, 1000);
+      setTimeout(enforceSingleFeaturedIphone, 2500);
     };
 
     if (document.readyState === "loading") {
