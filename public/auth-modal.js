@@ -13,9 +13,8 @@
     `;
     document.head.appendChild(profileLayerFix);
 
-    // Keep exactly one real iPhone 17 card in Featured Products.
-    // Prefer the canonical database card; if the duplicate has a wrong slug,
-    // use the iPhone 17 card content and normalize its link to the canonical route.
+    // Keep exactly one iPhone 17 Pro Max card in Featured Products,
+    // force the correct product image, and link it to the real product page.
     const enforceSingleFeaturedIphone = () => {
       const grid = document.getElementById("featuredProductsGrid");
       if (!grid) return;
@@ -23,30 +22,26 @@
       const cards = Array.from(grid.querySelectorAll("a.product-card"));
       if (!cards.length) return;
 
-      if (
-        cards.length === 1 &&
-        cards[0].getAttribute("href") === "/product/iphone-17-pro-max"
-      ) {
-        return;
-      }
-
-      let iphoneCard = cards.find(
-        (card) =>
-          card.getAttribute("href") === "/product/iphone-17-pro-max",
-      );
-
-      if (!iphoneCard) {
-        iphoneCard = cards.find((card) => {
-          const name = card.querySelector("h3")?.textContent || "";
-          const href = card.getAttribute("href") || "";
-          return /iphone\s*17/i.test(name) || /iphone-17/i.test(href);
-        });
-      }
+      let iphoneCard = cards.find((card) => {
+        const name = card.querySelector("h3")?.textContent || "";
+        const href = card.getAttribute("href") || "";
+        return /iphone\s*17/i.test(name) || /iphone-17/i.test(href);
+      });
 
       if (!iphoneCard) return;
 
       const onlyCard = iphoneCard.cloneNode(true);
       onlyCard.setAttribute("href", "/product/iphone-17-pro-max");
+
+      const image = onlyCard.querySelector("img");
+      if (image) {
+        image.setAttribute("src", "/images/apple/iphone-17.webp");
+        image.setAttribute("alt", "iPhone 17 Pro Max");
+      }
+
+      const title = onlyCard.querySelector("h3");
+      if (title) title.textContent = "iPhone 17 Pro Max";
+
       grid.replaceChildren(onlyCard);
     };
 
