@@ -3076,7 +3076,19 @@
 
       catsToggle.addEventListener("click", (e) => {
         e.stopPropagation();
+        if (catsToggle.dataset.touchHandled === "1") {
+          delete catsToggle.dataset.touchHandled;
+          return;
+        }
         megamenuOpen ? closeMegamenu() : openMegamenu();
+      });
+      catsToggle.addEventListener("pointerup", (e) => {
+        if (e.pointerType === "touch") {
+          e.preventDefault();
+          e.stopPropagation();
+          catsToggle.dataset.touchHandled = "1";
+          megamenuOpen ? closeMegamenu() : openMegamenu();
+        }
       });
       megamenuBackdrop.addEventListener("click", closeMegamenu);
       document.addEventListener("click", (e) => {
