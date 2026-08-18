@@ -28,6 +28,7 @@
     />
     <style>
       :root {
+        --header-height: 69px;
         --blue: #3b82f6;
         --blue-dark: #2563eb;
         --blue-light: #eff6ff;
@@ -1026,7 +1027,7 @@
       }
       .megamenu-links {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
         gap: 2px 24px;
       }
       .megamenu-link {
@@ -1064,7 +1065,7 @@
         position: fixed;
         inset: 0;
         background: var(--overlay-soft);
-        z-index: 590;
+        z-index: 650;
         opacity: 0;
         visibility: hidden;
         transition:
@@ -1659,13 +1660,13 @@
         }
         .megamenu-panel {
           position: fixed;
-          top: 69px;
+          top: var(--header-height, 69px);
           right: 0;
           left: 0;
           width: 100%;
           max-width: 100%;
           flex-direction: column;
-          max-height: calc(100vh - 69px);
+          max-height: calc(100vh - var(--header-height, 69px));
           border-radius: 0;
         }
         .megamenu-cats {
@@ -2970,6 +2971,7 @@
 
       const megamenuCats = document.getElementById("megamenuCats");
       const megamenuContent = document.getElementById("megamenuContent");
+      const hoverMedia = window.matchMedia("(hover: hover) and (pointer: fine)");
 
       categoriesData.forEach((cat, idx) => {
         const catBtn = document.createElement("button");
@@ -3009,7 +3011,9 @@
           panel.classList.add("active");
         }
         catBtn.addEventListener("click", activateCat);
-        catBtn.addEventListener("mouseenter", activateCat);
+        if (hoverMedia.matches) {
+          catBtn.addEventListener("mouseenter", activateCat);
+        }
       });
 
       const catsToggle = document.getElementById("catsToggle");
@@ -3037,8 +3041,23 @@
         megamenuCloseTimer = setTimeout(closeMegamenu, 200);
       }
 
-      navCatsWrap.addEventListener("mouseenter", openMegamenu);
-      navCatsWrap.addEventListener("mouseleave", scheduleClose);
+      if (hoverMedia.matches) {
+        navCatsWrap.addEventListener("mouseenter", openMegamenu);
+        navCatsWrap.addEventListener("mouseleave", scheduleClose);
+      }
+
+      function updateHeaderHeight() {
+        const header = document.querySelector(".header");
+        if (header) {
+          document.documentElement.style.setProperty(
+            "--header-height",
+            `${header.getBoundingClientRect().height}px`,
+          );
+        }
+      }
+      updateHeaderHeight();
+      window.addEventListener("resize", updateHeaderHeight);
+      window.addEventListener("orientationchange", updateHeaderHeight);
 
       catsToggle.addEventListener("click", (e) => {
         e.stopPropagation();
