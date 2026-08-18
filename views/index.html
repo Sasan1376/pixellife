@@ -1076,6 +1076,9 @@
         opacity: 1;
         visibility: visible;
       }
+      .desktop-hover .megamenu-backdrop {
+        pointer-events: none;
+      }
 
       /* PAGE */
       .page-body {
@@ -2972,6 +2975,7 @@
       const megamenuCats = document.getElementById("megamenuCats");
       const megamenuContent = document.getElementById("megamenuContent");
       const hoverMedia = window.matchMedia("(hover: hover) and (pointer: fine)");
+      document.documentElement.classList.toggle("desktop-hover", hoverMedia.matches);
 
       categoriesData.forEach((cat, idx) => {
         const catBtn = document.createElement("button");
