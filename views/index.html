@@ -1437,6 +1437,14 @@
         animation-delay: 1.6s;
       }
 
+      /* ثابت نگه‌داشتن آیکن‌های موبایل، تبلت، هدفون و کنسول */
+      .category-item:nth-child(-n + 4) .category-circle,
+      .category-item:nth-child(-n + 4):hover .category-circle {
+        animation: none;
+        transition: none;
+        transform: none;
+      }
+
       .category-item:hover .category-circle {
         transform: scale(1.1) translateY(-5px);
         background: var(--blue);
