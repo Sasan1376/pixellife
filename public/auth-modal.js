@@ -13,25 +13,15 @@
     `;
     document.head.appendChild(profileLayerFix);
 
-    // Ensure Featured Products always shows exactly one correct iPhone 17 Pro Max card.
-    // This also acts as a fallback if the homepage products API script gets stuck on "loading".
+    // Render one stable iPhone 17 Pro Max card without MutationObserver.
+    // This avoids repeated DOM mutations that can make the homepage unstable on reload.
     const renderFeaturedIphone = () => {
       const grid = document.getElementById("featuredProductsGrid");
       if (!grid) return;
 
       let priceHtml = "";
-      const existingIphone = Array.from(
-        grid.querySelectorAll("a.product-card"),
-      ).find((card) => {
-        const name = card.querySelector("h3")?.textContent || "";
-        const href = card.getAttribute("href") || "";
-        return /iphone\s*17/i.test(name) || /iphone-17/i.test(href);
-      });
-
-      if (existingIphone) {
-        const price = existingIphone.querySelector(".product-price");
-        if (price) priceHtml = price.outerHTML;
-      }
+      const existingPrice = grid.querySelector(".product-card .product-price");
+      if (existingPrice) priceHtml = existingPrice.outerHTML;
 
       grid.innerHTML = `
         <a href="/product/iphone-17-pro-max" class="product-card" aria-label="iPhone 17 Pro Max">
@@ -43,34 +33,13 @@
     };
 
     const startFeaturedProductsFix = () => {
-      const grid = document.getElementById("featuredProductsGrid");
-      if (!grid) return;
+      // Show the card immediately instead of leaving "در حال بارگذاری محصولات" on screen.
+      renderFeaturedIphone();
 
-      // Give the normal API renderer a moment; then normalize/fallback to one correct card.
-      setTimeout(renderFeaturedIphone, 700);
-      setTimeout(renderFeaturedIphone, 1800);
-
-      // If the API later replaces the grid with duplicate/wrong cards, normalize again once.
-      const observer = new MutationObserver(() => {
-        const cards = grid.querySelectorAll("a.product-card");
-        if (cards.length !== 1) {
-          renderFeaturedIphone();
-          return;
-        }
-
-        const card = cards[0];
-        const href = card.getAttribute("href");
-        const img = card.querySelector("img")?.getAttribute("src");
-        if (
-          href !== "/product/iphone-17-pro-max" ||
-          img !== "/images/apple/iphone-17.webp"
-        ) {
-          renderFeaturedIphone();
-        }
-      });
-
-      observer.observe(grid, { childList: true });
-      setTimeout(() => observer.disconnect(), 5000);
+      // The original homepage API may finish a little later and overwrite the grid.
+      // Re-apply only a couple of times; no observer and no infinite DOM loop.
+      setTimeout(renderFeaturedIphone, 1000);
+      setTimeout(renderFeaturedIphone, 3000);
     };
 
     if (document.readyState === "loading") {
