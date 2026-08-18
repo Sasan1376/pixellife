@@ -118,6 +118,86 @@ const MOBILE_HERO_FIX = `
   }
 </style>`;
 
+const BRANDS_SECTION = `
+      <section class="brands-showcase" aria-labelledby="brandsShowcaseTitle">
+        <style>
+          .brands-showcase {
+            margin: 0 0 40px;
+            padding: 26px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1px solid #bfdbfe;
+          }
+          .brands-showcase h2 {
+            margin: 0 0 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 800;
+            color: #1e3a8a;
+          }
+          .brands-showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+          }
+          .brand-showcase-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 150px;
+            padding: 18px;
+            background: #ffffff;
+            border: 1px solid rgba(59, 130, 246, 0.16);
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+          }
+          .brand-showcase-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.14);
+          }
+          .brand-showcase-card img {
+            display: block;
+            width: 100%;
+            max-width: 220px;
+            height: 110px;
+            object-fit: contain;
+          }
+          @media (max-width: 640px) {
+            .brands-showcase {
+              padding: 18px 14px;
+              border-radius: 18px;
+            }
+            .brands-showcase-grid {
+              grid-template-columns: repeat(3, minmax(0, 1fr));
+              gap: 8px;
+            }
+            .brand-showcase-card {
+              min-height: 98px;
+              padding: 8px;
+              border-radius: 14px;
+            }
+            .brand-showcase-card img {
+              height: 76px;
+              max-width: 100%;
+            }
+          }
+        </style>
+
+        <h2 id="brandsShowcaseTitle">برندها</h2>
+        <div class="brands-showcase-grid">
+          <a class="brand-showcase-card" href="/iphone" aria-label="محصولات اپل">
+            <img src="/images/brands/apple.svg" alt="Apple" loading="lazy" />
+          </a>
+          <a class="brand-showcase-card" href="/samsung" aria-label="محصولات سامسونگ">
+            <img src="/images/brands/samsung.svg" alt="Samsung" loading="lazy" />
+          </a>
+          <a class="brand-showcase-card" href="/xiaomi" aria-label="محصولات شیائومی">
+            <img src="/images/brands/xiaomi.svg" alt="Xiaomi" loading="lazy" />
+          </a>
+        </div>
+      </section>`;
+
 function injectEnamad(html) {
   if (!html || html.includes("trustseal.enamad.ir")) return html;
 
@@ -244,6 +324,12 @@ const homeController = {
       html = html.replace(
         /\s*(<!-- ═══ SIMPLE BANNER \(بنر ساده\) ═══ -->)/,
         `\n${featuredProductsSection}\n      $1`,
+      );
+
+      // Replace the old blue Brands placeholder with three linked brand-logo cards.
+      html = html.replace(
+        /\s*<section class="simple-banner">[\s\S]*?<\/section>/,
+        `\n${BRANDS_SECTION}`,
       );
 
       // index.html already contains the official Enamad badge in its footer.
