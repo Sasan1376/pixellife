@@ -1,1 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 160" role="img" aria-labelledby="title"><title id="title">Xiaomi</title><rect width="320" height="160" rx="28" fill="#ffffff"/><rect x="112" y="24" width="96" height="96" rx="28" fill="#ff6900"/><text x="160" y="88" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="44" font-weight="700" fill="#ffffff">mi</text><text x="160" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="700" fill="#111827">Xiaomi</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img" aria-labelledby="title">
+  <title id="title">Xiaomi</title>
+  <rect width="320" height="220" fill="#ededed"/>
+  <rect x="58" y="18" width="204" height="184" rx="46" fill="#ff6900"/>
+  <path fill="#ffffff" d="M103 79h72c24 0 40 16 40 40v49h-24v-47c0-12-7-19-19-19h-45v66h-24V79zm34 36h24v53h-24v-53zm87-36h24v89h-24V79z"/>
+</svg>
