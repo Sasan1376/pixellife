@@ -137,6 +137,11 @@ const PROFILE_DROPDOWN_LAYER_FIX = `
   }
 </style>`;
 
+const SHARED_CATEGORY_HEAD = `
+<link rel="stylesheet" href="/css/shared-category-nav.css?v=1" />`;
+const SHARED_CATEGORY_SCRIPT = `
+<script src="/js/shared-category-nav.js?v=1"></script>`;
+
 function injectEnamad(html) {
   if (!html || html.includes("trustseal.enamad.ir")) return html;
 
@@ -164,11 +169,27 @@ function injectEnamad(html) {
   return `${html}\n${wrappedBadge}`;
 }
 
+function injectSharedCategoryNav(html) {
+  if (!html || !html.includes('class="nav-cats-wrap"')) return html;
+
+  if (!html.includes("/css/shared-category-nav.css")) {
+    html = html.replace("</head>", `${SHARED_CATEGORY_HEAD}\n</head>`);
+  }
+
+  if (!html.includes("/js/shared-category-nav.js")) {
+    html = html.replace("</body>", `${SHARED_CATEGORY_SCRIPT}\n</body>`);
+  }
+
+  return html;
+}
+
 function sendViewWithEnamad(res, fileName) {
   const filePath = path.join(__dirname, `../../views/${fileName}`);
 
   try {
-    const html = injectEnamad(fs.readFileSync(filePath, "utf8"));
+    let html = fs.readFileSync(filePath, "utf8");
+    html = injectEnamad(html);
+    html = injectSharedCategoryNav(html);
     res.type("html").send(html);
   } catch (error) {
     console.error(`View render error (${fileName}):`, error);
@@ -186,7 +207,7 @@ const homeController = {
       if (html.includes("</head>")) {
         html = html.replace(
           "</head>",
-          `${MOBILE_HERO_FIX}\n${PROFILE_DROPDOWN_LAYER_FIX}\n</head>`,
+          `${MOBILE_HERO_FIX}\n${PROFILE_DROPDOWN_LAYER_FIX}\n${SHARED_CATEGORY_HEAD}\n</head>`,
         );
       }
 
@@ -264,12 +285,14 @@ const homeController = {
         `\n${featuredProductsSection}\n      $1`,
       );
 
-      // Remove the obsolete simple Brands banner. The newer "برندهای محبوب"
-      // section already present in index.html remains untouched.
       html = html.replace(
         /\s*<section class="simple-banner">[\s\S]*?<\/section>/,
         "\n",
       );
+
+      if (!html.includes("/js/shared-category-nav.js")) {
+        html = html.replace("</body>", `${SHARED_CATEGORY_SCRIPT}\n</body>`);
+      }
 
       res.type("html").send(html);
     } catch (error) {
