@@ -2930,7 +2930,7 @@
             { label: "خرید گوشی سامسونگ", href: "/samsung" },
             { label: "خرید گوشی شیائومی", href: "/xiaomi" },
           ],
-          seeAllHref: "#",
+          seeAllHref: "/mobiles",
         },
         {
           id: "tablet",
@@ -2941,7 +2941,7 @@
             { label: "خرید تبلت سامسونگ", href: "/samsungtab" },
             { label: "خرید تبلت شیائومی", href: "/xiaomitab" },
           ],
-          seeAllHref: "#",
+          seeAllHref: "/ipad",
         },
         {
           id: "headphone",
@@ -3014,7 +3014,10 @@
           catBtn.classList.add("active");
           panel.classList.add("active");
         }
-        catBtn.addEventListener("click", activateCat);
+        catBtn.addEventListener("click", (event) => {
+          event.stopPropagation();
+          activateCat();
+        });
         if (hoverMedia.matches) {
           catBtn.addEventListener("mouseenter", activateCat);
         }
