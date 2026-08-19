@@ -145,7 +145,7 @@ const SHARED_CATEGORY_SCRIPT = `
 const MOBILE_BOTTOM_NAV_HEAD = `
 <link rel="stylesheet" href="/css/mobile-bottom-nav.css?v=5" />`;
 const MOBILE_BOTTOM_NAV_SCRIPT = `
-<script src="/js/mobile-bottom-nav.js?v=7"></script>`;
+<script src="/js/mobile-bottom-nav.js?v=8"></script>`;
 function injectMobileBottomNav(html) {
   if (!html) return html;
 
