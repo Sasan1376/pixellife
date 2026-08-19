@@ -5,6 +5,23 @@ const Product = require("../models/Product");
 const upload = require("../utils/upload");
 const requireAdmin = require("../middleware/adminAuth");
 
+function parseColors(value) {
+  if (value === undefined) return undefined;
+  if (!value || !String(value).trim()) return [];
+
+  return String(value)
+    .split(/\r?\n|،|,/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [rawName, rawHex] = line.split("|").map((item) => item.trim());
+      const hex = /^#[0-9a-fA-F]{6}$/.test(rawHex || "")
+        ? rawHex
+        : "#334155";
+      return { name: rawName || "رنگ", hex };
+    });
+}
+
 router.use(requireAdmin);
 
 router.get("/products", async (req, res) => {
@@ -29,6 +46,7 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       featured,
       stock,
       availability,
+      colors,
     } = req.body;
 
     if (!name || !brand || !price) {
@@ -53,6 +71,7 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       stock: Number(stock) || 0,
       availability: availability || "in",
       images: uploadedImages,
+      colors: parseColors(colors) || [],
     });
 
     await product.save();
@@ -75,6 +94,7 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
       featured,
       stock,
       availability,
+      colors,
     } = req.body;
 
     const product = await Product.findById(req.params.id);
@@ -93,6 +113,7 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
     if (specs !== undefined) product.specs = specs;
     if (stock !== undefined) product.stock = Number(stock) || 0;
     if (availability) product.availability = availability;
+    if (colors !== undefined) product.colors = parseColors(colors);
     product.featured =
       featured === "true" || featured === "on" || featured === true;
 
