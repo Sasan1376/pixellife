@@ -48,7 +48,7 @@ function serializeProduct(product) {
   const data = product.toObject ? product.toObject() : product;
   const images = (Array.isArray(data.images) ? data.images : []).map(normalizeImagePath).filter(Boolean);
   const mainImage = normalizeImagePath(data.mainImage);
-  return { ...data, images, mainImage: mainImage || images[0] || "/images/product-placeholder.svg" };
+  return { ...data, images, mainImage: mainImage || images[0] || "" };
 }
 function resolveMainImage(selection, existingImages = [], uploadedImages = []) {
   const current = (Array.isArray(existingImages) ? existingImages : []).map(normalizeImagePath).filter(Boolean);
