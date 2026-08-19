@@ -3486,16 +3486,17 @@
 
           grid.innerHTML = products
             .map((p) => {
-              const img = escapeHtml(
-                p.mainImage || (p.images && p.images[0]) ||
-                  "https://placehold.co/150x150/f1f5f9/94a3b8?text=No+Image",
-              );
+              const rawImg = p.mainImage || (p.images && p.images[0]) || "";
+              const rawFallback =
+                (p.images || []).find((image) => image && image !== rawImg) || "";
+              const img = escapeHtml(rawImg || "/images/product-placeholder.svg");
+              const fallbackImg = escapeHtml(rawFallback);
               const price = Number(p.price).toLocaleString("fa-IR");
               const name = escapeHtml(p.name);
               const slug = escapeHtml(p.slug);
               return `
                 <a href="/product/${slug}" class="product-card">
-                  <img src="${img}" alt="${name}" onerror="this.onerror=null;this.src='/images/product-placeholder.svg'">
+                  <img src="${img}" data-fallback="${fallbackImg}" alt="${name}" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.onerror=null;this.src='/images/product-placeholder.svg';}">
                   <h3>${name}</h3>
                   <div class="product-price">${price} <span>تومان</span></div>
                 </a>`;
