@@ -52,6 +52,10 @@ const productSchema = new mongoose.Schema(
         type: String,
       },
     ],
+    mainImage: {
+      type: String,
+      default: "",
+    },
     colors: [
       {
         name: { type: String, trim: true },
