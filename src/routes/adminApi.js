@@ -31,17 +31,36 @@ function parseColors(value) {
     });
 }
 
+function resolveMainImage(selection, existingImages = [], uploadedImages = []) {
+  const current = Array.isArray(existingImages) ? existingImages : [];
+  const incoming = Array.isArray(uploadedImages) ? uploadedImages : [];
+  if (typeof selection === "string" && selection.startsWith("new:")) {
+    const index = Number.parseInt(selection.slice(4), 10);
+    if (Number.isInteger(index) && incoming[index]) return incoming[index];
+  }
+  if (typeof selection === "string" && current.includes(selection)) return selection;
+  return current[0] || incoming[0] || "";
+}
+
 router.use(requireAdmin);
 
 router.post("/products/import-demo", async (req, res) => {
   try {
-    const operations = demoProducts.map((product) => ({
-      updateOne: {
-        filter: { $or: [{ legacyId: product.legacyId }, { slug: product.slug }] },
-        update: { $setOnInsert: product },
-        upsert: true,
-      },
-    }));
+    const operations = demoProducts.map((product) => {
+      const seedProduct = {
+        ...product,
+        mainImage: product.mainImage || product.images?.[0] || "",
+      };
+      return {
+        updateOne: {
+          filter: {
+            $or: [{ legacyId: seedProduct.legacyId }, { slug: seedProduct.slug }],
+          },
+          update: { $setOnInsert: seedProduct },
+          upsert: true,
+        },
+      };
+    });
     const result = await Product.bulkWrite(operations, { ordered: false });
     res.json({
       success: true,
@@ -79,6 +98,7 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       colors,
       storages,
       warranties,
+      mainImage: mainImageSelection,
     } = req.body;
 
     if (!name || !brand || !price) {
@@ -103,6 +123,7 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       stock: Number(stock) || 0,
       availability: availability || "in",
       images: uploadedImages,
+      mainImage: resolveMainImage(mainImageSelection, [], uploadedImages),
       colors: parseColors(colors) || [],
       storages: parseList(storages) || [],
       warranties: parseList(warranties) || [],
@@ -131,6 +152,7 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
       colors,
       storages,
       warranties,
+      mainImage: mainImageSelection,
     } = req.body;
 
     const product = await Product.findById(req.params.id);
@@ -155,11 +177,21 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
     product.featured =
       featured === "true" || featured === "on" || featured === true;
 
+    const existingImages = Array.isArray(product.images) ? product.images : [];
     const newImages = (req.files || []).map(
       (f) => "/uploads/products/" + f.filename,
     );
     if (newImages.length > 0) {
-      product.images = [...(product.images || []), ...newImages];
+      product.images = [...existingImages, ...newImages];
+    }
+    if (mainImageSelection !== undefined) {
+      product.mainImage = resolveMainImage(
+        mainImageSelection,
+        existingImages,
+        newImages,
+      );
+    } else if (!product.mainImage) {
+      product.mainImage = product.images?.[0] || "";
     }
 
     await product.save();
