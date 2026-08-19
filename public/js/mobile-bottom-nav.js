@@ -18,6 +18,23 @@
     else item.removeAttribute("aria-current");
   });
 
+  const accountItem = nav.querySelector('[data-nav="account"]');
+  accountItem?.addEventListener("click", (event) => {
+    let hasAuthHint = false;
+    try {
+      hasAuthHint = Boolean(
+        localStorage.getItem("user") ||
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("token")
+      );
+    } catch (_) {}
+
+    if (!hasAuthHint) {
+      event.preventDefault();
+      window.location.href = "/?openLogin=1";
+    }
+  });
+
   const badge = nav.querySelector("[data-mobile-cart-count]");
   if (!badge) return;
 
