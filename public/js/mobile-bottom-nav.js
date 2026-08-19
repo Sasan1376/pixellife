@@ -61,7 +61,7 @@
     document.body.classList.add("mobile-category-sheet-open");
   };
 
-  if (categoryItem) {
+  if (categoryItem && window.matchMedia("(max-width: 768px)").matches) {
     categoryItem.setAttribute("aria-expanded", "false");
 
     const sheet = document.createElement("section");
