@@ -55,13 +55,20 @@
           background-color 0.3s ease,
           color 0.3s ease;
       }
-      body,
-      body * {
+      /* انتقال سراسری روی تمام عناصر باعث کندی شدید هنگام ساخت صفحهٔ محصول
+         (به‌خصوص روی موبایل) می‌شد؛ انتقال فقط در سطح صفحه کافی است. */
+      body {
         transition:
           background-color 0.3s ease,
-          color 0.3s ease,
-          border-color 0.3s ease,
-          box-shadow 0.3s ease;
+          color 0.3s ease;
+      }
+
+      /* بخش‌های پایین صفحه تا زمانی که نزدیک نمایشگر نیستند رندر نمی‌شوند. */
+      @media (max-width: 768px) {
+        .section-block:not(#fullSpecsSection) {
+          content-visibility: auto;
+          contain-intrinsic-size: auto 720px;
+        }
       }
       body {
         font-family: Vazirmatn, Tahoma, sans-serif;
@@ -3254,7 +3261,7 @@
             p.images.length > 1
               ? p.images[(idx + 1) % p.images.length]
               : "";
-          return `<img src="${src}" data-fallback="${fallback}" alt="${p.name}" loading="lazy" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.onerror=null;this.src='/images/product-placeholder.svg';}">`;
+          return `<img src="${src}" data-fallback="${fallback}" alt="${p.name}" loading="lazy" decoding="async" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.onerror=null;this.src='/images/product-placeholder.svg';}">`;
         }
         const variant =
           FALLBACK_GALLERY_VARIANTS[
@@ -4879,13 +4886,26 @@
           const apiUrl = isMongoId
             ? `/api/products/id/${productId}`
             : `/api/products/${productId}`;
-          const apiRes = await fetch(apiUrl);
-          if (apiRes.ok) {
-            const apiData = await apiRes.json();
-            if (apiData.success && apiData.product) {
-              product = mapDbProductToView(apiData.product);
-              productId = String(apiData.product._id); // یکتا و ثابت برای همیشه
+          // روی اینترنت ضعیف موبایل، منتظر ماندن نامحدود برای API صفحه را
+          // ظاهراً «هنگ» می‌کرد. پس از 5 ثانیه دادهٔ نمایشیِ امن بارگذاری می‌شود.
+          const productRequestController = new AbortController();
+          const productRequestTimer = setTimeout(
+            () => productRequestController.abort(),
+            5000,
+          );
+          try {
+            const apiRes = await fetch(apiUrl, {
+              signal: productRequestController.signal,
+            });
+            if (apiRes.ok) {
+              const apiData = await apiRes.json();
+              if (apiData.success && apiData.product) {
+                product = mapDbProductToView(apiData.product);
+                productId = String(apiData.product._id); // یکتا و ثابت برای همیشه
+              }
             }
+          } finally {
+            clearTimeout(productRequestTimer);
           }
         } catch (e) {
           console.warn("خطا در دریافت محصول از سرور:", e);
@@ -4904,6 +4924,25 @@
           qty = 1;
         let galleryIndex = 0;
         let isWished = false;
+
+        // کارهای غیرضروری زیرِ صفحه پس از نمایش محصول اجرا می‌شوند تا تعامل
+        // اولیه در موبایل بدون مکث باقی بماند.
+        function deferNonCriticalWork(task) {
+          const run = () => {
+            if ("requestIdleCallback" in window) {
+              window.requestIdleCallback(task, { timeout: 1200 });
+            } else {
+              window.setTimeout(task, 120);
+            }
+          };
+          if ("requestAnimationFrame" in window) {
+            window.requestAnimationFrame(() =>
+              window.requestAnimationFrame(run),
+            );
+          } else {
+            window.setTimeout(run, 0);
+          }
+        }
 
         function starsHtml(ratingStr, size) {
           const n = Math.round(
@@ -5854,7 +5893,7 @@
               .map((id) => miniCard(id, PRODUCTS[id]))
               .join("");
           }
-          loadRelatedProducts();
+          deferNonCriticalWork(loadRelatedProducts);
 
           const recentIds = getRecentlyViewed().filter(
             (id) => id !== productId && PRODUCTS[id],
@@ -5949,7 +5988,7 @@
             });
           }
           // بارگذاری نظرات ذخیره‌شده پس از آماده‌شدن صفحه
-          fetchReviews();
+          deferNonCriticalWork(fetchReviews);
         }
       })();
     </script>
