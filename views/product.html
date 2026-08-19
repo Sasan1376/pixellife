@@ -1390,8 +1390,7 @@
         flex-direction: column;
         gap: 10px;
       }
-      .btn-add-cart,
-      .btn-buy-now {
+      .btn-add-cart {
         width: 100%;
         height: 52px;
         color: #fff;
@@ -1412,15 +1411,7 @@
         background: var(--blue-dark);
         box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
       }
-      .btn-buy-now {
-        background: var(--text-1);
-      }
-      .btn-buy-now:hover {
-        opacity: 0.88;
-        box-shadow: var(--shadow);
-      }
-      .btn-add-cart:disabled,
-      .btn-buy-now:disabled {
+      .btn-add-cart:disabled {
         background: var(--border);
         color: var(--text-4);
         cursor: not-allowed;
@@ -5106,8 +5097,7 @@
                   ${
                     product.outOfStock
                       ? '<button class="btn-notify" id="notifyBtn"><i class="ti ti-bell"></i> اطلاع‌رسانی هنگام موجود شدن</button>'
-                      : `<button class="btn-add-cart" id="addCartBtn"><i class="ti ti-shopping-cart-plus"></i> افزودن به سبد خرید</button>
-                         <button class="btn-buy-now" id="buyNowBtn"><i class="ti ti-bolt"></i> خرید سریع</button>`
+                      : `<button class="btn-add-cart" id="addCartBtn"><i class="ti ti-shopping-cart-plus"></i> افزودن به سبد خرید</button>`
                   }
                 </div>
                 <div class="trust-mini-row">
@@ -5924,14 +5914,6 @@
               showToast("به سبد خرید اضافه شد");
             });
           }
-          const buyNowBtn = document.getElementById("buyNowBtn");
-          if (buyNowBtn) {
-            buyNowBtn.addEventListener("click", () => {
-              addCurrentToCart();
-              location.href = "cart.html";
-            });
-          }
-
           // بارگذاری نظرات ذخیره‌شده پس از آماده‌شدن صفحه
           fetchReviews();
         }
