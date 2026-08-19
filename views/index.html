@@ -1749,6 +1749,64 @@
       .iphone-17-promo:hover .iphone-17-promo__content em {
         background: #fff;
       }
+      .ps5-pro-promo {
+        position: relative;
+        isolation: isolate;
+        color: #fff;
+        background: #050822;
+      }
+      .ps5-pro-promo img {
+        object-position: right center;
+      }
+      .ps5-pro-promo::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: linear-gradient(90deg, rgba(3, 6, 25, 0.76), rgba(3, 6, 25, 0.04));
+        pointer-events: none;
+      }
+      .ps5-pro-promo__content {
+        position: absolute;
+        z-index: 1;
+        inset: 0;
+        padding: 24px 22px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        text-align: left;
+        direction: rtl;
+        gap: 3px;
+      }
+      .ps5-pro-promo__content strong {
+        direction: ltr;
+        font-family: Arial, sans-serif;
+        font-size: clamp(24px, 2.4vw, 32px);
+        letter-spacing: -0.6px;
+        line-height: 1.1;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+      }
+      .ps5-pro-promo__content > span {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .ps5-pro-promo__content em {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 9px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        background: #fff;
+        color: #102a8c;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 800;
+      }
+      .ps5-pro-promo:hover .ps5-pro-promo__content em {
+        background: #dbeafe;
+      }
       @media (max-width: 768px) {
         .home-promo-placeholders {
           grid-template-columns: 1fr;
@@ -2485,7 +2543,21 @@
         <a class="home-promo-placeholder has-image" href="/samsung">
           <img src="/images/samsung-a57-promo.png" alt="Samsung Galaxy A57" />
         </a>
-        <a class="home-promo-placeholder" href="/console">Banner placeholder 3</a>
+        <a
+          class="home-promo-placeholder has-image ps5-pro-promo"
+          href="/console"
+          aria-label="مشاهده کنسول‌های بازی"
+        >
+          <img
+            src="/images/ps5-pro-blue-promo-banner.svg"
+            alt="کنسول بازی PS5 Pro"
+          />
+          <span class="ps5-pro-promo__content">
+            <strong>PS5 Pro</strong>
+            <span>قدرت نسل بعد، آمادهٔ بازی</span>
+            <em>مشاهده کنسول‌ها <i class="ti ti-arrow-left"></i></em>
+          </span>
+        </a>
       </section>
 
       <section class="home-brands-section" aria-label="Popular brands">
