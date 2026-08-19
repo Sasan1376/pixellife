@@ -31,14 +31,34 @@ function parseColors(value) {
     });
 }
 
+function normalizeImagePath(value) {
+  const image = String(value || "").trim();
+  if (!image) return "";
+  if (/^https?:\/\//i.test(image) || image.startsWith("data:")) return image;
+  return "/" + image.replace(/^\/?(?:public\/)?/, "");
+}
+function parseRemovedImages(value) {
+  if (!value) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed.map(normalizeImagePath).filter(Boolean) : [];
+  } catch (_) { return []; }
+}
+function serializeProduct(product) {
+  const data = product.toObject ? product.toObject() : product;
+  const images = (Array.isArray(data.images) ? data.images : []).map(normalizeImagePath).filter(Boolean);
+  const mainImage = normalizeImagePath(data.mainImage);
+  return { ...data, images, mainImage: mainImage || images[0] || "/images/product-placeholder.svg" };
+}
 function resolveMainImage(selection, existingImages = [], uploadedImages = []) {
-  const current = Array.isArray(existingImages) ? existingImages : [];
-  const incoming = Array.isArray(uploadedImages) ? uploadedImages : [];
+  const current = (Array.isArray(existingImages) ? existingImages : []).map(normalizeImagePath).filter(Boolean);
+  const incoming = (Array.isArray(uploadedImages) ? uploadedImages : []).map(normalizeImagePath).filter(Boolean);
   if (typeof selection === "string" && selection.startsWith("new:")) {
     const index = Number.parseInt(selection.slice(4), 10);
     if (Number.isInteger(index) && incoming[index]) return incoming[index];
   }
-  if (typeof selection === "string" && current.includes(selection)) return selection;
+  const selected = normalizeImagePath(selection);
+  if (selected && current.includes(selected)) return selected;
   return current[0] || incoming[0] || "";
 }
 
@@ -76,7 +96,7 @@ router.post("/products/import-demo", async (req, res) => {
 router.get("/products", async (req, res) => {
   try {
     const products = await Product.find().sort({ createdAt: -1 });
-    res.json({ success: true, products });
+    res.json({ success: true, products: products.map(serializeProduct) });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -130,7 +150,7 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
     });
 
     await product.save();
-    res.json({ success: true, product });
+    res.json({ success: true, product: serializeProduct(product) });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -153,6 +173,7 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
       storages,
       warranties,
       mainImage: mainImageSelection,
+      removeImages,
     } = req.body;
 
     const product = await Product.findById(req.params.id);
@@ -177,25 +198,21 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
     product.featured =
       featured === "true" || featured === "on" || featured === true;
 
-    const existingImages = Array.isArray(product.images) ? product.images : [];
-    const newImages = (req.files || []).map(
-      (f) => "/uploads/products/" + f.filename,
-    );
-    if (newImages.length > 0) {
-      product.images = [...existingImages, ...newImages];
-    }
+    const existingImages = (Array.isArray(product.images) ? product.images : []).map(normalizeImagePath).filter(Boolean);
+    const removed = new Set(parseRemovedImages(removeImages));
+    const remainingImages = existingImages.filter((image) => !removed.has(image));
+    const newImages = (req.files || []).map((f) => "/uploads/products/" + f.filename);
+    product.images = [...remainingImages, ...newImages];
+
     if (mainImageSelection !== undefined) {
-      product.mainImage = resolveMainImage(
-        mainImageSelection,
-        existingImages,
-        newImages,
-      );
-    } else if (!product.mainImage) {
-      product.mainImage = product.images?.[0] || "";
+      product.mainImage = resolveMainImage(mainImageSelection, remainingImages, newImages);
+    } else {
+      const currentMain = normalizeImagePath(product.mainImage);
+      product.mainImage = product.images.includes(currentMain) ? currentMain : product.images[0] || "";
     }
 
     await product.save();
-    res.json({ success: true, product });
+    res.json({ success: true, product: serializeProduct(product) });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
