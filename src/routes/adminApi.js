@@ -4,6 +4,15 @@ const router = express.Router();
 const Product = require("../models/Product");
 const upload = require("../utils/upload");
 const requireAdmin = require("../middleware/adminAuth");
+const demoProducts = require("../data/demoProducts");
+
+function parseList(value) {
+  if (value === undefined) return undefined;
+  return String(value || "")
+    .split(/\r?\n|،|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
 
 function parseColors(value) {
   if (value === undefined) return undefined;
@@ -23,6 +32,27 @@ function parseColors(value) {
 }
 
 router.use(requireAdmin);
+
+router.post("/products/import-demo", async (req, res) => {
+  try {
+    const operations = demoProducts.map((product) => ({
+      updateOne: {
+        filter: { $or: [{ legacyId: product.legacyId }, { slug: product.slug }] },
+        update: { $setOnInsert: product },
+        upsert: true,
+      },
+    }));
+    const result = await Product.bulkWrite(operations, { ordered: false });
+    res.json({
+      success: true,
+      inserted: result.upsertedCount || 0,
+      existing: demoProducts.length - (result.upsertedCount || 0),
+      total: demoProducts.length,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 router.get("/products", async (req, res) => {
   try {
@@ -47,6 +77,8 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       stock,
       availability,
       colors,
+      storages,
+      warranties,
     } = req.body;
 
     if (!name || !brand || !price) {
@@ -72,6 +104,8 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       availability: availability || "in",
       images: uploadedImages,
       colors: parseColors(colors) || [],
+      storages: parseList(storages) || [],
+      warranties: parseList(warranties) || [],
     });
 
     await product.save();
@@ -95,6 +129,8 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
       stock,
       availability,
       colors,
+      storages,
+      warranties,
     } = req.body;
 
     const product = await Product.findById(req.params.id);
@@ -114,6 +150,8 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
     if (stock !== undefined) product.stock = Number(stock) || 0;
     if (availability) product.availability = availability;
     if (colors !== undefined) product.colors = parseColors(colors);
+    if (storages !== undefined) product.storages = parseList(storages);
+    if (warranties !== undefined) product.warranties = parseList(warranties);
     product.featured =
       featured === "true" || featured === "on" || featured === true;
 
