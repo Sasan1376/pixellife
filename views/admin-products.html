@@ -42,6 +42,25 @@
       .featured-badge {
         cursor: pointer;
       }
+      .product-image-preview {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .product-image-preview img {
+        width: 66px;
+        height: 66px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: #f8fafc;
+        object-fit: contain;
+      }
+      .form-hint {
+        margin-top: 5px;
+        color: #64748b;
+        font-size: 12px;
+      }
       #toast {
         position: fixed;
         bottom: 24px;
@@ -269,8 +288,20 @@
                   <textarea
                     class="form-control"
                     id="fSpecs"
-                    rows="2"
+                    rows="4"
+                    placeholder="نمایش: ۶.۹ اینچ&#10;پردازنده: A19 Pro&#10;حافظه: ۲۵۶ گیگابایت"
                   ></textarea>
+                  <div class="form-hint">هر مشخصه را در یک خط و با قالب «عنوان: مقدار» وارد کنید.</div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">رنگ‌ها</label>
+                  <textarea
+                    class="form-control"
+                    id="fColors"
+                    rows="2"
+                    placeholder="مشکی | #111111&#10;طلایی | #C6A46A"
+                  ></textarea>
+                  <div class="form-hint">هر رنگ را در یک خط، با قالب «نام رنگ | کد رنگ» وارد کنید.</div>
                 </div>
                 <div class="col-12">
                   <label class="form-label"
@@ -284,8 +315,10 @@
                     multiple
                   />
                   <div class="form-text">
-                    در حالت ویرایش، عکس‌های جدید به عکس‌های قبلی اضافه می‌شوند.
+                    حداکثر ۵ عکس. در حالت ویرایش، عکس‌های جدید به عکس‌های قبلی اضافه می‌شوند.
                   </div>
+                  <div class="product-image-preview" id="existingImagesPreview"></div>
+                  <div class="product-image-preview" id="newImagesPreview"></div>
                 </div>
               </div>
             </div>
@@ -324,6 +357,24 @@
 
       function toPersianPrice(n) {
         return Number(n || 0).toLocaleString("fa-IR");
+      }
+
+      function formatColors(colors) {
+        if (!Array.isArray(colors)) return "";
+        return colors
+          .map((color) =>
+            typeof color === "string"
+              ? color
+              : `${color.name || "رنگ"} | ${color.hex || "#334155"}`,
+          )
+          .join("\n");
+      }
+
+      function renderImagePreview(targetId, urls) {
+        const target = document.getElementById(targetId);
+        target.innerHTML = (urls || [])
+          .map((url) => `<img src="${url}" alt="پیش‌نمایش محصول">`)
+          .join("");
       }
 
       async function loadProducts() {
@@ -409,6 +460,8 @@
         document.getElementById("productId").value = "";
         document.getElementById("productModalTitle").textContent =
           "افزودن محصول";
+        document.getElementById("existingImagesPreview").innerHTML = "";
+        document.getElementById("newImagesPreview").innerHTML = "";
       }
 
       function openEditModal(p) {
@@ -426,8 +479,15 @@
         document.getElementById("fFeatured").checked = !!p.featured;
         document.getElementById("fDescription").value = p.description || "";
         document.getElementById("fSpecs").value = p.specs || "";
+        document.getElementById("fColors").value = formatColors(p.colors);
+        renderImagePreview("existingImagesPreview", p.images || []);
         productModal.show();
       }
+
+      document.getElementById("fImages").addEventListener("change", (event) => {
+        const urls = [...event.target.files].map((file) => URL.createObjectURL(file));
+        renderImagePreview("newImagesPreview", urls);
+      });
 
       document
         .getElementById("openAddModalBtn")
@@ -458,6 +518,7 @@
             document.getElementById("fDescription").value,
           );
           fd.append("specs", document.getElementById("fSpecs").value);
+          fd.append("colors", document.getElementById("fColors").value);
 
           const files = document.getElementById("fImages").files;
           for (let i = 0; i < files.length; i++) fd.append("images", files[i]);
