@@ -4273,7 +4273,15 @@
           svg: isTablet
             ? tabletSvg("#1a1a2e", "#1e3a5f", "#2d1b4e")
             : phoneSvg("#1a1a2e", "#1e3a5f", "#2d1b4e"),
-          images: Array.isArray(doc.images) ? doc.images : [],
+          images: (() => {
+            const productImages = Array.isArray(doc.images) ? doc.images : [];
+            return doc.mainImage
+              ? [
+                  doc.mainImage,
+                  ...productImages.filter((image) => image !== doc.mainImage),
+                ]
+              : productImages;
+          })(),
           reviewImages: Array.isArray(doc.reviewImages) ? doc.reviewImages : [],
           isTablet: isTablet,
           specs: parseSpecsString(doc.specs),
