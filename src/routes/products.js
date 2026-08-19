@@ -20,7 +20,7 @@ function serializeProduct(product) {
   const data = product.toObject ? product.toObject() : product;
   const images = (Array.isArray(data.images) ? data.images : []).map(normalizeImagePath).filter(Boolean);
   const mainImage = normalizeImagePath(data.mainImage);
-  return { ...data, images, mainImage: mainImage || images[0] || "/images/product-placeholder.svg" };
+  return { ...data, images, mainImage: mainImage || images[0] || "" };
 }
 
 router.get("/", async (req, res) => {
