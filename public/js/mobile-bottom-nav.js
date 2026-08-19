@@ -1,5 +1,36 @@
 (() => {
-  const nav = document.querySelector(".mobile-bottom-nav");
+  const isMobileViewport = window.matchMedia("(max-width: 768px)").matches;
+  if (!isMobileViewport) return;
+
+  let nav = document.querySelector(".mobile-bottom-nav");
+  if (!nav) {
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      `
+        <nav class="mobile-bottom-nav" aria-label="ناوبری اصلی موبایل">
+          <a class="mobile-bottom-nav__item" data-nav="home" href="/" aria-label="خانه">
+            <svg class="mobile-bottom-nav__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-6h6v6"/></svg>
+            <span>خانه</span>
+          </a>
+          <a class="mobile-bottom-nav__item" data-nav="categories" href="/categories" aria-label="دسته‌بندی‌ها">
+            <svg class="mobile-bottom-nav__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>
+            <span>دسته‌بندی‌ها</span>
+          </a>
+          <a class="mobile-bottom-nav__item" data-nav="cart" href="/cart" aria-label="سبد خرید">
+            <svg class="mobile-bottom-nav__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H7"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
+            <span class="mobile-bottom-nav__badge" data-mobile-cart-count>0</span>
+            <span>سبد خرید</span>
+          </a>
+          <a class="mobile-bottom-nav__item" data-nav="account" href="/profile" aria-label="حساب کاربری">
+            <svg class="mobile-bottom-nav__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c.7-4 3.2-6 8-6s7.3 2 8 6"/></svg>
+            <span>حساب کاربری</span>
+          </a>
+        </nav>
+      `,
+    );
+    nav = document.querySelector(".mobile-bottom-nav");
+  }
+
   if (!nav) return;
 
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
