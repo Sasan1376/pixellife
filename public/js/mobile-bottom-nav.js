@@ -71,18 +71,37 @@
     sheet.innerHTML = `
       <div class="mobile-category-sheet__handle"></div>
       <div class="mobile-category-sheet__header">
-        <h2 class="mobile-category-sheet__title">دسته‌بندی‌ها</h2>
+        <h2 class="mobile-category-sheet__title">دسته‌بندی کالاها</h2>
         <button class="mobile-category-sheet__close" type="button" aria-label="بستن">×</button>
       </div>
-      <div class="mobile-category-sheet__grid">
-        <a class="mobile-category-sheet__item" href="/mobiles"><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>موبایل</a>
-        <a class="mobile-category-sheet__item" href="/ipad"><svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2"/><path d="M11 18.5h2"/></svg>تبلت</a>
-        <a class="mobile-category-sheet__item" href="/iphone"><svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M8.5 8.5a4.95 4.95 0 0 1 7 0"/><path d="M6 6a8.5 8.5 0 0 1 12 0"/><path d="M9.5 15.5a3.5 3.5 0 0 1 5 0"/></svg>اپل</a>
-        <a class="mobile-category-sheet__item" href="/samsung"><svg viewBox="0 0 24 24"><path d="M4 12s3-5 8-5 8 5 8 5-3 5-8 5-8-5-8-5Z"/><circle cx="12" cy="12" r="2"/></svg>سامسونگ</a>
-        <a class="mobile-category-sheet__item" href="/xiaomi"><svg viewBox="0 0 24 24"><path d="M5 7h14v10H5z"/><path d="M8 11h8M8 14h5"/></svg>شیائومی</a>
-        <a class="mobile-category-sheet__item" href="/console"><svg viewBox="0 0 24 24"><path d="M7 9h10a4 4 0 0 1 3.9 3.1l.6 2.5a2.5 2.5 0 0 1-4.2 2.3l-1.1-1H7.8l-1.1 1a2.5 2.5 0 0 1-4.2-2.3l.6-2.5A4 4 0 0 1 7 9Z"/><path d="M7 12v3m-1.5-1.5h3M16 13h.01M18 15h.01"/></svg>کنسول بازی</a>
+      <p class="mobile-category-sheet__intro">دستهٔ موردنظرت را انتخاب کن و محصولات مرتبط را ببین.</p>
+      <div class="mobile-category-featured" aria-label="محصولات منتخب">
+        <a class="mobile-category-featured__item" href="/product.html?id=iphone-17-pro-max"><strong>iPhone 17 Pro Max</strong><span>مشاهده محصول</span></a>
+        <a class="mobile-category-featured__item" href="/product.html?id=samsung-galaxy-a56"><strong>Galaxy A56</strong><span>مشاهده محصول</span></a>
+        <a class="mobile-category-featured__item" href="/console"><strong>PS5 Pro</strong><span>کنسول‌های بازی</span></a>
       </div>
-      <a class="mobile-category-sheet__all" href="/categories">مشاهدهٔ همهٔ دسته‌بندی‌ها</a>`;
+      <div class="mobile-category-sheet__grid">
+        <a class="mobile-category-sheet__item" href="/mobiles">
+          <span class="mobile-category-sheet__item-head"><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>موبایل</span>
+          <span class="mobile-category-sheet__links"><span>آیفون</span><span>گوشی سامسونگ</span><span>گوشی شیائومی</span></span>
+        </a>
+        <a class="mobile-category-sheet__item" href="/ipad">
+          <span class="mobile-category-sheet__item-head"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M11 18.5h2"/></svg>تبلت</span>
+          <span class="mobile-category-sheet__links"><span>iPad اپل</span><span>تبلت سامسونگ</span><span>تبلت شیائومی</span></span>
+        </a>
+        <div class="mobile-category-sheet__item" aria-label="هدفون و هندزفری">
+          <span class="mobile-category-sheet__item-head"><svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><path d="M4 14h3v5H5a1 1 0 0 1-1-1z"/><path d="M20 14h-3v5h2a1 1 0 0 0 1-1z"/></svg>هدفون و هندزفری</span>
+          <span class="mobile-category-sheet__links mobile-category-sheet__soon"><span>ایرپاد اپل — به‌زودی</span><span>هندزفری سامسونگ — به‌زودی</span></span>
+        </div>
+        <div class="mobile-category-sheet__item" aria-label="ساعت هوشمند">
+          <span class="mobile-category-sheet__item-head"><svg viewBox="0 0 24 24"><rect x="7" y="6" width="10" height="12" rx="2"/><path d="M9 6 10 3h4l1 3M9 18l1 3h4l1-3"/></svg>ساعت هوشمند</span>
+          <span class="mobile-category-sheet__links mobile-category-sheet__soon"><span>اپل واچ — به‌زودی</span><span>گلکسی واچ — به‌زودی</span></span>
+        </div>
+        <a class="mobile-category-sheet__item" href="/console">
+          <span class="mobile-category-sheet__item-head"><svg viewBox="0 0 24 24"><path d="M7 9h10a4 4 0 0 1 3.8 2.8l1 3.5A2 2 0 0 1 19.9 18h-2.3l-2-2H8.4l-2 2H4.1a2 2 0 0 1-1.9-2.7l1-3.5A4 4 0 0 1 7 9z"/><path d="M7 13v3M5.5 14.5h3M16 14h.01M18 15.5h.01"/></svg>کنسول بازی</span>
+          <span class="mobile-category-sheet__links"><span>PS5 Pro</span><span>PlayStation 5</span><span>لوازم جانبی گیمینگ</span></span>
+        </a>
+      </div>`;;
     const backdrop = document.createElement("div");
     backdrop.className = "mobile-category-backdrop";
     backdrop.setAttribute("aria-hidden", "true");
