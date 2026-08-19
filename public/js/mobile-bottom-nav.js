@@ -44,10 +44,12 @@
   let categoryBackdrop;
 
   const closeCategorySheet = () => {
-    categorySheet?.classList.remove("is-open");
+    categorySheet?.classList.remove("is-open", "is-dragging");
+    categorySheet?.style.removeProperty("transform");
     categoryBackdrop?.classList.remove("is-open");
     categoryItem?.classList.remove("is-expanded");
     categoryItem?.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("mobile-category-sheet-open");
   };
 
   const openCategorySheet = () => {
@@ -56,6 +58,7 @@
     categoryBackdrop.classList.add("is-open");
     categoryItem?.classList.add("is-expanded");
     categoryItem?.setAttribute("aria-expanded", "true");
+    document.body.classList.add("mobile-category-sheet-open");
   };
 
   if (categoryItem) {
@@ -95,6 +98,37 @@
         ? closeCategorySheet()
         : openCategorySheet();
     });
+
+    let dragStartY = null;
+    let dragDistance = 0;
+    const handle = sheet.querySelector(".mobile-category-sheet__handle");
+
+    handle?.addEventListener("pointerdown", (event) => {
+      if (!sheet.classList.contains("is-open")) return;
+      dragStartY = event.clientY;
+      dragDistance = 0;
+      sheet.classList.add("is-dragging");
+      handle.setPointerCapture?.(event.pointerId);
+    });
+
+    handle?.addEventListener("pointermove", (event) => {
+      if (dragStartY === null) return;
+      dragDistance = Math.max(0, event.clientY - dragStartY);
+      sheet.style.transform = `translate3d(0, ${dragDistance}px, 0)`;
+    });
+
+    const finishDrag = () => {
+      if (dragStartY === null) return;
+      const shouldClose = dragDistance > 85;
+      dragStartY = null;
+      dragDistance = 0;
+      sheet.classList.remove("is-dragging");
+      sheet.style.removeProperty("transform");
+      if (shouldClose) closeCategorySheet();
+    };
+
+    handle?.addEventListener("pointerup", finishDrag);
+    handle?.addEventListener("pointercancel", finishDrag);
 
     sheet.querySelector(".mobile-category-sheet__close")?.addEventListener("click", closeCategorySheet);
     backdrop.addEventListener("click", closeCategorySheet);
