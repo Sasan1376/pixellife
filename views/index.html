@@ -3487,7 +3487,7 @@
           grid.innerHTML = products
             .map((p) => {
               const img = escapeHtml(
-                (p.images && p.images[0]) ||
+                p.mainImage || (p.images && p.images[0]) ||
                   "https://placehold.co/150x150/f1f5f9/94a3b8?text=No+Image",
               );
               const price = Number(p.price).toLocaleString("fa-IR");
