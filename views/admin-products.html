@@ -146,6 +146,9 @@
                 <h3 class="mb-0">مدیریت محصولات</h3>
               </div>
               <div class="col-sm-6 text-end">
+                <button class="btn btn-outline-secondary me-2" id="importDemoProductsBtn">
+                  <i class="ti ti-database-import"></i> انتقال محصولات نمایشی
+                </button>
                 <button class="btn btn-primary" id="openAddModalBtn">
                   <i class="ti ti-plus"></i> افزودن محصول
                 </button>
@@ -293,6 +296,16 @@
                   ></textarea>
                   <div class="form-hint">هر مشخصه را در یک خط و با قالب «عنوان: مقدار» وارد کنید.</div>
                 </div>
+                <div class="col-md-6">
+                  <label class="form-label">حافظه‌ها / مدل‌ها</label>
+                  <textarea class="form-control" id="fStorages" rows="2" placeholder="۲۵۶ گیگابایت&#10;۵۱۲ گیگابایت"></textarea>
+                  <div class="form-hint">هر گزینه را در یک خط وارد کنید.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">گارانتی‌ها</label>
+                  <textarea class="form-control" id="fWarranties" rows="2" placeholder="گارانتی ۱۸ ماهه شرکتی"></textarea>
+                  <div class="form-hint">هر گارانتی را در یک خط وارد کنید.</div>
+                </div>
                 <div class="col-12">
                   <label class="form-label">رنگ‌ها</label>
                   <textarea
@@ -357,6 +370,10 @@
 
       function toPersianPrice(n) {
         return Number(n || 0).toLocaleString("fa-IR");
+      }
+
+      function formatList(items) {
+        return Array.isArray(items) ? items.join("\n") : "";
       }
 
       function formatColors(colors) {
@@ -480,9 +497,28 @@
         document.getElementById("fDescription").value = p.description || "";
         document.getElementById("fSpecs").value = p.specs || "";
         document.getElementById("fColors").value = formatColors(p.colors);
+        document.getElementById("fStorages").value = formatList(p.storages);
+        document.getElementById("fWarranties").value = formatList(p.warranties);
         renderImagePreview("existingImagesPreview", p.images || []);
         productModal.show();
       }
+
+      document.getElementById("importDemoProductsBtn").addEventListener("click", async () => {
+        if (!confirm("۱۷ محصول نمایشی وارد MongoDB شوند؟ محصولات ثبت‌شده قبلی تغییر نمی‌کنند.")) return;
+        const button = document.getElementById("importDemoProductsBtn");
+        button.disabled = true;
+        try {
+          const res = await fetch("/admin/api/products/import-demo", { method: "POST" });
+          const json = await res.json();
+          if (!json.success) throw new Error(json.message);
+          showToast(`${json.inserted} محصول وارد شد؛ ${json.existing} مورد از قبل وجود داشت.`);
+          loadProducts();
+        } catch (error) {
+          showToast(error.message || "انتقال محصولات ناموفق بود");
+        } finally {
+          button.disabled = false;
+        }
+      });
 
       document.getElementById("fImages").addEventListener("change", (event) => {
         const urls = [...event.target.files].map((file) => URL.createObjectURL(file));
@@ -519,6 +555,8 @@
           );
           fd.append("specs", document.getElementById("fSpecs").value);
           fd.append("colors", document.getElementById("fColors").value);
+          fd.append("storages", document.getElementById("fStorages").value);
+          fd.append("warranties", document.getElementById("fWarranties").value);
 
           const files = document.getElementById("fImages").files;
           for (let i = 0; i < files.length; i++) fd.append("images", files[i]);
