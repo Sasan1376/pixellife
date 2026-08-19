@@ -109,12 +109,6 @@ app.use((req, res, next) => {
 });
 */
 // =======================
-// MongoDB Connection
-// =======================
-
-connectDB();
-
-// =======================
 // Routes
 // =======================
 
@@ -236,8 +230,19 @@ app.use(errorHandler);
 
 const PORT = env.port || 3000;
 
-app.listen(PORT, () => {
-  console.log(`✅ PixelLife Server running on port ${PORT}`);
-  console.log(`📱 Products API: http://localhost:${PORT}/api/products`);
-  console.log(`🛒 Product Pages: http://localhost:${PORT}/product/:slug`);
-});
+async function startServer() {
+  try {
+    // Render فقط وقتی سرویس را آماده می‌بیند که MongoDB واقعاً متصل شده باشد.
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`✅ PixelLife Server running on port ${PORT}`);
+      console.log(`📱 Products API: http://localhost:${PORT}/api/products`);
+      console.log(`🛒 Product Pages: http://localhost:${PORT}/product/:slug`);
+    });
+  } catch (error) {
+    console.error("❌ برنامه به MongoDB متصل نشد:", error.message);
+    process.exit(1);
+  }
+}
+
+startServer();
