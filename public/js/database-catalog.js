@@ -34,12 +34,21 @@
       : Number(product.price).toLocaleString("fa-IR") + " تومان";
 
   function imageMarkup(product, name) {
-    const primary = product.mainImage || (product.images && product.images[0]) || "";
-    const fallback = (product.images || []).find(
-      (image) => image && image !== primary,
-    ) || "";
-    const image = escapeHtml(primary || "/images/product-placeholder.svg");
-    return `<img src="${image}" data-fallback="${escapeHtml(fallback)}" alt="${name}" loading="lazy" decoding="async" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.onerror=null;this.src='/images/product-placeholder.svg';}">`;
+    // mainImage اولویت دارد، ولی اگر یک فایل قدیمی/حذف‌شده باشد، تمام عکس‌های
+    // همان محصول به‌ترتیب امتحان می‌شوند؛ نه این‌که فوراً placeholder نمایش داده شود.
+    const rawCandidates = [
+      product.mainImage,
+      ...(Array.isArray(product.images) ? product.images : []),
+    ].filter(Boolean);
+    const version = product.updatedAt || product._id || "";
+    const candidates = [...new Set(rawCandidates)].map((source) => {
+      if (!version || String(source).startsWith("data:")) return source;
+      return source + (String(source).includes("?") ? "&" : "?") +
+        "v=" + encodeURIComponent(version);
+    });
+    const primary = candidates[0] || "/images/product-placeholder.svg";
+    const fallbacks = candidates.slice(1).join("|");
+    return `<img src="${escapeHtml(primary)}" data-fallbacks="${escapeHtml(fallbacks)}" alt="${name}" loading="lazy" decoding="async" onerror="var urls=(this.dataset.fallbacks||'').split('|').filter(Boolean);var next=urls.shift();this.dataset.fallbacks=urls.join('|');if(next){this.src=next;}else{this.onerror=null;this.src='/images/product-placeholder.svg';}">`;
   }
 
   function card(product) {
