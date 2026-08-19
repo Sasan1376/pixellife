@@ -145,7 +145,7 @@ const SHARED_CATEGORY_SCRIPT = `
 const MOBILE_BOTTOM_NAV_HEAD = `
 <link rel="stylesheet" href="/css/mobile-bottom-nav.css?v=2" />`;
 const MOBILE_BOTTOM_NAV_SCRIPT = `
-<script src="/js/mobile-bottom-nav.js?v=3"></script>`;
+<script src="/js/mobile-bottom-nav.js?v=4"></script>`;
 const MOBILE_BOTTOM_NAV_HTML = `
 <nav class="mobile-bottom-nav" aria-label="ناوبری اصلی موبایل">
   <a class="mobile-bottom-nav__item" data-nav="home" href="/" aria-label="خانه">
