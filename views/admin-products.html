@@ -56,6 +56,9 @@
         background: #f8fafc;
         object-fit: contain;
       }
+      .image-preview-item { position: relative; width: 66px; height: 66px; }
+      .image-preview-item img { width: 100%; height: 100%; }
+      .remove-image-btn { position: absolute; top: -7px; left: -7px; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; background: #dc2626; color: #fff; line-height: 22px; font-weight: 800; cursor: pointer; }
       .form-hint {
         margin-top: 5px;
         color: #64748b;
@@ -366,6 +369,7 @@
       const productModal = new bootstrap.Modal(productModalEl);
       const tableBody = document.getElementById("productsTableBody");
       let editingImages = [];
+      let removedImages = [];
 
       function showToast(msg) {
         const t = document.getElementById("toast");
@@ -393,10 +397,10 @@
           .join("\n");
       }
 
-      function renderImagePreview(targetId, urls) {
+      function renderImagePreview(targetId, urls, removable = false) {
         const target = document.getElementById(targetId);
         target.innerHTML = (urls || [])
-          .map((url) => `<img src="${url}" alt="پیش‌نمایش محصول">`)
+          .map((url) => `<div class="image-preview-item"><img src="${url}" alt="پیش‌نمایش محصول" onerror="this.onerror=null;this.src='/images/product-placeholder.svg'">${removable ? `<button type="button" class="remove-image-btn" data-remove-image="${url}" title="حذف عکس">×</button>` : ""}</div>`)
           .join("");
       }
 
@@ -438,7 +442,7 @@
                 "https://placehold.co/60x60/f1f5f9/94a3b8?text=%D8%B9%DA%A9%D8%B3";
               return `
                 <tr data-id="${p._id}">
-                  <td><img src="${img}" class="prod-thumb" alt=""></td>
+                  <td><img src="${img}" class="prod-thumb" alt="" onerror="this.onerror=null;this.src='/images/product-placeholder.svg'"></td>
                   <td>${p.name}</td>
                   <td>${p.brand}</td>
                   <td>${toPersianPrice(p.price)}</td>
@@ -503,6 +507,7 @@
         document.getElementById("existingImagesPreview").innerHTML = "";
         document.getElementById("newImagesPreview").innerHTML = "";
         editingImages = [];
+        removedImages = [];
         setMainImageOptions();
       }
 
@@ -525,7 +530,7 @@
         document.getElementById("fStorages").value = formatList(p.storages);
         document.getElementById("fWarranties").value = formatList(p.warranties);
         editingImages = Array.isArray(p.images) ? p.images : [];
-        renderImagePreview("existingImagesPreview", editingImages);
+        renderImagePreview("existingImagesPreview", editingImages, true);
         setMainImageOptions(
           editingImages,
           0,
@@ -549,6 +554,17 @@
         } finally {
           button.disabled = false;
         }
+      });
+
+      document.getElementById("existingImagesPreview").addEventListener("click", (event) => {
+        const removeButton = event.target.closest("[data-remove-image]");
+        if (!removeButton) return;
+        const image = removeButton.dataset.removeImage;
+        const previousSelection = document.getElementById("fMainImage").value;
+        removedImages.push(image);
+        editingImages = editingImages.filter((url) => url !== image);
+        renderImagePreview("existingImagesPreview", editingImages, true);
+        setMainImageOptions(editingImages, document.getElementById("fImages").files.length, previousSelection === image ? "" : previousSelection);
       });
 
       document.getElementById("fImages").addEventListener("change", (event) => {
@@ -591,6 +607,7 @@
           fd.append("storages", document.getElementById("fStorages").value);
           fd.append("warranties", document.getElementById("fWarranties").value);
           fd.append("mainImage", document.getElementById("fMainImage").value);
+          fd.append("removeImages", JSON.stringify(removedImages));
 
           const files = document.getElementById("fImages").files;
           for (let i = 0; i < files.length; i++) fd.append("images", files[i]);
