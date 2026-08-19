@@ -816,7 +816,9 @@
           data = await res.json();
         } catch (_) {}
         if (!res.ok || data.success === false) {
-          throw new Error(data.message || "خطایی رخ داد.");
+          const error = new Error(data.message || "خطایی رخ داد.");
+          error.status = res.status;
+          throw error;
         }
         return data;
       }
@@ -834,7 +836,30 @@
           initTabFromPath();
           loadAddresses();
         } catch (err) {
-          window.location.href = "/?openLogin=1";
+          const loadingState = document.getElementById("loadingState");
+          document.getElementById("profileLayout").style.display = "none";
+
+          if (err.status === 401 || err.status === 403) {
+            try {
+              localStorage.removeItem("user");
+              localStorage.removeItem("token");
+              localStorage.removeItem("authToken");
+            } catch (_) {}
+
+            document.body.classList.remove("logged-in");
+            loadingState.style.display = "none";
+
+            if (typeof window.openLoginModal === "function") {
+              window.openLoginModal();
+            } else {
+              window.location.href = "/?openLogin=1";
+            }
+            return;
+          }
+
+          loadingState.style.display = "block";
+          loadingState.textContent =
+            "ارتباط با سرور برقرار نشد. لطفاً صفحه را دوباره بارگذاری کنید.";
         }
       }
 
