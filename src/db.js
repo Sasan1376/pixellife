@@ -1,16 +1,20 @@
 const mongoose = require("mongoose");
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
+mongoose.set("bufferCommands", false);
 
-    console.log("✅ MongoDB Atlas Connected");
-  } catch (error) {
-    console.error("❌ Database Connection Error");
-    console.error(error.message);
-
-    process.exit(1);
+async function connectDB() {
+  if (!process.env.MONGO_URI) {
+    throw new Error("MONGO_URI تنظیم نشده است");
   }
-};
+
+  await mongoose.connect(process.env.MONGO_URI, {
+    serverSelectionTimeoutMS: 10000,
+    connectTimeoutMS: 10000,
+    socketTimeoutMS: 45000,
+    maxPoolSize: 10,
+  });
+
+  console.log("✅ MongoDB Atlas Connected");
+}
 
 module.exports = connectDB;
