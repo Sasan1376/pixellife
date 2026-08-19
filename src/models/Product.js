@@ -11,6 +11,12 @@ const productSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
+    legacyId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true,
+    },
     brand: {
       type: String,
       required: true,
@@ -52,6 +58,12 @@ const productSchema = new mongoose.Schema(
         hex: { type: String, default: "#334155" },
       },
     ],
+    storages: [{ type: String }],
+    warranties: [{ type: String }],
+    reviewImages: [{ type: String }],
+    rating: { type: Number, default: 0 },
+    reviewCount: { type: Number, default: 0 },
+    comingSoon: { type: Boolean, default: false },
     stock: {
       type: Number,
       default: 0,
