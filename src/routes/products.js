@@ -32,7 +32,7 @@ router.get("/", async (req, res) => {
     if (featured !== undefined) filter.featured = toBoolean(featured);
     if (exclude) filter._id = { $ne: exclude };
     const order = sort === "price-asc" ? { price: 1 } : sort === "price-desc" ? { price: -1 } : { featured: -1, createdAt: -1 };
-    let query = Product.find(filter).sort(order);
+    let query = Product.find(filter).sort(order).lean();
     const requestedLimit = safeLimit(limit);
     if (requestedLimit) query = query.limit(requestedLimit);
     const products = await query;
@@ -44,7 +44,7 @@ router.get("/", async (req, res) => {
 
 router.get("/id/:id", async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).lean();
     if (!product) return res.status(404).json({ success: false, message: "محصول پیدا نشد" });
     res.json({ success: true, product: serializeProduct(product) });
   } catch (error) {
@@ -54,7 +54,7 @@ router.get("/id/:id", async (req, res) => {
 
 router.get("/:slug", async (req, res) => {
   try {
-    const product = await Product.findOne({ slug: req.params.slug });
+    const product = await Product.findOne({ slug: req.params.slug }).lean();
     if (!product) return res.status(404).json({ success: false, message: "محصول پیدا نشد" });
     res.json({ success: true, product: serializeProduct(product) });
   } catch (error) {
