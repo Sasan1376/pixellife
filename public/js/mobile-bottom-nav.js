@@ -31,7 +31,11 @@
 
     if (!hasAuthHint) {
       event.preventDefault();
-      window.location.href = "/?openLogin=1";
+      if (typeof window.openLoginModal === "function") {
+        window.openLoginModal();
+      } else {
+        window.location.href = "/?openLogin=1";
+      }
     }
   });
 
