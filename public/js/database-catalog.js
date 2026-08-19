@@ -19,8 +19,11 @@
   const card = (p) => {
     const name = escapeHtml(p.name), href = "/product?id=" + encodeURIComponent(p.slug);
     if (path === "/mobiles") return `<a href="${href}" class="${config.card}" style="color:inherit;text-decoration:none"><div class="${config.name}">${name}</div><div class="${config.brand}">${escapeHtml(p.brand)}</div><div class="${config.price}">${price(p)}</div></a>`;
-    const image = escapeHtml(p.mainImage || (p.images && p.images[0]) || "https://placehold.co/600x600/f8fafc/94a3b8?text=PixelLife");
-    return `<a href="${href}" class="${config.card}" style="color:inherit"><div class="${config.image}"><img src="${image}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='/images/product-placeholder.svg'"></div><div class="${config.body}"><div class="${config.name}">${name}</div><div class="${config.desc}">${escapeHtml(p.description || p.brand || "")}</div><div class="mt-2 small ${p.availability === "out" ? "text-danger" : "text-success"}">${p.availability === "out" ? "ناموجود" : "موجود"} · ${price(p)}</div></div></a>`;
+    const rawImage = p.mainImage || (p.images && p.images[0]) || "";
+    const rawFallback = (p.images || []).find((item) => item && item !== rawImage) || "";
+    const image = escapeHtml(rawImage || "/images/product-placeholder.svg");
+    const fallbackImage = escapeHtml(rawFallback);
+    return `<a href="${href}" class="${config.card}" style="color:inherit"><div class="${config.image}"><img src="${image}" data-fallback="${fallbackImage}" alt="${name}" loading="lazy" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.onerror=null;this.src='/images/product-placeholder.svg';}"></div><div class="${config.body}"><div class="${config.name}">${name}</div><div class="${config.desc}">${escapeHtml(p.description || p.brand || "")}</div><div class="mt-2 small ${p.availability === "out" ? "text-danger" : "text-success"}">${p.availability === "out" ? "ناموجود" : "موجود"} · ${price(p)}</div></div></a>`;
   };
   const params = new URLSearchParams({ category: config.category, limit: "24" });
   if (config.brand) params.set("brand", config.brand);
