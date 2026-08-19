@@ -3,6 +3,16 @@
   display: none;
 }
 
+/* The category explorer is created by JavaScript only for mobile. Keep it
+   explicitly hidden on desktop as a defensive fallback. */
+@media (min-width: 769px) {
+  .mobile-bottom-nav,
+  .mobile-category-backdrop,
+  .mobile-category-sheet {
+    display: none !important;
+  }
+}
+
 @media (max-width: 768px) {
   :root {
     --mobile-bottom-nav-height: 70px;
