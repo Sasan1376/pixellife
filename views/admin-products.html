@@ -332,6 +332,11 @@
                   </div>
                   <div class="product-image-preview" id="existingImagesPreview"></div>
                   <div class="product-image-preview" id="newImagesPreview"></div>
+                  <label class="form-label mt-3" for="fMainImage">تصویر اصلی محصول</label>
+                  <select class="form-select" id="fMainImage">
+                    <option value="">اولین تصویر محصول</option>
+                  </select>
+                  <div class="form-hint">این تصویر در همهٔ بخش‌های سایت، کارت محصول و صفحهٔ محصول در اولویت نمایش قرار می‌گیرد.</div>
                 </div>
               </div>
             </div>
@@ -360,6 +365,7 @@
       const productModalEl = document.getElementById("productModal");
       const productModal = new bootstrap.Modal(productModalEl);
       const tableBody = document.getElementById("productsTableBody");
+      let editingImages = [];
 
       function showToast(msg) {
         const t = document.getElementById("toast");
@@ -394,6 +400,22 @@
           .join("");
       }
 
+      function setMainImageOptions(existingImages = [], newFilesCount = 0, selectedValue = "") {
+        const select = document.getElementById("fMainImage");
+        select.innerHTML = "";
+        select.add(new Option("اولین تصویر محصول", ""));
+        existingImages.forEach((url, index) => {
+          select.add(new Option(`تصویر فعلی ${index + 1}`, url));
+        });
+        for (let index = 0; index < newFilesCount; index += 1) {
+          select.add(new Option(`تصویر جدید ${index + 1}`, `new:${index}`));
+        }
+        const available = [...select.options].some(
+          (option) => option.value === selectedValue,
+        );
+        select.value = available ? selectedValue : "";
+      }
+
       async function loadProducts() {
         tableBody.innerHTML =
           '<tr><td colspan="7" class="text-center text-muted py-4">در حال بارگذاری...</td></tr>';
@@ -411,6 +433,7 @@
           tableBody.innerHTML = json.products
             .map((p) => {
               const img =
+                p.mainImage ||
                 (p.images && p.images[0]) ||
                 "https://placehold.co/60x60/f1f5f9/94a3b8?text=%D8%B9%DA%A9%D8%B3";
               return `
@@ -479,6 +502,8 @@
           "افزودن محصول";
         document.getElementById("existingImagesPreview").innerHTML = "";
         document.getElementById("newImagesPreview").innerHTML = "";
+        editingImages = [];
+        setMainImageOptions();
       }
 
       function openEditModal(p) {
@@ -499,7 +524,13 @@
         document.getElementById("fColors").value = formatColors(p.colors);
         document.getElementById("fStorages").value = formatList(p.storages);
         document.getElementById("fWarranties").value = formatList(p.warranties);
-        renderImagePreview("existingImagesPreview", p.images || []);
+        editingImages = Array.isArray(p.images) ? p.images : [];
+        renderImagePreview("existingImagesPreview", editingImages);
+        setMainImageOptions(
+          editingImages,
+          0,
+          p.mainImage || editingImages[0] || "",
+        );
         productModal.show();
       }
 
@@ -522,7 +553,9 @@
 
       document.getElementById("fImages").addEventListener("change", (event) => {
         const urls = [...event.target.files].map((file) => URL.createObjectURL(file));
+        const previousSelection = document.getElementById("fMainImage").value;
         renderImagePreview("newImagesPreview", urls);
+        setMainImageOptions(editingImages, event.target.files.length, previousSelection);
       });
 
       document
@@ -557,6 +590,7 @@
           fd.append("colors", document.getElementById("fColors").value);
           fd.append("storages", document.getElementById("fStorages").value);
           fd.append("warranties", document.getElementById("fWarranties").value);
+          fd.append("mainImage", document.getElementById("fMainImage").value);
 
           const files = document.getElementById("fImages").files;
           for (let i = 0; i < files.length; i++) fd.append("images", files[i]);
