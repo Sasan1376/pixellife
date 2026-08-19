@@ -3495,7 +3495,7 @@
               const slug = escapeHtml(p.slug);
               return `
                 <a href="/product/${slug}" class="product-card">
-                  <img src="${img}" alt="${name}">
+                  <img src="${img}" alt="${name}" onerror="this.onerror=null;this.src='/images/product-placeholder.svg'">
                   <h3>${name}</h3>
                   <div class="product-price">${price} <span>تومان</span></div>
                 </a>`;
