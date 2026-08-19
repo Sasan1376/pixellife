@@ -3250,7 +3250,7 @@
             p.images[
               ((idx % p.images.length) + p.images.length) % p.images.length
             ];
-          return `<img src="${src}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.closest('#galleryImgHolder,#fsImageWrap,.gallery-thumb,.slider-card-image,#stickySvgWrap') && (this.style.opacity=0.35)">`;
+          return `<img src="${src}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src='/images/product-placeholder.svg'">`;
         }
         const variant =
           FALLBACK_GALLERY_VARIANTS[
