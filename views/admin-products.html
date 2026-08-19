@@ -39,6 +39,18 @@
         border-radius: 6px;
         border: 1px solid #e2e8f0;
       }
+      .no-product-image {
+        display: inline-flex;
+        width: 44px;
+        height: 44px;
+        align-items: center;
+        justify-content: center;
+        border: 1px dashed #cbd5e1;
+        border-radius: 6px;
+        color: #94a3b8;
+        font-size: 10px;
+        background: #f8fafc;
+      }
       .featured-badge {
         cursor: pointer;
       }
@@ -436,13 +448,13 @@
 
           tableBody.innerHTML = json.products
             .map((p) => {
-              const img =
-                p.mainImage ||
-                (p.images && p.images[0]) ||
-                "https://placehold.co/60x60/f1f5f9/94a3b8?text=%D8%B9%DA%A9%D8%B3";
+              const img = p.mainImage || (p.images && p.images[0]) || "";
+              const imageCell = img
+                ? `<img src="${img}" class="prod-thumb" alt="" onerror="this.closest('td').innerHTML='<span class=\\'no-product-image\\'>بدون عکس</span>'">`
+                : '<span class="no-product-image">بدون عکس</span>';
               return `
                 <tr data-id="${p._id}">
-                  <td><img src="${img}" class="prod-thumb" alt="" onerror="this.onerror=null;this.src='/images/product-placeholder.svg'"></td>
+                  <td>${imageCell}</td>
                   <td>${p.name}</td>
                   <td>${p.brand}</td>
                   <td>${toPersianPrice(p.price)}</td>
