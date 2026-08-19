@@ -46,6 +46,12 @@ const productSchema = new mongoose.Schema(
         type: String,
       },
     ],
+    colors: [
+      {
+        name: { type: String, trim: true },
+        hex: { type: String, default: "#334155" },
+      },
+    ],
     stock: {
       type: Number,
       default: 0,
