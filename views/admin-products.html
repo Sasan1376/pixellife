@@ -449,8 +449,10 @@
           tableBody.innerHTML = json.products
             .map((p) => {
               const img = p.mainImage || (p.images && p.images[0]) || "";
+              const fallbackImage =
+                (p.images || []).find((image) => image && image !== img) || "";
               const imageCell = img
-                ? `<img src="${img}" class="prod-thumb" alt="" onerror="this.closest('td').innerHTML='<span class=\\'no-product-image\\'>بدون عکس</span>'">`
+                ? `<img src="${img}" data-fallback="${fallbackImage}" class="prod-thumb" alt="" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.closest('td').innerHTML='<span class=\\'no-product-image\\'>بدون عکس</span>';}">`
                 : '<span class="no-product-image">بدون عکس</span>';
               return `
                 <tr data-id="${p._id}">
