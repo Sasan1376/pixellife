@@ -1691,6 +1691,64 @@
         border: none;
         overflow: hidden;
       }
+      .iphone-17-promo {
+        position: relative;
+        isolation: isolate;
+        color: #fff;
+        background: #b9470f;
+      }
+      .iphone-17-promo img {
+        object-position: left center;
+      }
+      .iphone-17-promo::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: linear-gradient(90deg, rgba(78, 22, 3, 0.12), rgba(78, 22, 3, 0.56));
+        pointer-events: none;
+      }
+      .iphone-17-promo__content {
+        position: absolute;
+        z-index: 1;
+        inset: 0;
+        padding: 24px 22px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        text-align: right;
+        direction: rtl;
+        gap: 3px;
+      }
+      .iphone-17-promo__content strong {
+        direction: ltr;
+        font-family: Arial, sans-serif;
+        font-size: clamp(20px, 2vw, 28px);
+        letter-spacing: -0.8px;
+        line-height: 1.15;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+      }
+      .iphone-17-promo__content > span {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .iphone-17-promo__content em {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 9px;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 700;
+        color: #341004;
+        background: #fff7ed;
+        border-radius: 999px;
+        padding: 5px 10px;
+      }
+      .iphone-17-promo:hover .iphone-17-promo__content em {
+        background: #fff;
+      }
       @media (max-width: 768px) {
         .home-promo-placeholders {
           grid-template-columns: 1fr;
@@ -2409,7 +2467,21 @@
 
       <!-- ═══ SIMPLE BANNER (بنر ساده) ═══ -->
       <section class="home-promo-placeholders" aria-label="Future promotional banners">
-        <a class="home-promo-placeholder" href="/iphone">Banner placeholder 1</a>
+        <a
+          class="home-promo-placeholder has-image iphone-17-promo"
+          href="/iphone"
+          aria-label="مشاهده آیفون ۱۷ پرومکس"
+        >
+          <img
+            src="/images/iphone-17-pro-max-orange-banner.svg"
+            alt="آیفون ۱۷ پرومکس"
+          />
+          <span class="iphone-17-promo__content">
+            <strong>iPhone 17 Pro Max</strong>
+            <span>قدرت، در اوج زیبایی</span>
+            <em>مشاهده و خرید <i class="ti ti-arrow-left"></i></em>
+          </span>
+        </a>
         <a class="home-promo-placeholder has-image" href="/samsung">
           <img src="/images/samsung-a57-promo.png" alt="Samsung Galaxy A57" />
         </a>
