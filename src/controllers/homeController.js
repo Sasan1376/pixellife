@@ -209,7 +209,7 @@ function injectDatabaseCatalog(html) {
   ];
   if (!html || !catalogGrids.some((marker) => html.includes(marker)) ||
       html.includes("/js/database-catalog.js")) return html;
-  return html.replace("</body>", '<script src="/js/database-catalog.js?v=2"></script>\n</body>');
+  return html.replace("</body>", '<script src="/js/database-catalog.js?v=3"></script>\n</body>');
 }
 
 function sendViewWithEnamad(res, fileName) {
