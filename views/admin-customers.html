@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
     <style>
       body, .app-header, .app-sidebar { font-family: Vazirmatn, Tahoma, sans-serif; }
+      body { color-scheme: light; background: #f8fafc !important; color: #1e293b !important; }
+      .app-wrapper, .app-main, .app-content, .app-content-header { background: #f8fafc !important; color: #1e293b !important; }
+      .card { background: #ffffff !important; color: #1e293b !important; border-color: #e2e8f0 !important; }
+      .table { --bs-table-bg: #ffffff; --bs-table-color: #1e293b; --bs-table-border-color: #e2e8f0; --bs-table-striped-bg: #f8fafc; --bs-table-hover-bg: #eff6ff; --bs-table-hover-color: #1e293b; }
+      .table > :not(caption) > * > * { background-color: var(--bs-table-bg) !important; color: var(--bs-table-color) !important; }
       .brand-link { font-weight: 800; } .brand-link span { color: #3b82f6; }
       .app-sidebar { background: #ffffff !important; border-left: 1px solid #e2e8f0; }
       .app-sidebar .nav-link, .app-sidebar .brand-link { color: #334155 !important; }
@@ -19,7 +24,7 @@
       .status-badge { font-size: 11px; } #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1d4ed8; color:#fff; padding:12px 24px; border-radius:8px; z-index:9999; opacity:0; transition:.25s; } #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
     </style>
   </head>
-  <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+  <body class="layout-fixed sidebar-expand-lg">
     <div class="app-wrapper">
       <nav class="app-header navbar navbar-expand bg-white border-bottom"><div class="container-fluid"><ul class="navbar-nav"><li class="nav-item"><a class="nav-link" data-lte-toggle="sidebar" href="#"><i class="ti ti-menu-2"></i></a></li></ul><ul class="navbar-nav ms-auto"><li class="nav-item"><button class="btn btn-sm btn-outline-danger" id="logoutBtn"><i class="ti ti-logout"></i> خروج</button></li></ul></div></nav>
       <aside class="app-sidebar bg-white shadow-sm"><div class="sidebar-brand"><a href="/admin/products" class="brand-link"><span class="brand-text">پیکسل<span>لایف</span></span></a></div><div class="sidebar-wrapper"><nav class="mt-2"><ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu"><li class="nav-item"><a href="/admin/products" class="nav-link"><i class="nav-icon ti ti-device-mobile"></i><p>محصولات</p></a></li><li class="nav-item"><a href="/admin/customers" class="nav-link active"><i class="nav-icon ti ti-users"></i><p>مشتریان</p></a></li><li class="nav-item"><a href="/" class="nav-link" target="_blank"><i class="nav-icon ti ti-external-link"></i><p>مشاهده‌ی سایت</p></a></li></ul></nav></div></aside>
