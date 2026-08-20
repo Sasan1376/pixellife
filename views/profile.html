@@ -675,7 +675,8 @@
           <!-- ── سفارش‌ها ── -->
           <section class="p-pane" id="pane-orders">
             <h2 class="p-main-title">سفارش‌های من</h2>
-            <div class="empty-state">
+            <div id="ordersList"></div>
+            <div class="empty-state" id="ordersEmpty" style="display: none">
               <i class="ti ti-shopping-bag"></i>
               <p>هنوز سفارشی ثبت نکرده‌اید.</p>
             </div>
@@ -900,6 +901,31 @@
             ? "/profile"
             : "/profile/" + (tab === "addresses" ? "addresses" : tab);
         window.history.replaceState(null, "", path);
+        if (tab === "orders") loadOrders();
+      }
+
+      const orderStatusText = { awaiting_payment: "در انتظار پرداخت", processing: "در حال پردازش", shipped: "ارسال‌شده", delivered: "تحویل‌شده", cancelled: "لغوشده" };
+      async function loadOrders() {
+        const list = document.getElementById("ordersList");
+        const empty = document.getElementById("ordersEmpty");
+        list.innerHTML = '<div class="empty-state"><p>در حال دریافت سفارش‌ها...</p></div>';
+        try {
+          const res = await apiRequest("/api/orders/my", "GET");
+          const orders = res.orders || [];
+          list.innerHTML = "";
+          empty.style.display = orders.length ? "none" : "block";
+          orders.forEach((order) => {
+            const card = document.createElement("div");
+            card.className = "addr-card";
+            const date = new Intl.DateTimeFormat("fa-IR", { dateStyle: "medium", timeStyle: "short" }).format(new Date(order.createdAt));
+            const itemCount = (order.items || []).reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+            card.innerHTML = `<div class="addr-card-top"><div class="addr-card-title"><i class="ti ti-package"></i> سفارش <span dir="ltr">${order.orderNumber}</span></div><span class="addr-badge">${orderStatusText[order.status] || order.status}</span></div><div class="addr-card-text">${itemCount.toLocaleString("fa-IR")} کالا · مبلغ: ${Number(order.total || 0).toLocaleString("fa-IR")} تومان</div><div class="addr-card-text">${date}</div>`;
+            list.appendChild(card);
+          });
+        } catch (_) {
+          list.innerHTML = '<div class="empty-state"><p>دریافت سفارش‌ها ناموفق بود. صفحه را دوباره بارگذاری کنید.</p></div>';
+          empty.style.display = "none";
+        }
       }
 
       function initTabFromPath() {
