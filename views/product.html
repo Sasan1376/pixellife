@@ -1297,6 +1297,22 @@
         border-color: var(--blue);
         box-shadow: 0 0 0 3px var(--blue-light);
       }
+      .color-swatch.unavailable {
+        opacity: .38 !important;
+        cursor: not-allowed !important;
+      }
+      .color-swatch.unavailable::before {
+        content: "";
+        position: absolute;
+        z-index: 3;
+        width: 2px;
+        height: 42px;
+        background: #dc2626;
+        border-radius: 999px;
+        transform: rotate(45deg);
+        box-shadow: 0 0 0 1px rgba(255,255,255,.85);
+        pointer-events: none;
+      }
       .color-swatch::after {
         content: "";
         position: absolute;
@@ -5521,10 +5537,11 @@
               chip.style.cursor = enabled ? "pointer" : "not-allowed";
             });
             document.querySelectorAll(".color-swatch").forEach((swatch) => {
-              const enabled = variants.some((variant) => variant.color.name === swatch.dataset.name);
+              const enabled = variants.some((variant) => variant.storage === selectedStorage && variant.color.name === swatch.dataset.name);
               swatch.classList.toggle("active", swatch.dataset.name === selectedColor.name);
+              swatch.classList.toggle("unavailable", !enabled);
               swatch.setAttribute("aria-disabled", enabled ? "false" : "true");
-              swatch.style.opacity = enabled ? "1" : ".32";
+              swatch.style.opacity = enabled ? "1" : "";
               swatch.style.cursor = enabled ? "pointer" : "not-allowed";
             });
             const quantityHint = document.querySelector(".quantity-row")?.previousElementSibling?.querySelector(".selected-val");
