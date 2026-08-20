@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Product = require("../models/Product");
+const { streamProductImage } = require("../utils/productImages");
 
 function toBoolean(value) {
   return value === true || value === "true" || value === "1";
@@ -22,6 +23,14 @@ function serializeProduct(product) {
   const mainImage = normalizeImagePath(data.mainImage);
   return { ...data, images, mainImage: mainImage || images[0] || "" };
 }
+
+router.get("/image/:id", (req, res) => {
+  try {
+    if (!streamProductImage(req.params.id, res)) return res.status(404).end();
+  } catch (_) {
+    if (!res.headersSent) res.status(404).end();
+  }
+});
 
 router.get("/", async (req, res) => {
   try {
