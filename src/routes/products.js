@@ -37,7 +37,21 @@ router.get("/", async (req, res) => {
   try {
     const filter = {};
     const { brand, category, featured, exclude, limit, sort } = req.query;
-    if (brand) filter.brand = { $regex: String(brand), $options: "i" };
+    if (brand) {
+      const brandAliases = {
+        "اپل": "اپل|apple",
+        "apple": "اپل|apple",
+        "سامسونگ": "سامسونگ|samsung",
+        "samsung": "سامسونگ|samsung",
+        "شیائومی": "شیائومی|xiaomi",
+        "xiaomi": "شیائومی|xiaomi",
+      };
+      const requestedBrand = String(brand).trim().toLowerCase();
+      filter.brand = {
+        $regex: brandAliases[requestedBrand] || String(brand).trim(),
+        $options: "i",
+      };
+    }
     if (category) filter.category = { $regex: String(category), $options: "i" };
     if (featured !== undefined) filter.featured = toBoolean(featured);
     if (exclude) filter._id = { $ne: exclude };
