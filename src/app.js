@@ -122,6 +122,7 @@ const homeRoutes = require("./routes/homeRoutes");
 const authRoutes = require("./routes/authRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const addressRoutes = require("./routes/addressRoutes");
+const orderRoutes = require("./routes/orders");
 const adminRoutes = require("./routes/admin");
 const adminApiRoutes = require("./routes/adminApi");
 const productRoutes = require("./routes/products");
@@ -142,6 +143,7 @@ app.use("/api/reviews", reviewRoutes);
 
 // Addresses (آدرس‌های کاربر)
 app.use("/api/addresses", addressRoutes);
+app.use("/api/orders", orderRoutes);
 
 // Admin Panel
 app.use("/admin/api", adminApiRoutes);
