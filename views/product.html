@@ -4246,18 +4246,34 @@
         const oldPrice =
           doc.oldPrice || doc.compareAtPrice || oldPriceFromDiscount;
 
+        const variants = Array.isArray(doc.variants)
+          ? doc.variants.map((variant) => ({
+              storage: String(variant?.storage || "").trim(),
+              color: {
+                name: String(variant?.color?.name || "").trim(),
+                hex: /^#[0-9a-fA-F]{6}$/.test(variant?.color?.hex || "") ? variant.color.hex : "#334155",
+              },
+              stock: Math.max(0, Number(variant?.stock) || 0),
+              price: Number(variant?.price) || 0,
+            })).filter((variant) => variant.storage && variant.color.name)
+          : [];
+
         // رنگ‌ها/حافظه‌ها را از دیتابیس بخوان اگر موجود بود، وگرنه یک گزینه واحد بساز
         // (نه یک برچسب جعلی "استاندارد"/"پیش‌فرض" که روی همه محصولات یکسان دیده شود)
         const storages =
-          Array.isArray(doc.storages) && doc.storages.length
-            ? doc.storages
+          variants.length
+            ? [...new Set(variants.map((variant) => variant.storage))]
+            : Array.isArray(doc.storages) && doc.storages.length
+              ? doc.storages
             : doc.capacity
               ? [doc.capacity]
               : ["یک گزینه"];
 
         const colors =
-          Array.isArray(doc.colors) && doc.colors.length
-            ? doc.colors.map((c) =>
+          variants.length
+            ? [...new Map(variants.map((variant) => [variant.color.name, variant.color])).values()]
+            : Array.isArray(doc.colors) && doc.colors.length
+              ? doc.colors.map((c) =>
                 typeof c === "string" ? { name: c, hex: "#334155" } : c,
               )
             : [{ name: doc.color || "یک رنگ", hex: doc.colorHex || "#334155" }];
@@ -4281,6 +4297,7 @@
               ? doc.warranties
               : ["گارانتی ۱۸ ماهه شرکتی"],
           colors: colors,
+          variants: variants,
           // شکل SVG بر اساس دسته‌بندی واقعی، نه همیشه گوشی
           svg: isTablet
             ? tabletSvg("#1a1a2e", "#1e3a5f", "#2d1b4e")
@@ -4996,12 +5013,16 @@
             categoryLink.textContent = `${product.isTablet ? "تبلت" : "گوشی موبایل"} ${product.brand || ""}`;
           }
 
-          selectedStorage = product.storages[0];
-          selectedColor = product.colors[0];
+          const firstAvailableVariant = Array.isArray(product.variants)
+            ? product.variants.find((variant) => variant.stock > 0) || product.variants[0]
+            : null;
+          selectedStorage = firstAvailableVariant?.storage || product.storages[0];
+          selectedColor = firstAvailableVariant?.color || product.colors[0];
           selectedWarranty = product.warranties ? product.warranties[0] : null;
           const galleryTotal = galleryCount(product);
-          const maxQuantity =
-            product._fromDb ? Math.max(0, Number(product.stock) || 0) : 10;
+          let maxQuantity = firstAvailableVariant
+            ? Math.max(0, Number(firstAvailableVariant.stock) || 0)
+            : product._fromDb ? Math.max(0, Number(product.stock) || 0) : 10;
           const wishlist = getWishlist();
           isWished = wishlist.includes(productId);
           const discountPct =
@@ -5110,7 +5131,7 @@
                   ${product.storages
                     .map(
                       (s, i) =>
-                        `<button class="storage-chip${i === 0 ? " active" : ""}" data-val="${s}">${s}</button>`,
+                        `<button class="storage-chip${s === selectedStorage ? " active" : ""}" data-val="${s}">${s}</button>`,
                     )
                     .join("")}
                 </div>
@@ -5122,7 +5143,7 @@
                   ${product.colors
                     .map(
                       (c, i) =>
-                        `<div class="color-swatch${i === 0 ? " active" : ""}" style="background:${c.hex}" data-name="${c.name}" title="${c.name}"></div>`,
+                        `<div class="color-swatch${c.name === selectedColor.name ? " active" : ""}" style="background:${c.hex}" data-name="${c.name}" data-hex="${c.hex}" title="${c.name}"></div>`,
                     )
                     .join("")}
                 </div>
