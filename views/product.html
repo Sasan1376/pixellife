@@ -5492,7 +5492,15 @@
 
           function syncVariantSelection(preferredStorage, preferredColorName) {
             const variants = Array.isArray(product.variants) ? product.variants.filter((variant) => variant.stock > 0) : [];
-            if (!variants.length) return true; // محصولات قدیمی از موجودی کلی استفاده می‌کنند.
+            if (!variants.length) {
+              selectedStorage = preferredStorage || selectedStorage;
+              selectedColor = product.colors.find((color) => color.name === preferredColorName) || selectedColor;
+              document.getElementById("storageVal").textContent = selectedStorage;
+              document.getElementById("colorVal").textContent = selectedColor.name;
+              document.querySelectorAll(".storage-chip").forEach((chip) => chip.classList.toggle("active", chip.dataset.val === selectedStorage));
+              document.querySelectorAll(".color-swatch").forEach((swatch) => swatch.classList.toggle("active", swatch.dataset.name === selectedColor.name));
+              return true;
+            }
             const selected = variants.find((variant) => variant.storage === preferredStorage && variant.color.name === preferredColorName)
               || variants.find((variant) => variant.storage === preferredStorage)
               || variants.find((variant) => variant.color.name === preferredColorName)
@@ -5512,7 +5520,7 @@
               chip.style.cursor = enabled ? "pointer" : "not-allowed";
             });
             document.querySelectorAll(".color-swatch").forEach((swatch) => {
-              const enabled = variants.some((variant) => variant.storage === selectedStorage && variant.color.name === swatch.dataset.name);
+              const enabled = variants.some((variant) => variant.color.name === swatch.dataset.name);
               swatch.classList.toggle("active", swatch.dataset.name === selectedColor.name);
               swatch.setAttribute("aria-disabled", enabled ? "false" : "true");
               swatch.style.opacity = enabled ? "1" : ".32";
