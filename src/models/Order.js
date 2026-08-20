@@ -1,0 +1,33 @@
+const mongoose = require("mongoose");
+
+const orderSchema = new mongoose.Schema(
+  {
+    orderNumber: { type: String, required: true, unique: true, index: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
+    items: [{
+      product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+      name: { type: String, required: true }, brand: { type: String, default: "" }, image: { type: String, default: "" },
+      price: { type: Number, required: true, min: 0 }, quantity: { type: Number, required: true, min: 1 },
+      color: { type: String, default: "" }, storage: { type: String, default: "" }, warranty: { type: String, default: "" },
+    }],
+    shippingAddress: {
+      receiverName: { type: String, required: true }, receiverMobile: { type: String, required: true },
+      province: { type: String, required: true }, city: { type: String, required: true },
+      fullAddress: { type: String, required: true }, postalCode: { type: String, default: "" },
+    },
+    subtotal: { type: Number, required: true, min: 0 }, deliveryFee: { type: Number, default: 0, min: 0 },
+    discount: { type: Number, default: 0, min: 0 }, total: { type: Number, required: true, min: 0 },
+    paymentMethod: { type: String, enum: ["online"], default: "online" },
+    paymentStatus: { type: String, enum: ["unpaid", "paid", "failed"], default: "unpaid" },
+    status: { type: String, enum: ["awaiting_payment", "processing", "shipped", "delivered", "cancelled"], default: "awaiting_payment", index: true },
+    statusHistory: [{ _id: false, status: String, note: String, changedAt: { type: Date, default: Date.now } }],
+  },
+  { timestamps: true },
+);
+
+orderSchema.pre("validate", function () {
+  if (!this.orderNumber) this.orderNumber = `PL-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+  if (!this.statusHistory?.length) this.statusHistory = [{ status: this.status, note: "سفارش ثبت شد" }];
+});
+
+module.exports = mongoose.model("Order", orderSchema);
