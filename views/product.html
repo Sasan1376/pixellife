@@ -4914,6 +4914,7 @@
           try {
             const apiRes = await fetch(apiUrl, {
               signal: productRequestController.signal,
+              cache: "no-store",
             });
             if (apiRes.ok) {
               const apiData = await apiRes.json();
