@@ -3634,13 +3634,36 @@
 
       function saveCart() {
         localStorage.setItem("digishop_cart", JSON.stringify(cartData));
+        window.dispatchEvent(new Event("cartUpdated"));
+      }
+
+      // موجودی واقعیِ ثبت‌شده هنگام افزودن محصول؛ بدون موجودی، افزایش تعداد مجاز نیست.
+      function getCartStock(item) {
+        const stock = Number(item && item.stock);
+        return Number.isFinite(stock) ? Math.max(0, Math.floor(stock)) : 0;
+      }
+
+      function getCartQuantity(item) {
+        const quantity = Number(item && (item.quantity ?? item.qty));
+        return Number.isFinite(quantity) ? Math.max(1, Math.floor(quantity)) : 1;
+      }
+
+      function normalizeCartItem(item) {
+        const stock = getCartStock(item);
+        item.stock = stock;
+        item.available = item.available !== false && stock > 0;
+        const quantity = getCartQuantity(item);
+        item.quantity = item.available ? Math.min(quantity, stock) : quantity;
+        item.qty = item.quantity;
+        return item;
       }
       const CART_IMAGE_FALLBACK = "/images/product-placeholder.svg";
       function cartImage(item) {
         return item.image || item.mainImage || item.images?.[0] || CART_IMAGE_FALLBACK;
       }
       async function enrichCartImages() {
-        const missing = cartData.filter((item) => !item.image && item.id);
+        // برای کالاهای قدیمیِ بدون موجودی نیز اطلاعات جدید محصول دریافت می‌شود.
+        const missing = cartData.filter((item) => (!item.image || item.stock === undefined) && item.id);
         if (!missing.length) return;
         await Promise.all(missing.map(async (item) => {
           try {
@@ -3652,8 +3675,10 @@
             const product = data.product;
             item.image = product.mainImage || product.images?.[0] || CART_IMAGE_FALLBACK;
             item.brand = item.brand || product.brand || "";
-            item.stock = Math.max(0, Number(product.stock) || 0);
-            item.available = product.availability !== "out" && item.stock > 0;
+            if (item.stock === undefined) {
+              item.stock = Math.max(0, Number(product.stock) || 0);
+            }
+            normalizeCartItem(item);
           } catch (_) {}
         }));
         saveCart();
@@ -3666,7 +3691,13 @@
       function addToCart(product) {
         const existing = cartData.find((i) => i.id === product.id);
         if (existing) {
+          normalizeCartItem(existing);
+          if (!existing.available || existing.quantity >= existing.stock) {
+            showToast("تعداد انتخابی به سقف موجودی این کالا رسیده است");
+            return;
+          }
           existing.quantity += 1;
+          existing.qty = existing.quantity;
         } else {
           cartData.push({
             id: product.id,
@@ -3675,8 +3706,8 @@
             color: product.color || "—",
             variant: product.variant || "—",
             warranty: product.warranty || "—",
-            available: true,
-            stock: product.stock || 99,
+            stock: getCartStock(product),
+            available: getCartStock(product) > 0,
             price: product.price,
             originalPrice:
               product.oldPrice || product.originalPrice || product.price,
@@ -3733,11 +3764,9 @@
 
         cartData.forEach((item, idx) => {
           // نرمال‌سازی دیتا برای جلوگیری از خطا
-          if (item.quantity === undefined) item.quantity = item.qty || 1;
+          normalizeCartItem(item);
           if (item.originalPrice === undefined)
             item.originalPrice = item.price || 0;
-          if (item.stock === undefined) item.stock = 99;
-          if (item.available === undefined) item.available = true;
 
           const card = document.createElement("div");
           card.className =
@@ -3792,7 +3821,7 @@
               </div>
               <div class="qty-selector" role="group" aria-label="تعداد محصول">
                 <button class="qty-btn" onclick="changeQty('${item.id}',-1)" ${item.quantity <= 1 || !item.available ? "disabled" : ""} aria-label="کاهش تعداد"><i class="ti ti-minus"></i></button>
-                <input type="number" class="qty-value" value="${item.quantity}" min="1" max="${item.stock}" onchange="setQty('${item.id}',this.value)" aria-label="تعداد" ${!item.available ? "disabled" : ""} />
+                <input type="number" class="qty-value" value="${item.quantity}" min="1" max="${Math.max(1, item.stock)}" onchange="setQty('${item.id}',this.value)" aria-label="تعداد" ${!item.available ? "disabled" : ""} />
                 <button class="qty-btn" onclick="changeQty('${item.id}',1)" ${item.quantity >= item.stock || !item.available ? "disabled" : ""} aria-label="افزایش تعداد"><i class="ti ti-plus"></i></button>
               </div>
             </div>
@@ -3888,9 +3917,11 @@
         // تبدیل آی‌دی به استرینگ برای تطابق دقیق
         const item = cartData.find((i) => String(i.id) === String(id));
         if (!item || !item.available) return;
+        normalizeCartItem(item);
         const newQty = item.quantity + delta;
         if (newQty < 1 || newQty > item.stock) return;
         item.quantity = newQty;
+        item.qty = newQty;
         saveCart();
         renderCartItems();
       }
@@ -3898,10 +3929,12 @@
       function setQty(id, val) {
         const item = cartData.find((i) => String(i.id) === String(id));
         if (!item || !item.available) return;
+        normalizeCartItem(item);
         let n = parseInt(val, 10);
         if (isNaN(n) || n < 1) n = 1;
         if (n > item.stock) n = item.stock;
         item.quantity = n;
+        item.qty = n;
         saveCart();
         renderCartItems();
       }
@@ -4802,7 +4835,7 @@
 
       // تابع کمکی برای خواندن تعداد
       function getItemQty(item) {
-        return item.qty || item.quantity || 1;
+        return getCartQuantity(item);
       }
 
       // تابع همگام‌سازی کامل با صفحه سبد خرید
@@ -4813,11 +4846,9 @@
 
             // 🚀 نکته مهم: افزودن ویژگی‌های مفقود تا cart.html بتواند آن‌ها را محاسبه کند
             cartData.forEach((item) => {
-              if (item.quantity === undefined) item.quantity = item.qty || 1;
-              if (item.available === undefined) item.available = true;
+              normalizeCartItem(item);
               if (item.originalPrice === undefined)
                 item.originalPrice = item.price || 0;
-              if (item.stock === undefined) item.stock = 99;
               if (item.brand === undefined) item.brand = "";
               if (item.color === undefined) item.color = "—";
               if (item.variant === undefined) item.variant = "—";
@@ -4893,9 +4924,9 @@
                 <i class="ti ti-trash"></i>
               </button>
               <div class="mini-qty-controls">
-                <button class="mini-qty-btn" onclick="changeMiniCartQty('${item.id}', -1)">−</button>
+                <button class="mini-qty-btn" onclick="changeMiniCartQty('${item.id}', -1)" ${currentQty <= 1 ? "disabled" : ""}>−</button>
                 <span class="mini-qty-val">${toPersianNum(currentQty)}</span>
-                <button class="mini-qty-btn" onclick="changeMiniCartQty('${item.id}', 1)">+</button>
+                <button class="mini-qty-btn" onclick="changeMiniCartQty('${item.id}', 1)" ${!item.available || currentQty >= getCartStock(item) ? "disabled" : ""}>+</button>
               </div>
             </div>
           </div>
@@ -4924,11 +4955,17 @@
         const item = cart.find((i) => String(i.id) === String(id));
         if (!item) return;
 
-        let currentQty = getItemQty(item);
-        currentQty += delta;
-        if (currentQty < 1) currentQty = 1; // کمتر از 1 نشود
+        normalizeCartItem(item);
+        const maxStock = getCartStock(item);
+        let currentQty = getItemQty(item) + delta;
+        if (currentQty < 1) currentQty = 1;
+        if (delta > 0 && (!item.available || currentQty > maxStock)) {
+          showToast("تعداد انتخابی به سقف موجودی این کالا رسیده است");
+          return;
+        }
+        currentQty = Math.min(currentQty, maxStock || 1);
 
-        // آپدیت هر دو فیلد qty و quantity برای همگام‌سازی با تمام صفحات
+        // همگام‌سازی هر دو فیلد برای تمام صفحه‌ها
         item.qty = currentQty;
         item.quantity = currentQty;
 
