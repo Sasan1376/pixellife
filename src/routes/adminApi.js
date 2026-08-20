@@ -3,6 +3,7 @@ const router = express.Router();
 
 const Product = require("../models/Product");
 const User = require("../models/User");
+const Order = require("../models/Order");
 const upload = require("../utils/upload");
 const requireAdmin = require("../middleware/adminAuth");
 const demoProducts = require("../data/demoProducts");
@@ -371,6 +372,33 @@ router.patch("/users/:id/status", async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
+});
+
+router.get("/orders", async (req, res) => {
+  try {
+    const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(10, Number.parseInt(req.query.limit, 10) || 20));
+    const filter = {};
+    if (req.query.status) filter.status = req.query.status;
+    if (req.query.search) filter.orderNumber = { $regex: String(req.query.search).trim(), $options: "i" };
+    const [total, orders] = await Promise.all([
+      Order.countDocuments(filter),
+      Order.find(filter).populate("user", "firstName lastName mobile").sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+    ]);
+    res.json({ success: true, orders, pagination: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) } });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+router.patch("/orders/:id/status", async (req, res) => {
+  try {
+    const allowed = ["awaiting_payment", "processing", "shipped", "delivered", "cancelled"];
+    const status = String(req.body.status || "");
+    if (!allowed.includes(status)) return res.status(400).json({ success: false, message: "وضعیت سفارش معتبر نیست" });
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ success: false, message: "سفارش پیدا نشد" });
+    order.status = status; order.statusHistory.push({ status, note: "وضعیت توسط ادمین تغییر کرد" }); await order.save();
+    res.json({ success: true, order });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 });
 
 module.exports = router;
