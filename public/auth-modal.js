@@ -473,6 +473,30 @@
           </div>
         </div>
 
+        <div class="shared-auth-row" style="margin-top:18px;">
+          <div class="shared-auth-field">
+            <label for="sharedAuthNationalCode">کد ملی</label>
+            <input
+              id="sharedAuthNationalCode"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="کد ملی ۱۰ رقمی"
+              maxlength="10"
+              required
+            />
+          </div>
+          <div class="shared-auth-field">
+            <label for="sharedAuthBirthDate">تاریخ تولد</label>
+            <input
+              id="sharedAuthBirthDate"
+              type="date"
+              autocomplete="bday"
+              required
+            />
+          </div>
+        </div>
+
         <div class="shared-auth-field" style="margin-top:18px;">
           <label for="sharedAuthMobileReadonly">تلفن همراه</label>
           <input
@@ -515,16 +539,35 @@
 
     const firstName = firstNameInput.value.trim();
     const lastName = lastNameInput.value.trim();
+    const nationalCode = document
+      .getElementById("sharedAuthNationalCode")
+      .value.trim()
+      .replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit))
+      .replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit));
+    const birthDate = document.getElementById("sharedAuthBirthDate").value;
 
     if (firstName.length < 2 || lastName.length < 2) {
       showError("لطفاً نام و نام خانوادگی را به‌درستی وارد کنید.");
+      return;
+    }
+    if (!/^\d{10}$/.test(nationalCode)) {
+      showError("کد ملی باید ۱۰ رقم باشد.");
+      return;
+    }
+    if (!birthDate) {
+      showError("تاریخ تولد را وارد کنید.");
       return;
     }
 
     setLoading(button, true, "ذخیره تغییرات");
 
     try {
-      await apiRequest("/api/auth/complete-profile", { firstName, lastName });
+      await apiRequest("/api/auth/complete-profile", {
+        firstName,
+        lastName,
+        nationalCode,
+        birthDate,
+      });
 
       clearInterval(timerInterval);
       document.body.classList.add("logged-in");
