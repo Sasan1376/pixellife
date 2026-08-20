@@ -11,11 +11,13 @@ router.post("/", protect, async (req, res, next) => {
     if (!requestedItems.length) return res.status(400).json({ success: false, message: "سبد خرید خالی است" });
     const address = await Address.findOne({ _id: req.body.addressId, user: req.user._id }).lean();
     if (!address) return res.status(400).json({ success: false, message: "برای ثبت سفارش یک آدرس معتبر انتخاب کنید" });
-    const ids = requestedItems.map((item) => item.productId).filter(Boolean);
-    const products = await Product.find({ _id: { $in: ids } }).lean();
-    const byId = new Map(products.map((product) => [String(product._id), product]));
-    const items = requestedItems.map((item) => {
-      const product = byId.get(String(item.productId)); const quantity = Math.max(1, Math.floor(Number(item.quantity) || 0));
+    const products = await Promise.all(requestedItems.map(async (item) => {
+      const id = String(item.productId || "").trim();
+      if (/^[a-f\d]{24}$/i.test(id)) return Product.findById(id).lean();
+      return Product.findOne({ $or: [{ slug: id }, { legacyId: id }] }).lean();
+    }));
+    const items = requestedItems.map((item, index) => {
+      const product = products[index]; const quantity = Math.max(1, Math.floor(Number(item.quantity) || 0));
       if (!product || product.availability === "out" || Number(product.stock) < quantity) throw new Error(`محصول «${product?.name || "انتخاب‌شده"}» موجود نیست`);
       const price = Math.round(Number(product.price) * (1 - Math.max(0, Number(product.discount) || 0) / 100));
       return { product: product._id, name: product.name, brand: product.brand, image: product.mainImage || product.images?.[0] || "", price, quantity, color: String(item.color || ""), storage: String(item.storage || ""), warranty: String(item.warranty || "") };
