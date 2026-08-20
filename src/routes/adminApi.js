@@ -35,6 +35,11 @@ function parseColors(value) {
 function toEnglishDigits(value) {
   return String(value ?? "").replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit)).replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit));
 }
+function parseStock(value) {
+  const normalized = toEnglishDigits(value).replace(/[\s,٬،]/g, "");
+  const number = Number(normalized);
+  return Number.isFinite(number) ? Math.max(0, number) : 0;
+}
 function parseVariantNumber(value, label, lineNumber) {
   const normalized = toEnglishDigits(value).replace(/[\s,٬،]/g, "");
   if (normalized === "" || !/^\d+(?:\.\d+)?$/.test(normalized)) {
@@ -187,7 +192,7 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       description,
       specs,
       featured: featured === "true" || featured === "on" || featured === true,
-      stock: Number(stock) || 0,
+      stock: parseStock(stock),
       availability: availability || "in",
       images: uploadedImages,
       mainImage: resolveMainImage(mainImageSelection, [], uploadedImages),
@@ -238,7 +243,7 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
     if (discount !== undefined) product.discount = Number(discount) || 0;
     if (description !== undefined) product.description = description;
     if (specs !== undefined) product.specs = specs;
-    if (stock !== undefined) product.stock = Number(stock) || 0;
+    if (stock !== undefined) product.stock = parseStock(stock);
     if (availability) product.availability = availability;
     if (colors !== undefined) product.colors = parseColors(colors);
     if (storages !== undefined) product.storages = parseList(storages);
