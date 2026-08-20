@@ -3528,7 +3528,28 @@
 
       function saveCart(cart) {
         localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        window.dispatchEvent(new Event("cartUpdated"));
         renderMiniCart();
+      }
+
+      function getItemQty(item) {
+        const quantity = Number(item && (item.quantity ?? item.qty));
+        return Number.isFinite(quantity) ? Math.max(1, Math.floor(quantity)) : 1;
+      }
+
+      function getItemStock(item) {
+        const stock = Number(item && item.stock);
+        return Number.isFinite(stock) ? Math.max(0, Math.floor(stock)) : 0;
+      }
+
+      function normalizeMiniCartItem(item) {
+        const stock = getItemStock(item);
+        const available = item.available !== false && stock > 0;
+        item.stock = stock;
+        item.available = available;
+        item.quantity = available ? Math.min(getItemQty(item), stock) : getItemQty(item);
+        item.qty = item.quantity;
+        return item;
       }
 
       function formatToman(n) {
@@ -3542,7 +3563,8 @@
         const countBadge = document.getElementById("cartCount");
         const totalPriceEl = document.getElementById("miniCartTotalPrice");
 
-        const totalQty = cart.reduce((s, it) => s + (Number(it.qty) || 0), 0);
+        cart.forEach(normalizeMiniCartItem);
+        const totalQty = cart.filter((it) => it.available).reduce((sum, it) => sum + getItemQty(it), 0);
         if (totalQty > 0) {
           countBadge.textContent = totalQty > 99 ? "99+" : totalQty;
           countBadge.style.display = "flex";
@@ -3559,7 +3581,7 @@
 
         footer.style.display = "block";
         const totalPrice = cart.reduce(
-          (s, it) => s + (Number(it.price) || 0) * (Number(it.qty) || 0),
+          (s, it) => s + (Number(it.price) || 0) * (it.available ? getItemQty(it) : 0),
           0,
         );
         totalPriceEl.textContent = formatToman(totalPrice);
@@ -3571,7 +3593,8 @@
             const image = escapeHtml(
               it.image || "https://placehold.co/50x50/f1f5f9/94a3b8?text=%20",
             );
-            const qty = escapeHtml(it.qty);
+            const qty = escapeHtml(getItemQty(it));
+            const canIncrease = it.available && getItemQty(it) < getItemStock(it);
             return `
             <div class="mini-cart-item" data-id="${id}">
               <img class="mini-cart-img" src="${image}" alt="${name}">
@@ -3584,9 +3607,9 @@
                   <i class="ti ti-trash"></i>
                 </button>
                 <div class="mini-qty-controls">
-                  <button class="mini-qty-btn" data-action="inc" data-id="${id}">+</button>
+                  <button class="mini-qty-btn" data-action="inc" data-id="${id}" ${canIncrease ? "" : "disabled"}>+</button>
                   <span class="mini-qty-val">${qty}</span>
-                  <button class="mini-qty-btn" data-action="dec" data-id="${id}">−</button>
+                  <button class="mini-qty-btn" data-action="dec" data-id="${id}" ${!it.available || getItemQty(it) <= 1 ? "disabled" : ""}>−</button>
                 </div>
               </div>
             </div>`;
@@ -3598,8 +3621,16 @@
         const cart = getCart();
         const idx = cart.findIndex((it) => String(it.id) === String(id));
         if (idx === -1) return;
-        cart[idx].qty = (Number(cart[idx].qty) || 0) + delta;
-        if (cart[idx].qty <= 0) cart.splice(idx, 1);
+        const item = normalizeMiniCartItem(cart[idx]);
+        const nextQty = getItemQty(item) + delta;
+        if (nextQty < 1) {
+          cart.splice(idx, 1);
+        } else if (delta > 0 && (!item.available || nextQty > getItemStock(item))) {
+          return;
+        } else {
+          item.qty = nextQty;
+          item.quantity = nextQty;
+        }
         saveCart(cart);
       }
 
