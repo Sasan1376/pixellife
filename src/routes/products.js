@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+router.use((req, res, next) => { res.set("Cache-Control", "no-store, no-cache, must-revalidate, private"); next(); });
 const Product = require("../models/Product");
 const { streamProductImage } = require("../utils/productImages");
 
