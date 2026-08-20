@@ -32,6 +32,35 @@ function parseColors(value) {
     });
 }
 
+function toEnglishDigits(value) {
+  return String(value ?? "").replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit)).replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit));
+}
+function parseVariants(value) {
+  if (value === undefined) return undefined;
+  if (!String(value || "").trim()) return [];
+  const seen = new Set();
+  return String(value).split(/\r?\n/).map((line) => line.trim()).filter(Boolean).map((line) => {
+    const [rawStorage, rawColor, rawHex, rawStock, rawPrice] = line.split("|").map((item) => item.trim());
+    const stock = Math.max(0, Number(toEnglishDigits(rawStock)) || 0);
+    const price = rawPrice === undefined || rawPrice === "" ? undefined : Math.max(0, Number(toEnglishDigits(rawPrice)) || 0);
+    const hex = /^#[0-9a-fA-F]{6}$/.test(rawHex || "") ? rawHex : "#334155";
+    return { storage: rawStorage || "", color: { name: rawColor || "", hex }, stock, ...(price !== undefined ? { price } : {}) };
+  }).filter((variant) => {
+    if (!variant.storage || !variant.color.name) return false;
+    const key = variant.storage + "|" + variant.color.name;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+function applyVariantInventory(data, variants) {
+  if (!Array.isArray(variants) || !variants.length) return data;
+  const storages = [...new Set(variants.map((item) => item.storage).filter(Boolean))];
+  const colors = [...new Map(variants.map((item) => [item.color.name, item.color])).values()];
+  const stock = variants.reduce((total, item) => total + Math.max(0, Number(item.stock) || 0), 0);
+  return { ...data, variants, storages, colors, stock, availability: stock > 0 ? "in" : "out" };
+}
+
 function normalizeImagePath(value) {
   const image = String(value || "").trim();
   if (!image) return "";
@@ -119,6 +148,7 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       colors,
       storages,
       warranties,
+      variants,
       mainImage: mainImageSelection,
     } = req.body;
 
@@ -132,7 +162,8 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       (req.files || []).map(saveProductImage),
     );
 
-    const product = new Product({
+    const variantInventory = parseVariants(variants);
+    const product = new Product(applyVariantInventory({
       name,
       brand,
       category: category || "عمومی",
@@ -148,7 +179,7 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       colors: parseColors(colors) || [],
       storages: parseList(storages) || [],
       warranties: parseList(warranties) || [],
-    });
+    }, variantInventory));
 
     await product.save();
     res.json({ success: true, product: serializeProduct(product) });
@@ -173,6 +204,7 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
       colors,
       storages,
       warranties,
+      variants,
       mainImage: mainImageSelection,
       removeImages,
     } = req.body;
@@ -196,6 +228,19 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
     if (colors !== undefined) product.colors = parseColors(colors);
     if (storages !== undefined) product.storages = parseList(storages);
     if (warranties !== undefined) product.warranties = parseList(warranties);
+    if (variants !== undefined) {
+      const variantInventory = parseVariants(variants);
+      if (variantInventory.length) {
+        const normalized = applyVariantInventory({}, variantInventory);
+        product.variants = normalized.variants;
+        product.storages = normalized.storages;
+        product.colors = normalized.colors;
+        product.stock = normalized.stock;
+        product.availability = normalized.availability;
+      } else {
+        product.variants = [];
+      }
+    }
     product.featured =
       featured === "true" || featured === "on" || featured === true;
 
