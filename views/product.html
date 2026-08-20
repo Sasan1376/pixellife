@@ -231,91 +231,154 @@
       .cart-wrap {
         position: relative;
       }
-      /* پنجرهٔ سبد: هم روی آیکون و هم هنگام حرکت موس داخل پنجره باز می‌ماند. */
+      /* استایل dropdown سبد خرید — از داخل مدیا کوئری موبایل بیرون آورده شد
+         تا در همه‌ی سایزها (دسکتاپ و موبایل) کار کند */
       .cart-dropdown {
         position: absolute;
-        top: calc(100% + 8px);
+        top: calc(100% + 10px);
         left: 0;
-        width: min(340px, calc(100vw - 28px));
-        max-height: 420px;
-        overflow: auto;
-        padding: 12px;
-        border: 1px solid var(--border);
-        border-radius: 14px;
+        width: 340px;
         background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
         box-shadow: var(--shadow-lg);
-        z-index: 1200;
+        z-index: 1000;
         opacity: 0;
         visibility: hidden;
-        pointer-events: none;
-        transform: translateY(-6px);
-        transition: opacity .16s ease, transform .16s ease, visibility .16s ease;
+        transform: translateY(-10px);
+        transition: all 0.2s ease;
+        padding: 16px;
       }
       .cart-wrap:hover .cart-dropdown,
-      .cart-wrap:focus-within .cart-dropdown,
       .cart-wrap.open .cart-dropdown {
         opacity: 1;
         visibility: visible;
-        pointer-events: auto;
         transform: translateY(0);
       }
+
+      /* آیتم‌های داخل سبد */
       .mini-cart-item {
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 9px 0;
+        padding: 10px 0;
         border-bottom: 1px solid var(--border);
       }
-      .mini-cart-item:last-child { border-bottom: 0; }
+      .mini-cart-item:last-child {
+        border-bottom: none;
+      }
       .mini-cart-img {
-        width: 46px;
-        height: 46px;
-        flex: 0 0 46px;
-        border-radius: 9px;
-        object-fit: contain;
-        background: #fff;
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+        background: var(--bg);
       }
-      .mini-cart-info { min-width: 0; flex: 1; }
+      .mini-cart-info {
+        flex: 1;
+        min-width: 0;
+      }
       .mini-cart-name {
-        overflow: hidden;
-        color: var(--text-1);
-        font-size: 12px;
+        font-size: 12.5px;
         font-weight: 700;
-        text-overflow: ellipsis;
+        color: var(--text-1);
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 4px;
       }
-      .mini-cart-meta {
-        margin-top: 5px;
-        color: var(--text-3);
-        font-size: 11px;
+      .mini-cart-price {
+        font-size: 12px;
+        color: var(--blue);
+        font-weight: 700;
       }
-      .mini-cart-footer {
+
+      /* دکمه‌های تعداد و حذف */
+      .mini-cart-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+      }
+      .mini-qty-controls {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        margin-top: 10px;
-        padding-top: 12px;
-        border-top: 1px solid var(--border);
+        gap: 6px;
+        background: var(--bg);
+        border-radius: 6px;
+        padding: 2px;
+      }
+      .mini-qty-btn {
+        width: 22px;
+        height: 22px;
+        border: none;
+        background: var(--white);
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 700;
         color: var(--text-2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+      .mini-qty-val {
         font-size: 12px;
         font-weight: 700;
-      }
-      .mini-cart-footer a {
-        color: var(--blue);
-        font-weight: 800;
-        text-decoration: none;
-        white-space: nowrap;
-      }
-      .mini-cart-empty {
-        padding: 14px 4px;
-        color: var(--text-3);
-        font-size: 12px;
+        min-width: 15px;
         text-align: center;
       }
-      @media (max-width: 680px) {
-        .cart-dropdown { display: none; }
+      .mini-remove-btn {
+        background: none;
+        border: none;
+        color: var(--text-4);
+        cursor: pointer;
+        font-size: 14px;
+        transition: color 0.2s;
       }
+      .mini-remove-btn:hover {
+        color: var(--red);
+      }
+
+      /* بخش پایینی dropdown */
+      .mini-cart-footer {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 2px solid var(--border);
+      }
+      .mini-cart-total {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .mini-cart-btn-checkout {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        height: 42px;
+        background: var(--red);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        font-size: 13px;
+        text-decoration: none;
+        transition: opacity 0.2s;
+      }
+      .mini-cart-btn-checkout:hover {
+        opacity: 0.9;
+      }
+      .mini-cart-empty {
+        text-align: center;
+        color: var(--text-3);
+        font-size: 13px;
+        padding: 20px 0;
+      }
+
       .cart-badge {
         position: absolute;
         top: 2px;
@@ -3234,11 +3297,16 @@
               <i class="ti ti-shopping-cart"></i>
             </a>
             <span class="cart-badge" id="cartCount" style="display: none">0</span>
-            <div class="cart-dropdown" id="cartDropdown" aria-label="محتوای سبد خرید">
+            <div class="cart-dropdown" id="cartDropdown">
               <div id="miniCartItems"></div>
-              <div class="mini-cart-footer" id="miniCartFooter" style="display:none">
-                <span id="miniCartTotalPrice">۰ تومان</span>
-                <a href="/cart">مشاهده سبد</a>
+              <div class="mini-cart-footer" id="miniCartFooter" style="display: none">
+                <div class="mini-cart-total">
+                  <span>مجموع:</span>
+                  <span id="miniCartTotalPrice">۰ تومان</span>
+                </div>
+                <a href="/cart" class="mini-cart-btn-checkout">
+                  <i class="ti ti-check"></i> مشاهده سبد و تسویه حساب
+                </a>
               </div>
             </div>
           </div>
@@ -4933,45 +5001,24 @@
           return [];
         }
       }
-      function saveCart(cart) {
-        localStorage.setItem("digishop_cart", JSON.stringify(cart));
-        window.dispatchEvent(new Event("cartUpdated"));
-        updateCartBadge();
-        renderMiniCart();
-      }
-
       function cartQuantity(item) {
         const value = Number(item && (item.quantity ?? item.qty));
         return Number.isFinite(value) ? Math.max(1, Math.floor(value)) : 1;
+      }
+      function cartStock(item) {
+        const value = Number(item && item.stock);
+        return Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
       }
       function escapeCartText(value) {
         const node = document.createElement("span");
         node.textContent = value == null ? "" : String(value);
         return node.innerHTML;
       }
-      function renderMiniCart() {
-        const items = document.getElementById("miniCartItems");
-        const footer = document.getElementById("miniCartFooter");
-        const totalElement = document.getElementById("miniCartTotalPrice");
-        if (!items || !footer || !totalElement) return;
-        const cart = getCart();
-        if (!cart.length) {
-          items.innerHTML = '<div class="mini-cart-empty">سبد خرید شما خالی است</div>';
-          footer.style.display = "none";
-          return;
-        }
-        let total = 0;
-        items.innerHTML = cart.map((item) => {
-          const quantity = cartQuantity(item);
-          total += (Number(item.price) || 0) * quantity;
-          const image = escapeCartText(item.image || item.mainImage || item.images?.[0] || "/images/product-placeholder.svg");
-          return '<div class="mini-cart-item">' +
-            '<img class="mini-cart-img" src="' + image + '" alt="' + escapeCartText(item.name) + '" onerror="this.onerror=null;this.src=\'/images/product-placeholder.svg\';">' +
-            '<div class="mini-cart-info"><div class="mini-cart-name">' + escapeCartText(item.name) + '</div>' +
-            '<div class="mini-cart-meta">' + quantity.toLocaleString("fa-IR") + ' عدد · ' + (Number(item.price) || 0).toLocaleString("fa-IR") + ' تومان</div></div></div>';
-        }).join("");
-        totalElement.textContent = total.toLocaleString("fa-IR") + " تومان";
-        footer.style.display = "flex";
+      function saveCart(cart) {
+        localStorage.setItem("digishop_cart", JSON.stringify(cart));
+        window.dispatchEvent(new Event("cartUpdated"));
+        updateCartBadge();
+        renderMiniCart();
       }
 
       function updateCartBadge() {
@@ -4985,6 +5032,67 @@
           badge.style.display = "none";
         }
       }
+
+      function renderMiniCart() {
+        const cart = getCart();
+        const itemsWrap = document.getElementById("miniCartItems");
+        const footer = document.getElementById("miniCartFooter");
+        const totalPriceEl = document.getElementById("miniCartTotalPrice");
+        if (!itemsWrap || !footer || !totalPriceEl) return;
+        if (!cart.length) {
+          itemsWrap.innerHTML = '<div class="mini-cart-empty"><i class="ti ti-shopping-cart-off" style="font-size:24px;display:block;margin-bottom:8px;"></i>سبد خرید شما خالی است</div>';
+          footer.style.display = "none";
+          return;
+        }
+        let total = 0;
+        itemsWrap.innerHTML = cart.map((item) => {
+          const quantity = cartQuantity(item);
+          const stock = cartStock(item);
+          const canIncrease = item.available !== false && stock > quantity;
+          total += (Number(item.price) || 0) * quantity;
+          const id = escapeCartText(item.id);
+          const name = escapeCartText(item.name);
+          const image = escapeCartText(item.image || item.mainImage || item.images?.[0] || "/images/product-placeholder.svg");
+          return '<div class="mini-cart-item" data-id="' + id + '">' +
+            '<img class="mini-cart-img" src="' + image + '" alt="' + name + '" onerror="this.onerror=null;this.src=\'/images/product-placeholder.svg\';">' +
+            '<div class="mini-cart-info"><div class="mini-cart-name">' + name + '</div><div class="mini-cart-price">' + (Number(item.price) || 0).toLocaleString("fa-IR") + ' تومان</div></div>' +
+            '<div class="mini-cart-actions"><button class="mini-remove-btn" data-action="remove" data-id="' + id + '" aria-label="حذف"><i class="ti ti-trash"></i></button>' +
+            '<div class="mini-qty-controls"><button class="mini-qty-btn" data-action="inc" data-id="' + id + '" ' + (canIncrease ? "" : "disabled") + '>+</button>' +
+            '<span class="mini-qty-val">' + quantity.toLocaleString("fa-IR") + '</span><button class="mini-qty-btn" data-action="dec" data-id="' + id + '" ' + (quantity <= 1 ? "disabled" : "") + '>−</button></div></div></div>';
+        }).join("");
+        totalPriceEl.textContent = total.toLocaleString("fa-IR") + " تومان";
+        footer.style.display = "block";
+      }
+
+      function changeMiniCartQty(id, delta) {
+        const cart = getCart();
+        const item = cart.find((entry) => String(entry.id) === String(id));
+        if (!item) return;
+        const next = cartQuantity(item) + delta;
+        const stock = cartStock(item);
+        if (next < 1 || (delta > 0 && (item.available === false || next > stock))) return;
+        item.quantity = next;
+        item.qty = next;
+        saveCart(cart);
+      }
+      function removeFromMiniCart(id) {
+        saveCart(getCart().filter((item) => String(item.id) !== String(id)));
+      }
+      document.getElementById("miniCartItems").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-action]");
+        if (!button || button.disabled) return;
+        if (button.dataset.action === "inc") changeMiniCartQty(button.dataset.id, 1);
+        if (button.dataset.action === "dec") changeMiniCartQty(button.dataset.id, -1);
+        if (button.dataset.action === "remove") removeFromMiniCart(button.dataset.id);
+      });
+      const cartWrap = document.getElementById("cartWrap");
+      const cartBtn = document.getElementById("cartBtn");
+      cartBtn.addEventListener("click", (event) => {
+        if (window.matchMedia("(max-width: 480px)").matches) {
+          event.preventDefault();
+          cartWrap.classList.toggle("open");
+        }
+      });
       updateCartBadge();
       renderMiniCart();
       window.addEventListener("cartUpdated", () => {
