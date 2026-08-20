@@ -61,6 +61,8 @@
       .admin-color-palette { display:flex; gap:7px; flex-wrap:wrap; margin-top:9px; }
       .admin-color-dot { width:24px; height:24px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px #cbd5e1; cursor:pointer; padding:0; }
       .admin-color-dot.active { outline:2px solid #2563eb; outline-offset:2px; }
+      .variant-stock-summary { margin-top:8px; padding:8px 10px; border-radius:7px; font-size:12px; font-weight:600; background:#eff6ff; color:#1d4ed8; }
+      .variant-stock-summary.error { background:#fff1f2; color:#be123c; }
       .product-image-preview {
         display: flex;
         gap: 8px;
@@ -356,6 +358,7 @@
                   <label class="form-label">تنوع‌های قابل فروش: حافظه، رنگ و موجودی</label>
                   <textarea class="form-control" id="fVariants" rows="4" placeholder="۲۵۶ گیگابایت | تیتانیوم مشکی | #2C2C2E | ۳&#10;۲۵۶ گیگابایت | تیتانیوم سفید | #F0F0F0 | ۰&#10;۵۱۲ گیگابایت | تیتانیوم مشکی | #2C2C2E | ۲"></textarea>
                   <div class="form-hint">هر خط یک ترکیب واقعی است: «حافظه | نام رنگ | کد رنگ | تعداد موجود». با ثبت این بخش، رنگ‌ها، حافظه‌ها و موجودی کلی خودکار از همین ردیف‌ها ساخته می‌شوند.</div>
+                  <div class="variant-stock-summary" id="variantStockSummary">در صورت ثبت تنوع، موجودی کلی محصول از جمع تعداد این ردیف‌ها محاسبه می‌شود.</div>
                 </div>
                 <div class="col-12">
                   <label class="form-label"
@@ -422,6 +425,45 @@
 
       function formatList(items) {
         return Array.isArray(items) ? items.join("\n") : "";
+      }
+
+      function englishNumber(value) {
+        return String(value || "").replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit)).replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit)).replace(/[\s,٬،]/g, "");
+      }
+      function syncVariantInventoryInputs(showError = false) {
+        const field = document.getElementById("fVariants");
+        const stockInput = document.getElementById("fStock");
+        const availability = document.getElementById("fAvailability");
+        const summary = document.getElementById("variantStockSummary");
+        const lines = field.value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+        if (!lines.length) {
+          stockInput.readOnly = false;
+          stockInput.classList.remove("bg-light");
+          summary.className = "variant-stock-summary";
+          summary.textContent = "در صورت ثبت تنوع، موجودی کلی محصول از جمع تعداد این ردیف‌ها محاسبه می‌شود.";
+          return true;
+        }
+        let total = 0;
+        for (let index = 0; index < lines.length; index += 1) {
+          const parts = lines[index].split("|").map((part) => part.trim());
+          const amount = englishNumber(parts[3]);
+          if (parts.length < 4 || !parts[0] || !parts[1] || !/^\d+(?:\.\d+)?$/.test(amount)) {
+            stockInput.readOnly = true;
+            stockInput.classList.add("bg-light");
+            summary.className = "variant-stock-summary error";
+            summary.textContent = "ردیف " + (index + 1).toLocaleString("fa-IR") + " ناقص است: حافظه، رنگ و تعداد معتبر را وارد کنید.";
+            if (showError) showToast(summary.textContent);
+            return false;
+          }
+          total += Math.max(0, Number(amount));
+        }
+        stockInput.value = total;
+        stockInput.readOnly = true;
+        stockInput.classList.add("bg-light");
+        availability.value = total > 0 ? "in" : "out";
+        summary.className = "variant-stock-summary";
+        summary.textContent = "موجودی کلی خودکار: " + total.toLocaleString("fa-IR") + " عدد — وضعیت: " + (total > 0 ? "موجود" : "ناموجود");
+        return true;
       }
 
       function formatVariants(variants) {
@@ -581,6 +623,7 @@
         setMainImageOptions();
         setPickerColor("", "#334155");
         renderColorPalette();
+        syncVariantInventoryInputs();
       }
 
       function openEditModal(p) {
@@ -646,6 +689,7 @@
         renderColorPalette();
       });
       document.getElementById("fColors").addEventListener("input", renderColorPalette);
+      document.getElementById("fVariants").addEventListener("input", () => syncVariantInventoryInputs());
       document.getElementById("adminColorPalette").addEventListener("click", (event) => {
         const dot = event.target.closest("[data-color-hex]");
         if (!dot) return;
@@ -667,6 +711,7 @@
         if (!name) return showToast("ابتدا نام رنگ را وارد کنید");
         const field = document.getElementById("fVariants");
         field.value = (field.value.trim() ? field.value.trim() + "\n" : "") + "حافظه را وارد کنید | " + name + " | " + hex + " | ۰";
+        syncVariantInventoryInputs();
         showToast("رنگ به ردیف تنوع افزوده شد؛ فقط حافظه و تعداد را کامل کنید");
       });
 
@@ -688,6 +733,7 @@
         .getElementById("productForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
+          if (!syncVariantInventoryInputs(true)) return;
           const id = document.getElementById("productId").value;
           const fd = new FormData();
           fd.append("name", document.getElementById("fName").value);
