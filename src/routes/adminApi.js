@@ -35,22 +35,37 @@ function parseColors(value) {
 function toEnglishDigits(value) {
   return String(value ?? "").replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit)).replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit));
 }
+function parseVariantNumber(value, label, lineNumber) {
+  const normalized = toEnglishDigits(value).replace(/[\s,٬،]/g, "");
+  if (normalized === "" || !/^\d+(?:\.\d+)?$/.test(normalized)) {
+    const error = new Error(`تعداد موجودی در ردیف ${lineNumber} معتبر نیست`);
+    error.statusCode = 400;
+    throw error;
+  }
+  return Math.max(0, Number(normalized));
+}
 function parseVariants(value) {
   if (value === undefined) return undefined;
   if (!String(value || "").trim()) return [];
   const seen = new Set();
-  return String(value).split(/\r?\n/).map((line) => line.trim()).filter(Boolean).map((line) => {
+  return String(value).split(/\r?\n/).map((line) => line.trim()).filter(Boolean).map((line, index) => {
     const [rawStorage, rawColor, rawHex, rawStock, rawPrice] = line.split("|").map((item) => item.trim());
-    const stock = Math.max(0, Number(toEnglishDigits(rawStock)) || 0);
-    const price = rawPrice === undefined || rawPrice === "" ? undefined : Math.max(0, Number(toEnglishDigits(rawPrice)) || 0);
+    if (!rawStorage || !rawColor || rawStock === undefined) {
+      const error = new Error(`ردیف ${index + 1} تنوع ناقص است؛ حافظه، رنگ و تعداد را کامل کنید`);
+      error.statusCode = 400;
+      throw error;
+    }
+    const stock = parseVariantNumber(rawStock, "موجودی", index + 1);
+    const price = rawPrice === undefined || rawPrice === "" ? undefined : parseVariantNumber(rawPrice, "قیمت", index + 1);
     const hex = /^#[0-9a-fA-F]{6}$/.test(rawHex || "") ? rawHex : "#334155";
-    return { storage: rawStorage || "", color: { name: rawColor || "", hex }, stock, ...(price !== undefined ? { price } : {}) };
-  }).filter((variant) => {
-    if (!variant.storage || !variant.color.name) return false;
-    const key = variant.storage + "|" + variant.color.name;
-    if (seen.has(key)) return false;
+    const key = rawStorage + "|" + rawColor;
+    if (seen.has(key)) {
+      const error = new Error(`ترکیب حافظه و رنگ در ردیف ${index + 1} تکراری است`);
+      error.statusCode = 400;
+      throw error;
+    }
     seen.add(key);
-    return true;
+    return { storage: rawStorage, color: { name: rawColor, hex }, stock, ...(price !== undefined ? { price } : {}) };
   });
 }
 function applyVariantInventory(data, variants) {
@@ -119,7 +134,7 @@ router.post("/products/import-demo", async (req, res) => {
       total: demoProducts.length,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(error.statusCode || 500).json({ success: false, message: error.message });
   }
 });
 
@@ -128,7 +143,7 @@ router.get("/products", async (req, res) => {
     const products = await Product.find().sort({ createdAt: -1 });
     res.json({ success: true, products: products.map(serializeProduct) });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(error.statusCode || 500).json({ success: false, message: error.message });
   }
 });
 
@@ -184,7 +199,7 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
     await product.save();
     res.json({ success: true, product: serializeProduct(product) });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(error.statusCode || 500).json({ success: false, message: error.message });
   }
 });
 
@@ -261,7 +276,7 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
     await product.save();
     res.json({ success: true, product: serializeProduct(product) });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(error.statusCode || 500).json({ success: false, message: error.message });
   }
 });
 
@@ -276,7 +291,7 @@ router.delete("/products/:id", async (req, res) => {
     await Promise.all((product.images || []).map(removeProductImage));
     res.json({ success: true });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(error.statusCode || 500).json({ success: false, message: error.message });
   }
 });
 
