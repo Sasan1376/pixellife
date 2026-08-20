@@ -64,7 +64,16 @@ router.get("/id/:id", async (req, res) => {
 
 router.get("/:slug", async (req, res) => {
   try {
-    const product = await Product.findOne({ slug: req.params.slug }).lean();
+    const requestedSlug = String(req.params.slug || "").trim();
+    const alternatives = [{ slug: requestedSlug }, { legacyId: requestedSlug }];
+    // iPhone 17 نخستین محصول نمایشی سایت بوده است. برخی نسخه‌های قدیمی آن
+    // بدون legacyId/slug درست ذخیره شده‌اند؛ آخرین رکورد ویرایش‌شده ادمین مرجع است.
+    if (requestedSlug === "iphone-17") {
+      alternatives.push({ name: { $regex: "^iPhone\\s*17$", $options: "i" } });
+    }
+    const product = await Product.findOne({ $or: alternatives })
+      .sort({ updatedAt: -1 })
+      .lean();
     if (!product) return res.status(404).json({ success: false, message: "محصول پیدا نشد" });
     res.json({ success: true, product: serializeProduct(product) });
   } catch (error) {
