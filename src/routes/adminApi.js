@@ -113,6 +113,7 @@ function resolveMainImage(selection, existingImages = [], uploadedImages = []) {
 }
 
 router.use(requireAdmin);
+router.use((req, res, next) => { res.set("Cache-Control", "no-store, no-cache, must-revalidate, private"); next(); });
 
 router.post("/products/import-demo", async (req, res) => {
   try {
