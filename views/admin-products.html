@@ -332,6 +332,11 @@
                   <div class="form-hint">هر رنگ را در یک خط، با قالب «نام رنگ | کد رنگ» وارد کنید.</div>
                 </div>
                 <div class="col-12">
+                  <label class="form-label">تنوع‌های قابل فروش: حافظه، رنگ و موجودی</label>
+                  <textarea class="form-control" id="fVariants" rows="4" placeholder="۲۵۶ گیگابایت | تیتانیوم مشکی | #2C2C2E | ۳&#10;۲۵۶ گیگابایت | تیتانیوم سفید | #F0F0F0 | ۰&#10;۵۱۲ گیگابایت | تیتانیوم مشکی | #2C2C2E | ۲"></textarea>
+                  <div class="form-hint">هر خط یک ترکیب واقعی است: «حافظه | نام رنگ | کد رنگ | تعداد موجود». با ثبت این بخش، رنگ‌ها، حافظه‌ها و موجودی کلی خودکار از همین ردیف‌ها ساخته می‌شوند.</div>
+                </div>
+                <div class="col-12">
                   <label class="form-label"
                     >تصاویر محصول (می‌توانید چند عکس انتخاب کنید)</label
                   >
@@ -396,6 +401,14 @@
 
       function formatList(items) {
         return Array.isArray(items) ? items.join("\n") : "";
+      }
+
+      function formatVariants(variants) {
+        if (!Array.isArray(variants)) return "";
+        return variants.map((variant) => {
+          const color = variant && variant.color ? variant.color : {};
+          return [variant.storage || "", color.name || "", color.hex || "#334155", Number(variant.stock) || 0].join(" | ");
+        }).filter(Boolean).join("\n");
       }
 
       function formatColors(colors) {
@@ -543,6 +556,7 @@
         document.getElementById("fColors").value = formatColors(p.colors);
         document.getElementById("fStorages").value = formatList(p.storages);
         document.getElementById("fWarranties").value = formatList(p.warranties);
+        document.getElementById("fVariants").value = formatVariants(p.variants);
         editingImages = Array.isArray(p.images) ? p.images : [];
         renderImagePreview("existingImagesPreview", editingImages, true);
         setMainImageOptions(
@@ -620,6 +634,7 @@
           fd.append("colors", document.getElementById("fColors").value);
           fd.append("storages", document.getElementById("fStorages").value);
           fd.append("warranties", document.getElementById("fWarranties").value);
+          fd.append("variants", document.getElementById("fVariants").value);
           fd.append("mainImage", document.getElementById("fMainImage").value);
           fd.append("removeImages", JSON.stringify(removedImages));
 
