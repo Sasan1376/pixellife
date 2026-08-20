@@ -335,7 +335,7 @@ router.get("/users", async (req, res) => {
     const [total, users] = await Promise.all([
       User.countDocuments(filter),
       User.find(filter)
-        .select("firstName lastName mobile email isVerified isActive lastLogin createdAt")
+        .select("firstName lastName mobile email nationalCode birthDate isVerified isActive lastLogin createdAt")
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit)
@@ -362,7 +362,7 @@ router.patch("/users/:id/status", async (req, res) => {
       { _id: req.params.id, role: { $ne: "admin" } },
       { $set: { isActive: req.body.isActive } },
       { new: true },
-    ).select("firstName lastName mobile email isVerified isActive lastLogin createdAt");
+    ).select("firstName lastName mobile email nationalCode birthDate isVerified isActive lastLogin createdAt");
 
     if (!user) {
       return res.status(404).json({ success: false, message: "مشتری پیدا نشد" });
