@@ -3408,20 +3408,14 @@
                 <i class="ti ti-map-pin"></i> آدرس و زمان ارسال
               </div>
 
-              <div class="address-box">
-                <label class="address-radio">
-                  <input type="radio" name="address" checked />
-                  <div class="address-content">
-                    <strong>آدرس اصلی (منزل)</strong>
-                    <p>
-                      تهران، خیابان ولیعصر، بالاتر از میدان ونک، کوچه بهار، پلاک
-                      ۱۲، واحد ۳
-                    </p>
-                  </div>
-                </label>
-                <button class="btn-add-address">
-                  <i class="ti ti-plus"></i> افزودن آدرس جدید
-                </button>
+              <div class="address-box" id="checkoutAddressBox">
+                <div class="address-content">
+                  <strong id="checkoutAddressTitle">در حال دریافت آدرس...</strong>
+                  <p id="checkoutAddressText">برای ثبت سفارش، آدرس ذخیره‌شدهٔ حساب شما استفاده می‌شود.</p>
+                </div>
+                <a class="btn-add-address" href="/profile/addresses">
+                  <i class="ti ti-plus"></i> مدیریت آدرس‌ها
+                </a>
               </div>
 
               <div class="delivery-time-title">
@@ -3635,6 +3629,32 @@
       function saveCart() {
         localStorage.setItem("digishop_cart", JSON.stringify(cartData));
         window.dispatchEvent(new Event("cartUpdated"));
+      }
+
+      let checkoutAddress = null;
+      async function loadCheckoutAddress() {
+        const title = document.getElementById("checkoutAddressTitle");
+        const text = document.getElementById("checkoutAddressText");
+        try {
+          const response = await fetch("/api/addresses", { cache: "no-store" });
+          const result = await response.json();
+          if (!response.ok || !result.success) {
+            title.textContent = "برای ثبت سفارش وارد حساب کاربری شوید";
+            text.textContent = "پس از ورود، آدرس پیش‌فرض شما در این بخش نمایش داده می‌شود.";
+            return;
+          }
+          checkoutAddress = (result.data || []).find((item) => item.isDefault) || result.data?.[0] || null;
+          if (!checkoutAddress) {
+            title.textContent = "هنوز آدرسی ثبت نشده است";
+            text.textContent = "برای ثبت سفارش ابتدا یک آدرس در پروفایل خود اضافه کنید.";
+            return;
+          }
+          title.textContent = checkoutAddress.title || "آدرس ارسال";
+          text.textContent = `${checkoutAddress.province}، ${checkoutAddress.city}، ${checkoutAddress.fullAddress}`;
+        } catch (_) {
+          title.textContent = "آدرس قابل دریافت نیست";
+          text.textContent = "اتصال اینترنت را بررسی کنید و دوباره تلاش کنید.";
+        }
       }
 
       // موجودی واقعیِ ثبت‌شده هنگام افزودن محصول؛ بدون موجودی، افزایش تعداد مجاز نیست.
@@ -4139,6 +4159,7 @@
 
       /* ═══ لودینگ اولیه ═══ */
       function initCartPage() {
+        loadCheckoutAddress();
         setTimeout(() => {
           document.getElementById("cartSkeleton").style.display = "none";
           if (cartData.length > 0) {
@@ -4179,13 +4200,8 @@
         const button = document.getElementById("checkoutBtn");
         button.disabled = true;
         try {
-          const addressResponse = await fetch("/api/addresses");
-          const addressJson = await addressResponse.json();
-          if (!addressResponse.ok || !addressJson.success) {
-            throw new Error("برای ثبت سفارش ابتدا وارد حساب کاربری شوید");
-          }
-          const address = (addressJson.data || []).find((item) => item.isDefault) || addressJson.data?.[0];
-          if (!address) {
+          if (!checkoutAddress) await loadCheckoutAddress();
+          if (!checkoutAddress) {
             window.location.href = "/profile/addresses";
             return;
           }
@@ -4193,7 +4209,7 @@
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              addressId: address._id,
+              addressId: checkoutAddress._id,
               items: availableItems.map((item) => ({
                 productId: item.id,
                 quantity: getCartQuantity(item),
