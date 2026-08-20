@@ -1,18 +1,16 @@
 const multer = require("multer");
-const path = require("path");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads/products");
-  },
-
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-
+// فایل‌ها ابتدا در حافظه دریافت و سپس در MongoDB GridFS ذخیره می‌شوند.
+// برخلاف دیسک Render، GridFS بعد از redeploy پاک نمی‌شود.
 const upload = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024, files: 5 },
+  fileFilter(req, file, cb) {
+    if (!file.mimetype || !file.mimetype.startsWith("image/")) {
+      return cb(new Error("فقط فایل تصویری مجاز است"));
+    }
+    cb(null, true);
+  },
 });
 
 module.exports = upload;
