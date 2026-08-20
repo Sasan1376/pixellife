@@ -40,6 +40,11 @@ function parseStock(value) {
   const number = Number(normalized);
   return Number.isFinite(number) ? Math.max(0, number) : 0;
 }
+function normalizeAvailability(value, stock) {
+  // محصول بدون تنوع فقط وقتی «موجود» است که تعداد واقعی آن مثبت باشد.
+  return value === "out" ? "out" : parseStock(stock) > 0 ? "in" : "out";
+}
+
 function parseVariantNumber(value, label, lineNumber) {
   const normalized = toEnglishDigits(value).replace(/[\s,٬،]/g, "");
   if (normalized === "" || !/^\d+(?:\.\d+)?$/.test(normalized)) {
@@ -184,6 +189,7 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
     );
 
     const variantInventory = parseVariants(variants);
+    const rootStock = parseStock(stock);
     const product = new Product(applyVariantInventory({
       name,
       brand,
@@ -193,8 +199,8 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       description,
       specs,
       featured: featured === "true" || featured === "on" || featured === true,
-      stock: parseStock(stock),
-      availability: availability || "in",
+      stock: rootStock,
+      availability: normalizeAvailability(availability, rootStock),
       images: uploadedImages,
       mainImage: resolveMainImage(mainImageSelection, [], uploadedImages),
       colors: parseColors(colors) || [],
@@ -245,7 +251,12 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
     if (description !== undefined) product.description = description;
     if (specs !== undefined) product.specs = specs;
     if (stock !== undefined) product.stock = parseStock(stock);
-    if (availability) product.availability = availability;
+    if (stock !== undefined || availability !== undefined) {
+      product.availability = normalizeAvailability(
+        availability !== undefined ? availability : product.availability,
+        product.stock,
+      );
+    }
     if (colors !== undefined) product.colors = parseColors(colors);
     if (storages !== undefined) product.storages = parseList(storages);
     if (warranties !== undefined) product.warranties = parseList(warranties);
