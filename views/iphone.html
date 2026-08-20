@@ -2883,18 +2883,30 @@
         return n.toLocaleString("fa-IR");
       }
       function getItemQty(item) {
-        return item.qty || item.quantity || 1;
+        const quantity = Number(item && (item.quantity ?? item.qty));
+        return Number.isFinite(quantity) ? Math.max(1, Math.floor(quantity)) : 1;
+      }
+      function getItemStock(item) {
+        const stock = Number(item && item.stock);
+        return Number.isFinite(stock) ? Math.max(0, Math.floor(stock)) : 0;
+      }
+      function normalizeMiniCartItem(item) {
+        const stock = getItemStock(item);
+        item.stock = stock;
+        item.available = item.available !== false && stock > 0;
+        const quantity = getItemQty(item);
+        item.quantity = item.available ? Math.min(quantity, stock) : quantity;
+        item.qty = item.quantity;
+        return item;
       }
       function syncCartPage() {
         if (typeof cartData !== "undefined") {
           try {
             cartData = JSON.parse(localStorage.getItem("digishop_cart")) || [];
             cartData.forEach(function (item) {
-              if (item.quantity === undefined) item.quantity = item.qty || 1;
-              if (item.available === undefined) item.available = true;
+              normalizeMiniCartItem(item);
               if (item.originalPrice === undefined)
                 item.originalPrice = item.price || 0;
-              if (item.stock === undefined) item.stock = 99;
             });
           } catch (e) {
             cartData = [];
@@ -2926,8 +2938,9 @@
         if (itemsContainer) {
           itemsContainer.innerHTML = cart
             .map(function (item) {
+              normalizeMiniCartItem(item);
               var currentQty = getItemQty(item);
-              var itemTotal = (item.price || 0) * currentQty;
+              var itemTotal = (item.price || 0) * (item.available ? currentQty : 0);
               total += itemTotal;
               totalQty += currentQty;
               return (
@@ -2955,13 +2968,13 @@
                 '<div class="mini-qty-controls">' +
                 '<button class="mini-qty-btn" onclick="changeMiniCartQty(\'' +
                 item.id +
-                "', -1)\">−</button>" +
+                "', -1)\" " + (currentQty <= 1 || !item.available ? "disabled" : "") + ">−</button>" +
                 '<span class="mini-qty-val">' +
                 toPersianNum(currentQty) +
                 "</span>" +
                 '<button class="mini-qty-btn" onclick="changeMiniCartQty(\'' +
                 item.id +
-                "', 1)\">+</button>" +
+                "', 1)\" " + (!item.available || currentQty >= getItemStock(item) ? "disabled" : "") + ">+</button>" +
                 "</div>" +
                 "</div>" +
                 "</div>"
@@ -2984,12 +2997,16 @@
           return String(i.id) === String(id);
         });
         if (!item) return;
-        var currentQty = getItemQty(item);
-        currentQty += delta;
+        normalizeMiniCartItem(item);
+        var maxStock = getItemStock(item);
+        var currentQty = getItemQty(item) + delta;
         if (currentQty < 1) currentQty = 1;
+        if (delta > 0 && (!item.available || currentQty > maxStock)) return;
+        currentQty = Math.min(currentQty, maxStock || 1);
         item.qty = currentQty;
         item.quantity = currentQty;
         localStorage.setItem("digishop_cart", JSON.stringify(cart));
+        window.dispatchEvent(new Event("cartUpdated"));
         renderMiniCart();
       }
       function removeFromMiniCart(id) {
@@ -2998,6 +3015,7 @@
           return String(i.id) !== String(id);
         });
         localStorage.setItem("digishop_cart", JSON.stringify(cart));
+        window.dispatchEvent(new Event("cartUpdated"));
         renderMiniCart();
       }
       document.addEventListener("DOMContentLoaded", renderMiniCart);
