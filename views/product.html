@@ -4271,7 +4271,8 @@
           reviews: doc.reviewCount != null ? toFaDigits(doc.reviewCount) : "۰",
           desc: doc.description || "",
           comingSoon: !!doc.comingSoon,
-          outOfStock: doc.availability === "out" || doc.stock === 0,
+          stock: Math.max(0, Number(doc.stock) || 0),
+          outOfStock: doc.availability === "out" || Number(doc.stock) <= 0,
           price: doc.price,
           oldPrice: oldPrice,
           storages: storages,
@@ -4999,6 +5000,8 @@
           selectedColor = product.colors[0];
           selectedWarranty = product.warranties ? product.warranties[0] : null;
           const galleryTotal = galleryCount(product);
+          const maxQuantity =
+            product._fromDb ? Math.max(0, Number(product.stock) || 0) : 10;
           const wishlist = getWishlist();
           isWished = wishlist.includes(productId);
           const discountPct =
@@ -5142,7 +5145,7 @@
               }
 
               <div class="option-group">
-                <div class="option-label"><i class="ti ti-hash"></i> تعداد</div>
+                <div class="option-label"><i class="ti ti-hash"></i> تعداد <span class="selected-val">${product._fromDb && !product.outOfStock ? "(حداکثر " + maxQuantity.toLocaleString("fa-IR") + " عدد)" : ""}</span></div>
                 <div class="quantity-row">
                   <div class="quantity-selector">
                     <button class="qty-btn" id="qtyMinusBtn">−</button>
@@ -5522,7 +5525,12 @@
           document
             .getElementById("qtyPlusBtn")
             .addEventListener("click", () => {
-              qty = Math.min(10, qty + 1);
+              const allowed = product._fromDb ? maxQuantity : 10;
+              if (qty >= allowed) {
+                showToast(`حداکثر ${allowed.toLocaleString("fa-IR")} عدد از این محصول قابل سفارش است`);
+                return;
+              }
+              qty = Math.min(allowed, qty + 1);
               qtyValEl.textContent = qty;
             });
 
@@ -5966,7 +5974,12 @@
                 item.color === selectedColor.name,
             );
             if (existing) {
-              existing.qty = (existing.qty || 1) + qty;
+              const allowed = product._fromDb ? maxQuantity : 10;
+              const requested = (existing.qty || 1) + qty;
+              existing.qty = Math.min(requested, allowed);
+              if (requested > allowed) {
+                showToast(`تعداد این محصول در سبد به موجودی ${allowed.toLocaleString("fa-IR")} عدد محدود شد`);
+              }
             } else {
               cart.push({
                 id: productId,
@@ -5975,6 +5988,7 @@
                 color: selectedColor.name,
                 warranty: selectedWarranty,
                 price: product.price,
+                stock: maxQuantity,
                 qty: qty,
               });
             }
