@@ -47,4 +47,8 @@ router.get("/products", requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, "../../views/admin-products.html"));
 });
 
+router.get("/customers", requireAdmin, (req, res) => {
+  res.sendFile(path.join(__dirname, "../../views/admin-customers.html"));
+});
+
 module.exports = router;
