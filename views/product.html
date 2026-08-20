@@ -231,6 +231,91 @@
       .cart-wrap {
         position: relative;
       }
+      /* پنجرهٔ سبد: هم روی آیکون و هم هنگام حرکت موس داخل پنجره باز می‌ماند. */
+      .cart-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        width: min(340px, calc(100vw - 28px));
+        max-height: 420px;
+        overflow: auto;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--white);
+        box-shadow: var(--shadow-lg);
+        z-index: 1200;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(-6px);
+        transition: opacity .16s ease, transform .16s ease, visibility .16s ease;
+      }
+      .cart-wrap:hover .cart-dropdown,
+      .cart-wrap:focus-within .cart-dropdown,
+      .cart-wrap.open .cart-dropdown {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+      .mini-cart-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .mini-cart-item:last-child { border-bottom: 0; }
+      .mini-cart-img {
+        width: 46px;
+        height: 46px;
+        flex: 0 0 46px;
+        border-radius: 9px;
+        object-fit: contain;
+        background: #fff;
+      }
+      .mini-cart-info { min-width: 0; flex: 1; }
+      .mini-cart-name {
+        overflow: hidden;
+        color: var(--text-1);
+        font-size: 12px;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .mini-cart-meta {
+        margin-top: 5px;
+        color: var(--text-3);
+        font-size: 11px;
+      }
+      .mini-cart-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 10px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+        color: var(--text-2);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .mini-cart-footer a {
+        color: var(--blue);
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .mini-cart-empty {
+        padding: 14px 4px;
+        color: var(--text-3);
+        font-size: 12px;
+        text-align: center;
+      }
+      @media (max-width: 680px) {
+        .cart-dropdown { display: none; }
+      }
       .cart-badge {
         position: absolute;
         top: 2px;
@@ -3144,13 +3229,18 @@
               </div>
             </div>
           </div>
-          <div class="cart-wrap">
-            <a href="/cart" class="h-btn">
+          <div class="cart-wrap" id="cartWrap">
+            <a href="/cart" class="h-btn" id="cartBtn" aria-label="سبد خرید">
               <i class="ti ti-shopping-cart"></i>
             </a>
-            <span class="cart-badge" id="cartCount" style="display: none"
-              >0</span
-            >
+            <span class="cart-badge" id="cartCount" style="display: none">0</span>
+            <div class="cart-dropdown" id="cartDropdown" aria-label="محتوای سبد خرید">
+              <div id="miniCartItems"></div>
+              <div class="mini-cart-footer" id="miniCartFooter" style="display:none">
+                <span id="miniCartTotalPrice">۰ تومان</span>
+                <a href="/cart">مشاهده سبد</a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -4845,21 +4935,68 @@
       }
       function saveCart(cart) {
         localStorage.setItem("digishop_cart", JSON.stringify(cart));
+        window.dispatchEvent(new Event("cartUpdated"));
         updateCartBadge();
+        renderMiniCart();
+      }
+
+      function cartQuantity(item) {
+        const value = Number(item && (item.quantity ?? item.qty));
+        return Number.isFinite(value) ? Math.max(1, Math.floor(value)) : 1;
+      }
+      function escapeCartText(value) {
+        const node = document.createElement("span");
+        node.textContent = value == null ? "" : String(value);
+        return node.innerHTML;
+      }
+      function renderMiniCart() {
+        const items = document.getElementById("miniCartItems");
+        const footer = document.getElementById("miniCartFooter");
+        const totalElement = document.getElementById("miniCartTotalPrice");
+        if (!items || !footer || !totalElement) return;
+        const cart = getCart();
+        if (!cart.length) {
+          items.innerHTML = '<div class="mini-cart-empty">سبد خرید شما خالی است</div>';
+          footer.style.display = "none";
+          return;
+        }
+        let total = 0;
+        items.innerHTML = cart.map((item) => {
+          const quantity = cartQuantity(item);
+          total += (Number(item.price) || 0) * quantity;
+          const image = escapeCartText(item.image || item.mainImage || item.images?.[0] || "/images/product-placeholder.svg");
+          return '<div class="mini-cart-item">' +
+            '<img class="mini-cart-img" src="' + image + '" alt="' + escapeCartText(item.name) + '" onerror="this.onerror=null;this.src=\'/images/product-placeholder.svg\';">' +
+            '<div class="mini-cart-info"><div class="mini-cart-name">' + escapeCartText(item.name) + '</div>' +
+            '<div class="mini-cart-meta">' + quantity.toLocaleString("fa-IR") + ' عدد · ' + (Number(item.price) || 0).toLocaleString("fa-IR") + ' تومان</div></div></div>';
+        }).join("");
+        totalElement.textContent = total.toLocaleString("fa-IR") + " تومان";
+        footer.style.display = "flex";
       }
 
       function updateCartBadge() {
         const cart = getCart();
-        const count = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+        const count = cart.reduce((sum, item) => sum + cartQuantity(item), 0);
         const badge = document.getElementById("cartCount");
         if (count > 0) {
           badge.style.display = "flex";
-          badge.textContent = count;
+          badge.textContent = count > 99 ? "99+" : count;
         } else {
           badge.style.display = "none";
         }
       }
       updateCartBadge();
+      renderMiniCart();
+      window.addEventListener("cartUpdated", () => {
+        updateCartBadge();
+        renderMiniCart();
+      });
+      window.addEventListener("storage", (event) => {
+        if (event.key === "digishop_cart") {
+          updateCartBadge();
+          renderMiniCart();
+        }
+      });
 
       function getWishlist() {
         try {
