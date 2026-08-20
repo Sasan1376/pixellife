@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const Product = require("../models/Product");
+const User = require("../models/User");
 const upload = require("../utils/upload");
 const requireAdmin = require("../middleware/adminAuth");
 const demoProducts = require("../data/demoProducts");
@@ -309,6 +310,66 @@ router.delete("/products/:id", async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     res.status(error.statusCode || 500).json({ success: false, message: error.message });
+  }
+});
+
+// Customers: only non-admin accounts are returned. Passwords, national codes and
+// saved addresses are deliberately never selected for the management table.
+router.get("/users", async (req, res) => {
+  try {
+    const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(10, Number.parseInt(req.query.limit, 10) || 20));
+    const search = String(req.query.search || "").trim();
+    const filter = { role: { $ne: "admin" } };
+
+    if (search) {
+      const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      filter.$or = [
+        { firstName: { $regex: escaped, $options: "i" } },
+        { lastName: { $regex: escaped, $options: "i" } },
+        { mobile: { $regex: escaped } },
+        { email: { $regex: escaped, $options: "i" } },
+      ];
+    }
+
+    const [total, users] = await Promise.all([
+      User.countDocuments(filter),
+      User.find(filter)
+        .select("firstName lastName mobile email isVerified isActive lastLogin createdAt")
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+    ]);
+
+    res.json({
+      success: true,
+      users,
+      pagination: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.patch("/users/:id/status", async (req, res) => {
+  try {
+    if (typeof req.body.isActive !== "boolean") {
+      return res.status(400).json({ success: false, message: "وضعیت حساب معتبر نیست" });
+    }
+
+    const user = await User.findOneAndUpdate(
+      { _id: req.params.id, role: { $ne: "admin" } },
+      { $set: { isActive: req.body.isActive } },
+      { new: true },
+    ).select("firstName lastName mobile email isVerified isActive lastLogin createdAt");
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "مشتری پیدا نشد" });
+    }
+    res.json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
