@@ -5490,35 +5490,58 @@
             }
           });
 
+          function syncVariantSelection(preferredStorage, preferredColorName) {
+            const variants = Array.isArray(product.variants) ? product.variants.filter((variant) => variant.stock > 0) : [];
+            if (!variants.length) return true; // محصولات قدیمی از موجودی کلی استفاده می‌کنند.
+            const selected = variants.find((variant) => variant.storage === preferredStorage && variant.color.name === preferredColorName)
+              || variants.find((variant) => variant.storage === preferredStorage)
+              || variants.find((variant) => variant.color.name === preferredColorName)
+              || variants[0];
+            selectedStorage = selected.storage;
+            selectedColor = selected.color;
+            maxQuantity = selected.stock;
+            qty = Math.min(Math.max(1, qty), maxQuantity);
+            document.getElementById("storageVal").textContent = selectedStorage;
+            document.getElementById("colorVal").textContent = selectedColor.name;
+            document.getElementById("qtyVal").textContent = qty;
+            document.querySelectorAll(".storage-chip").forEach((chip) => {
+              const enabled = variants.some((variant) => variant.storage === chip.dataset.val);
+              chip.classList.toggle("active", chip.dataset.val === selectedStorage);
+              chip.disabled = !enabled;
+              chip.style.opacity = enabled ? "1" : ".38";
+              chip.style.cursor = enabled ? "pointer" : "not-allowed";
+            });
+            document.querySelectorAll(".color-swatch").forEach((swatch) => {
+              const enabled = variants.some((variant) => variant.storage === selectedStorage && variant.color.name === swatch.dataset.name);
+              swatch.classList.toggle("active", swatch.dataset.name === selectedColor.name);
+              swatch.setAttribute("aria-disabled", enabled ? "false" : "true");
+              swatch.style.opacity = enabled ? "1" : ".32";
+              swatch.style.cursor = enabled ? "pointer" : "not-allowed";
+            });
+            const quantityHint = document.querySelector(".quantity-row")?.previousElementSibling?.querySelector(".selected-val");
+            if (quantityHint) quantityHint.textContent = "(حداکثر " + maxQuantity.toLocaleString("fa-IR") + " عدد)";
+            return true;
+          }
+
+          syncVariantSelection(selectedStorage, selectedColor.name);
+
           document
             .getElementById("storageOptions")
             .addEventListener("click", (e) => {
               const btn = e.target.closest(".storage-chip");
-              if (!btn) return;
-              document
-                .querySelectorAll(".storage-chip")
-                .forEach((c) => c.classList.remove("active"));
-              btn.classList.add("active");
-              selectedStorage = btn.dataset.val;
-              document.getElementById("storageVal").textContent =
-                selectedStorage;
+              if (!btn || btn.disabled) return;
+              syncVariantSelection(btn.dataset.val, selectedColor.name);
             });
 
           document
             .getElementById("colorOptions")
             .addEventListener("click", (e) => {
               const sw = e.target.closest(".color-swatch");
-              if (!sw) return;
-              document
-                .querySelectorAll(".color-swatch")
-                .forEach((c) => c.classList.remove("active"));
-              sw.classList.add("active");
-              selectedColor = {
-                name: sw.dataset.name,
-                hex: sw.style.background,
-              };
-              document.getElementById("colorVal").textContent =
-                selectedColor.name;
+              if (!sw || sw.getAttribute("aria-disabled") === "true") {
+                if (sw) showToast("این رنگ با حافظه انتخاب‌شده ناموجود است");
+                return;
+              }
+              syncVariantSelection(selectedStorage, sw.dataset.name);
             });
 
           const warrantyOptionsEl = document.getElementById("warrantyOptions");
