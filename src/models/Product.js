@@ -62,6 +62,20 @@ const productSchema = new mongoose.Schema(
         hex: { type: String, default: "#334155" },
       },
     ],
+    // هر ردیف یک ترکیب واقعیِ قابل فروش است: حافظه + رنگ + موجودی.
+    // برای محصولات قدیمی که تنوع ندارند، stock اصلی همچنان معتبر می‌ماند.
+    variants: [
+      {
+        _id: false,
+        storage: { type: String, trim: true, default: "" },
+        color: {
+          name: { type: String, trim: true, default: "" },
+          hex: { type: String, default: "#334155" },
+        },
+        stock: { type: Number, default: 0, min: 0 },
+        price: { type: Number, min: 0 },
+      },
+    ],
     storages: [{ type: String }],
     warranties: [{ type: String }],
     reviewImages: [{ type: String }],
