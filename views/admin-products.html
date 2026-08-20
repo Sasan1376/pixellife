@@ -20,6 +20,34 @@
     <style>
       body {
         font-family: Vazirmatn, Tahoma, sans-serif;
+        color-scheme: light;
+        background: #f8fafc !important;
+        color: #1e293b !important;
+      }
+      .app-wrapper,
+      .app-main,
+      .app-content,
+      .app-content-header {
+        background: #f8fafc !important;
+        color: #1e293b !important;
+      }
+      .card,
+      .modal-content {
+        background: #ffffff !important;
+        color: #1e293b !important;
+        border-color: #e2e8f0 !important;
+      }
+      .table {
+        --bs-table-bg: #ffffff;
+        --bs-table-color: #1e293b;
+        --bs-table-border-color: #e2e8f0;
+        --bs-table-striped-bg: #f8fafc;
+        --bs-table-hover-bg: #eff6ff;
+        --bs-table-hover-color: #1e293b;
+      }
+      .table > :not(caption) > * > * {
+        background-color: var(--bs-table-bg) !important;
+        color: var(--bs-table-color) !important;
       }
       .app-header,
       .app-sidebar {
@@ -128,7 +156,7 @@
       }
     </style>
   </head>
-  <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+  <body class="layout-fixed sidebar-expand-lg">
     <div class="app-wrapper">
       <nav class="app-header navbar navbar-expand bg-white border-bottom">
         <div class="container-fluid">
