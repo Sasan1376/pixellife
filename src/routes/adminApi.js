@@ -5,6 +5,7 @@ const Product = require("../models/Product");
 const upload = require("../utils/upload");
 const requireAdmin = require("../middleware/adminAuth");
 const demoProducts = require("../data/demoProducts");
+const { removeProductImage, saveProductImage } = require("../utils/productImages");
 
 function parseList(value) {
   if (value === undefined) return undefined;
@@ -127,8 +128,8 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
         .json({ success: false, message: "نام، برند و قیمت الزامی هستند" });
     }
 
-    const uploadedImages = (req.files || []).map(
-      (f) => "/uploads/products/" + f.filename,
+    const uploadedImages = await Promise.all(
+      (req.files || []).map(saveProductImage),
     );
 
     const product = new Product({
@@ -201,8 +202,9 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
     const existingImages = (Array.isArray(product.images) ? product.images : []).map(normalizeImagePath).filter(Boolean);
     const removed = new Set(parseRemovedImages(removeImages));
     const remainingImages = existingImages.filter((image) => !removed.has(image));
-    const newImages = (req.files || []).map((f) => "/uploads/products/" + f.filename);
+    const newImages = await Promise.all((req.files || []).map(saveProductImage));
     product.images = [...remainingImages, ...newImages];
+    await Promise.all([...removed].map(removeProductImage));
 
     if (mainImageSelection !== undefined) {
       product.mainImage = resolveMainImage(mainImageSelection, remainingImages, newImages);
@@ -226,6 +228,7 @@ router.delete("/products/:id", async (req, res) => {
         .status(404)
         .json({ success: false, message: "محصول پیدا نشد" });
     }
+    await Promise.all((product.images || []).map(removeProductImage));
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
