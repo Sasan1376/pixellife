@@ -54,6 +54,13 @@
       .featured-badge {
         cursor: pointer;
       }
+      .color-picker-tools { display:flex; align-items:end; gap:8px; flex-wrap:wrap; margin-top:10px; padding:10px; border:1px solid #e2e8f0; border-radius:8px; background:#f8fafc; }
+      .color-picker-tools .color-name-field { flex:1 1 150px; }
+      .color-picker-tools input[type="color"] { width:44px; height:38px; padding:2px; cursor:pointer; }
+      .selected-color-code { min-width:78px; font:600 12px monospace; color:#475569; padding-bottom:9px; direction:ltr; text-align:left; }
+      .admin-color-palette { display:flex; gap:7px; flex-wrap:wrap; margin-top:9px; }
+      .admin-color-dot { width:24px; height:24px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px #cbd5e1; cursor:pointer; padding:0; }
+      .admin-color-dot.active { outline:2px solid #2563eb; outline-offset:2px; }
       .product-image-preview {
         display: flex;
         gap: 8px;
@@ -330,6 +337,20 @@
                     placeholder="مشکی | #111111&#10;طلایی | #C6A46A"
                   ></textarea>
                   <div class="form-hint">هر رنگ را در یک خط، با قالب «نام رنگ | کد رنگ» وارد کنید.</div>
+                  <div class="color-picker-tools">
+                    <div class="color-name-field">
+                      <label class="form-label mb-1" for="fColorName">نام رنگ انتخابی</label>
+                      <input class="form-control form-control-sm" id="fColorName" placeholder="مثلاً تیتانیوم آبی" />
+                    </div>
+                    <div>
+                      <label class="form-label mb-1" for="fColorPicker">پالت رنگ</label>
+                      <input type="color" class="form-control form-control-color" id="fColorPicker" value="#334155" title="انتخاب رنگ" />
+                    </div>
+                    <span class="selected-color-code" id="fColorHex">#334155</span>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="addProductColorBtn"><i class="ti ti-plus"></i> افزودن رنگ</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="addVariantColorBtn"><i class="ti ti-list-plus"></i> افزودن به تنوع</button>
+                  </div>
+                  <div class="admin-color-palette" id="adminColorPalette" aria-label="رنگ‌های ثبت‌شده محصول"></div>
                 </div>
                 <div class="col-12">
                   <label class="form-label">تنوع‌های قابل فروش: حافظه، رنگ و موجودی</label>
@@ -409,6 +430,28 @@
           const color = variant && variant.color ? variant.color : {};
           return [variant.storage || "", color.name || "", color.hex || "#334155", Number(variant.stock) || 0].join(" | ");
         }).filter(Boolean).join("\n");
+      }
+
+      function escapeText(value) {
+        const node = document.createElement("span");
+        node.textContent = String(value || "");
+        return node.innerHTML;
+      }
+      function parseAdminColors() {
+        return document.getElementById("fColors").value.split(/\r?\n|،|,/).map((line) => line.trim()).filter(Boolean).map((line) => {
+          const [name, hex] = line.split("|").map((item) => item.trim());
+          return { name: name || "رنگ", hex: /^#[0-9a-fA-F]{6}$/.test(hex || "") ? hex.toUpperCase() : "#334155" };
+        });
+      }
+      function setPickerColor(name, hex) {
+        document.getElementById("fColorName").value = name || "";
+        document.getElementById("fColorPicker").value = hex || "#334155";
+        document.getElementById("fColorHex").textContent = (hex || "#334155").toUpperCase();
+      }
+      function renderColorPalette() {
+        const colors = parseAdminColors();
+        const selected = document.getElementById("fColorPicker").value.toUpperCase();
+        document.getElementById("adminColorPalette").innerHTML = colors.map((color) => '<button type="button" class="admin-color-dot' + (color.hex === selected ? ' active' : '') + '" data-color-name="' + escapeText(color.name) + '" data-color-hex="' + color.hex + '" style="background:' + color.hex + '" title="' + escapeText(color.name) + '"></button>').join("");
       }
 
       function formatColors(colors) {
@@ -536,6 +579,8 @@
         editingImages = [];
         removedImages = [];
         setMainImageOptions();
+        setPickerColor("", "#334155");
+        renderColorPalette();
       }
 
       function openEditModal(p) {
@@ -557,6 +602,7 @@
         document.getElementById("fStorages").value = formatList(p.storages);
         document.getElementById("fWarranties").value = formatList(p.warranties);
         document.getElementById("fVariants").value = formatVariants(p.variants);
+        renderColorPalette();
         editingImages = Array.isArray(p.images) ? p.images : [];
         renderImagePreview("existingImagesPreview", editingImages, true);
         setMainImageOptions(
@@ -593,6 +639,35 @@
         editingImages = editingImages.filter((url) => url !== image);
         renderImagePreview("existingImagesPreview", editingImages, true);
         setMainImageOptions(editingImages, document.getElementById("fImages").files.length, previousSelection === image ? "" : previousSelection);
+      });
+
+      document.getElementById("fColorPicker").addEventListener("input", (event) => {
+        document.getElementById("fColorHex").textContent = event.target.value.toUpperCase();
+        renderColorPalette();
+      });
+      document.getElementById("fColors").addEventListener("input", renderColorPalette);
+      document.getElementById("adminColorPalette").addEventListener("click", (event) => {
+        const dot = event.target.closest("[data-color-hex]");
+        if (!dot) return;
+        setPickerColor(dot.dataset.colorName, dot.dataset.colorHex);
+        renderColorPalette();
+      });
+      document.getElementById("addProductColorBtn").addEventListener("click", () => {
+        const name = document.getElementById("fColorName").value.trim();
+        const hex = document.getElementById("fColorPicker").value.toUpperCase();
+        if (!name) return showToast("ابتدا نام رنگ را وارد کنید");
+        const colors = parseAdminColors().filter((color) => color.name !== name);
+        colors.push({ name, hex });
+        document.getElementById("fColors").value = colors.map((color) => color.name + " | " + color.hex).join("\n");
+        renderColorPalette();
+      });
+      document.getElementById("addVariantColorBtn").addEventListener("click", () => {
+        const name = document.getElementById("fColorName").value.trim();
+        const hex = document.getElementById("fColorPicker").value.toUpperCase();
+        if (!name) return showToast("ابتدا نام رنگ را وارد کنید");
+        const field = document.getElementById("fVariants");
+        field.value = (field.value.trim() ? field.value.trim() + "\n" : "") + "حافظه را وارد کنید | " + name + " | " + hex + " | ۰";
+        showToast("رنگ به ردیف تنوع افزوده شد؛ فقط حافظه و تعداد را کامل کنید");
       });
 
       document.getElementById("fImages").addEventListener("change", (event) => {
