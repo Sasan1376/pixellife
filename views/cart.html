@@ -1359,7 +1359,8 @@
       .cart-item-img-wrap img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
+        background: #fff;
         transition: transform 0.35s ease;
       }
       .cart-item-img-wrap:hover img {
@@ -3634,6 +3635,32 @@
       function saveCart() {
         localStorage.setItem("digishop_cart", JSON.stringify(cartData));
       }
+      const CART_IMAGE_FALLBACK = "/images/product-placeholder.svg";
+      function cartImage(item) {
+        return item.image || item.mainImage || item.images?.[0] || CART_IMAGE_FALLBACK;
+      }
+      async function enrichCartImages() {
+        const missing = cartData.filter((item) => !item.image && item.id);
+        if (!missing.length) return;
+        await Promise.all(missing.map(async (item) => {
+          try {
+            const id = String(item.id);
+            const url = /^[a-f0-9]{24}$/i.test(id) ? "/api/products/id/" + encodeURIComponent(id) : "/api/products/" + encodeURIComponent(id);
+            const response = await fetch(url, { cache: "no-store" });
+            const data = await response.json();
+            if (!response.ok || !data.success || !data.product) return;
+            const product = data.product;
+            item.image = product.mainImage || product.images?.[0] || CART_IMAGE_FALLBACK;
+            item.brand = item.brand || product.brand || "";
+            item.stock = Math.max(0, Number(product.stock) || 0);
+            item.available = product.availability !== "out" && item.stock > 0;
+          } catch (_) {}
+        }));
+        saveCart();
+        renderCartItems();
+        updateCartBadge();
+      }
+
 
       /* افزودن محصول به سبد خرید */
       function addToCart(product) {
@@ -3738,7 +3765,7 @@
           // استفاده از '${item.id}' برای جلوگیری از خطای آی‌دی
           card.innerHTML = `
             <div class="cart-item-img-wrap" onclick="openQuickView('${item.id}')" aria-label="مشاهده سریع ${item.name}">
-              <img src="${item.image}" alt="${item.name}" loading="lazy" />
+              <img src="${cartImage(item)}" alt="${item.name}" loading="lazy" onerror="this.onerror=null;this.src=\'/images/product-placeholder.svg\';" />
               <div class="cart-item-quick-view"><i class="ti ti-eye"></i></div>
             </div>
             <div class="cart-item-info">
@@ -3935,7 +3962,7 @@
       function openQuickView(id) {
         const item = cartData.find((i) => i.id === id);
         if (!item) return;
-        document.getElementById("qvImg").src = item.image;
+        document.getElementById("qvImg").src = cartImage(item);
         document.getElementById("qvImg").alt = item.name;
         document.getElementById("qvBrand").textContent = item.brand;
         document.getElementById("qvName").textContent = item.name;
