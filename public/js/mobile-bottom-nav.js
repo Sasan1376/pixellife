@@ -34,7 +34,7 @@
   if (!nav) return;
 
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
-  const isCategoryPath = ["/categories", "/mobiles", "/iphone", "/samsung", "/xiaomi", "/ipad", "/samsungtab", "/xiaomitab", "/console"].includes(path);
+  const isCategoryPath = ["/categories", "/mobiles", "/iphone", "/samsung", "/xiaomi", "/accessories/apple", "/accessories/samsung", "/accessories/xiaomi", "/ipad", "/samsungtab", "/xiaomitab", "/console"].includes(path);
 
   nav.querySelectorAll(".mobile-bottom-nav__item").forEach((item) => {
     const key = item.dataset.nav;
