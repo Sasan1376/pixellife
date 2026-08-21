@@ -114,15 +114,22 @@ function parseReviewSections(value, uploadedImages = []) {
   try {
     const sections = JSON.parse(value);
     if (!Array.isArray(sections)) return [];
-    return sections.map((section) => ({
-      enabled: section?.enabled !== false,
-      title: String(section?.title || "").trim(),
-      content: String(section?.content || "").trim(),
-      images: (Array.isArray(section?.images) ? section.images : []).map((image) => {
+    return sections.map((section) => {
+      const imageSizes = Array.isArray(section?.imageSizes) ? section.imageSizes : [];
+      const images = (Array.isArray(section?.images) ? section.images : []).map((image, index) => {
         const match = String(image || "").match(/^new:(\d+)$/);
-        return match ? uploadedImages[Number(match[1])] || "" : normalizeImagePath(image);
-      }).filter(Boolean),
-    })).filter((section) => section.title || section.content || section.images.length);
+        const src = match ? uploadedImages[Number(match[1])] || "" : normalizeImagePath(image);
+        const size = ["small", "medium", "large", "full"].includes(imageSizes[index]) ? imageSizes[index] : "large";
+        return src ? { src, size } : null;
+      }).filter(Boolean);
+      return {
+        enabled: section?.enabled !== false,
+        title: String(section?.title || "").trim(),
+        content: String(section?.content || "").trim(),
+        images: images.map((image) => image.src),
+        imageSizes: images.map((image) => image.size),
+      };
+    }).filter((section) => section.title || section.content || section.images.length);
   } catch (_) { return []; }
 }
 function serializeProduct(product) {
