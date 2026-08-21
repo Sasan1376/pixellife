@@ -2,6 +2,26 @@ const path = require("path");
 const fs = require("fs");
 const ContactMessage = require("../models/ContactMessage");
 
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const viewCache = new Map();
+
+function readView(filePath) {
+  if (IS_PRODUCTION && viewCache.has(filePath)) return viewCache.get(filePath);
+  const html = fs.readFileSync(filePath, "utf8");
+  if (IS_PRODUCTION) viewCache.set(filePath, html);
+  return html;
+}
+
+function sendCachedHtml(res, cacheKey, render) {
+  res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+  if (IS_PRODUCTION && viewCache.has(cacheKey)) {
+    return res.type("html").send(viewCache.get(cacheKey));
+  }
+  const html = render();
+  if (IS_PRODUCTION) viewCache.set(cacheKey, html);
+  return res.type("html").send(html);
+}
+
 const ENAMAD_URL =
   "https://trustseal.enamad.ir/?id=7320810&Code=NumFm2BnHAPz2uqVZohNfj7I6jfqOEE5";
 const ENAMAD_LOGO =
@@ -233,12 +253,13 @@ function sendViewWithEnamad(res, fileName) {
   const filePath = path.join(__dirname, `../../views/${fileName}`);
 
   try {
-    let html = fs.readFileSync(filePath, "utf8");
-    html = injectEnamad(html);
-    html = injectSharedCategoryNav(html);
-    html = injectMobileBottomNav(html);
-    html = injectDatabaseCatalog(html);
-    res.type("html").send(html);
+    sendCachedHtml(res, `rendered:${fileName}`, () => {
+      let html = readView(filePath);
+      html = injectEnamad(html);
+      html = injectSharedCategoryNav(html);
+      html = injectMobileBottomNav(html);
+      return injectDatabaseCatalog(html);
+    });
   } catch (error) {
     console.error(`View render error (${fileName}):`, error);
     res.status(500).send("خطا در بارگذاری صفحه");
@@ -250,7 +271,11 @@ function sendAccessoryBrandView(res, brand) {
   const brandName = String(brand || "").trim();
 
   try {
-    let html = fs.readFileSync(filePath, "utf8");
+    res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+    if (IS_PRODUCTION && viewCache.has(`accessory:${brandName}`)) {
+      return res.type("html").send(viewCache.get(`accessory:${brandName}`));
+    }
+    let html = readView(filePath);
     const pageTitle = `لوازم جانبی ${brandName}`;
 
     // کارت‌های نمونهٔ آیفون فقط برای طراحی اولیهٔ قالب هستند. در صفحهٔ لوازم
@@ -288,6 +313,7 @@ function sendAccessoryBrandView(res, brand) {
     html = injectSharedCategoryNav(html);
     html = injectMobileBottomNav(html);
     html = injectDatabaseCatalog(html);
+    if (IS_PRODUCTION) viewCache.set(`accessory:${brandName}`, html);
     res.type("html").send(html);
   } catch (error) {
     console.error(`Accessory view render error (${brandName}):`, error);
@@ -300,7 +326,11 @@ const homeController = {
     const indexPath = path.join(__dirname, "../../views/index.html");
 
     try {
-      let html = fs.readFileSync(indexPath, "utf8");
+      res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+      if (IS_PRODUCTION && viewCache.has("rendered:index")) {
+        return res.type("html").send(viewCache.get("rendered:index"));
+      }
+      let html = readView(indexPath);
 
       if (html.includes("</head>")) {
         html = html.replace(
@@ -314,6 +344,7 @@ const homeController = {
       }
 
       html = injectMobileBottomNav(html);
+      if (IS_PRODUCTION) viewCache.set("rendered:index", html);
       res.type("html").send(html);
     } catch (error) {
       console.error("Homepage render error:", error);
