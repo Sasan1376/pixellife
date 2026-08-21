@@ -417,6 +417,10 @@
                 </div>
                 <div class="col-md-6">
                   <label class="form-label">گارانتی‌ها</label>
+                  <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" role="switch" id="fHasWarranty" checked />
+                    <label class="form-check-label" for="fHasWarranty">نمایش گارانتی در صفحه محصول</label>
+                  </div>
                   <textarea class="form-control" id="fWarranties" rows="2" placeholder="گارانتی ۱۸ ماهه شرکتی"></textarea>
                   <div class="form-hint">هر گارانتی را در یک خط وارد کنید.</div>
                 </div>
@@ -566,6 +570,13 @@
         document.getElementById("fVariants").disabled = !enabled;
         document.getElementById("addVariantColorBtn").disabled = !enabled;
       }
+      function syncWarrantyField() {
+        const enabled = document.getElementById("fHasWarranty").checked;
+        const input = document.getElementById("fWarranties");
+        input.disabled = !enabled;
+        input.closest(".col-md-6").classList.toggle("opacity-50", !enabled);
+      }
+
       function syncVariantInventoryInputs(showError = false) {
         const field = document.getElementById("fVariants");
         const stockInput = document.getElementById("fStock");
@@ -784,9 +795,11 @@
         setMainImageOptions();
         setPickerColor("", "#334155");
         document.getElementById("fShowReview").checked = false;
+        document.getElementById("fHasWarranty").checked = true;
         renderReviewSections(DEFAULT_REVIEW_SECTIONS);
         renderColorPalette();
         syncStorageFields();
+        syncWarrantyField();
         syncVariantInventoryInputs();
         renderVariantInventoryEditor();
       }
@@ -805,6 +818,7 @@
         document.getElementById("fAvailability").value = p.availability || "in";
         document.getElementById("fFeatured").checked = !!p.featured;
         document.getElementById("fHasStorage").checked = p.hasStorage !== false;
+        document.getElementById("fHasWarranty").checked = p.hasWarranty !== false;
         document.getElementById("fDescription").value = p.description || "";
         document.getElementById("fShowReview").checked = p.showReview === true;
         renderReviewSections(Array.isArray(p.reviewSections) ? p.reviewSections : []);
@@ -814,6 +828,7 @@
         document.getElementById("fWarranties").value = formatList(p.warranties);
         document.getElementById("fVariants").value = formatVariants(p.variants);
         syncStorageFields();
+        syncWarrantyField();
         renderColorPalette();
         editingImages = Array.isArray(p.images) ? p.images : [];
         renderImagePreview("existingImagesPreview", editingImages, true);
@@ -875,6 +890,7 @@
         syncVariantInventoryInputs();
         renderVariantInventoryEditor();
       });
+      document.getElementById("fHasWarranty").addEventListener("change", syncWarrantyField);
       document.getElementById("fVariants").addEventListener("change", () => {
         syncVariantInventoryInputs();
         renderVariantInventoryEditor();
@@ -935,6 +951,7 @@
         .addEventListener("submit", async (e) => {
           e.preventDefault();
           const hasStorage = document.getElementById("fHasStorage").checked;
+          const hasWarranty = document.getElementById("fHasWarranty").checked;
           if (hasStorage && !syncVariantInventoryInputs(true)) return;
           const id = document.getElementById("productId").value;
           const fd = new FormData();
@@ -950,6 +967,7 @@
           );
           fd.append("featured", document.getElementById("fFeatured").checked);
           fd.append("hasStorage", hasStorage);
+          fd.append("hasWarranty", hasWarranty);
           fd.append("showReview", document.getElementById("fShowReview").checked);
           fd.append(
             "description",
@@ -958,7 +976,7 @@
           fd.append("specs", document.getElementById("fSpecs").value);
           fd.append("colors", document.getElementById("fColors").value);
           fd.append("storages", hasStorage ? document.getElementById("fStorages").value : "");
-          fd.append("warranties", document.getElementById("fWarranties").value);
+          fd.append("warranties", hasWarranty ? document.getElementById("fWarranties").value : "");
           fd.append("variants", hasStorage ? document.getElementById("fVariants").value : "");
           fd.append("mainImage", document.getElementById("fMainImage").value);
           fd.append("removeImages", JSON.stringify(removedImages));
