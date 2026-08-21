@@ -28,6 +28,13 @@
     document.head.appendChild(style);
   }
 
+  if (path === "/console" && !document.getElementById("console-catalog-grid-style")) {
+    const style = document.createElement("style");
+    style.id = "console-catalog-grid-style";
+    style.textContent = ".console-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))!important}@media(max-width:640px){.console-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}";
+    document.head.appendChild(style);
+  }
+
   if (isAccessoryCatalog && !document.getElementById("accessory-catalog-card-style")) {
     const style = document.createElement("style");
     style.id = "accessory-catalog-card-style";
