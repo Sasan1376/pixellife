@@ -4408,7 +4408,8 @@
         const oldPrice =
           doc.oldPrice || doc.compareAtPrice || oldPriceFromDiscount;
 
-        const variants = Array.isArray(doc.variants)
+        const hasStorage = doc.hasStorage !== false;
+        const variants = hasStorage && Array.isArray(doc.variants)
           ? doc.variants.map((variant) => ({
               storage: String(variant?.storage || "").trim(),
               color: {
@@ -4422,8 +4423,9 @@
 
         // رنگ‌ها/حافظه‌ها را از دیتابیس بخوان اگر موجود بود، وگرنه یک گزینه واحد بساز
         // (نه یک برچسب جعلی "استاندارد"/"پیش‌فرض" که روی همه محصولات یکسان دیده شود)
-        const storages =
-          variants.length
+        const storages = !hasStorage
+          ? []
+          : variants.length
             ? [...new Set(variants.map((variant) => variant.storage))]
             : Array.isArray(doc.storages) && doc.storages.length
               ? doc.storages
@@ -4453,6 +4455,7 @@
           outOfStock: doc.availability === "out" || Number(doc.stock) <= 0,
           price: doc.price,
           oldPrice: oldPrice,
+          hasStorage: hasStorage,
           storages: storages,
           warranties:
             Array.isArray(doc.warranties) && doc.warranties.length
@@ -5184,6 +5187,7 @@
             console.warn("fallback به داده استاتیک برای شناسه:", productId);
           }
         }
+        if (product) product.hasStorage = product.hasStorage !== false;
         const pageBody = document.getElementById("pageBody");
 
         let selectedStorage,
@@ -5266,7 +5270,7 @@
           const firstAvailableVariant = Array.isArray(product.variants)
             ? product.variants.find((variant) => variant.stock > 0) || product.variants[0]
             : null;
-          selectedStorage = firstAvailableVariant?.storage || product.storages[0];
+          selectedStorage = product.hasStorage ? firstAvailableVariant?.storage || product.storages[0] : "";
           selectedColor = firstAvailableVariant?.color || product.colors[0];
           selectedWarranty = product.warranties ? product.warranties[0] : null;
           const galleryTotal = galleryCount(product);
@@ -5375,7 +5379,7 @@
                 </button>
               </div>
 
-              <div class="option-group">
+              ${product.hasStorage ? `<div class="option-group">
                 <div class="option-label"><i class="ti ti-device-sd-card"></i> حافظه داخلی: <span class="selected-val" id="storageVal">${selectedStorage}</span></div>
                 <div class="storage-options" id="storageOptions">
                   ${product.storages
@@ -5385,7 +5389,7 @@
                     )
                     .join("")}
                 </div>
-              </div>
+              </div>` : ""}
 
               <div class="option-group">
                 <div class="option-label"><i class="ti ti-palette"></i> رنگ: <span class="selected-val" id="colorVal">${selectedColor.name}</span></div>
@@ -5741,6 +5745,13 @@
           });
 
           function syncVariantSelection(preferredStorage, preferredColorName) {
+            if (!product.hasStorage) {
+              selectedColor = product.colors.find((color) => color.name === preferredColorName) || selectedColor;
+              const colorValue = document.getElementById("colorVal");
+              if (colorValue) colorValue.textContent = selectedColor.name;
+              document.querySelectorAll(".color-swatch").forEach((swatch) => swatch.classList.toggle("active", swatch.dataset.name === selectedColor.name));
+              return true;
+            }
             const variants = Array.isArray(product.variants) ? product.variants.filter((variant) => variant.stock > 0) : [];
             if (!variants.length) {
               selectedStorage = preferredStorage || selectedStorage;
@@ -5786,7 +5797,7 @@
 
           document
             .getElementById("storageOptions")
-            .addEventListener("click", (e) => {
+            ?.addEventListener("click", (e) => {
               const btn = e.target.closest(".storage-chip");
               if (!btn || btn.disabled) return;
               syncVariantSelection(btn.dataset.val, selectedColor.name);
