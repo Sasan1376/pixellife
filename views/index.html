@@ -2515,6 +2515,20 @@
         </div>
       </section>
 
+      <!-- ═══ PRODUCT GRID (لوازم جانبی موبایل) ═══ -->
+      <section class="product-section" aria-labelledby="mobileAccessoriesTitle">
+        <div class="section-header">
+          <h2 id="mobileAccessoriesTitle">لوازم جانبی موبایل</h2>
+          <a href="/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84" class="see-all-btn">مشاهده همه</a>
+        </div>
+
+        <div class="product-grid" id="mobileAccessoriesGrid">
+          <p style="color: var(--text-3); font-size: 13px">
+            در حال بارگذاری لوازم جانبی...
+          </p>
+        </div>
+      </section>
+
       <!-- ═══ SIMPLE BANNER (بنر ساده) ═══ -->
       <section class="home-promo-placeholders" aria-label="Future promotional banners">
         <a
@@ -3519,6 +3533,49 @@
         }
       }
       loadFeaturedProducts();
+
+      /* ══ لوازم جانبی موبایل (از دیتابیس واقعی) ══ */
+      async function loadMobileAccessories() {
+        const grid = document.getElementById("mobileAccessoriesGrid");
+        try {
+          const res = await fetch(
+            "/api/products?category=" + encodeURIComponent("لوازم جانبی موبایل") + "&limit=4",
+          );
+          const json = await res.json();
+          if (!json.success)
+            throw new Error(json.message || "خطا در دریافت محصولات");
+
+          const products = (json.products || []).slice(0, 4);
+          if (products.length === 0) {
+            grid.innerHTML =
+              '<p style="color: var(--text-3); font-size: 13px;">هنوز لوازم جانبی موبایل ثبت نشده است.</p>';
+            return;
+          }
+
+          grid.innerHTML = products
+            .map((p) => {
+              const rawImg = p.mainImage || (p.images && p.images[0]) || "";
+              const rawFallback =
+                (p.images || []).find((image) => image && image !== rawImg) || "";
+              const img = escapeHtml(rawImg || "/images/product-placeholder.svg");
+              const fallbackImg = escapeHtml(rawFallback);
+              const price = Number(p.price).toLocaleString("fa-IR");
+              const name = escapeHtml(p.name);
+              const slug = escapeHtml(p.slug);
+              return `
+                <a href="/product/${slug}" class="product-card">
+                  <img src="${img}" data-fallback="${fallbackImg}" alt="${name}" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.onerror=null;this.src='/images/product-placeholder.svg';}">
+                  <h3>${name}</h3>
+                  <div class="product-price">${price} <span>تومان</span></div>
+                </a>`;
+            })
+            .join("");
+        } catch (err) {
+          grid.innerHTML =
+            '<p style="color: var(--red); font-size: 13px;">خطا در بارگذاری لوازم جانبی</p>';
+        }
+      }
+      loadMobileAccessories();
 
       /* ══ MINI CART (سبد خرید کوچک هدر) ══
          این بخش سبد را از localStorage می‌خواند (کلید digishop_cart، آرایه‌ای از
