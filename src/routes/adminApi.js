@@ -105,6 +105,26 @@ function parseRemovedImages(value) {
     return Array.isArray(parsed) ? parsed.map(normalizeImagePath).filter(Boolean) : [];
   } catch (_) { return []; }
 }
+function uploadedFiles(req, field) {
+  if (Array.isArray(req.files)) return field === "images" ? req.files : [];
+  return Array.isArray(req.files?.[field]) ? req.files[field] : [];
+}
+function parseReviewSections(value, uploadedImages = []) {
+  if (!value) return [];
+  try {
+    const sections = JSON.parse(value);
+    if (!Array.isArray(sections)) return [];
+    return sections.map((section) => ({
+      enabled: section?.enabled !== false,
+      title: String(section?.title || "").trim(),
+      content: String(section?.content || "").trim(),
+      images: (Array.isArray(section?.images) ? section.images : []).map((image) => {
+        const match = String(image || "").match(/^new:(\d+)$/);
+        return match ? uploadedImages[Number(match[1])] || "" : normalizeImagePath(image);
+      }).filter(Boolean),
+    })).filter((section) => section.title || section.content || section.images.length);
+  } catch (_) { return []; }
+}
 function serializeProduct(product) {
   const data = product.toObject ? product.toObject() : product;
   const images = (Array.isArray(data.images) ? data.images : []).map(normalizeImagePath).filter(Boolean);
@@ -164,7 +184,7 @@ router.get("/products", async (req, res) => {
   }
 });
 
-router.post("/products", upload.array("images", 5), async (req, res) => {
+router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name: "reviewImages", maxCount: 20 }]), async (req, res) => {
   try {
     const {
       name,
@@ -182,6 +202,8 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       hasStorage,
       warranties,
       variants,
+      showReview,
+      reviewSections,
       mainImage: mainImageSelection,
     } = req.body;
 
@@ -192,10 +214,11 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
     }
 
     const uploadedImages = await Promise.all(
-      (req.files || []).map(saveProductImage),
+      uploadedFiles(req, "images").map(saveProductImage),
     );
 
     const storageEnabled = parseEnabled(hasStorage);
+    const uploadedReviewImages = await Promise.all(uploadedFiles(req, "reviewImages").map(saveProductImage));
     const variantInventory = storageEnabled ? parseVariants(variants) : [];
     const rootStock = parseStock(stock);
     const product = new Product(applyVariantInventory({
@@ -214,6 +237,8 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       colors: parseColors(colors) || [],
       storages: storageEnabled ? parseList(storages) || [] : [],
       hasStorage: storageEnabled,
+      showReview: parseEnabled(showReview, false),
+      reviewSections: parseReviewSections(reviewSections, uploadedReviewImages),
       warranties: parseList(warranties) || [],
     }, variantInventory));
 
@@ -224,7 +249,7 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
   }
 });
 
-router.put("/products/:id", upload.array("images", 5), async (req, res) => {
+router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { name: "reviewImages", maxCount: 20 }]), async (req, res) => {
   try {
     const {
       name,
@@ -242,6 +267,8 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
       hasStorage,
       warranties,
       variants,
+      showReview,
+      reviewSections,
       mainImage: mainImageSelection,
       removeImages,
     } = req.body;
@@ -260,6 +287,7 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
     if (discount !== undefined) product.discount = Number(discount) || 0;
     if (description !== undefined) product.description = description;
     if (specs !== undefined) product.specs = specs;
+    if (showReview !== undefined) product.showReview = parseEnabled(showReview, false);
     if (stock !== undefined) product.stock = parseStock(stock);
     if (stock !== undefined || availability !== undefined) {
       product.availability = normalizeAvailability(
@@ -294,7 +322,9 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
     const existingImages = (Array.isArray(product.images) ? product.images : []).map(normalizeImagePath).filter(Boolean);
     const removed = new Set(parseRemovedImages(removeImages));
     const remainingImages = existingImages.filter((image) => !removed.has(image));
-    const newImages = await Promise.all((req.files || []).map(saveProductImage));
+    const newImages = await Promise.all(uploadedFiles(req, "images").map(saveProductImage));
+    const uploadedReviewImages = await Promise.all(uploadedFiles(req, "reviewImages").map(saveProductImage));
+    if (reviewSections !== undefined) product.reviewSections = parseReviewSections(reviewSections, uploadedReviewImages);
     product.images = [...remainingImages, ...newImages];
     await Promise.all([...removed].map(removeProductImage));
 
