@@ -12,5 +12,6 @@ const reviewSchema = new mongoose.Schema({
   helpful: { type: Number, default: 0 },
   reply: { type: String, default: null },
 });
+reviewSchema.index({ productId: 1, date: -1 });
 
 module.exports = mongoose.models.Review || mongoose.model("Review", reviewSchema);
