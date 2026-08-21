@@ -366,6 +366,12 @@
                     >
                   </div>
                 </div>
+                <div class="col-md-4 d-flex align-items-end">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="fHasStorage" checked />
+                    <label class="form-check-label" for="fHasStorage">نمایش انتخاب حافظه در صفحه محصول</label>
+                  </div>
+                </div>
                 <div class="col-12">
                   <label class="form-label">توضیحات</label>
                   <textarea
@@ -384,7 +390,7 @@
                   ></textarea>
                   <div class="form-hint">هر مشخصه را در یک خط و با قالب «عنوان: مقدار» وارد کنید.</div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" id="storageFieldGroup">
                   <label class="form-label">حافظه‌ها / مدل‌ها</label>
                   <textarea class="form-control" id="fStorages" rows="2" placeholder="۲۵۶ گیگابایت&#10;۵۱۲ گیگابایت"></textarea>
                   <div class="form-hint">هر گزینه را در یک خط وارد کنید.</div>
@@ -418,7 +424,7 @@
                   </div>
                   <div class="admin-color-palette" id="adminColorPalette" aria-label="رنگ‌های ثبت‌شده محصول"></div>
                 </div>
-                <div class="col-12">
+                <div class="col-12" id="variantFieldGroup">
                   <label class="form-label">تنوع‌های قابل فروش: حافظه، رنگ و موجودی</label>
                   <textarea class="form-control" id="fVariants" rows="4" placeholder="۲۵۶ گیگابایت | تیتانیوم مشکی | #2C2C2E | ۳&#10;۲۵۶ گیگابایت | تیتانیوم سفید | #F0F0F0 | ۰&#10;۵۱۲ گیگابایت | تیتانیوم مشکی | #2C2C2E | ۲"></textarea>
                   <div class="form-hint">هر خط یک ترکیب واقعی است: «حافظه | نام رنگ | کد رنگ | تعداد موجود». با ثبت این بخش، رنگ‌ها، حافظه‌ها و موجودی کلی خودکار از همین ردیف‌ها ساخته می‌شوند.</div>
@@ -495,11 +501,26 @@
       function englishNumber(value) {
         return String(value || "").replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit)).replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit)).replace(/[\s,٬،]/g, "");
       }
+      function syncStorageFields() {
+        const enabled = document.getElementById("fHasStorage").checked;
+        document.getElementById("storageFieldGroup").hidden = !enabled;
+        document.getElementById("variantFieldGroup").hidden = !enabled;
+        document.getElementById("fStorages").disabled = !enabled;
+        document.getElementById("fVariants").disabled = !enabled;
+        document.getElementById("addVariantColorBtn").disabled = !enabled;
+      }
       function syncVariantInventoryInputs(showError = false) {
         const field = document.getElementById("fVariants");
         const stockInput = document.getElementById("fStock");
         const availability = document.getElementById("fAvailability");
         const summary = document.getElementById("variantStockSummary");
+        if (!document.getElementById("fHasStorage").checked) {
+          stockInput.readOnly = false;
+          stockInput.classList.remove("bg-light");
+          summary.className = "variant-stock-summary";
+          summary.textContent = "این کالا انتخاب حافظه ندارد؛ موجودی کلی را مستقیماً وارد کنید.";
+          return true;
+        }
         const lines = field.value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
         if (!lines.length) {
           stockInput.readOnly = false;
@@ -534,6 +555,10 @@
       function renderVariantInventoryEditor() {
         const field = document.getElementById("fVariants");
         const editor = document.getElementById("variantInventoryEditor");
+        if (!document.getElementById("fHasStorage").checked) {
+          editor.innerHTML = "";
+          return;
+        }
         const rows = field.value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).map((line, index) => {
           const parts = line.split("|").map((part) => part.trim());
           return { index, storage: parts[0] || "حافظه نامشخص", color: parts[1] || "رنگ نامشخص", hex: /^#[0-9a-fA-F]{6}$/.test(parts[2] || "") ? parts[2] : "#334155", stock: parts[3] || "0" };
@@ -702,6 +727,7 @@
         setMainImageOptions();
         setPickerColor("", "#334155");
         renderColorPalette();
+        syncStorageFields();
         syncVariantInventoryInputs();
         renderVariantInventoryEditor();
       }
@@ -719,12 +745,14 @@
         document.getElementById("fStock").value = p.stock || 0;
         document.getElementById("fAvailability").value = p.availability || "in";
         document.getElementById("fFeatured").checked = !!p.featured;
+        document.getElementById("fHasStorage").checked = p.hasStorage !== false;
         document.getElementById("fDescription").value = p.description || "";
         document.getElementById("fSpecs").value = p.specs || "";
         document.getElementById("fColors").value = formatColors(p.colors);
         document.getElementById("fStorages").value = formatList(p.storages);
         document.getElementById("fWarranties").value = formatList(p.warranties);
         document.getElementById("fVariants").value = formatVariants(p.variants);
+        syncStorageFields();
         renderColorPalette();
         editingImages = Array.isArray(p.images) ? p.images : [];
         renderImagePreview("existingImagesPreview", editingImages, true);
@@ -772,6 +800,11 @@
       });
       document.getElementById("fColors").addEventListener("input", renderColorPalette);
       document.getElementById("fVariants").addEventListener("input", () => syncVariantInventoryInputs());
+      document.getElementById("fHasStorage").addEventListener("change", () => {
+        syncStorageFields();
+        syncVariantInventoryInputs();
+        renderVariantInventoryEditor();
+      });
       document.getElementById("fVariants").addEventListener("change", () => {
         syncVariantInventoryInputs();
         renderVariantInventoryEditor();
@@ -831,7 +864,8 @@
         .getElementById("productForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
-          if (!syncVariantInventoryInputs(true)) return;
+          const hasStorage = document.getElementById("fHasStorage").checked;
+          if (hasStorage && !syncVariantInventoryInputs(true)) return;
           const id = document.getElementById("productId").value;
           const fd = new FormData();
           fd.append("name", document.getElementById("fName").value);
@@ -845,15 +879,16 @@
             document.getElementById("fAvailability").value,
           );
           fd.append("featured", document.getElementById("fFeatured").checked);
+          fd.append("hasStorage", hasStorage);
           fd.append(
             "description",
             document.getElementById("fDescription").value,
           );
           fd.append("specs", document.getElementById("fSpecs").value);
           fd.append("colors", document.getElementById("fColors").value);
-          fd.append("storages", document.getElementById("fStorages").value);
+          fd.append("storages", hasStorage ? document.getElementById("fStorages").value : "");
           fd.append("warranties", document.getElementById("fWarranties").value);
-          fd.append("variants", document.getElementById("fVariants").value);
+          fd.append("variants", hasStorage ? document.getElementById("fVariants").value : "");
           fd.append("mainImage", document.getElementById("fMainImage").value);
           fd.append("removeImages", JSON.stringify(removedImages));
 
