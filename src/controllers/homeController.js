@@ -228,6 +228,45 @@ function sendViewWithEnamad(res, fileName) {
   }
 }
 
+function sendAccessoryBrandView(res, brand) {
+  const filePath = path.join(__dirname, "../../views/iphone.html");
+  const brandName = String(brand || "").trim();
+
+  try {
+    let html = fs.readFileSync(filePath, "utf8");
+    const pageTitle = `لوازم جانبی ${brandName}`;
+
+    // صفحهٔ فهرست آیفون، ساختار کارت و ریسپانسیو استاندارد فروشگاه را دارد؛
+    // با تغییر عنوان و داده‌های کاتالوگ، برای هر برند لوازم جانبی بازاستفاده می‌شود.
+    html = html
+      .replace(/<title>[\s\S]*?<\/title>/, `<title>${pageTitle} | PixelLife</title>`)
+      .replace(
+        /<div class="iphone-page-title">[\s\S]*?<\/div>/,
+        `<div class="iphone-page-title">${pageTitle}</div>`,
+      )
+      .replace(
+        /<div class="iphone-page-subtitle">[\s\S]*?<\/div>/,
+        `<div class="iphone-page-subtitle">جدیدترین لوازم جانبی موبایل ${brandName}</div>`,
+      )
+      .replace(
+        /<svg width="32" height="32" viewBox="0 0 24 24" fill="none">[\s\S]*?<\/svg>\s*<div>/,
+        '<i class="ti ti-headphones" style="font-size:32px;color:var(--text-2)"></i><div>',
+      )
+      .replace(
+        "/js/database-catalog.js?v=20260820-card-design-10",
+        "/js/database-catalog.js?v=20260821-accessories-1",
+      );
+    html = injectEnamad(html);
+    html = injectSharedCategoryNav(html);
+    html = injectMobileBottomNav(html);
+    html = injectDatabaseCatalog(html);
+    res.type("html").send(html);
+  } catch (error) {
+    console.error(`Accessory view render error (${brandName}):`, error);
+    res.status(500).send("خطا در بارگذاری صفحه");
+  }
+}
+
 const homeController = {
   index: (req, res) => {
     const indexPath = path.join(__dirname, "../../views/index.html");
@@ -297,6 +336,9 @@ const homeController = {
   product: (req, res) => sendViewWithEnamad(res, "product.html"),
   samsung: (req, res) => sendViewWithEnamad(res, "samsung.html"),
   xiaomi: (req, res) => sendViewWithEnamad(res, "xiaomi.html"),
+  accessoriesApple: (req, res) => sendAccessoryBrandView(res, "اپل"),
+  accessoriesSamsung: (req, res) => sendAccessoryBrandView(res, "سامسونگ"),
+  accessoriesXiaomi: (req, res) => sendAccessoryBrandView(res, "شیائومی"),
   samsungtab: (req, res) => sendViewWithEnamad(res, "samsungtab.html"),
   ipad: (req, res) => sendViewWithEnamad(res, "ipad.html"),
   xiaomitab: (req, res) => sendViewWithEnamad(res, "xiaomitab.html"),
