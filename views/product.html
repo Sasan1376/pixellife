@@ -4446,9 +4446,28 @@
               )
             : [{ name: doc.color || "یک رنگ", hex: doc.colorHex || "#334155" }];
 
+        const normalizedBrand = String(doc.brand || "")
+          .trim()
+          .toLowerCase()
+          .replace(/ي/g, "ی")
+          .replace(/ك/g, "ک");
+
+        const brandLogo =
+          normalizedBrand.includes("samsung") || normalizedBrand.includes("سامسونگ")
+            ? "SAMSUNG_LOGO_SVG"
+            : normalizedBrand.includes("redmi") || normalizedBrand.includes("ردمی")
+              ? "REDMI_LOGO_SVG"
+              : normalizedBrand.includes("xiaomi") ||
+                  normalizedBrand.includes("شیائومی") ||
+                  normalizedBrand.includes("شیایومی")
+                ? "XIAOMI_LOGO_SVG"
+                : normalizedBrand.includes("apple") || normalizedBrand.includes("اپل")
+                  ? "APPLE_LOGO_SVG"
+                  : "";
+
         return {
           brand: doc.brand || "نامشخص",
-          brandLogo: "",
+          brandLogo,
           name: doc.name,
           // به‌جای هاردکد صفر، اگر سرور rating/reviewCount می‌فرستد از همان استفاده کن
           rating: doc.rating ? String(doc.rating) : "۰",
@@ -5361,7 +5380,7 @@
             </div>
             <div class="product-info-col">
               <div class="product-brand-row">
-                <div class="product-brand-badge">${product.brandLogo === "SAMSUNG_LOGO_SVG" ? SAMSUNG_LOGO_SVG : product.brandLogo === "XIAOMI_LOGO_SVG" ? XIAOMI_LOGO_SVG : product.brandLogo === "REDMI_LOGO_SVG" ? REDMI_LOGO_SVG : APPLE_LOGO_SVG}<span>${product.brand || ""}</span></div>
+                <div class="product-brand-badge">${product.brandLogo === "SAMSUNG_LOGO_SVG" ? SAMSUNG_LOGO_SVG : product.brandLogo === "XIAOMI_LOGO_SVG" ? XIAOMI_LOGO_SVG : product.brandLogo === "REDMI_LOGO_SVG" ? REDMI_LOGO_SVG : product.brandLogo === "APPLE_LOGO_SVG" ? APPLE_LOGO_SVG : ""}<span>${product.brand || ""}</span></div>
                 <div class="action-icons-row">
                   <button class="icon-action-btn${isWished ? " active" : ""}" id="wishBtn" title="علاقه‌مندی"><i class="ti ${isWished ? "ti-heart-filled" : "ti-heart"}"></i></button>
                   <button class="icon-action-btn" id="compareBtn" title="مقایسه"><i class="ti ti-arrows-exchange"></i></button>
