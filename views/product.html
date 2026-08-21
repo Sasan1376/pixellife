@@ -1857,6 +1857,10 @@
         border: none;
         mix-blend-mode: multiply;
       }
+      .review-section-img--small { width: min(38%, 280px); max-height: 190px; }
+      .review-section-img--medium { width: min(54%, 460px); max-height: 280px; }
+      .review-section-img--large { width: min(72%, 620px); max-height: 420px; }
+      .review-section-img--full { width: 100%; max-height: none; }
       .review-img-caption {
         font-size: 12px;
         color: var(--text-4);
@@ -5298,7 +5302,7 @@
                   icon: "ti-article",
                   title: String(section.title || "بررسی محصول"),
                   body: String(section.content || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>"),
-                  images: Array.isArray(section.images) ? section.images : [],
+                  images: Array.isArray(section.images) ? section.images.map((src, index) => ({ src, size: ["small", "medium", "large", "full"].includes(section.imageSizes?.[index]) ? section.imageSizes[index] : "large" })) : [],
                 }))
             : [];
           let demoReviews = [];
@@ -5376,7 +5380,7 @@
               </div>
                   <div class="product-desc">${product.desc}</div>
 
-              ${product.showSpecs && Object.keys(product.specs || {}).length ? `<div class="quick-specs-card">`
+              ${product.showSpecs && Object.keys(product.specs || {}).length ? `<div class="quick-specs-card">
                 <div class="quick-specs-grid">
                   ${Object.entries(product.specs || {})
                     .slice(0, 3)
@@ -5476,7 +5480,7 @@
             </div>
           </div>
 
-                    ${product.showSpecs && Object.keys(product.specs || {}).length ? `<div class="section-block" id="fullSpecsSection">`
+                    ${product.showSpecs && Object.keys(product.specs || {}).length ? `<div class="section-block" id="fullSpecsSection">
             <div class="section-heading"><i class="ti ti-list-details"></i> مشخصات فنی</div>
             <div class="specs-table-wrap" id="specsTableWrap">
               ${Object.entries(product.specs || {})
@@ -5508,7 +5512,7 @@
                 <div class="review-section-title"><i class="ti ${s.icon}"></i> ${s.title}</div>
                 <div class="review-section-body">${s.body}</div>
                 ${
-                  s.images?.map((image) => `<img src="${image}" alt="${s.title}" class="review-section-img" />`).join("") || ""
+                  s.images?.map((image) => `<img src="${image.src}" alt="${s.title}" class="review-section-img review-section-img--${image.size}" />`).join("") || ""
                 }
                 ${
                   i === 6
