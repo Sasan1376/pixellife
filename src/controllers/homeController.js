@@ -169,6 +169,7 @@ const MOBILE_BOTTOM_NAV_SCRIPT = `
 const CATALOG_NO_FLASH_HEAD = `
 <style id="database-catalog-no-flash">.grid,.iphone-grid,.samsung-grid,.xiaomi-grid,.prod-grid,.xiaomitab-grid,.console-grid{visibility:hidden}</style>`;
 const LOCAL_FONT_HEAD = `\n<link rel="stylesheet" href="/css/local-fonts.css?v=1" />`;
+const LOCAL_ICON_HEAD = `<link rel="stylesheet" href="/css/tabler-icons.min.css?v=perf-1" />`;
 
 function injectLocalFonts(html) {
   if (!html) return html;
@@ -176,8 +177,15 @@ function injectLocalFonts(html) {
     /<link[^>]+href=["\x27]https:\/\/fonts\.googleapis\.com\/css2[^"\x27]*["\x27][^>]*>/gi,
     "",
   );
+  html = html.replace(
+    /<link[^>]+href=["\x27]https:\/\/cdn\.jsdelivr\.net\/npm\/@tabler\/icons-webfont[^"\x27]*["\x27][^>]*>/gi,
+    LOCAL_ICON_HEAD,
+  );
   if (html.includes("</head>") && !html.includes("/css/local-fonts.css")) {
     html = html.replace("</head>", `${LOCAL_FONT_HEAD}\n</head>`);
+  }
+  if (html.includes("</head>") && html.includes("ti ti-") && !html.includes("/css/tabler-icons.min.css")) {
+    html = html.replace("</head>", `${LOCAL_ICON_HEAD}\n</head>`);
   }
   return html;
 }
