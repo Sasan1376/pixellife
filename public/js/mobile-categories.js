@@ -6,6 +6,7 @@
 
   const icons = {
     mobile: '<svg class="mobile-category-rail-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M10 18.5h4"/></svg>',
+    "mobile-accessories": '<svg class="mobile-category-rail-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3v6a4 4 0 0 0 8 0V3"/><path d="M8 6h8"/><path d="M12 13v8"/><path d="M9 21h6"/></svg>',
     tablet: '<svg class="mobile-category-rail-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M11 18h2"/></svg>',
     headphone: '<svg class="mobile-category-rail-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><path d="M4 14h3v5H5a1 1 0 0 1-1-1z"/><path d="M20 14h-3v5h2a1 1 0 0 0 1-1z"/></svg>',
     watch: '<svg class="mobile-category-rail-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="6" width="10" height="12" rx="2"/><path d="M9 6 10 3h4l1 3M9 18l1 3h4l1-3"/></svg>',
@@ -23,6 +24,16 @@
         { label: "خرید گوشی شیائومی", href: "/xiaomi" }
       ],
       allHref: "/mobiles"
+    },
+    {
+      id: "mobile-accessories",
+      name: "لوازم جانبی موبایل",
+      links: [
+        { label: "لوازم جانبی اپل", href: "/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84&brand=%D8%A7%D9%BE%D9%84" },
+        { label: "لوازم جانبی سامسونگ", href: "/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84&brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" },
+        { label: "لوازم جانبی شیائومی", href: "/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84&brand=%D8%B4%DB%8C%D8%A7%D8%A6%D9%88%D9%85%DB%8C" }
+      ],
+      allHref: "/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84"
     },
     {
       id: "tablet",
