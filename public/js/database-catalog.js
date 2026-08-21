@@ -31,7 +31,7 @@
   if (path === "/console" && !document.getElementById("console-catalog-grid-style")) {
     const style = document.createElement("style");
     style.id = "console-catalog-grid-style";
-    style.textContent = ".console-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))!important}@media(max-width:640px){.console-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}";
+    style.textContent = ".console-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}@media(max-width:1100px){.console-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}@media(max-width:820px){.console-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}";
     document.head.appendChild(style);
   }
 

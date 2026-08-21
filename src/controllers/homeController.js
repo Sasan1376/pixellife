@@ -261,13 +261,13 @@ function injectDatabaseCatalog(html) {
   // قبل از دریافت دادهٔ واقعی از دیتابیس دیده نشوند.
   html = html.replace(
     /\/js\/database-catalog\.js(?:\?v=[^"'\s>]*)?/g,
-    "/js/database-catalog.js?v=20260821-perf-2",
+    "/js/database-catalog.js?v=20260821-console-grid-3",
   );
 
   if (html.includes("/js/database-catalog.js")) return html;
   return html.replace(
     "</body>",
-    '<script src="/js/database-catalog.js?v=20260821-perf-2"></script>\n</body>',
+    '<script src="/js/database-catalog.js?v=20260821-console-grid-3"></script>\n</body>',
   );
 }
 
