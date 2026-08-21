@@ -39,6 +39,8 @@ const productSchema = new mongoose.Schema(
     specs: {
       type: String,
     },
+    // مشخصات فنی برای کالاهایی که جدول مشخصات ندارند، قابل غیرفعال‌کردن است.
+    showSpecs: { type: Boolean, default: true },
     featured: {
       type: Boolean,
       default: false,
