@@ -80,6 +80,8 @@ const productSchema = new mongoose.Schema(
     // لوازم جانبی و کالاهای بدون ظرفیت انتخابی، نباید گزینهٔ حافظه در صفحهٔ محصول داشته باشند.
     hasStorage: { type: Boolean, default: true },
     warranties: [{ type: String }],
+    // گارانتی هم می‌تواند برای محصولاتی مثل لوازم جانبی غیرفعال شود.
+    hasWarranty: { type: Boolean, default: true },
     reviewImages: [{ type: String }],
     showReview: { type: Boolean, default: false },
     reviewSections: [{
