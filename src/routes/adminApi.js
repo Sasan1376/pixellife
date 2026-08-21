@@ -201,6 +201,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       storages,
       hasStorage,
       warranties,
+      hasWarranty,
       variants,
       showReview,
       reviewSections,
@@ -218,6 +219,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
     );
 
     const storageEnabled = parseEnabled(hasStorage);
+    const warrantyEnabled = parseEnabled(hasWarranty);
     const uploadedReviewImages = await Promise.all(uploadedFiles(req, "reviewImages").map(saveProductImage));
     const variantInventory = storageEnabled ? parseVariants(variants) : [];
     const rootStock = parseStock(stock);
@@ -239,7 +241,8 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       hasStorage: storageEnabled,
       showReview: parseEnabled(showReview, false),
       reviewSections: parseReviewSections(reviewSections, uploadedReviewImages),
-      warranties: parseList(warranties) || [],
+      warranties: warrantyEnabled ? parseList(warranties) || [] : [],
+      hasWarranty: warrantyEnabled,
     }, variantInventory));
 
     await product.save();
@@ -266,6 +269,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       storages,
       hasStorage,
       warranties,
+      hasWarranty,
       variants,
       showReview,
       reviewSections,
@@ -298,7 +302,8 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
     if (colors !== undefined) product.colors = parseColors(colors);
     if (hasStorage !== undefined) product.hasStorage = parseEnabled(hasStorage);
     if (storages !== undefined && product.hasStorage !== false) product.storages = parseList(storages);
-    if (warranties !== undefined) product.warranties = parseList(warranties);
+    if (hasWarranty !== undefined) product.hasWarranty = parseEnabled(hasWarranty);
+    if (warranties !== undefined && product.hasWarranty !== false) product.warranties = parseList(warranties);
     if (variants !== undefined && product.hasStorage !== false) {
       const variantInventory = parseVariants(variants);
       if (variantInventory.length) {
@@ -316,6 +321,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       product.storages = [];
       product.variants = [];
     }
+    if (product.hasWarranty === false) product.warranties = [];
     product.featured =
       featured === "true" || featured === "on" || featured === true;
 
