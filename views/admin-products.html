@@ -502,6 +502,14 @@
       const tableBody = document.getElementById("productsTableBody");
       let editingImages = [];
       let removedImages = [];
+      const DEFAULT_REVIEW_SECTIONS = [
+        "معرفی کلی محصول",
+        "طراحی و کیفیت ساخت",
+        "ویژگی‌ها و عملکرد",
+        "کیفیت و تجربه استفاده",
+        "نقاط قوت و ضعف",
+        "جمع‌بندی نهایی",
+      ].map((title) => ({ enabled: true, title, content: "", images: [] }));
 
       function showToast(msg) {
         const t = document.getElementById("toast");
@@ -776,7 +784,7 @@
         setMainImageOptions();
         setPickerColor("", "#334155");
         document.getElementById("fShowReview").checked = false;
-        renderReviewSections();
+        renderReviewSections(DEFAULT_REVIEW_SECTIONS);
         renderColorPalette();
         syncStorageFields();
         syncVariantInventoryInputs();
