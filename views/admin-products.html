@@ -520,6 +520,8 @@
       const tableBody = document.getElementById("productsTableBody");
       let editingImages = [];
       let removedImages = [];
+      // انتخاب‌های جداگانهٔ کاربر را نگه می‌داریم؛ FileList مرورگر با هر انتخاب جدید جایگزین می‌شود.
+      let pendingProductImages = [];
       const DEFAULT_REVIEW_SECTIONS = [
         "معرفی کلی محصول",
         "طراحی و کیفیت ساخت",
@@ -565,11 +567,13 @@
           </div>`;
         }).join("");
       }
-      function renderNewReviewImageOptions(input) {
-        const root = input.closest("[data-review-section]").querySelector("[data-new-review-image-options]");
-        const defaultSize = input.closest("[data-review-section]").querySelector("[data-review-default-image-size]")?.value || "large";
+      function renderNewReviewImageOptions(section) {
+        const root = section.querySelector("[data-new-review-image-options]");
+        const defaultSize = section.querySelector("[data-review-default-image-size]")?.value || "large";
         const labels = { small: "کوچک", medium: "متوسط", large: "بزرگ", full: "تمام‌عرض" };
-        root.innerHTML = [...(input.files || [])].map((file, index) => `<div class="review-image-setting"><span class="small text-truncate" title="${escapeText(file.name)}">${escapeText(file.name)}</span><select class="form-select form-select-sm" data-new-review-image-size data-image-index="${index}">${Object.entries(labels).map(([value, label]) => `<option value="${value}" ${value === defaultSize ? "selected" : ""}>${label}</option>`).join("")}</select></div>`).join("");
+        const files = section._reviewFiles || [];
+        const sizes = section._reviewImageSizes || [];
+        root.innerHTML = files.map((file, index) => `<div class="review-image-setting"><span class="small text-truncate" title="${escapeText(file.name)}">${escapeText(file.name)}</span><select class="form-select form-select-sm" data-new-review-image-size data-image-index="${index}">${Object.entries(labels).map(([value, label]) => `<option value="${value}" ${value === (sizes[index] || defaultSize) ? "selected" : ""}>${label}</option>`).join("")}</select></div>`).join("");
       }
       function collectReviewSections(fd) {
         let imageIndex = 0;
@@ -577,7 +581,7 @@
           const existingImages = JSON.parse(element.dataset.existingImages || "[]");
           const existingImageSizes = [...element.querySelectorAll("[data-existing-review-image-size]")].map((input) => input.value);
           const newImageSizes = [...element.querySelectorAll("[data-new-review-image-size]")].map((input) => input.value);
-          const newImages = [...(element.querySelector("[data-review-images]").files || [])].map((file, index) => {
+          const newImages = (element._reviewFiles || []).map((file, index) => {
             fd.append("reviewImages", file);
             return "new:" + imageIndex++;
           });
@@ -829,6 +833,7 @@
         document.getElementById("newImagesPreview").innerHTML = "";
         editingImages = [];
         removedImages = [];
+        pendingProductImages = [];
         setMainImageOptions();
         setPickerColor("", "#334155");
         document.getElementById("fShowReview").checked = false;
@@ -908,7 +913,7 @@
         removedImages.push(image);
         editingImages = editingImages.filter((url) => url !== image);
         renderImagePreview("existingImagesPreview", editingImages, true);
-        setMainImageOptions(editingImages, document.getElementById("fImages").files.length, previousSelection === image ? "" : previousSelection);
+        setMainImageOptions(editingImages, pendingProductImages.length, previousSelection === image ? "" : previousSelection);
       });
 
       document.getElementById("fColorPicker").addEventListener("input", (event) => {
@@ -927,7 +932,13 @@
         if (button) button.closest("[data-review-section]").remove();
       });
       document.getElementById("reviewSectionsEditor").addEventListener("change", (event) => {
-        if (event.target.matches("[data-review-images]")) renderNewReviewImageOptions(event.target);
+        if (event.target.matches("[data-review-images]")) {
+          const section = event.target.closest("[data-review-section]");
+          section._reviewFiles = [...(section._reviewFiles || []), ...event.target.files];
+          section._reviewImageSizes = [...(section._reviewImageSizes || []), ...[...event.target.files].map(() => section.querySelector("[data-review-default-image-size]")?.value || "large")];
+          event.target.value = "";
+          renderNewReviewImageOptions(section);
+        }
       });
       document.getElementById("fHasStorage").addEventListener("change", () => {
         syncStorageFields();
@@ -978,10 +989,12 @@
       });
 
       document.getElementById("fImages").addEventListener("change", (event) => {
-        const urls = [...event.target.files].map((file) => URL.createObjectURL(file));
+        pendingProductImages = [...pendingProductImages, ...event.target.files];
+        const urls = pendingProductImages.map((file) => URL.createObjectURL(file));
         const previousSelection = document.getElementById("fMainImage").value;
         renderImagePreview("newImagesPreview", urls);
-        setMainImageOptions(editingImages, event.target.files.length, previousSelection);
+        setMainImageOptions(editingImages, pendingProductImages.length, previousSelection);
+        event.target.value = "";
       });
 
       document
@@ -1029,7 +1042,7 @@
           fd.append("removeImages", JSON.stringify(removedImages));
           fd.append("reviewSections", JSON.stringify(collectReviewSections(fd)));
 
-          const files = document.getElementById("fImages").files;
+          const files = pendingProductImages;
           for (let i = 0; i < files.length; i++) fd.append("images", files[i]);
 
           const btn = document.getElementById("saveProductBtn");
