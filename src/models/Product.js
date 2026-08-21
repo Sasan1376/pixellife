@@ -77,6 +77,8 @@ const productSchema = new mongoose.Schema(
       },
     ],
     storages: [{ type: String }],
+    // لوازم جانبی و کالاهای بدون ظرفیت انتخابی، نباید گزینهٔ حافظه در صفحهٔ محصول داشته باشند.
+    hasStorage: { type: Boolean, default: true },
     warranties: [{ type: String }],
     reviewImages: [{ type: String }],
     rating: { type: Number, default: 0 },
