@@ -4477,6 +4477,8 @@
               : productImages;
           })(),
           reviewImages: Array.isArray(doc.reviewImages) ? doc.reviewImages : [],
+          showReview: doc.showReview === true,
+          reviewSections: Array.isArray(doc.reviewSections) ? doc.reviewSections : [],
           isTablet: isTablet,
           specs: parseSpecsString(doc.specs),
           _fromDb: true,
@@ -5283,8 +5285,16 @@
             product.oldPrice && product.price
               ? Math.round(100 - (product.price / product.oldPrice) * 100)
               : 0;
-          const reviewArticle =
-            product.reviewArticle || genericReviewArticle(product);
+          const reviewArticle = Array.isArray(product.reviewSections)
+            ? product.reviewSections
+                .filter((section) => section && section.enabled !== false && (section.title || section.content || section.images?.length))
+                .map((section) => ({
+                  icon: "ti-article",
+                  title: String(section.title || "بررسی محصول"),
+                  body: String(section.content || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>"),
+                  images: Array.isArray(section.images) ? section.images : [],
+                }))
+            : [];
           let demoReviews = [];
           // تابع دریافت نظرات از سرور واقعی
           async function fetchReviews() {
@@ -5480,12 +5490,11 @@
             }
           </div>
 
-          <div class="section-block">
+          <div class="section-block" id="productReviewSection" style="display:${product.showReview && reviewArticle.length ? "" : "none"}">
             <div class="section-heading"><i class="ti ti-article"></i> بررسی تخصصی ${product.name}</div>
             <div class="review-article-nav">
               ${reviewArticle.map((s, i) => `<a class="review-nav-chip" href="#rev-sec-${i}">${s.title}</a>`).join("")}
-              <a class="review-nav-chip" href="#rev-sec-verdict">جمع‌بندی</a>
-            </div>
+             </div>
                         ${reviewArticle
                           .map(
                             (s, i) => `
@@ -5493,9 +5502,7 @@
                 <div class="review-section-title"><i class="ti ${s.icon}"></i> ${s.title}</div>
                 <div class="review-section-body">${s.body}</div>
                 ${
-                  s.img
-                    ? `<img src="${s.img}" alt="${s.title}" class="review-section-img" />`
-                    : ""
+                  s.images?.map((image) => `<img src="${image}" alt="${s.title}" class="review-section-img" />`).join("") || ""
                 }
                 ${
                   i === 6
@@ -5506,7 +5513,7 @@
                           )
                           .join("")}
 
-            <div class="review-section">
+            <div class="review-section" style="display:none">
               <div class="review-section-title"><i class="ti ti-thumb-up"></i> نقاط قوت و ضعف</div>
               <div class="pros-cons-grid">
                 <div class="pros-card">
@@ -5529,7 +5536,7 @@
               </div>
             </div>
 
-            <div class="review-section" id="rev-sec-verdict" style="margin-bottom:0">
+            <div class="review-section" id="rev-sec-verdict" style="display:none">
               <div class="review-section-title"><i class="ti ti-award"></i> جمع‌بندی نهایی</div>
               <div class="verdict-box">
                 <div class="verdict-score">${(parseFloat(product.rating.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d))) * 2).toFixed(1)}</div>
