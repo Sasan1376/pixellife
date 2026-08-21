@@ -194,6 +194,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       discount,
       description,
       specs,
+      showSpecs,
       featured,
       stock,
       availability,
@@ -220,6 +221,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
 
     const storageEnabled = parseEnabled(hasStorage);
     const warrantyEnabled = parseEnabled(hasWarranty);
+    const specsEnabled = parseEnabled(showSpecs);
     const uploadedReviewImages = await Promise.all(uploadedFiles(req, "reviewImages").map(saveProductImage));
     const variantInventory = storageEnabled ? parseVariants(variants) : [];
     const rootStock = parseStock(stock);
@@ -230,7 +232,8 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       price: Number(price),
       discount: Number(discount) || 0,
       description,
-      specs,
+      specs: specsEnabled ? specs : "",
+      showSpecs: specsEnabled,
       featured: featured === "true" || featured === "on" || featured === true,
       stock: rootStock,
       availability: normalizeAvailability(availability, rootStock),
@@ -262,6 +265,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       discount,
       description,
       specs,
+      showSpecs,
       featured,
       stock,
       availability,
@@ -290,7 +294,8 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
     if (price) product.price = Number(price);
     if (discount !== undefined) product.discount = Number(discount) || 0;
     if (description !== undefined) product.description = description;
-    if (specs !== undefined) product.specs = specs;
+    if (showSpecs !== undefined) product.showSpecs = parseEnabled(showSpecs);
+    if (specs !== undefined && product.showSpecs !== false) product.specs = specs;
     if (showReview !== undefined) product.showReview = parseEnabled(showReview, false);
     if (stock !== undefined) product.stock = parseStock(stock);
     if (stock !== undefined || availability !== undefined) {
@@ -322,6 +327,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       product.variants = [];
     }
     if (product.hasWarranty === false) product.warranties = [];
+    if (product.showSpecs === false) product.specs = "";
     product.featured =
       featured === "true" || featured === "on" || featured === true;
 
