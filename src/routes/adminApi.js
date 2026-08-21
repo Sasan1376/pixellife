@@ -46,6 +46,10 @@ function normalizeAvailability(value, stock) {
   // محصول بدون تنوع فقط وقتی «موجود» است که تعداد واقعی آن مثبت باشد.
   return value === "out" ? "out" : parseStock(stock) > 0 ? "in" : "out";
 }
+function parseEnabled(value, fallback = true) {
+  if (value === undefined) return fallback;
+  return value === true || value === "true" || value === "on" || value === "1";
+}
 
 function parseVariantNumber(value, label, lineNumber) {
   const normalized = toEnglishDigits(value).replace(/[\s,٬،]/g, "");
@@ -175,6 +179,7 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       availability,
       colors,
       storages,
+      hasStorage,
       warranties,
       variants,
       mainImage: mainImageSelection,
@@ -190,7 +195,8 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       (req.files || []).map(saveProductImage),
     );
 
-    const variantInventory = parseVariants(variants);
+    const storageEnabled = parseEnabled(hasStorage);
+    const variantInventory = storageEnabled ? parseVariants(variants) : [];
     const rootStock = parseStock(stock);
     const product = new Product(applyVariantInventory({
       name,
@@ -206,7 +212,8 @@ router.post("/products", upload.array("images", 5), async (req, res) => {
       images: uploadedImages,
       mainImage: resolveMainImage(mainImageSelection, [], uploadedImages),
       colors: parseColors(colors) || [],
-      storages: parseList(storages) || [],
+      storages: storageEnabled ? parseList(storages) || [] : [],
+      hasStorage: storageEnabled,
       warranties: parseList(warranties) || [],
     }, variantInventory));
 
@@ -232,6 +239,7 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
       availability,
       colors,
       storages,
+      hasStorage,
       warranties,
       variants,
       mainImage: mainImageSelection,
@@ -260,9 +268,10 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
       );
     }
     if (colors !== undefined) product.colors = parseColors(colors);
-    if (storages !== undefined) product.storages = parseList(storages);
+    if (hasStorage !== undefined) product.hasStorage = parseEnabled(hasStorage);
+    if (storages !== undefined && product.hasStorage !== false) product.storages = parseList(storages);
     if (warranties !== undefined) product.warranties = parseList(warranties);
-    if (variants !== undefined) {
+    if (variants !== undefined && product.hasStorage !== false) {
       const variantInventory = parseVariants(variants);
       if (variantInventory.length) {
         const normalized = applyVariantInventory({}, variantInventory);
@@ -274,6 +283,10 @@ router.put("/products/:id", upload.array("images", 5), async (req, res) => {
       } else {
         product.variants = [];
       }
+    }
+    if (product.hasStorage === false) {
+      product.storages = [];
+      product.variants = [];
     }
     product.featured =
       featured === "true" || featured === "on" || featured === true;
