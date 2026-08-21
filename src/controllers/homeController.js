@@ -236,6 +236,17 @@ function sendAccessoryBrandView(res, brand) {
     let html = fs.readFileSync(filePath, "utf8");
     const pageTitle = `لوازم جانبی ${brandName}`;
 
+    // کارت‌های نمونهٔ آیفون فقط برای طراحی اولیهٔ قالب هستند. در صفحهٔ لوازم
+    // جانبی نباید حتی برای یک لحظه نمایش داده شوند.
+    const gridStart = html.indexOf('<div class="iphone-grid">');
+    const gridEnd = html.indexOf('<!-- End of iphone-grid — nothing else follows -->');
+    if (gridStart !== -1 && gridEnd !== -1) {
+      html =
+        html.slice(0, gridStart) +
+        '<div class="iphone-grid" aria-live="polite"></div>\n      ' +
+        html.slice(gridEnd);
+    }
+
     // صفحهٔ فهرست آیفون، ساختار کارت و ریسپانسیو استاندارد فروشگاه را دارد؛
     // با تغییر عنوان و داده‌های کاتالوگ، برای هر برند لوازم جانبی بازاستفاده می‌شود.
     html = html
@@ -254,7 +265,7 @@ function sendAccessoryBrandView(res, brand) {
       )
       .replace(
         "/js/database-catalog.js?v=20260820-card-design-10",
-        "/js/database-catalog.js?v=20260821-accessories-2",
+        "/js/database-catalog.js?v=20260821-accessories-3",
       );
     html = injectEnamad(html);
     html = injectSharedCategoryNav(html);
