@@ -83,8 +83,14 @@
     return `<a href="${href}" class="${config.card} pl-catalog-card" data-stock="${stock}" style="color:inherit;text-decoration:none"><div class="${imageClass}">${colorDots(product, outOfStock)}${imageMarkup(product, name)}</div><div class="${bodyClass}"><div class="pl-catalog-brand">${escapeHtml(product.brand || "")}</div><div class="${config.name}">${name}</div><div class="${config.desc || "pl-catalog-desc"}">${description}</div><div class="pl-catalog-footer"><div class="pl-catalog-stock">${status}</div>${priceHtml}</div></div></a>`;
   }
 
-  const params = new URLSearchParams({ category: config.category, limit: "24" });
-  if (config.brand) params.set("brand", config.brand);
+  const requestedParams = new URLSearchParams(window.location.search);
+  const requestedCategory = path === "/mobiles" ? requestedParams.get("category") : "";
+  const requestedBrand = path === "/mobiles" ? requestedParams.get("brand") : "";
+  const params = new URLSearchParams({
+    category: requestedCategory || config.category,
+    limit: "24",
+  });
+  if (requestedBrand || config.brand) params.set("brand", requestedBrand || config.brand);
 
   // دادهٔ قدیمیِ داخل HTML فقط نقش پشتیبان دارد. قبل از اولین رنگ‌کردن
   // صفحه پنهان می‌شود تا کاربر هرگز جابه‌جایی بین کارت‌های قدیمی و دیتابیس را نبیند.
