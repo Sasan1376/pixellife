@@ -128,6 +128,10 @@ const adminApiRoutes = require("./routes/adminApi");
 const productRoutes = require("./routes/products");
 const productPageRoutes = require("./routes/productPage");
 const testEmailRoutes = require("./routes/testEmail");
+const visitTracker = require("./middleware/visitTracker");
+
+// فقط بازدید صفحات عمومی را ثبت می‌کند؛ مسیرهای ادمین، API، ربات‌ها و فایل‌ها حذف می‌شوند.
+app.use(visitTracker);
 
 // Home Page
 app.use("/", homeRoutes);
