@@ -5,9 +5,9 @@
     "/iphone": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", brand: "اپل", category: "موبایل" },
     "/samsung": { grid: ".samsung-grid", card: "samsung-card", name: "samsung-card-name", image: "samsung-card-image", body: "samsung-card-body", desc: "samsung-card-desc", brand: "سامسونگ", category: "موبایل" },
     "/xiaomi": { grid: ".xiaomi-grid", card: "xiaomi-card", name: "xiaomi-card-name", image: "xiaomi-card-image", body: "xiaomi-card-body", desc: "xiaomi-card-desc", brand: "شیائومی", category: "موبایل" },
-    "/accessories/apple": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", brand: "اپل", category: "لوازم جانبی موبایل" },
-    "/accessories/samsung": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", brand: "سامسونگ", category: "لوازم جانبی موبایل" },
-    "/accessories/xiaomi": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", brand: "شیائومی", category: "لوازم جانبی موبایل" },
+    "/accessories/apple": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", brand: "اپل", category: "لوازم جانبی موبایل", noFallback: true },
+    "/accessories/samsung": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", brand: "سامسونگ", category: "لوازم جانبی موبایل", noFallback: true },
+    "/accessories/xiaomi": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", brand: "شیائومی", category: "لوازم جانبی موبایل", noFallback: true },
     "/ipad": { grid: ".prod-grid", card: "prod-card", name: "prod-card-name", image: "prod-card-image", body: "prod-card-body", desc: "prod-card-desc", brand: "اپل", category: "تبلت" },
     "/samsungtab": { grid: ".prod-grid", card: "prod-card", name: "prod-card-name", image: "prod-card-image", body: "prod-card-body", desc: "prod-card-desc", brand: "سامسونگ", category: "تبلت" },
     "/xiaomitab": { grid: ".xiaomitab-grid", card: "xiaomitab-card", name: "xiaomitab-card-name", image: "xiaomitab-card-image", body: "xiaomitab-card-body", desc: "xiaomitab-card-desc", brand: "شیائومی", category: "تبلت" },
@@ -115,7 +115,17 @@
       return response.json();
     })
     .then((data) => {
-      if (!data.success || !Array.isArray(data.products) || !data.products.length) {
+      if (!data.success || !Array.isArray(data.products)) {
+        throw new Error("catalog is empty");
+      }
+
+      if (!data.products.length) {
+        if (config.noFallback) {
+          grid.innerHTML =
+            '<div class="pl-catalog-loading">هنوز محصولی برای این برند ثبت نشده است.</div>';
+          grid.dataset.databaseCatalog = "empty";
+          return;
+        }
         throw new Error("catalog is empty");
       }
 
@@ -125,6 +135,12 @@
       grid.dataset.databaseCatalog = "ready";
     })
     .catch(() => {
+      if (config.noFallback) {
+        grid.innerHTML =
+          '<div class="pl-catalog-loading">خطا در دریافت محصولات. دوباره تلاش کنید.</div>';
+        grid.dataset.databaseCatalog = "error";
+        return;
+      }
       // اگر API واقعاً در دسترس نبود، صفحه همچنان قابل استفاده می‌ماند.
       grid.innerHTML = fallbackHtml;
       grid.dataset.databaseCatalog = "fallback";
