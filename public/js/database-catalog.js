@@ -111,6 +111,7 @@
   grid.setAttribute("aria-busy", "true");
   grid.innerHTML =
     '<div class="pl-catalog-loading" role="status">در حال بارگذاری محصولات…</div>';
+  grid.style.visibility = "visible";
 
   const catalogRequestController = new AbortController();
   const catalogRequestTimer = window.setTimeout(
