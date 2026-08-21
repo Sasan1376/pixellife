@@ -168,8 +168,22 @@ const MOBILE_BOTTOM_NAV_SCRIPT = `
 <script src="/js/mobile-bottom-nav.js?v=8"></script>`;
 const CATALOG_NO_FLASH_HEAD = `
 <style id="database-catalog-no-flash">.grid,.iphone-grid,.samsung-grid,.xiaomi-grid,.prod-grid,.xiaomitab-grid,.console-grid{visibility:hidden}</style>`;
+const LOCAL_FONT_HEAD = `\n<link rel="stylesheet" href="/css/local-fonts.css?v=1" />`;
+
+function injectLocalFonts(html) {
+  if (!html) return html;
+  html = html.replace(
+    /<link[^>]+href=["\x27]https:\/\/fonts\.googleapis\.com\/css2[^"\x27]*["\x27][^>]*>/gi,
+    "",
+  );
+  if (html.includes("</head>") && !html.includes("/css/local-fonts.css")) {
+    html = html.replace("</head>", `${LOCAL_FONT_HEAD}\n</head>`);
+  }
+  return html;
+}
 function injectMobileBottomNav(html) {
   if (!html) return html;
+  html = injectLocalFonts(html);
 
   if (html.includes("</head>") && !html.includes("/css/mobile-bottom-nav.css")) {
     html = html.replace("</head>", `${MOBILE_BOTTOM_NAV_HEAD}\n</head>`);
