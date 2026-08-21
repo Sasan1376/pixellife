@@ -52,7 +52,9 @@ router.get("/", async (req, res) => {
         $options: "i",
       };
     }
-    if (category) filter.category = { $regex: String(category), $options: "i" };
+    // دسته باید دقیقاً برابر باشد؛ وگرنه فیلتر «موبایل» به اشتباه
+    // «لوازم جانبی موبایل» را هم برمی‌گرداند.
+    if (category) filter.category = String(category).trim();
     if (featured !== undefined) filter.featured = toBoolean(featured);
     if (exclude) filter._id = { $ne: exclude };
     const order = sort === "price-asc" ? { price: 1 } : sort === "price-desc" ? { price: -1 } : { featured: -1, createdAt: -1 };
