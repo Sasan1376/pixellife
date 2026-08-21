@@ -164,7 +164,7 @@ router.get("/analytics/overview", async (req, res) => {
     const today = analyticsDateKey(new Date());
     const from = analyticsDateKey(new Date(Date.now() - 29 * 86400000));
     const stats = async (start) => {
-      const [row] = await AnalyticsDaily.aggregate([{ $match:{date:{$gte:start,$lte:today}} },{$group:{_id:null,views:{$sum:"$views"},sets:{$push:"$visitors"}}},{$project:{_id:0,views:1,uniqueVisitors:{$size:{$reduce:{input:"$sets",initialValue:[],in:{$setUnion:["$value","$this"]}}}}}}]);
+      const [row] = await AnalyticsDaily.aggregate([{ $match:{date:{$gte:start,$lte:today}} },{$group:{_id:null,views:{$sum:"$views"},sets:{$push:"$visitors"}}},{$project:{_id:0,views:1,uniqueVisitors:{$size:{$reduce:{input:"$sets",initialValue:[],in:{$setUnion:["$$value","$$this"]}}}}}}]);
       return row || { views:0, uniqueVisitors:0 };
     };
     const [todayStats,week,month,topPages] = await Promise.all([stats(today),stats(analyticsDateKey(new Date(Date.now()-6*86400000))),stats(from),AnalyticsDaily.aggregate([{$match:{date:{$gte:from,$lte:today}}},{$group:{_id:"$page",views:{$sum:"$views"}}},{$sort:{views:-1}},{$limit:8}])]);
