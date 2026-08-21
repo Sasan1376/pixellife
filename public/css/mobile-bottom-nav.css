@@ -79,6 +79,8 @@
     box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.08);
     backdrop-filter: blur(12px);
     box-sizing: border-box;
+    isolation: isolate;
+    pointer-events: auto;
   }
 
   .mobile-bottom-nav__item {
@@ -96,6 +98,8 @@
     line-height: 1.25;
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    pointer-events: auto;
   }
 
   .mobile-bottom-nav__icon {

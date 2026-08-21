@@ -9,7 +9,7 @@
   placeholder.href = "/console";
   placeholder.setAttribute("aria-label", "مشاهده کنسول‌های بازی");
   placeholder.innerHTML = `
-    <img src="/images/ps5-pro-blue-promo-banner.svg" alt="کنسول بازی PS5 Pro" />
+    <img src="/images/ps5-pro-blue-promo-banner.webp" alt="کنسول بازی PS5 Pro" />
     <span class="ps5-pro-promo__content">
       <strong>PS5 Pro</strong>
       <span>قدرت نسل بعد، آمادهٔ بازی</span>

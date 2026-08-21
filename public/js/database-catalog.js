@@ -119,7 +119,7 @@
     7000,
   );
 
-  fetch("/api/products?" + params, { signal: catalogRequestController.signal, cache: "no-store" })
+  fetch("/api/products?" + params, { signal: catalogRequestController.signal, cache: "default" })
     .then((response) => {
       if (!response.ok) throw new Error("catalog request failed");
       return response.json();

@@ -1,13 +1,28 @@
 const express = require("express");
 const router = express.Router();
-router.use((req, res, next) => { res.set("Cache-Control", "no-store, no-cache, must-revalidate, private"); next(); });
+router.use((req, res, next) => {
+  res.set(
+    "Cache-Control",
+    req.method === "GET"
+      ? "public, max-age=30, stale-while-revalidate=300"
+      : "no-store",
+  );
+  next();
+});
 const Product = require("../models/Product");
 const { streamProductImage } = require("../utils/productImages");
+
+const PRODUCT_CARD_FIELDS = [
+  "name", "slug", "legacyId", "brand", "category", "price", "discount",
+  "featured", "availability", "images", "mainImage", "colors", "variants",
+  "storages", "hasStorage", "rating", "reviewCount", "comingSoon", "stock",
+  "createdAt", "updatedAt",
+].join(" ");
 
 function toBoolean(value) {
   return value === true || value === "true" || value === "1";
 }
-function safeLimit(value, fallback = 0) {
+function safeLimit(value, fallback = 100) {
   const parsed = Number.parseInt(value, 10);
   return !Number.isFinite(parsed) || parsed <= 0 ? fallback : Math.min(parsed, 100);
 }
@@ -58,9 +73,9 @@ router.get("/", async (req, res) => {
     if (featured !== undefined) filter.featured = toBoolean(featured);
     if (exclude) filter._id = { $ne: exclude };
     const order = sort === "price-asc" ? { price: 1 } : sort === "price-desc" ? { price: -1 } : { featured: -1, createdAt: -1 };
-    let query = Product.find(filter).sort(order).lean();
+    let query = Product.find(filter).select(PRODUCT_CARD_FIELDS).sort(order).lean();
     const requestedLimit = safeLimit(limit);
-    if (requestedLimit) query = query.limit(requestedLimit);
+    query = query.limit(requestedLimit);
     const products = await query;
     res.json({ success: true, products: products.map(serializeProduct) });
   } catch (error) {

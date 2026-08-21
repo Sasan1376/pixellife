@@ -24,6 +24,8 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+orderSchema.index({ user: 1, createdAt: -1 });
+orderSchema.index({ status: 1, createdAt: -1 });
 
 orderSchema.pre("validate", function () {
   if (!this.orderNumber) this.orderNumber = `PL-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;

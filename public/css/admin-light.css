@@ -1,0 +1,89 @@
+/* PixelLife admin: همیشه از تم روشن استفاده شود، حتی اگر AdminLTE/مرورگر
+   حالت تیره را در حافظه نگه داشته باشد. */
+html,
+html[data-bs-theme="dark"],
+html[data-theme="dark"],
+body,
+body.app-dark,
+.app-wrapper,
+.app-main,
+.app-content,
+.app-content-header {
+  color-scheme: light !important;
+  background: #f8fafc !important;
+  color: #1e293b !important;
+}
+
+.app-header,
+.app-sidebar,
+.app-dark .app-header,
+.app-dark .app-sidebar {
+  background: #ffffff !important;
+  color: #1e293b !important;
+  border-color: #e2e8f0 !important;
+}
+
+.card,
+.modal-content,
+.dropdown-menu,
+.offcanvas,
+.list-group-item,
+.input-group-text,
+.form-control,
+.form-select,
+.form-control:focus,
+.form-select:focus,
+.form-control:disabled,
+.form-select:disabled {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border-color: #cbd5e1 !important;
+}
+
+.form-control::placeholder {
+  color: #94a3b8 !important;
+}
+
+.table,
+.table > :not(caption) > * > *,
+.table > thead > tr > th,
+.table > tbody > tr > td {
+  --bs-table-bg: #ffffff !important;
+  --bs-table-color: #1e293b !important;
+  --bs-table-border-color: #e2e8f0 !important;
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+.table-hover > tbody > tr:hover > * {
+  background-color: #eff6ff !important;
+  color: #1e293b !important;
+}
+
+.app-sidebar .nav-link,
+.app-sidebar .brand-link {
+  color: #334155 !important;
+}
+
+.app-sidebar .nav-link:hover {
+  background: #eff6ff !important;
+  color: #2563eb !important;
+}
+
+.app-sidebar .nav-link.active {
+  background: #dbeafe !important;
+  color: #1d4ed8 !important;
+}
+
+.page-link,
+.btn-outline-secondary {
+  background: #ffffff !important;
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.page-link:hover,
+.btn-outline-secondary:hover {
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}

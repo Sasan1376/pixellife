@@ -39,6 +39,8 @@ const productSchema = new mongoose.Schema(
     specs: {
       type: String,
     },
+    // مشخصات فنی برای کالاهایی که جدول مشخصات ندارند، قابل غیرفعال‌کردن است.
+    showSpecs: { type: Boolean, default: true },
     featured: {
       type: Boolean,
       default: false,
@@ -90,6 +92,8 @@ const productSchema = new mongoose.Schema(
       title: { type: String, trim: true, default: "" },
       content: { type: String, default: "" },
       images: [{ type: String }],
+      // اندازهٔ نمایش هر عکس، با همان ترتیب آرایهٔ images ذخیره می‌شود.
+      imageSizes: [{ type: String, enum: ["small", "medium", "large", "full"], default: "large" }],
     }],
     rating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
@@ -111,4 +115,6 @@ productSchema.pre("validate", function () {
     });
   }
 });
+productSchema.index({ category: 1, featured: -1, createdAt: -1 });
+productSchema.index({ category: 1, price: 1 });
 module.exports = mongoose.model("Product", productSchema);

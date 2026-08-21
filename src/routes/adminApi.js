@@ -4,6 +4,7 @@ const router = express.Router();
 const Product = require("../models/Product");
 const User = require("../models/User");
 const Order = require("../models/Order");
+const AnalyticsDaily = require("../models/AnalyticsDaily");
 const upload = require("../utils/upload");
 const requireAdmin = require("../middleware/adminAuth");
 const demoProducts = require("../data/demoProducts");
@@ -114,15 +115,22 @@ function parseReviewSections(value, uploadedImages = []) {
   try {
     const sections = JSON.parse(value);
     if (!Array.isArray(sections)) return [];
-    return sections.map((section) => ({
-      enabled: section?.enabled !== false,
-      title: String(section?.title || "").trim(),
-      content: String(section?.content || "").trim(),
-      images: (Array.isArray(section?.images) ? section.images : []).map((image) => {
+    return sections.map((section) => {
+      const imageSizes = Array.isArray(section?.imageSizes) ? section.imageSizes : [];
+      const images = (Array.isArray(section?.images) ? section.images : []).map((image, index) => {
         const match = String(image || "").match(/^new:(\d+)$/);
-        return match ? uploadedImages[Number(match[1])] || "" : normalizeImagePath(image);
-      }).filter(Boolean),
-    })).filter((section) => section.title || section.content || section.images.length);
+        const src = match ? uploadedImages[Number(match[1])] || "" : normalizeImagePath(image);
+        const size = ["small", "medium", "large", "full"].includes(imageSizes[index]) ? imageSizes[index] : "large";
+        return src ? { src, size } : null;
+      }).filter(Boolean);
+      return {
+        enabled: section?.enabled !== false,
+        title: String(section?.title || "").trim(),
+        content: String(section?.content || "").trim(),
+        images: images.map((image) => image.src),
+        imageSizes: images.map((image) => image.size),
+      };
+    }).filter((section) => section.title || section.content || section.images.length);
   } catch (_) { return []; }
 }
 function serializeProduct(product) {
@@ -145,6 +153,24 @@ function resolveMainImage(selection, existingImages = [], uploadedImages = []) {
 
 router.use(requireAdmin);
 router.use((req, res, next) => { res.set("Cache-Control", "no-store, no-cache, must-revalidate, private"); next(); });
+
+function analyticsDateKey(date) {
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tehran", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(date);
+  const value = Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, part.value]));
+  return `${value.year}-${value.month}-${value.day}`;
+}
+router.get("/analytics/overview", async (req, res) => {
+  try {
+    const today = analyticsDateKey(new Date());
+    const from = analyticsDateKey(new Date(Date.now() - 29 * 86400000));
+    const stats = async (start) => {
+      const [row] = await AnalyticsDaily.aggregate([{ $match:{date:{$gte:start,$lte:today}} },{$group:{_id:null,views:{$sum:"$views"},sets:{$push:"$visitors"}}},{$project:{_id:0,views:1,uniqueVisitors:{$size:{$reduce:{input:"$sets",initialValue:[],in:{$setUnion:["$$value","$$this"]}}}}}}]);
+      return row || { views:0, uniqueVisitors:0 };
+    };
+    const [todayStats,week,month,topPages] = await Promise.all([stats(today),stats(analyticsDateKey(new Date(Date.now()-6*86400000))),stats(from),AnalyticsDaily.aggregate([{$match:{date:{$gte:from,$lte:today}}},{$group:{_id:"$page",views:{$sum:"$views"}}},{$sort:{views:-1}},{$limit:8}])]);
+    res.json({success:true,today:todayStats,week,month,topPages:topPages.map(x=>({page:x._id,views:x.views}))});
+  } catch (_) { res.status(500).json({success:false,message:"دریافت آمار بازدید ناموفق بود"}); }
+});
 
 router.post("/products/import-demo", async (req, res) => {
   try {
@@ -194,6 +220,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       discount,
       description,
       specs,
+      showSpecs,
       featured,
       stock,
       availability,
@@ -220,6 +247,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
 
     const storageEnabled = parseEnabled(hasStorage);
     const warrantyEnabled = parseEnabled(hasWarranty);
+    const specsEnabled = parseEnabled(showSpecs);
     const uploadedReviewImages = await Promise.all(uploadedFiles(req, "reviewImages").map(saveProductImage));
     const variantInventory = storageEnabled ? parseVariants(variants) : [];
     const rootStock = parseStock(stock);
@@ -230,7 +258,8 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       price: Number(price),
       discount: Number(discount) || 0,
       description,
-      specs,
+      specs: specsEnabled ? specs : "",
+      showSpecs: specsEnabled,
       featured: featured === "true" || featured === "on" || featured === true,
       stock: rootStock,
       availability: normalizeAvailability(availability, rootStock),
@@ -262,6 +291,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       discount,
       description,
       specs,
+      showSpecs,
       featured,
       stock,
       availability,
@@ -290,7 +320,8 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
     if (price) product.price = Number(price);
     if (discount !== undefined) product.discount = Number(discount) || 0;
     if (description !== undefined) product.description = description;
-    if (specs !== undefined) product.specs = specs;
+    if (showSpecs !== undefined) product.showSpecs = parseEnabled(showSpecs);
+    if (specs !== undefined && product.showSpecs !== false) product.specs = specs;
     if (showReview !== undefined) product.showReview = parseEnabled(showReview, false);
     if (stock !== undefined) product.stock = parseStock(stock);
     if (stock !== undefined || availability !== undefined) {
@@ -322,6 +353,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       product.variants = [];
     }
     if (product.hasWarranty === false) product.warranties = [];
+    if (product.showSpecs === false) product.specs = "";
     product.featured =
       featured === "true" || featured === "on" || featured === true;
 

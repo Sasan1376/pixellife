@@ -1857,6 +1857,10 @@
         border: none;
         mix-blend-mode: multiply;
       }
+      .review-section-img--small { width: min(38%, 280px); max-height: 190px; }
+      .review-section-img--medium { width: min(54%, 460px); max-height: 280px; }
+      .review-section-img--large { width: min(72%, 620px); max-height: 420px; }
+      .review-section-img--full { width: 100%; max-height: none; }
       .review-img-caption {
         font-size: 12px;
         color: var(--text-4);
@@ -1990,12 +1994,6 @@
         border-radius: var(--radius);
         padding: 20px 14px;
         text-align: center;
-        transition: all 0.25s ease;
-      }
-      .advantage-card:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow);
-        border-color: var(--blue-mid);
       }
       .advantage-ico {
         width: 52px;
@@ -2008,28 +2006,6 @@
         justify-content: center;
         font-size: 24px;
         margin: 0 auto 12px;
-        transition: all 0.25s ease;
-      }
-      .advantage-card:hover .advantage-ico {
-        background: var(--blue);
-        color: #fff;
-      }
-      .advantage-card:hover .advantage-ico i {
-        animation: advantageIconMotion 0.45s ease;
-      }
-      @keyframes advantageIconMotion {
-        0% {
-          transform: translateY(0) rotate(0deg);
-        }
-        35% {
-          transform: translateY(-4px) rotate(-8deg);
-        }
-        70% {
-          transform: translateY(2px) rotate(6deg);
-        }
-        100% {
-          transform: translateY(0) rotate(0deg);
-        }
       }
       .advantage-title {
         font-size: 12.5px;
@@ -2148,6 +2124,16 @@
       }
       .btn-write-review:hover {
         background: var(--blue-dark);
+      }
+
+      .reviews-empty {
+        padding: 28px 18px;
+        border: 1px dashed var(--border);
+        border-radius: var(--radius);
+        color: var(--text-3);
+        font-size: 13px;
+        line-height: 1.9;
+        text-align: center;
       }
 
       .review-card {
@@ -3500,58 +3486,6 @@
         { icon: "ti-box", title: "بسته‌بندی ایمن", desc: "حفاظت کامل کالا" },
       ];
 
-      function genericReviews(productName) {
-        return [
-          {
-            name: "علی رضایی",
-            verified: true,
-            rating: 5,
-            date: "۲ هفته پیش",
-            comment: `کیفیت ساخت ${productName} فوق‌العاده است، سرعت ارسال هم عالی بود. کاملاً راضی هستم.`,
-            pros: ["کیفیت ساخت بالا", "بسته‌بندی مناسب"],
-            cons: ["قیمت کمی بالا"],
-            helpful: 12,
-            reply: null,
-          },
-          {
-            name: "سارا محمدی",
-            verified: true,
-            rating: 4,
-            date: "۱ ماه پیش",
-            comment:
-              "نسبت به قیمتش انتظار بیشتری داشتم ولی در کل تجربه خوبی بود. دوربینش عالیه.",
-            pros: ["دوربین قوی", "نمایشگر با کیفیت"],
-            cons: ["باتری متوسط"],
-            helpful: 7,
-            reply: "ممنون از نظر شما؛ خوشحالیم که تجربه خوبی داشتید 🙏",
-          },
-          {
-            name: "محمد احمدی",
-            verified: false,
-            rating: 5,
-            date: "۱ ماه پیش",
-            comment:
-              "بهترین خریدی بود که امسال انجام دادم. حتماً به دوستانم هم پیشنهاد می‌کنم.",
-            pros: ["عملکرد سریع", "طراحی زیبا"],
-            cons: [],
-            helpful: 4,
-            reply: null,
-          },
-          {
-            name: "نگار حسینی",
-            verified: true,
-            rating: 3,
-            date: "۲ ماه پیش",
-            comment: "محصول خوبیه اما بسته‌بندی هنگام تحویل کمی آسیب دیده بود.",
-            pros: ["کارکرد مناسب"],
-            cons: ["بسته‌بندی آسیب‌دیده"],
-            helpful: 2,
-            reply:
-              "بابت این موضوع عذرخواهی می‌کنیم، لطفاً با پشتیبانی تماس بگیرید تا پیگیری شود.",
-          },
-        ];
-      }
-
       function genericReviewArticle(p) {
         // خواندن عکس‌های اختصاصی محصول، اگر وجود داشت
         const imgs = p.reviewImages || [];
@@ -4442,9 +4376,28 @@
               )
             : [{ name: doc.color || "یک رنگ", hex: doc.colorHex || "#334155" }];
 
+        const normalizedBrand = String(doc.brand || "")
+          .trim()
+          .toLowerCase()
+          .replace(/ي/g, "ی")
+          .replace(/ك/g, "ک");
+
+        const brandLogo =
+          normalizedBrand.includes("samsung") || normalizedBrand.includes("سامسونگ")
+            ? "SAMSUNG_LOGO_SVG"
+            : normalizedBrand.includes("redmi") || normalizedBrand.includes("ردمی")
+              ? "REDMI_LOGO_SVG"
+              : normalizedBrand.includes("xiaomi") ||
+                  normalizedBrand.includes("شیائومی") ||
+                  normalizedBrand.includes("شیایومی")
+                ? "XIAOMI_LOGO_SVG"
+                : normalizedBrand.includes("apple") || normalizedBrand.includes("اپل")
+                  ? "APPLE_LOGO_SVG"
+                  : "";
+
         return {
           brand: doc.brand || "نامشخص",
-          brandLogo: "",
+          brandLogo,
           name: doc.name,
           // به‌جای هاردکد صفر، اگر سرور rating/reviewCount می‌فرستد از همان استفاده کن
           rating: doc.rating ? String(doc.rating) : "۰",
@@ -4457,10 +4410,11 @@
           oldPrice: oldPrice,
           hasStorage: hasStorage,
           storages: storages,
+          hasWarranty: doc.hasWarranty !== false,
           warranties:
-            Array.isArray(doc.warranties) && doc.warranties.length
-              ? doc.warranties
-              : ["گارانتی ۱۸ ماهه شرکتی"],
+            doc.hasWarranty === false
+              ? []
+              : (Array.isArray(doc.warranties) ? doc.warranties : []),
           colors: colors,
           variants: variants,
           // شکل SVG بر اساس دسته‌بندی واقعی، نه همیشه گوشی
@@ -4480,7 +4434,8 @@
           showReview: doc.showReview === true,
           reviewSections: Array.isArray(doc.reviewSections) ? doc.reviewSections : [],
           isTablet: isTablet,
-          specs: parseSpecsString(doc.specs),
+          showSpecs: doc.showSpecs !== false,
+          specs: doc.showSpecs === false ? {} : parseSpecsString(doc.specs),
           _fromDb: true,
           _dbId: doc._id,
         };
@@ -5189,7 +5144,11 @@
             console.warn("fallback به داده استاتیک برای شناسه:", productId);
           }
         }
-        if (product) product.hasStorage = product.hasStorage !== false;
+        if (product) {
+          product.hasStorage = product.hasStorage !== false;
+          product.hasWarranty = product.hasWarranty !== false;
+          product.showSpecs = product.showSpecs !== false;
+        }
         const pageBody = document.getElementById("pageBody");
 
         let selectedStorage,
@@ -5292,7 +5251,7 @@
                   icon: "ti-article",
                   title: String(section.title || "بررسی محصول"),
                   body: String(section.content || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>"),
-                  images: Array.isArray(section.images) ? section.images : [],
+                  images: Array.isArray(section.images) ? section.images.map((src, index) => ({ src, size: ["small", "medium", "large", "full"].includes(section.imageSizes?.[index]) ? section.imageSizes[index] : "large" })) : [],
                 }))
             : [];
           let demoReviews = [];
@@ -5302,27 +5261,27 @@
               const response = await fetch(`/api/reviews/${productId}`);
               const data = await response.json();
 
-              // اگر نظری در دیتابیس بود، آن‌ها را نشان بده، در غیر این صورت نظرات پیش‌فرض
-              if (data.length > 0) {
-                // تبدیل داده‌های دیتابیس به فرمت مورد نیاز صفحه
-                demoReviews = data.map((r) => ({
-                  name: r.userName,
-                  verified: r.verified,
-                  rating: r.rating,
-                  date: new Date(r.date).toLocaleDateString("fa-IR"),
-                  comment: r.comment,
-                  pros: r.pros,
-                  cons: r.cons,
-                  helpful: r.helpful,
-                  reply: r.reply,
-                }));
-              } else {
-                demoReviews = genericReviews(product.name);
+              if (!response.ok || !Array.isArray(data)) {
+                throw new Error("دریافت نظرات ناموفق بود");
               }
+
+              // فقط نظرهای واقعی ثبت‌شده توسط کاربران نمایش داده می‌شوند.
+              demoReviews = data.map((r) => ({
+                name: r.userName,
+                verified: r.verified,
+                rating: r.rating,
+                date: new Date(r.date).toLocaleDateString("fa-IR"),
+                comment: r.comment,
+                pros: r.pros || [],
+                cons: r.cons || [],
+                helpful: r.helpful || 0,
+                reply: r.reply,
+              }));
               renderReviews(); // رندر کردن نظرات در صفحه
             } catch (error) {
               console.error("Error fetching reviews:", error);
-              demoReviews = genericReviews(product.name);
+              // در صورت خطای ارتباط هم هیچ نظر ساختگی نمایش نده.
+              demoReviews = [];
               renderReviews();
             }
           }
@@ -5351,7 +5310,7 @@
             </div>
             <div class="product-info-col">
               <div class="product-brand-row">
-                <div class="product-brand-badge">${product.brandLogo === "SAMSUNG_LOGO_SVG" ? SAMSUNG_LOGO_SVG : product.brandLogo === "XIAOMI_LOGO_SVG" ? XIAOMI_LOGO_SVG : product.brandLogo === "REDMI_LOGO_SVG" ? REDMI_LOGO_SVG : APPLE_LOGO_SVG}<span>${product.brand || ""}</span></div>
+                <div class="product-brand-badge">${product.brandLogo === "SAMSUNG_LOGO_SVG" ? SAMSUNG_LOGO_SVG : product.brandLogo === "XIAOMI_LOGO_SVG" ? XIAOMI_LOGO_SVG : product.brandLogo === "REDMI_LOGO_SVG" ? REDMI_LOGO_SVG : product.brandLogo === "APPLE_LOGO_SVG" ? APPLE_LOGO_SVG : ""}<span>${product.brand || ""}</span></div>
                 <div class="action-icons-row">
                   <button class="icon-action-btn${isWished ? " active" : ""}" id="wishBtn" title="علاقه‌مندی"><i class="ti ${isWished ? "ti-heart-filled" : "ti-heart"}"></i></button>
                   <button class="icon-action-btn" id="compareBtn" title="مقایسه"><i class="ti ti-arrows-exchange"></i></button>
@@ -5370,7 +5329,7 @@
               </div>
                   <div class="product-desc">${product.desc}</div>
 
-              <div class="quick-specs-card">
+              ${product.showSpecs && Object.keys(product.specs || {}).length ? `<div class="quick-specs-card">
                 <div class="quick-specs-grid">
                   ${Object.entries(product.specs || {})
                     .slice(0, 3)
@@ -5387,7 +5346,7 @@
                 <button class="btn-more-specs" id="btnMoreSpecs">
                   <i class="ti ti-list-details"></i> همه ویژگی‌ها و نکات (مشخصات بیشتر)
                 </button>
-              </div>
+              </div>` : ""}
 
               ${product.hasStorage ? `<div class="option-group">
                 <div class="option-label"><i class="ti ti-device-sd-card"></i> حافظه داخلی: <span class="selected-val" id="storageVal">${selectedStorage}</span></div>
@@ -5414,7 +5373,7 @@
               </div>
 
               ${
-                product.warranties
+                product.hasWarranty && product.warranties?.length
                   ? `<div class="option-group">
                 <div class="option-label"><i class="ti ti-shield-check"></i> گارانتی: <span class="selected-val" id="warrantyVal">${selectedWarranty}</span></div>
                 <div class="warranty-options" id="warrantyOptions">
@@ -5470,7 +5429,7 @@
             </div>
           </div>
 
-                    <div class="section-block" id="fullSpecsSection">
+                    ${product.showSpecs && Object.keys(product.specs || {}).length ? `<div class="section-block" id="fullSpecsSection">
             <div class="section-heading"><i class="ti ti-list-details"></i> مشخصات فنی</div>
             <div class="specs-table-wrap" id="specsTableWrap">
               ${Object.entries(product.specs || {})
@@ -5488,7 +5447,7 @@
                 ? `<button class="specs-toggle-btn" id="specsToggleBtn"><i class="ti ti-chevron-down"></i> نمایش کامل مشخصات</button>`
                 : ""
             }
-          </div>
+          </div>` : ""}
 
           <div class="section-block" id="productReviewSection" style="display:${product.showReview && reviewArticle.length ? "" : "none"}">
             <div class="section-heading"><i class="ti ti-article"></i> بررسی تخصصی ${product.name}</div>
@@ -5502,7 +5461,7 @@
                 <div class="review-section-title"><i class="ti ${s.icon}"></i> ${s.title}</div>
                 <div class="review-section-body">${s.body}</div>
                 ${
-                  s.images?.map((image) => `<img src="${image}" alt="${s.title}" class="review-section-img" />`).join("") || ""
+                  s.images?.map((image) => `<img src="${image.src}" alt="${s.title}" class="review-section-img review-section-img--${image.size}" />`).join("") || ""
                 }
                 ${
                   i === 6
@@ -5563,9 +5522,9 @@
             <div class="section-heading"><i class="ti ti-messages"></i> نظرات کاربران</div>
             <div class="reviews-summary-grid">
               <div class="reviews-overall">
-                <div class="reviews-overall-score">${product.rating}</div>
-                <div class="stars">${starsHtml(product.rating, "18px")}</div>
-                <div class="reviews-overall-count">از ${product.reviews} نظر ثبت‌شده</div>
+                <div class="reviews-overall-score" id="reviewsOverallScore">${product.rating}</div>
+                <div class="stars" id="reviewsOverallStars">${starsHtml(product.rating, "18px")}</div>
+                <div class="reviews-overall-count" id="reviewsOverallCount">از ${product.reviews} نظر ثبت‌شده</div>
               </div>
               <div class="reviews-breakdown">
                 ${[5, 4, 3, 2, 1]
@@ -5927,6 +5886,20 @@
 
           const reviewsListEl = document.getElementById("reviewsList");
           let reviewsShown = 2;
+          function syncReviewSummary() {
+            const total = demoReviews.length;
+            const average = total
+              ? demoReviews.reduce((sum, review) => sum + Number(review.rating || 0), 0) / total
+              : 0;
+            const rating = total ? average.toFixed(1) : "۰";
+            product.rating = rating;
+            product.reviews = total.toLocaleString("fa-IR");
+
+            document.getElementById("reviewsOverallScore").textContent = rating;
+            document.getElementById("reviewsOverallStars").innerHTML = starsHtml(rating, "18px");
+            document.getElementById("reviewsOverallCount").textContent = `از ${product.reviews} نظر ثبت‌شده`;
+            document.getElementById("scrollToReviewsBtn").textContent = `(${product.reviews} نظر)`;
+          }
           function updateRatingBreakdown() {
             const total = demoReviews.length;
             const counts = [5, 4, 3, 2, 1].map(
@@ -5951,6 +5924,7 @@
           }
 
           function renderReviews() {
+            syncReviewSummary();
             const sortMode = document.getElementById("reviewsSortSelect").value;
             let sorted = [...demoReviews];
             if (sortMode === "helpful")
@@ -5960,8 +5934,8 @@
             if (sortMode === "lowest")
               sorted.sort((a, b) => a.rating - b.rating);
             const visible = sorted.slice(0, reviewsShown);
-            reviewsListEl.innerHTML = visible
-              .map(
+            reviewsListEl.innerHTML = visible.length
+              ? visible.map(
                 (r) => `
             <div class="review-card">
               <div class="review-card-head">
@@ -5990,8 +5964,8 @@
                   : ""
               }
             </div>`,
-              )
-              .join("");
+              ).join("")
+              : '<div class="reviews-empty">هنوز نظری برای این محصول ثبت نشده است. اولین نفری باشید که نظر خود را ثبت می‌کند.</div>';
             updateRatingBreakdown();
             document.getElementById("loadMoreReviewsBtn").style.display =
               reviewsShown >= sorted.length ? "none" : "block";

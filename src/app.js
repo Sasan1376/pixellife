@@ -4,12 +4,15 @@ dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
 
 const express = require("express");
 const cors = require("cors");
+const compression = require("compression");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const session = require("express-session");
 const connectDB = require("./db");
 const env = require("./config/env");
 const errorHandler = require("./middleware/errorHandler");
+const visitTracker = require("./middleware/visitTracker");
+const analyticsRoutes = require("./routes/analytics");
 
 const { SitemapStream, streamToPromise } = require("sitemap");
 
@@ -17,13 +20,17 @@ const Product = require("./models/Product");
 
 const app = express();
 
+app.set("etag", "strong");
+app.set("trust proxy", 1);
+
 // =======================
 // Middleware
 // =======================
 
 app.use(cors());
+app.use(compression({ threshold: 1024 }));
 
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
 
 app.use(
@@ -32,12 +39,34 @@ app.use(
   }),
 );
 
-// فایل‌های استاتیک (تصاویر محصولات و لوگو)
-app.use(express.static(path.join(__dirname, "../public")));
+// فایل‌های استاتیک با کش بلندمدت برای کاهش زمان بارگذاری موبایل
+app.use(
+  express.static(path.join(__dirname, "../public"), {
+    etag: true,
+    lastModified: true,
+    maxAge: process.env.NODE_ENV === "production" ? "7d" : 0,
+    setHeaders(res, filePath) {
+      if (/\.(?:png|jpe?g|gif|webp|avif|svg|ico|woff2?)$/i.test(filePath)) {
+        res.setHeader(
+          "Cache-Control",
+          "public, max-age=2592000, stale-while-revalidate=86400",
+        );
+      } else if (/\.(?:css|js)$/i.test(filePath)) {
+        res.setHeader(
+          "Cache-Control",
+          "public, max-age=604800, stale-while-revalidate=86400",
+        );
+      }
+    },
+  }),
+);
 // فایل‌های استاتیک قالب AdminLTE (فقط برای پنل ادمین)
 app.use(
   "/vendor/adminlte",
-  express.static(path.join(__dirname, "../node_modules/admin-lte/dist")),
+  express.static(path.join(__dirname, "../node_modules/admin-lte/dist"), {
+    etag: true,
+    maxAge: process.env.NODE_ENV === "production" ? "7d" : 0,
+  }),
 );
 
 // سشن برای ورود ادمین
@@ -52,6 +81,10 @@ app.use(
     },
   }),
 );
+
+// پیش از حالت تعمیرات اجرا می‌شود تا بازدید صفحات عمومی از دست نرود.
+app.use(visitTracker);
+
 // =======================
 // Maintenance Mode (حالت بروزرسانی هوشمند)
 // =======================
@@ -150,6 +183,7 @@ app.use("/admin/api", adminApiRoutes);
 app.use("/admin", adminRoutes);
 // Products API
 app.use("/api/products", productRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 // Product SEO Pages
 app.use("/product", productPageRoutes);
