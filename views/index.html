@@ -2406,15 +2406,15 @@
             
             <!-- اسلاید اول (آیفون) -->
             <a class="hero-slide" href="/iphone" style="min-width: 100%; display: block; padding: 0;">
-              <img src="/images/iphone17_banner.png" alt="بنر آیفون ۱۷" style="width: 100%; height: auto; display: block;">
+              <img src="/images/iphone17_banner.png" alt="بنر آیفون ۱۷" fetchpriority="high" decoding="async" style="width: 100%; height: auto; display: block;">
             </a>
             
             <!-- اسلاید دوم (سامسونگ) -->
             <a class="hero-slide" href="/samsung" style="min-width: 100%; display: block; padding: 0;">
-              <img src="/images/samsung-s26-banner.png" alt="بنر سامسونگ S26" style="width: 100%; height: auto; display: block;">
+              <img src="/images/samsung-s26-banner.png" alt="بنر سامسونگ S26" loading="lazy" decoding="async" style="width: 100%; height: auto; display: block;">
             </a>
             <a class="hero-slide" href="/console" style="min-width: 100%; display: block; padding: 0;">
-              <img src="/images/ps5-pro-banner.png" alt="PS5 Pro banner" style="width: 100%; height: auto; display: block;">
+              <img src="/images/ps5-pro-banner.png" alt="PS5 Pro banner" loading="lazy" decoding="async" style="width: 100%; height: auto; display: block;">
             </a>
 
           </div>
@@ -2539,6 +2539,8 @@
           <img
             src="/images/iphone-17-pro-max-orange-banner.svg"
             alt="آیفون ۱۷ پرومکس"
+            loading="lazy"
+            decoding="async"
           />
           <span class="iphone-17-promo__content">
             <strong>iPhone 17 Pro Max</strong>
@@ -2546,7 +2548,7 @@
           </span>
         </a>
         <a class="home-promo-placeholder has-image" href="/samsung">
-          <img src="/images/samsung-a57-promo.png" alt="Samsung Galaxy A57" />
+          <img src="/images/samsung-a57-promo.png" alt="Samsung Galaxy A57" loading="lazy" decoding="async" />
         </a>
         <a
           class="home-promo-placeholder has-image ps5-pro-promo"
@@ -2556,6 +2558,8 @@
           <img
             src="/images/ps5-pro-blue-promo-banner.svg"
             alt="کنسول بازی PS5 Pro"
+            loading="lazy"
+            decoding="async"
           />
           <span class="ps5-pro-promo__content">
             <strong>PS5 Pro</strong>
@@ -2571,16 +2575,16 @@
         </div>
         <div class="home-brands-grid">
           <a class="home-brand-card" href="/xiaomi">
-            <img src="/images/xiaomi-logo.png" alt="Xiaomi" />
+            <img src="/images/xiaomi-logo.png" alt="Xiaomi" loading="lazy" decoding="async" />
           </a>
           <a class="home-brand-card" href="/iphone">
-            <img src="/images/apple-logo.png" alt="Apple" />
+            <img src="/images/apple-logo.png" alt="Apple" loading="lazy" decoding="async" />
           </a>
           <a class="home-brand-card" href="/samsung">
-            <img src="/images/samsung-logo.png" alt="Samsung" />
+            <img src="/images/samsung-logo.png" alt="Samsung" loading="lazy" decoding="async" />
           </a>
           <a class="home-brand-card" href="#">
-            <img src="/images/Nokia-Logo.png" alt="Nokia" />
+            <img src="/images/Nokia-Logo.png" alt="Nokia" loading="lazy" decoding="async" />
           </a>
         </div>
       </section>
@@ -2590,6 +2594,8 @@
           <img
             src="https://placehold.co/1200x200/eff6ff/3b82f6?text=Brands+Banner"
             alt="بنر برندها"
+            loading="lazy"
+            decoding="async"
           />
         </a>
       </section>
@@ -2675,6 +2681,8 @@
               referrerpolicy="origin"
               src="https://trustseal.enamad.ir/logo.aspx?id=7320810&amp;Code=NumFm2BnHAPz2uqVZohNfj7I6jfqOEE5"
               alt="نماد اعتماد الکترونیکی"
+              loading="lazy"
+              decoding="async"
               width="120"
               height="50"
               style="cursor: pointer; display: block; max-height: 48px; width: auto;"
@@ -3521,7 +3529,7 @@
               const slug = escapeHtml(p.slug);
               return `
                 <a href="/product/${slug}" class="product-card">
-                  <img src="${img}" data-fallback="${fallbackImg}" alt="${name}" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.onerror=null;this.src='/images/product-placeholder.svg';}">
+                  <img src="${img}" data-fallback="${fallbackImg}" alt="${name}" loading="lazy" decoding="async" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.onerror=null;this.src='/images/product-placeholder.svg';}">
                   <h3>${name}</h3>
                   <div class="product-price">${price} <span>تومان</span></div>
                 </a>`;
@@ -3564,7 +3572,7 @@
               const slug = escapeHtml(p.slug);
               return `
                 <a href="/product/${slug}" class="product-card">
-                  <img src="${img}" data-fallback="${fallbackImg}" alt="${name}" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.onerror=null;this.src='/images/product-placeholder.svg';}">
+                  <img src="${img}" data-fallback="${fallbackImg}" alt="${name}" loading="lazy" decoding="async" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.onerror=null;this.src='/images/product-placeholder.svg';}">
                   <h3>${name}</h3>
                   <div class="product-price">${price} <span>تومان</span></div>
                 </a>`;
@@ -3665,7 +3673,7 @@
             const canIncrease = it.available && getItemQty(it) < getItemStock(it);
             return `
             <div class="mini-cart-item" data-id="${id}">
-              <img class="mini-cart-img" src="${image}" alt="${name}">
+              <img class="mini-cart-img" src="${image}" alt="${name}" loading="lazy" decoding="async">
               <div class="mini-cart-info">
                 <div class="mini-cart-name">${name}</div>
                 <div class="mini-cart-price">${formatToman(it.price)}</div>
