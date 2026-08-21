@@ -4,6 +4,7 @@ const router = express.Router();
 const Product = require("../models/Product");
 const User = require("../models/User");
 const Order = require("../models/Order");
+const AnalyticsDaily = require("../models/AnalyticsDaily");
 const upload = require("../utils/upload");
 const requireAdmin = require("../middleware/adminAuth");
 const demoProducts = require("../data/demoProducts");
@@ -152,6 +153,22 @@ function resolveMainImage(selection, existingImages = [], uploadedImages = []) {
 
 router.use(requireAdmin);
 router.use((req, res, next) => { res.set("Cache-Control", "no-store, no-cache, must-revalidate, private"); next(); });
+
+function analyticsDateKey(date) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tehran", year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
+}
+router.get("/analytics/overview", async (req, res) => {
+  try {
+    const today = analyticsDateKey(new Date());
+    const from = analyticsDateKey(new Date(Date.now() - 29 * 86400000));
+    const stats = async (start) => {
+      const [row] = await AnalyticsDaily.aggregate([{ $match:{date:{$gte:start,$lte:today}} },{$group:{_id:null,views:{$sum:"$views"},sets:{$push:"$visitors"}}},{$project:{_id:0,views:1,uniqueVisitors:{$size:{$reduce:{input:"$sets",initialValue:[],in:{$setUnion:["$value","$this"]}}}}}}]);
+      return row || { views:0, uniqueVisitors:0 };
+    };
+    const [todayStats,week,month,topPages] = await Promise.all([stats(today),stats(analyticsDateKey(new Date(Date.now()-6*86400000))),stats(from),AnalyticsDaily.aggregate([{$match:{date:{$gte:from,$lte:today}}},{$group:{_id:"$page",views:{$sum:"$views"}}},{$sort:{views:-1}},{$limit:8}])]);
+    res.json({success:true,today:todayStats,week,month,topPages:topPages.map(x=>({page:x._id,views:x.views}))});
+  } catch (_) { res.status(500).json({success:false,message:"دریافت آمار بازدید ناموفق بود"}); }
+});
 
 router.post("/products/import-demo", async (req, res) => {
   try {
