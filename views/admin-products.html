@@ -548,6 +548,11 @@
             </div>
             <textarea class="form-control form-control-sm" rows="4" data-review-content placeholder="متن بررسی این بخش">${escapeText(section.content || "")}</textarea>
             <label class="form-label mt-2 mb-1 small">عکس‌های این بخش</label>
+            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+              <span class="small text-muted">اندازهٔ پیش‌فرض عکس‌های جدید:</span>
+              <select class="form-select form-select-sm w-auto" data-review-default-image-size>${imageSizeOptions("large")}</select>
+              <span class="small text-muted">بعد از انتخاب عکس، اندازهٔ هر عکس جداگانه قابل تغییر است.</span>
+            </div>
             <input type="file" class="form-control form-control-sm" data-review-images accept="image/*" multiple>
             <div class="review-new-image-options" data-new-review-image-options></div>
             ${images.length ? `<div class="review-existing-images">${images.map((image, index) => `<div class="review-image-setting"><img src="${escapeText(image)}" alt="عکس بررسی"><select class="form-select form-select-sm" data-existing-review-image-size>${imageSizeOptions(imageSizes[index])}</select></div>`).join("")}</div>` : ""}
@@ -556,8 +561,9 @@
       }
       function renderNewReviewImageOptions(input) {
         const root = input.closest("[data-review-section]").querySelector("[data-new-review-image-options]");
+        const defaultSize = input.closest("[data-review-section]").querySelector("[data-review-default-image-size]")?.value || "large";
         const labels = { small: "کوچک", medium: "متوسط", large: "بزرگ", full: "تمام‌عرض" };
-        root.innerHTML = [...(input.files || [])].map((file, index) => `<div class="review-image-setting"><span class="small text-truncate" title="${escapeText(file.name)}">${escapeText(file.name)}</span><select class="form-select form-select-sm" data-new-review-image-size data-image-index="${index}">${Object.entries(labels).map(([value, label]) => `<option value="${value}" ${value === "large" ? "selected" : ""}>${label}</option>`).join("")}</select></div>`).join("");
+        root.innerHTML = [...(input.files || [])].map((file, index) => `<div class="review-image-setting"><span class="small text-truncate" title="${escapeText(file.name)}">${escapeText(file.name)}</span><select class="form-select form-select-sm" data-new-review-image-size data-image-index="${index}">${Object.entries(labels).map(([value, label]) => `<option value="${value}" ${value === defaultSize ? "selected" : ""}>${label}</option>`).join("")}</select></div>`).join("");
       }
       function collectReviewSections(fd) {
         let imageIndex = 0;
