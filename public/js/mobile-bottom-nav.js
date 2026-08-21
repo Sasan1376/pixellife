@@ -64,10 +64,20 @@
       event.preventDefault();
       if (typeof window.openLoginModal === "function") {
         window.openLoginModal();
+      } else if (document.getElementById("authPillBtn")) {
+        document.getElementById("authPillBtn").click();
       } else {
         window.location.href = "/?openLogin=1";
       }
     }
+  });
+
+  // روی بعضی صفحه‌ها (به‌خصوص صفحه محصول) اسکریپت‌های داخلی لینک‌ها را
+  // مدیریت می‌کنند. مسیر سبد را صریح نگه می‌داریم تا لمس نوار پایین همیشه
+  // کاربر را به صفحه سبد خرید ببرد.
+  nav.querySelector('[data-nav="cart"]')?.addEventListener("click", (event) => {
+    event.preventDefault();
+    window.location.assign("/cart");
   });
 
   const categoryItem = nav.querySelector('[data-nav="categories"]');
@@ -217,7 +227,11 @@
 
   const updateCartBadge = () => {
     try {
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      const cart = JSON.parse(
+        localStorage.getItem("digishop_cart") ||
+        localStorage.getItem("cart") ||
+        "[]"
+      );
       const count = Array.isArray(cart)
         ? cart.reduce((sum, item) => sum + Number(item.qty || 1), 0)
         : 0;
