@@ -146,6 +146,8 @@ const MOBILE_BOTTOM_NAV_HEAD = `
 <link rel="stylesheet" href="/css/mobile-bottom-nav.css?v=5" />`;
 const MOBILE_BOTTOM_NAV_SCRIPT = `
 <script src="/js/mobile-bottom-nav.js?v=8"></script>`;
+const CATALOG_NO_FLASH_HEAD = `
+<style id="database-catalog-no-flash">.grid,.iphone-grid,.samsung-grid,.xiaomi-grid,.prod-grid,.xiaomitab-grid,.console-grid{visibility:hidden}</style>`;
 function injectMobileBottomNav(html) {
   if (!html) return html;
 
@@ -207,9 +209,24 @@ function injectDatabaseCatalog(html) {
     'class="xiaomi-grid"', 'class="prod-grid"', 'class="xiaomitab-grid"',
     'class="console-grid"',
   ];
-  if (!html || !catalogGrids.some((marker) => html.includes(marker)) ||
-      html.includes("/js/database-catalog.js")) return html;
-  return html.replace("</body>", '<script src="/js/database-catalog.js?v=4"></script>\n</body>');
+  if (!html || !catalogGrids.some((marker) => html.includes(marker))) return html;
+
+  if (html.includes("</head>") && !html.includes("database-catalog-no-flash")) {
+    html = html.replace("</head>", `${CATALOG_NO_FLASH_HEAD}\n</head>`);
+  }
+
+  // همهٔ صفحه‌های فهرست از نسخهٔ تازهٔ کاتالوگ استفاده کنند تا کارت‌های نمونه
+  // قبل از دریافت دادهٔ واقعی از دیتابیس دیده نشوند.
+  html = html.replace(
+    /\/js\/database-catalog\.js(?:\?v=[^"'\s>]*)?/g,
+    "/js/database-catalog.js?v=20260821-no-flash-1",
+  );
+
+  if (html.includes("/js/database-catalog.js")) return html;
+  return html.replace(
+    "</body>",
+    '<script src="/js/database-catalog.js?v=20260821-no-flash-1"></script>\n</body>',
+  );
 }
 
 function sendViewWithEnamad(res, fileName) {
