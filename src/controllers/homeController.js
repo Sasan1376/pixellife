@@ -265,7 +265,7 @@ function sendAccessoryBrandView(res, brand) {
       )
       .replace(
         "/js/database-catalog.js?v=20260820-card-design-10",
-        "/js/database-catalog.js?v=20260821-accessories-3",
+        "/js/database-catalog.js?v=20260821-accessories-4",
       );
     html = injectEnamad(html);
     html = injectSharedCategoryNav(html);
