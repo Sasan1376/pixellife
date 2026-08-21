@@ -113,6 +113,13 @@
       .variant-inventory-color { display:flex; align-items:center; gap:6px; color:#475569; }
       .variant-inventory-dot { width:12px; height:12px; border-radius:50%; border:1px solid #cbd5e1; flex:none; }
       .variant-inventory-row input { text-align:center; }
+      .review-editor { border:1px solid #dbe4f0; border-radius:10px; padding:12px; background:#f8fafc; }
+      .review-editor[hidden] { display:none!important; }
+      .review-section-editor { border:1px solid #dbe4f0; border-radius:8px; padding:12px; background:#fff; margin-top:10px; }
+      .review-section-editor__head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+      .review-section-editor__head .form-control { flex:1; }
+      .review-existing-images { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+      .review-existing-images img { width:52px; height:52px; object-fit:contain; border:1px solid #e2e8f0; border-radius:6px; }
       .product-image-preview {
         display: flex;
         gap: 8px;
@@ -390,6 +397,19 @@
                   ></textarea>
                   <div class="form-hint">هر مشخصه را در یک خط و با قالب «عنوان: مقدار» وارد کنید.</div>
                 </div>
+                <div class="col-12">
+                  <div class="review-editor" id="reviewEditor">
+                    <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+                      <div class="form-check form-switch m-0">
+                        <input class="form-check-input" type="checkbox" id="fShowReview" />
+                        <label class="form-check-label" for="fShowReview">نمایش بررسی تخصصی این محصول در سایت</label>
+                      </div>
+                      <button type="button" class="btn btn-outline-primary btn-sm" id="addReviewSectionBtn"><i class="ti ti-plus"></i> افزودن بخش بررسی</button>
+                    </div>
+                    <div class="form-hint mt-2">هر بخش عنوان، توضیح، عکس و سوییچ مستقل دارد. فقط بخش‌های روشن در سایت نمایش داده می‌شوند.</div>
+                    <div id="reviewSectionsEditor"></div>
+                  </div>
+                </div>
                 <div class="col-md-6" id="storageFieldGroup">
                   <label class="form-label">حافظه‌ها / مدل‌ها</label>
                   <textarea class="form-control" id="fStorages" rows="2" placeholder="۲۵۶ گیگابایت&#10;۵۱۲ گیگابایت"></textarea>
@@ -492,6 +512,35 @@
 
       function toPersianPrice(n) {
         return Number(n || 0).toLocaleString("fa-IR");
+      }
+
+      function renderReviewSections(sections = []) {
+        const root = document.getElementById("reviewSectionsEditor");
+        root.innerHTML = sections.map((section) => {
+          const images = Array.isArray(section.images) ? section.images : [];
+          return `<div class="review-section-editor" data-review-section data-existing-images='${escapeText(JSON.stringify(images))}'>
+            <div class="review-section-editor__head">
+              <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" data-review-enabled ${section.enabled !== false ? "checked" : ""}><label class="form-check-label">فعال</label></div>
+              <input class="form-control form-control-sm" data-review-title placeholder="عنوان بخش؛ مثلاً طراحی و کیفیت ساخت" value="${escapeText(section.title || "")}">
+              <button type="button" class="btn btn-outline-danger btn-sm" data-remove-review-section><i class="ti ti-trash"></i></button>
+            </div>
+            <textarea class="form-control form-control-sm" rows="4" data-review-content placeholder="متن بررسی این بخش">${escapeText(section.content || "")}</textarea>
+            <label class="form-label mt-2 mb-1 small">عکس‌های این بخش</label>
+            <input type="file" class="form-control form-control-sm" data-review-images accept="image/*" multiple>
+            ${images.length ? `<div class="review-existing-images">${images.map((image) => `<img src="${escapeText(image)}" alt="عکس بررسی">`).join("")}</div>` : ""}
+          </div>`;
+        }).join("");
+      }
+      function collectReviewSections(fd) {
+        let imageIndex = 0;
+        return [...document.querySelectorAll("[data-review-section]")].map((element) => {
+          const existingImages = JSON.parse(element.dataset.existingImages || "[]");
+          const newImages = [...(element.querySelector("[data-review-images]").files || [])].map((file) => {
+            fd.append("reviewImages", file);
+            return "new:" + imageIndex++;
+          });
+          return { enabled: element.querySelector("[data-review-enabled]").checked, title: element.querySelector("[data-review-title]").value.trim(), content: element.querySelector("[data-review-content]").value.trim(), images: [...existingImages, ...newImages] };
+        });
       }
 
       function formatList(items) {
@@ -726,6 +775,8 @@
         removedImages = [];
         setMainImageOptions();
         setPickerColor("", "#334155");
+        document.getElementById("fShowReview").checked = false;
+        renderReviewSections();
         renderColorPalette();
         syncStorageFields();
         syncVariantInventoryInputs();
@@ -747,6 +798,8 @@
         document.getElementById("fFeatured").checked = !!p.featured;
         document.getElementById("fHasStorage").checked = p.hasStorage !== false;
         document.getElementById("fDescription").value = p.description || "";
+        document.getElementById("fShowReview").checked = p.showReview === true;
+        renderReviewSections(Array.isArray(p.reviewSections) ? p.reviewSections : []);
         document.getElementById("fSpecs").value = p.specs || "";
         document.getElementById("fColors").value = formatColors(p.colors);
         document.getElementById("fStorages").value = formatList(p.storages);
@@ -800,6 +853,15 @@
       });
       document.getElementById("fColors").addEventListener("input", renderColorPalette);
       document.getElementById("fVariants").addEventListener("input", () => syncVariantInventoryInputs());
+      document.getElementById("addReviewSectionBtn").addEventListener("click", () => {
+        const sections = [...document.querySelectorAll("[data-review-section]")].map((element) => ({ enabled: element.querySelector("[data-review-enabled]").checked, title: element.querySelector("[data-review-title]").value, content: element.querySelector("[data-review-content]").value, images: JSON.parse(element.dataset.existingImages || "[]") }));
+        sections.push({ enabled: true, title: "", content: "", images: [] });
+        renderReviewSections(sections);
+      });
+      document.getElementById("reviewSectionsEditor").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-remove-review-section]");
+        if (button) button.closest("[data-review-section]").remove();
+      });
       document.getElementById("fHasStorage").addEventListener("change", () => {
         syncStorageFields();
         syncVariantInventoryInputs();
@@ -880,6 +942,7 @@
           );
           fd.append("featured", document.getElementById("fFeatured").checked);
           fd.append("hasStorage", hasStorage);
+          fd.append("showReview", document.getElementById("fShowReview").checked);
           fd.append(
             "description",
             document.getElementById("fDescription").value,
@@ -891,6 +954,7 @@
           fd.append("variants", hasStorage ? document.getElementById("fVariants").value : "");
           fd.append("mainImage", document.getElementById("fMainImage").value);
           fd.append("removeImages", JSON.stringify(removedImages));
+          fd.append("reviewSections", JSON.stringify(collectReviewSections(fd)));
 
           const files = document.getElementById("fImages").files;
           for (let i = 0; i < files.length; i++) fd.append("images", files[i]);
