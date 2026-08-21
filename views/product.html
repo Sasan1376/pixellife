@@ -4457,10 +4457,11 @@
           oldPrice: oldPrice,
           hasStorage: hasStorage,
           storages: storages,
+          hasWarranty: doc.hasWarranty !== false,
           warranties:
-            Array.isArray(doc.warranties) && doc.warranties.length
-              ? doc.warranties
-              : ["گارانتی ۱۸ ماهه شرکتی"],
+            doc.hasWarranty === false
+              ? []
+              : (Array.isArray(doc.warranties) ? doc.warranties : []),
           colors: colors,
           variants: variants,
           // شکل SVG بر اساس دسته‌بندی واقعی، نه همیشه گوشی
@@ -5189,7 +5190,10 @@
             console.warn("fallback به داده استاتیک برای شناسه:", productId);
           }
         }
-        if (product) product.hasStorage = product.hasStorage !== false;
+        if (product) {
+          product.hasStorage = product.hasStorage !== false;
+          product.hasWarranty = product.hasWarranty !== false;
+        }
         const pageBody = document.getElementById("pageBody");
 
         let selectedStorage,
@@ -5414,7 +5418,7 @@
               </div>
 
               ${
-                product.warranties
+                product.hasWarranty && product.warranties?.length
                   ? `<div class="option-group">
                 <div class="option-label"><i class="ti ti-shield-check"></i> گارانتی: <span class="selected-val" id="warrantyVal">${selectedWarranty}</span></div>
                 <div class="warranty-options" id="warrantyOptions">
