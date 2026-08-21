@@ -4,6 +4,13 @@ const path = require("path");
 
 const requireAdmin = require("../middleware/adminAuth");
 
+// فایل‌های پنل نباید از کش مرورگر یا CDN خوانده شوند؛ وگرنه تغییرات فرم
+// مدیریت با نسخهٔ قدیمی نمایش داده می‌شوند.
+router.use((req, res, next) => {
+  res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+  next();
+});
+
 router.get("/", (req, res) => {
   if (req.session && req.session.isAdmin) {
     return res.redirect("/admin/products");
