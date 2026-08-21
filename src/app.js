@@ -11,6 +11,7 @@ const connectDB = require("./db");
 const env = require("./config/env");
 const errorHandler = require("./middleware/errorHandler");
 const visitTracker = require("./middleware/visitTracker");
+const analyticsRoutes = require("./routes/analytics");
 
 const { SitemapStream, streamToPromise } = require("sitemap");
 
@@ -155,6 +156,7 @@ app.use("/admin/api", adminApiRoutes);
 app.use("/admin", adminRoutes);
 // Products API
 app.use("/api/products", productRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 // Product SEO Pages
 app.use("/product", productPageRoutes);
