@@ -4481,7 +4481,8 @@
           showReview: doc.showReview === true,
           reviewSections: Array.isArray(doc.reviewSections) ? doc.reviewSections : [],
           isTablet: isTablet,
-          specs: parseSpecsString(doc.specs),
+          showSpecs: doc.showSpecs !== false,
+          specs: doc.showSpecs === false ? {} : parseSpecsString(doc.specs),
           _fromDb: true,
           _dbId: doc._id,
         };
@@ -5193,6 +5194,7 @@
         if (product) {
           product.hasStorage = product.hasStorage !== false;
           product.hasWarranty = product.hasWarranty !== false;
+          product.showSpecs = product.showSpecs !== false;
         }
         const pageBody = document.getElementById("pageBody");
 
@@ -5374,7 +5376,7 @@
               </div>
                   <div class="product-desc">${product.desc}</div>
 
-              <div class="quick-specs-card">
+              ${product.showSpecs && Object.keys(product.specs || {}).length ? `<div class="quick-specs-card">`
                 <div class="quick-specs-grid">
                   ${Object.entries(product.specs || {})
                     .slice(0, 3)
@@ -5391,7 +5393,7 @@
                 <button class="btn-more-specs" id="btnMoreSpecs">
                   <i class="ti ti-list-details"></i> همه ویژگی‌ها و نکات (مشخصات بیشتر)
                 </button>
-              </div>
+              </div>` : ""}
 
               ${product.hasStorage ? `<div class="option-group">
                 <div class="option-label"><i class="ti ti-device-sd-card"></i> حافظه داخلی: <span class="selected-val" id="storageVal">${selectedStorage}</span></div>
@@ -5474,7 +5476,7 @@
             </div>
           </div>
 
-                    <div class="section-block" id="fullSpecsSection">
+                    ${product.showSpecs && Object.keys(product.specs || {}).length ? `<div class="section-block" id="fullSpecsSection">`
             <div class="section-heading"><i class="ti ti-list-details"></i> مشخصات فنی</div>
             <div class="specs-table-wrap" id="specsTableWrap">
               ${Object.entries(product.specs || {})
@@ -5492,7 +5494,7 @@
                 ? `<button class="specs-toggle-btn" id="specsToggleBtn"><i class="ti ti-chevron-down"></i> نمایش کامل مشخصات</button>`
                 : ""
             }
-          </div>
+          </div>` : ""}
 
           <div class="section-block" id="productReviewSection" style="display:${product.showReview && reviewArticle.length ? "" : "none"}">
             <div class="section-heading"><i class="ti ti-article"></i> بررسی تخصصی ${product.name}</div>
