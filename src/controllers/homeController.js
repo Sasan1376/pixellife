@@ -423,6 +423,10 @@ const homeController = {
   samsungtab: (req, res) => sendViewWithEnamad(res, "samsungtab.html"),
   ipad: (req, res) => sendViewWithEnamad(res, "ipad.html"),
   xiaomitab: (req, res) => sendViewWithEnamad(res, "xiaomitab.html"),
+  // این دو دسته با همان قالب فهرست محصولات نمایش داده می‌شوند، اما مسیر مستقل
+  // دارند تا لینک هر دسته واقعی و قابل اشتراک‌گذاری باشد.
+  headphones: (req, res) => sendViewWithEnamad(res, "mobile.html"),
+  smartwatches: (req, res) => sendViewWithEnamad(res, "mobile.html"),
   console: (req, res) => sendViewWithEnamad(res, "console.html"),
   profile: (req, res) => sendViewWithEnamad(res, "profile.html"),
 };

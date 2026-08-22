@@ -49,17 +49,19 @@
       id: "headphone",
       name: "هدفون و هندزفری",
       links: [
-        { label: "هدفون اپل", soon: true },
-        { label: "هدفون سامسونگ", soon: true }
-      ]
+        { label: "هدفون اپل", href: "/headphones?brand=%D8%A7%D9%BE%D9%84" },
+        { label: "هدفون سامسونگ", href: "/headphones?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" }
+      ],
+      allHref: "/headphones"
     },
     {
       id: "watch",
       name: "ساعت هوشمند",
       links: [
-        { label: "ساعت اپل", soon: true },
-        { label: "ساعت سامسونگ", soon: true }
-      ]
+        { label: "ساعت اپل", href: "/smartwatches?brand=%D8%A7%D9%BE%D9%84" },
+        { label: "ساعت سامسونگ", href: "/smartwatches?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" }
+      ],
+      allHref: "/smartwatches"
     },
     {
       id: "console",

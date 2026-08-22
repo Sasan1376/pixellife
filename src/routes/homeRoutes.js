@@ -22,6 +22,8 @@ router.get("/accessories/xiaomi", homeController.accessoriesXiaomi);
 router.get("/ipad", homeController.ipad);
 router.get("/samsungtab", homeController.samsungtab);
 router.get("/xiaomitab", homeController.xiaomitab);
+router.get("/headphones", homeController.headphones);
+router.get("/smartwatches", homeController.smartwatches);
 router.get("/console", homeController.console);
 
 // Keep shared header/footer links valid until their dedicated pages are added.

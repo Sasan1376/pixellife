@@ -1,6 +1,8 @@
 (() => {
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
   const configs = {
+    "/headphones": { grid: ".grid", card: "card product-card", name: "card-name", brand: "card-brand", price: "card-price", category: "هدفون و هندزفری", title: "هدفون و هندزفری", noFallback: true },
+    "/smartwatches": { grid: ".grid", card: "card product-card", name: "card-name", brand: "card-brand", price: "card-price", category: "ساعت هوشمند", title: "ساعت هوشمند", noFallback: true },
     "/mobiles": { grid: ".grid", card: "card product-card", name: "card-name", brand: "card-brand", price: "card-price", category: "موبایل", noFallback: true },
     "/iphone": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", brand: "اپل", category: "موبایل", noFallback: true },
     "/samsung": { grid: ".samsung-grid", card: "samsung-card", name: "samsung-card-name", image: "samsung-card-image", body: "samsung-card-body", desc: "samsung-card-desc", brand: "سامسونگ", category: "موبایل", noFallback: true },
@@ -17,6 +19,7 @@
   };
 
   const config = configs[path];
+  if (config.title) document.title = config.title + " | پیکسل لایف";
   if (!config) return;
   const grid = document.querySelector(config.grid);
   if (!grid) return;
@@ -98,8 +101,8 @@
   }
 
   const requestedParams = new URLSearchParams(window.location.search);
-  const requestedCategory = path === "/mobiles" ? requestedParams.get("category") : "";
-  const requestedBrand = path === "/mobiles" ? requestedParams.get("brand") : "";
+  const requestedCategory = requestedParams.get("category");
+  const requestedBrand = requestedParams.get("brand");
   const params = new URLSearchParams({
     category: requestedCategory || config.category,
     limit: "24",

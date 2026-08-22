@@ -34,7 +34,7 @@
   if (!nav) return;
 
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
-  const isCategoryPath = ["/categories", "/mobiles", "/iphone", "/samsung", "/xiaomi", "/accessories/apple", "/accessories/samsung", "/accessories/xiaomi", "/ipad", "/samsungtab", "/xiaomitab", "/console"].includes(path);
+  const isCategoryPath = ["/categories", "/mobiles", "/iphone", "/samsung", "/xiaomi", "/accessories/apple", "/accessories/samsung", "/accessories/xiaomi", "/ipad", "/samsungtab", "/xiaomitab", "/console", "/headphones", "/smartwatches"].includes(path);
 
   nav.querySelectorAll(".mobile-bottom-nav__item").forEach((item) => {
     const key = item.dataset.nav;
@@ -136,8 +136,8 @@
       { id: "mobile", name: "موبایل", links: [{ label: "خرید آیفون", href: "/iphone" }, { label: "گوشی سامسونگ", href: "/samsung" }, { label: "گوشی شیائومی", href: "/xiaomi" }, { label: "همه موبایل‌ها", href: "/mobiles" }] },
       { id: "mobile-accessories", name: "لوازم جانبی موبایل", links: [{ label: "لوازم جانبی اپل", href: "/accessories/apple" }, { label: "لوازم جانبی سامسونگ", href: "/accessories/samsung" }, { label: "لوازم جانبی شیائومی", href: "/accessories/xiaomi" }, { label: "همه لوازم جانبی موبایل", href: "/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84" }] },
       { id: "tablet", name: "تبلت", links: [{ label: "تبلت اپل", href: "/ipad" }, { label: "تبلت سامسونگ", href: "/samsungtab" }, { label: "تبلت شیائومی", href: "/xiaomitab" }] },
-      { id: "headphone", name: "هدفون و هندزفری", links: [{ label: "هدفون اپل", soon: true }, { label: "هدفون سامسونگ", soon: true }] },
-      { id: "watch", name: "ساعت هوشمند", links: [{ label: "اپل واچ", soon: true }, { label: "گلکسی واچ", soon: true }] },
+      { id: "headphone", name: "هدفون و هندزفری", links: [{ label: "هدفون اپل", href: "/headphones?brand=%D8%A7%D9%BE%D9%84" }, { label: "هدفون سامسونگ", href: "/headphones?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" }, { label: "همه هدفون‌ها", href: "/headphones" }] },
+      { id: "watch", name: "ساعت هوشمند", links: [{ label: "اپل واچ", href: "/smartwatches?brand=%D8%A7%D9%BE%D9%84" }, { label: "گلکسی واچ", href: "/smartwatches?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" }, { label: "همه ساعت‌ها", href: "/smartwatches" }] },
       { id: "console", name: "کنسول بازی", links: [{ label: "PS5 Pro", href: "/console" }, { label: "PlayStation 5", href: "/console" }, { label: "لوازم جانبی گیمینگ", href: "/console" }] }
     ];
     const rail = sheet.querySelector(".mobile-category-sheet__rail");

@@ -78,20 +78,20 @@
       name: 'هدفون و هندزفری',
       icon: 'ti-headphones',
       links: [
-        { label: 'خرید هدفون اپل', href: '#' },
-        { label: 'خرید هدفون سامسونگ', href: '#' },
+        { label: 'خرید هدفون اپل', href: '/headphones?brand=%D8%A7%D9%BE%D9%84' },
+        { label: 'خرید هدفون سامسونگ', href: '/headphones?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF' },
       ],
-      seeAllHref: '#',
+      seeAllHref: '/headphones',
     },
     {
       id: 'watch',
       name: 'ساعت هوشمند',
       icon: 'ti-device-watch',
       links: [
-        { label: 'خرید ساعت اپل', href: '#' },
-        { label: 'خرید ساعت سامسونگ', href: '#' },
+        { label: 'خرید ساعت اپل', href: '/smartwatches?brand=%D8%A7%D9%BE%D9%84' },
+        { label: 'خرید ساعت سامسونگ', href: '/smartwatches?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF' },
       ],
-      seeAllHref: '#',
+      seeAllHref: '/smartwatches',
     },
     {
       id: 'console',
