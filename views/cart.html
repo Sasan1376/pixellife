@@ -3375,83 +3375,6 @@
               <!-- توسط JS رندر می‌شود -->
             </div>
 
-            <!-- کد تخفیف -->
-            <div class="cart-coupon-section" id="couponSection">
-              <div class="cart-section-title">
-                <i class="ti ti-ticket"></i> کد تخفیف
-              </div>
-              <div class="coupon-row" id="couponRow">
-                <input
-                  type="text"
-                  class="coupon-input"
-                  id="couponInput"
-                  placeholder="کد تخفیف خود را وارد کنید..."
-                  autocomplete="off"
-                />
-                <button class="btn-coupon" id="couponBtn">
-                  <i class="ti ti-check"></i> اعمال
-                </button>
-              </div>
-              <div
-                class="coupon-msg"
-                id="couponMsg"
-                style="display: none"
-              ></div>
-              <div id="couponAppliedTag" style="display: none"></div>
-            </div>
-
-            <!-- آدرس و زمان ارسال -->
-
-            <!-- آدرس و زمان ارسال -->
-            <div class="cart-shipping-section">
-              <div class="cart-section-title">
-                <i class="ti ti-map-pin"></i> آدرس و زمان ارسال
-              </div>
-
-              <div class="address-box" id="checkoutAddressBox">
-                <div class="address-content">
-                  <strong id="checkoutAddressTitle">در حال دریافت آدرس...</strong>
-                  <p id="checkoutAddressText">برای ثبت سفارش، آدرس ذخیره‌شدهٔ حساب شما استفاده می‌شود.</p>
-                </div>
-                <a class="btn-add-address" href="/profile/addresses">
-                  <i class="ti ti-plus"></i> مدیریت آدرس‌ها
-                </a>
-              </div>
-
-              <div class="delivery-time-title">
-                <i class="ti ti-calendar-time"></i> انتخاب زمان ارسال
-              </div>
-              <div class="delivery-options">
-                <label class="delivery-radio">
-                  <input type="radio" name="delivery" checked />
-                  <span>
-                    <span class="d-title"
-                      ><i class="ti ti-truck-delivery"></i> ارسال عادی</span
-                    >
-                    <span class="d-desc">تحویل ۳ تا ۵ روز کاری (رایگان)</span>
-                  </span>
-                </label>
-              </div>
-            </div>
-
-            <!-- روش‌های پرداخت -->
-            <div class="cart-payments-section">
-              <div class="cart-section-title">
-                <i class="ti ti-credit-card"></i> روش پرداخت
-              </div>
-              <div class="payment-options">
-                <label class="payment-radio">
-                  <input type="radio" name="payment" checked />
-                  <div class="payment-card">
-                    <i class="ti ti-credit-card-pay"></i>
-                    <span>
-                      پرداخت آنلاین (درگاه بانکی)
-                      <div class="p-desc">پرداخت با تمام کارت‌های شتاب</div>
-                    </span>
-                  </div>
-                </label>
-              </div>
-            </div>
           </div>
 
           <!-- ستون خلاصه سفارش -->
@@ -3635,25 +3558,25 @@
       async function loadCheckoutAddress() {
         const title = document.getElementById("checkoutAddressTitle");
         const text = document.getElementById("checkoutAddressText");
+        const showAddressStatus = (heading, description) => {
+          if (title) title.textContent = heading;
+          if (text) text.textContent = description;
+        };
         try {
           const response = await fetch("/api/addresses", { cache: "no-store" });
           const result = await response.json();
           if (!response.ok || !result.success) {
-            title.textContent = "برای ثبت سفارش وارد حساب کاربری شوید";
-            text.textContent = "پس از ورود، آدرس پیش‌فرض شما در این بخش نمایش داده می‌شود.";
+            showAddressStatus("برای ثبت سفارش وارد حساب کاربری شوید", "پس از ورود، آدرس پیش‌فرض شما در این بخش نمایش داده می‌شود.");
             return;
           }
           checkoutAddress = (result.data || []).find((item) => item.isDefault) || result.data?.[0] || null;
           if (!checkoutAddress) {
-            title.textContent = "هنوز آدرسی ثبت نشده است";
-            text.textContent = "برای ثبت سفارش ابتدا یک آدرس در پروفایل خود اضافه کنید.";
+            showAddressStatus("هنوز آدرسی ثبت نشده است", "برای ثبت سفارش ابتدا یک آدرس در پروفایل خود اضافه کنید.");
             return;
           }
-          title.textContent = checkoutAddress.title || "آدرس ارسال";
-          text.textContent = `${checkoutAddress.province}، ${checkoutAddress.city}، ${checkoutAddress.fullAddress}`;
+          showAddressStatus(checkoutAddress.title || "آدرس ارسال", `${checkoutAddress.province}، ${checkoutAddress.city}، ${checkoutAddress.fullAddress}`);
         } catch (_) {
-          title.textContent = "آدرس قابل دریافت نیست";
-          text.textContent = "اتصال اینترنت را بررسی کنید و دوباره تلاش کنید.";
+          showAddressStatus("آدرس قابل دریافت نیست", "اتصال اینترنت را بررسی کنید و دوباره تلاش کنید.");
         }
       }
 
@@ -4041,100 +3964,6 @@
         if (e.target === e.currentTarget)
           e.currentTarget.classList.remove("open");
       });
-
-      /* ═══ کد تخفیف ═══ */
-      document
-        .getElementById("couponBtn")
-        .addEventListener("click", applyCoupon);
-      document
-        .getElementById("couponInput")
-        .addEventListener("keydown", (e) => {
-          if (e.key === "Enter") applyCoupon();
-        });
-
-      function applyCoupon() {
-        const input = document.getElementById("couponInput");
-        const msg = document.getElementById("couponMsg");
-        const code = input.value.trim().toUpperCase();
-
-        input.classList.remove("input-error", "input-success");
-        msg.style.display = "none";
-
-        if (!code) {
-          input.classList.add("input-error");
-          msg.className = "coupon-msg error";
-          msg.style.display = "flex";
-          msg.innerHTML =
-            '<i class="ti ti-alert-circle"></i> لطفاً کد تخفیف را وارد کنید';
-          return;
-        }
-
-        if (appliedCoupon) {
-          input.classList.add("input-error");
-          msg.className = "coupon-msg error";
-          msg.style.display = "flex";
-          msg.innerHTML =
-            '<i class="ti ti-alert-circle"></i> قبلاً یک کد تخفیف اعمال شده است';
-          return;
-        }
-
-        const coupon = validCoupons[code];
-        if (!coupon) {
-          input.classList.add("input-error");
-          msg.className = "coupon-msg error";
-          msg.style.display = "flex";
-          msg.innerHTML =
-            '<i class="ti ti-alert-circle"></i> کد تخفیف نامعتبر است';
-          input.classList.add("shake");
-          setTimeout(() => input.classList.remove("shake"), 300);
-          return;
-        }
-
-        /* محاسبه مبلغ تخفیف */
-        const availableSubtotal = cartData
-          .filter((i) => i.available)
-          .reduce((s, i) => s + i.price * i.quantity, 0);
-        if (coupon.type === "percent") {
-          couponDiscount = Math.min(
-            Math.round((availableSubtotal * coupon.value) / 100),
-            coupon.max,
-          );
-        } else {
-          couponDiscount = coupon.value;
-        }
-
-        appliedCoupon = code;
-        input.classList.add("input-success");
-        msg.className = "coupon-msg success";
-        msg.style.display = "flex";
-        msg.innerHTML =
-          '<i class="ti ti-circle-check"></i> کد تخفیف با موفقیت اعمال شد';
-
-        document.getElementById("couponAppliedTag").style.display = "block";
-        document.getElementById("couponAppliedTag").innerHTML = `
-          <div class="coupon-applied-tag">
-            <i class="ti ti-ticket"></i> ${coupon.label}
-            <button onclick="removeCoupon()" aria-label="حذف کد تخفیف"><i class="ti ti-x"></i></button>
-          </div>
-        `;
-
-        document.getElementById("couponRow").style.display = "none";
-        updateSummary();
-      }
-
-      function removeCoupon() {
-        couponDiscount = 0;
-        appliedCoupon = null;
-        document.getElementById("couponInput").value = "";
-        document
-          .getElementById("couponInput")
-          .classList.remove("input-error", "input-success");
-        document.getElementById("couponMsg").style.display = "none";
-        document.getElementById("couponAppliedTag").style.display = "none";
-        document.getElementById("couponRow").style.display = "flex";
-        updateSummary();
-        showToast("کد تخفیف حذف شد");
-      }
 
       /* ═══ حالت سبد خالی ═══ */
       function showEmptyState() {
