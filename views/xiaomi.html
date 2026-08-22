@@ -1,9 +1,12 @@
+Warning: truncated output (original token count: 23768)
+Total output lines: 3134
+
 <!doctype html>
 <html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>خرید شیائومی | دیجی‌شاپ</title>
+    <title>خرید شیائومی | پیکسل لایف</title>
     <script>
       (function () {
         try {
@@ -1532,7 +1535,7 @@
               <a href="/terms" style="color: var(--blue); font-weight: 600"
                 >قوانین و مقررات</a
               >
-              دیجی‌شاپ را می‌پذیرید.
+              پیکسل لایف را می‌پذیرید.
             </p>
           </div>
           <div class="auth-step" id="stepMethod">
@@ -1549,435 +1552,7 @@
               <i class="ti ti-lock"></i> ورود با رمز عبور
             </button>
             <button class="back-link" id="backFromMethod">
-              <i class="ti ti-arrow-right"></i> تغییر شماره/ایمیل
-            </button>
-          </div>
-          <div class="auth-step" id="stepOtp">
-            <div class="otp-sent-info">
-              <i class="ti ti-circle-check"></i>
-              <p>
-                کد ۵ رقمی به
-                <strong
-                  id="otpTarget"
-                  dir="ltr"
-                  style="color: var(--blue)"
-                ></strong>
-                ارسال شد.
-              </p>
-            </div>
-            <div class="form-group" style="margin-top: 20px">
-              <label class="form-label">کد تأیید</label>
-              <input
-                type="text"
-                class="form-input input-otp"
-                id="otpInput"
-                placeholder="• • • • •"
-                maxlength="5"
-                autocomplete="one-time-code"
-                inputmode="numeric"
-                dir="ltr"
-              />
-              <div class="form-error" id="otpError">کد وارد شده صحیح نیست</div>
-            </div>
-            <button class="btn-auth" id="verifyOtpBtn">
-              <i class="ti ti-login"></i> تأیید و ورود
-            </button>
-            <div class="otp-timer-row">
-              <span id="otpTimerTxt"
-                >ارسال مجدد تا
-                <b class="timer-val" id="timerCount">02:00</b></span
-              >
-              <button class="resend-link" id="resendBtn" style="display: none">
-                <i class="ti ti-refresh"></i> ارسال مجدد کد
-              </button>
-            </div>
-            <button class="back-link" id="backFromOtp">
-              <i class="ti ti-arrow-right"></i> بازگشت
-            </button>
-          </div>
-          <div class="auth-step" id="stepPassword">
-            <p class="modal-desc" style="text-align: center">
-              رمز عبور خود را وارد کنید.
-            </p>
-            <div class="form-group">
-              <label class="form-label">رمز عبور</label>
-              <div class="password-wrap">
-                <input
-                  type="password"
-                  class="form-input"
-                  id="passwordInput"
-                  placeholder="••••••"
-                  autocomplete="current-password"
-                  dir="ltr"
-                  style="text-align: left"
-                />
-                <button
-                  type="button"
-                  class="password-toggle"
-                  id="togglePassword"
-                >
-                  <i class="ti ti-eye"></i>
-                </button>
-              </div>
-              <div class="form-error" id="passwordError">
-                رمز عبور اشتباه است
-              </div>
-            </div>
-            <button class="btn-auth" id="passwordLoginBtn">
-              <i class="ti ti-login"></i> ورود
-            </button>
-            <span class="forgot-link" id="forgotPasswordLink"
-              >فراموشی رمز عبور؟</span
-            >
-            <button class="back-link" id="backFromPassword">
-              <i class="ti ti-arrow-right"></i> بازگشت
-            </button>
-          </div>
-          <div class="auth-step" id="stepSuccess">
-            <div class="success-icon">
-              <i class="ti ti-check"></i>
-            </div>
-            <div class="success-title">خوش آمدید!</div>
-            <div class="success-desc" id="successDesc">
-              ورود شما با موفقیت انجام شد.
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TOAST -->
-    <div class="toast" id="toast">
-      <i class="ti ti-check"></i><span id="toastText"></span>
-    </div>
-
-    <!-- MEGA MENU BACKDROP -->
-    <div class="megamenu-backdrop" id="megamenuBackdrop"></div>
-
-    <!-- HEADER -->
-    <header class="header">
-      <div class="header-inner">
-        <a href="/" class="logo">
-          <div class="logo-mark"><i class="ti ti-shopping-bag"></i></div>
-          <div class="logo-text">دیجی<span>شاپ</span></div>
-        </a>
-        <div class="search-bar">
-          <input
-            type="text"
-            placeholder="جستجو در بیش از ۱ میلیون کالا..."
-            id="searchInput"
-          />
-          <button class="search-btn"><i class="ti ti-search"></i> جستجو</button>
-        </div>
-        <div class="header-actions">
-          <button
-            class="h-btn theme-toggle"
-            id="themeToggle"
-            aria-label="تغییر پوسته تیره/روشن"
-          >
-            <i class="ti ti-moon" id="themeIcon"></i>
-          </button>
-          <button class="h-btn" aria-label="اعلان‌ها">
-            <i class="ti ti-bell"></i>
-          </button>
-          <button
-            class="btn-auth-pill"
-            id="authPillBtn"
-            onclick="openLoginModal()"
-          >
-            <i class="ti ti-login"></i>
-            <span class="pill-text">ورود | ثبت‌نام</span>
-          </button>
-          <div class="profile-wrapper">
-            <div
-              class="profile-trigger"
-              id="profileTrigger"
-              role="button"
-              tabindex="0"
-            >
-              <div class="profile-avatar" id="profileAvatar">ک</div>
-              <span class="profile-trigger-name" id="profileName">کاربر</span>
-              <i class="ti ti-chevron-down profile-chevron"></i>
-            </div>
-            <div class="profile-dropdown" id="profileDropdown">
-              <div class="pdrop-header">
-                <div class="pdrop-avatar" id="pdropAvatar">ک</div>
-                <div>
-                  <div class="pdrop-info-name" id="pdropName">کاربر</div>
-                  <div class="pdrop-info-mobile" id="pdropMobile"></div>
-                </div>
-              </div>
-              <div class="pdrop-menu">
-                <a href="/profile/orders" class="pdrop-item"
-                  ><div class="pdrop-item-ico">
-                    <i class="ti ti-shopping-bag"></i>
-                  </div>
-                  <span>سفارش‌های من</span></a
-                >
-                <a href="/profile/wishlist" class="pdrop-item"
-                  ><div class="pdrop-item-ico"><i class="ti ti-heart"></i></div>
-                  <span>علاقه‌مندی‌ها</span></a
-                >
-                <a href="/profile/addresses" class="pdrop-item"
-                  ><div class="pdrop-item-ico">
-                    <i class="ti ti-map-pin"></i>
-                  </div>
-                  <span>آدرس‌های من</span></a
-                >
-                <a href="/profile/wallet" class="pdrop-item"
-                  ><div class="pdrop-item-ico">
-                    <i class="ti ti-wallet"></i>
-                  </div>
-                  <span>کیف پول</span></a
-                >
-                <a href="/contact" class="pdrop-item"
-                  ><div class="pdrop-item-ico">
-                    <i class="ti ti-headset"></i>
-                  </div>
-                  <span>پشتیبانی</span></a
-                >
-                <div class="pdrop-divider"></div>
-                <button class="pdrop-item logout" id="logoutBtn">
-                  <div class="pdrop-item-ico"><i class="ti ti-logout"></i></div>
-                  <span>خروج از حساب</span>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="cart-wrap">
-            <a href="/cart" class="h-btn" aria-label="سبد خرید">
-              <i class="ti ti-shopping-cart"></i>
-            </a>
-            <span class="cart-badge" id="cartCount" style="display: none"
-              >0</span
-            >
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- NAVBAR -->
-    <nav class="navbar">
-      <div class="navbar-inner">
-        <div class="nav-cats-wrap">
-          <button class="nav-cats" id="catsToggle">
-            <i class="ti ti-menu-2"></i> همه دسته‌بندی‌ها
-            <i class="ti ti-chevron-down"></i>
-          </button>
-          <div class="megamenu-panel" id="megamenuPanel">
-            <div class="megamenu-cats" id="megamenuCats"></div>
-            <div class="megamenu-content" id="megamenuContent"></div>
-          </div>
-        </div>
-        <a href="/" class="nav-link"><i class="ti ti-home"></i> خانه</a>
-        <a href="/offers" class="nav-link"
-          ><i class="ti ti-flame"></i> پیشنهاد ویژه</a
-        >
-        <a href="/new" class="nav-link"
-          ><i class="ti ti-sparkles"></i> تازه‌ها</a
-        >
-        <a href="/bestsellers" class="nav-link"
-          ><i class="ti ti-trending-up"></i> پرفروش‌ترین</a
-        >
-        <a href="/brands" class="nav-link"
-          ><i class="ti ti-building-store"></i> برندها</a
-        >
-        <a href="/blog" class="nav-link"><i class="ti ti-article"></i> مجله</a>
-      </div>
-    </nav>
-
-    <!-- BREADCRUMB -->
-    <div class="breadcrumb">
-      <a href="/">خانه</a>
-      <i class="ti ti-chevron-left"></i>
-      <span class="current">خرید شیائومی</span>
-    </div>
-
-    <!-- ═══════════════════════════════════════════════
-         PAGE BODY — Xiaomi Products Only
-         ═══════════════════════════════════════════════ -->
-    <main class="page-body">
-      <div class="xiaomi-page-header">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-          <rect
-            x="2"
-            y="2"
-            width="20"
-            height="20"
-            rx="6"
-            fill="none"
-            stroke="var(--text-2)"
-            stroke-width="1.6"
-          />
-          <text
-            x="12"
-            y="16.5"
-            text-anchor="middle"
-            font-family="Vazirmatn, Arial, sans-serif"
-            font-size="10.5"
-            font-weight="800"
-            fill="var(--text-2)"
-          >
-            MI
-          </text>
-        </svg>
-        <div>
-          <div class="xiaomi-page-title">خرید شیائومی</div>
-          <div class="xiaomi-page-subtitle">
-            محصولات شیائومی  در دیجی‌شاپ
-          </div>
-        </div>
-      </div>
-
-      <!-- Product Grid -->
-      <div class="xiaomi-grid">
-        <!-- ═══ Xiaomi 15 Ultra ═══ -->
-        <a
-          href="/product?id=xiaomi-15-ultra"
-          class="xiaomi-card"
-          style="color: inherit"
-        >
-          <div class="xiaomi-badges">
-            
-            <span class="badge-out-of-stock">
-              <i class="ti ti-x-circle"></i> ناموجود
-            </span>
-          </div>
-          <div class="xiaomi-card-image">
-            <svg
-              width="190"
-              height="360"
-              viewBox="0 0 190 360"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect
-                x="10"
-                y="4"
-                width="170"
-                height="352"
-                rx="30"
-                fill="#1c1c1e"
-                stroke="#333336"
-                stroke-width="2"
-              />
-              <rect
-                x="14"
-                y="8"
-                width="162"
-                height="344"
-                rx="27"
-                fill="#0c0c0e"
-              />
-              <rect x="72" y="18" width="46" height="22" rx="11" fill="#000" />
-              <defs>
-                <linearGradient
-                  id="screenXm15u"
-                  x1="95"
-                  y1="50"
-                  x2="95"
-                  y2="326"
-                  gradientUnits="userSpaceOnUse"
-                >
-                  <stop offset="0%" stop-color="#4a2b12" stop-opacity="0.55" />
-                  <stop offset="45%" stop-color="#0c0c0e" stop-opacity="0.15" />
-                  <stop
-                    offset="100%"
-                    stop-color="#1a2e1a"
-                    stop-opacity="0.35"
-                  />
-                </linearGradient>
-              </defs>
-              <rect
-                x="18"
-                y="50"
-                width="154"
-                height="272"
-                rx="4"
-                fill="url(#screenXm15u)"
-              />
-              <rect
-                x="22"
-                y="56"
-                width="70"
-                height="70"
-                rx="18"
-                fill="#151517"
-                stroke="#333336"
-                stroke-width="1"
-              />
-              <circle
-                cx="40"
-                cy="74"
-                r="10"
-                fill="#08080a"
-                stroke="#403f3f"
-                stroke-width="1.5"
-              />
-              <circle cx="40" cy="74" r="5" fill="#1e1e20" />
-              <circle
-                cx="66"
-                cy="74"
-                r="10"
-                fill="#08080a"
-                stroke="#403f3f"
-                stroke-width="1.5"
-              />
-              <circle cx="66" cy="74" r="5" fill="#1e1e20" />
-              <circle
-                cx="53"
-                cy="100"
-                r="10"
-                fill="#08080a"
-                stroke="#403f3f"
-                stroke-width="1.5"
-              />
-              <circle cx="53" cy="100" r="5" fill="#1e1e20" />
-              <circle cx="38" cy="72" r="1.8" fill="rgba(255,180,100,0.3)" />
-              <circle cx="64" cy="72" r="1.8" fill="rgba(255,180,100,0.3)" />
-              <circle cx="51" cy="98" r="1.8" fill="rgba(255,180,100,0.3)" />
-              <text
-                x="95"
-                y="170"
-                text-anchor="middle"
-                fill="rgba(255,255,255,0.85)"
-                font-family="Vazirmatn, sans-serif"
-                font-size="44"
-                font-weight="300"
-              >
-                9:41
-              </text>
-              <text
-                x="95"
-                y="192"
-                text-anchor="middle"
-                fill="rgba(255,255,255,0.4)"
-                font-family="Vazirmatn, sans-serif"
-                font-size="13"
-              >
-                دوشنبه ۱۵ تیر
-              </text>
-              <rect
-                x="65"
-                y="330"
-                width="60"
-                height="4"
-                rx="2"
-                fill="rgba(255,255,255,0.2)"
-              />
-              <rect
-                x="180"
-                y="105"
-                width="3"
-                height="30"
-                rx="1.5"
-                fill="#333336"
-              />
-              <rect
-                x="180"
-                y="148"
-                width="3"
-                height="50"
+      …3768 tokens truncated…          height="50"
                 rx="1.5"
                 fill="#333336"
               />
@@ -2463,10 +2038,10 @@
         <div class="footer-brand">
           <a href="/" class="logo"
             ><div class="logo-mark"><i class="ti ti-shopping-bag"></i></div>
-            <div class="logo-text">دیجی<span>شاپ</span></div></a
+            <div class="logo-text">پیکسل <span>لایف</span></div></a
           >
           <p>
-            دیجی‌شاپ، فروشگاه اینترنتی محصولات دیجیتال با بیش از ۱۰ سال تجربه.
+            پیکسل لایف، فروشگاه اینترنتی محصولات دیجیتال با بیش از ۱۰ سال تجربه.
           </p>
           <div class="footer-social">
             <div class="social-btn"><i class="ti ti-brand-instagram"></i></div>
@@ -2508,7 +2083,7 @@
         <div class="footer-col">
           <h4>درباره ما</h4>
           <ul>
-            <li>معرفی دیجی‌شاپ</li>
+            <li>معرفی پیکسل لایف</li>
             <li>فرصت‌های شغلی</li>
             <li>قوانین و مقررات</li>
             <li>حریم خصوصی</li>
@@ -2516,7 +2091,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>© ۱۴۰۴ دیجی‌شاپ — تمامی حقوق محفوظ است.</p>
+        <p>© ۱۴۰۴ پیکسل لایف — تمامی حقوق محفوظ است.</p>
         <div class="footer-trust">
           <div class="ftrust"><i class="ti ti-certificate"></i></div>
           <div class="ftrust"><i class="ti ti-shield-check"></i></div>
