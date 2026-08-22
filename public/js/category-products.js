@@ -115,7 +115,7 @@
       return `
         <a href="${href}" class="iphone-card" style="color: inherit">
           <div class="iphone-badges">
-            <span class="badge-coming-soon"><i class="ti ti-package"></i> محصول جدید</span>
+            ${product.comingSoon ? '<span class="badge-coming-soon"><i class="ti ti-clock"></i> به‌زودی</span>' : ""}
             <span class="${inStock ? "badge-in-stock" : "badge-out-of-stock"}"><i class="ti ti-${inStock ? "check" : "x"}-circle"></i> ${inStock ? "موجود" : "ناموجود"}</span>
           </div>
           <div class="iphone-card-image">
@@ -134,6 +134,7 @@
     if (grid.classList.contains("samsung-grid")) {
       return `
         <a href="${href}" class="samsung-card" style="color: inherit">
+          <div class="prod-badges">${product.comingSoon ? '<span class="badge-coming-soon"><i class="ti ti-clock"></i> به‌زودی</span>' : ""}</div>
           <div class="samsung-card-image"><img src="${image}" alt="${name}" /></div>
           <div class="samsung-card-body">
             <span class="samsung-brand-logo">${brand}</span>
@@ -150,7 +151,7 @@
     return `
       <a href="${href}" class="prod-card" style="color: inherit">
         <div class="prod-badges">
-          <span class="badge-coming-soon"><i class="ti ti-package"></i> محصول جدید</span>
+          ${product.comingSoon ? '<span class="badge-coming-soon"><i class="ti ti-clock"></i> به‌زودی</span>' : ""}
           <span class="${inStock ? "badge-in-stock" : "badge-out-of-stock"}"><i class="ti ti-${inStock ? "check" : "x"}-circle"></i> ${inStock ? "موجود" : "ناموجود"}</span>
         </div>
         <div class="prod-card-image"><img src="${image}" alt="${name}" /></div>

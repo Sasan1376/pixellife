@@ -222,6 +222,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       specs,
       showSpecs,
       featured,
+      comingSoon,
       stock,
       availability,
       colors,
@@ -261,6 +262,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       specs: specsEnabled ? specs : "",
       showSpecs: specsEnabled,
       featured: featured === "true" || featured === "on" || featured === true,
+      comingSoon: parseEnabled(comingSoon, false),
       stock: rootStock,
       availability: normalizeAvailability(availability, rootStock),
       images: uploadedImages,
@@ -293,6 +295,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       specs,
       showSpecs,
       featured,
+      comingSoon,
       stock,
       availability,
       colors,
@@ -356,6 +359,9 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
     if (product.showSpecs === false) product.specs = "";
     product.featured =
       featured === "true" || featured === "on" || featured === true;
+    if (comingSoon !== undefined) {
+      product.comingSoon = parseEnabled(comingSoon, false);
+    }
 
     const existingImages = (Array.isArray(product.images) ? product.images : []).map(normalizeImagePath).filter(Boolean);
     const removed = new Set(parseRemovedImages(removeImages));

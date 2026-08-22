@@ -385,6 +385,18 @@
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
                   <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="fComingSoon"
+                    />
+                    <label class="form-check-label" for="fComingSoon"
+                      >به‌زودی (نمایش روی کارت محصول)</label
+                    >
+                  </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                  <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="fHasStorage" checked />
                     <label class="form-check-label" for="fHasStorage">نمایش انتخاب حافظه در صفحه محصول</label>
                   </div>
@@ -768,7 +780,7 @@
               return `
                 <tr data-id="${p._id}">
                   <td>${imageCell}</td>
-                  <td>${p.name}</td>
+                  <td>${p.name}${p.comingSoon ? '<span class="badge bg-info text-dark ms-2">به‌زودی</span>' : ""}</td>
                   <td>${p.brand}</td>
                   <td>${toPersianPrice(p.price)}</td>
                   <td>${toPersianPrice(p.stock)}</td>
@@ -837,6 +849,7 @@
         setMainImageOptions();
         setPickerColor("", "#334155");
         document.getElementById("fShowReview").checked = false;
+        document.getElementById("fComingSoon").checked = false;
         document.getElementById("fShowSpecs").checked = true;
         document.getElementById("fHasWarranty").checked = true;
         renderReviewSections(DEFAULT_REVIEW_SECTIONS);
@@ -861,6 +874,7 @@
         document.getElementById("fStock").value = p.stock || 0;
         document.getElementById("fAvailability").value = p.availability || "in";
         document.getElementById("fFeatured").checked = !!p.featured;
+        document.getElementById("fComingSoon").checked = p.comingSoon === true;
         document.getElementById("fHasStorage").checked = p.hasStorage !== false;
         document.getElementById("fHasWarranty").checked = p.hasWarranty !== false;
         document.getElementById("fShowSpecs").checked = p.showSpecs !== false;
@@ -1025,6 +1039,7 @@
             document.getElementById("fAvailability").value,
           );
           fd.append("featured", document.getElementById("fFeatured").checked);
+          fd.append("comingSoon", document.getElementById("fComingSoon").checked);
           fd.append("hasStorage", hasStorage);
           fd.append("hasWarranty", hasWarranty);
           fd.append("showSpecs", showSpecs);

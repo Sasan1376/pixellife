@@ -1571,6 +1571,7 @@
         gap: 16px;
       }
       .product-card {
+        position: relative;
         background: var(--white);
         border: 1px solid var(--border);
         border-radius: var(--radius);
@@ -1581,6 +1582,21 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+      }
+      .product-card-coming-soon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
       }
       .product-card:hover {
         box-shadow: var(--shadow);
@@ -3515,6 +3531,7 @@
               const slug = escapeHtml(p.slug);
               return `
                 <a href="/product/${slug}" class="product-card">
+                  ${p.comingSoon ? '<span class="product-card-coming-soon"><i class="ti ti-clock"></i> به‌زودی</span>' : ""}
                   <img src="${img}" data-fallback="${fallbackImg}" alt="${name}" loading="lazy" decoding="async" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.onerror=null;this.src='/images/product-placeholder.svg';}">
                   <h3>${name}</h3>
                   <div class="product-price">${price} <span>تومان</span></div>
@@ -3558,6 +3575,7 @@
               const slug = escapeHtml(p.slug);
               return `
                 <a href="/product/${slug}" class="product-card">
+                  ${p.comingSoon ? '<span class="product-card-coming-soon"><i class="ti ti-clock"></i> به‌زودی</span>' : ""}
                   <img src="${img}" data-fallback="${fallbackImg}" alt="${name}" loading="lazy" decoding="async" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.onerror=null;this.src='/images/product-placeholder.svg';}">
                   <h3>${name}</h3>
                   <div class="product-price">${price} <span>تومان</span></div>
