@@ -1,9 +1,12 @@
+Warning: truncated output (original token count: 24496)
+Total output lines: 3031
+
 ﻿<!doctype html>
 <html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>خرید آیفون | دیجی‌شاپ</title>
+    <title>خرید آیفون | پیکسل لایف</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
@@ -1584,425 +1587,7 @@
         z-index: 999;
       }
     </style>
-  <style id="catalog-no-hover-motion">@media (hover:hover){.iphone-card:hover img,.iphone-card:hover svg,.samsung-card:hover img,.samsung-card:hover svg,.xiaomi-card:hover img,.xiaomi-card:hover svg,.prod-card:hover img,.prod-card:hover svg,.xiaomitab-card:hover img,.xiaomitab-card:hover svg,.console-card:hover img,.console-card:hover svg,.product-card:hover img,.product-card:hover svg,.pl-catalog-card:hover img,.pl-catalog-card:hover svg{transform:none!important}}.iphone-card,.samsung-card,.xiaomi-card,.prod-card,.xiaomitab-card,.console-card,.product-card,.pl-catalog-card,.iphone-card img,.samsung-card img,.xiaomi-card img,.prod-card img,.xiaomitab-card img,.console-card img,.product-card img,.pl-catalog-card img{transition:none!important;animation:none!important}</style>
-</head>
-  <body>
-    <!-- AUTH MODAL -->
-    <div class="modal-overlay" id="loginModal">
-      <div class="modal-box">
-        <div class="modal-head">
-          <h2 id="modalTitle">ورود | ثبت‌نام</h2>
-          <button class="modal-close" id="loginModalClose">
-            <i class="ti ti-x"></i>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="auth-step active" id="stepIdentifier">
-            <p class="modal-desc">شماره موبایل یا ایمیل خود را وارد کنید.</p>
-            <div class="form-group">
-              <label class="form-label">شماره موبایل یا ایمیل</label>
-              <input
-                type="text"
-                class="form-input"
-                id="identifierInput"
-                placeholder="09123456789 یا you@email.com"
-                autocomplete="off"
-                dir="ltr"
-                style="letter-spacing: 1px; font-size: 15px; text-align: center"
-              />
-              <div class="form-error" id="identifierError">
-                شماره موبایل یا ایمیل معتبر نیست
-              </div>
-            </div>
-            <button class="btn-auth" id="continueBtn">
-              <i class="ti ti-arrow-left"></i> ادامه
-            </button>
-            <p class="modal-footer-text">
-              با ورود،
-              <a href="/terms" style="color: var(--blue); font-weight: 600"
-                >قوانین و مقررات</a
-              >
-              دیجی‌شاپ را می‌پذیرید.
-            </p>
-          </div>
-          <div class="auth-step" id="stepMethod">
-            <div class="method-identifier" id="methodIdentifierDisplay">
-              09123456789
-            </div>
-            <p class="modal-desc" style="text-align: center">
-              روش ورود را انتخاب کنید.
-            </p>
-            <button class="btn-auth" id="sendOtpBtn">
-              <i class="ti ti-device-mobile-message"></i> ارسال کد تأیید
-            </button>
-            <button class="btn-auth-outline" id="showPasswordBtn">
-              <i class="ti ti-lock"></i> ورود با رمز عبور
-            </button>
-            <button class="back-link" id="backFromMethod">
-              <i class="ti ti-arrow-right"></i> تغییر شماره/ایمیل
-            </button>
-          </div>
-          <div class="auth-step" id="stepOtp">
-            <div class="otp-sent-info">
-              <i class="ti ti-circle-check"></i>
-              <p>
-                کد ۵ رقمی به
-                <strong
-                  id="otpTarget"
-                  dir="ltr"
-                  style="color: var(--blue)"
-                ></strong>
-                ارسال شد.
-              </p>
-            </div>
-            <div class="form-group" style="margin-top: 20px">
-              <label class="form-label">کد تأیید</label>
-              <input
-                type="text"
-                class="form-input input-otp"
-                id="otpInput"
-                placeholder="• • • • •"
-                maxlength="5"
-                autocomplete="one-time-code"
-                inputmode="numeric"
-                dir="ltr"
-              />
-              <div class="form-error" id="otpError">کد وارد شده صحیح نیست</div>
-            </div>
-            <button class="btn-auth" id="verifyOtpBtn">
-              <i class="ti ti-login"></i> تأیید و ورود
-            </button>
-            <div class="otp-timer-row">
-              <span id="otpTimerTxt"
-                >ارسال مجدد تا
-                <b class="timer-val" id="timerCount">02:00</b></span
-              >
-              <button class="resend-link" id="resendBtn" style="display: none">
-                <i class="ti ti-refresh"></i> ارسال مجدد کد
-              </button>
-            </div>
-            <button class="back-link" id="backFromOtp">
-              <i class="ti ti-arrow-right"></i> بازگشت
-            </button>
-          </div>
-          <div class="auth-step" id="stepPassword">
-            <p class="modal-desc" style="text-align: center">
-              رمز عبور خود را وارد کنید.
-            </p>
-            <div class="form-group">
-              <label class="form-label">رمز عبور</label>
-              <div class="password-wrap">
-                <input
-                  type="password"
-                  class="form-input"
-                  id="passwordInput"
-                  placeholder="••••••"
-                  autocomplete="current-password"
-                  dir="ltr"
-                  style="text-align: left"
-                />
-                <button
-                  type="button"
-                  class="password-toggle"
-                  id="togglePassword"
-                >
-                  <i class="ti ti-eye"></i>
-                </button>
-              </div>
-              <div class="form-error" id="passwordError">
-                رمز عبور اشتباه است
-              </div>
-            </div>
-            <button class="btn-auth" id="passwordLoginBtn">
-              <i class="ti ti-login"></i> ورود
-            </button>
-            <span class="forgot-link" id="forgotPasswordLink"
-              >فراموشی رمز عبور؟</span
-            >
-            <button class="back-link" id="backFromPassword">
-              <i class="ti ti-arrow-right"></i> بازگشت
-            </button>
-          </div>
-          <div class="auth-step" id="stepSuccess">
-            <div class="success-icon">
-              <i class="ti ti-check"></i>
-            </div>
-            <div class="success-title">خوش آمدید!</div>
-            <div class="success-desc" id="successDesc">
-              ورود شما با موفقیت انجام شد.
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TOAST -->
-    <div class="toast" id="toast">
-      <i class="ti ti-check"></i><span id="toastText"></span>
-    </div>
-
-    <!-- MEGA MENU BACKDROP -->
-    <div class="megamenu-backdrop" id="megamenuBackdrop"></div>
-
-    <!-- HEADER -->
-    <header class="header">
-      <div class="header-inner">
-        <a href="/" class="logo">
-          <div class="logo-mark"><i class="ti ti-shopping-bag"></i></div>
-          <div class="logo-text">دیجی<span>شاپ</span></div>
-        </a>
-        <div class="search-bar">
-          <input
-            type="text"
-            placeholder="جستجو در بیش از ۱ میلیون کالا..."
-            id="searchInput"
-          />
-          <button class="search-btn"><i class="ti ti-search"></i> جستجو</button>
-        </div>
-        <div class="header-actions">
-          <button class="h-btn" aria-label="اعلان‌ها">
-            <i class="ti ti-bell"></i>
-          </button>
-          <button
-            class="btn-auth-pill"
-            id="authPillBtn"
-            onclick="openLoginModal()"
-          >
-            <i class="ti ti-login"></i>
-            <span class="pill-text">ورود | ثبت‌نام</span>
-          </button>
-          <div class="profile-wrapper">
-            <div
-              class="profile-trigger"
-              id="profileTrigger"
-              role="button"
-              tabindex="0"
-            >
-              <div class="profile-avatar" id="profileAvatar">ک</div>
-              <span class="profile-trigger-name" id="profileName">کاربر</span>
-              <i class="ti ti-chevron-down profile-chevron"></i>
-            </div>
-            <div class="profile-dropdown" id="profileDropdown">
-              <div class="pdrop-header">
-                <div class="pdrop-avatar" id="pdropAvatar">ک</div>
-                <div>
-                  <div class="pdrop-info-name" id="pdropName">کاربر</div>
-                  <div class="pdrop-info-mobile" id="pdropMobile"></div>
-                </div>
-              </div>
-              <div class="pdrop-menu">
-                <a href="/profile/orders" class="pdrop-item"
-                  ><div class="pdrop-item-ico">
-                    <i class="ti ti-shopping-bag"></i>
-                  </div>
-                  <span>سفارش‌های من</span></a
-                >
-                <a href="/profile/wishlist" class="pdrop-item"
-                  ><div class="pdrop-item-ico"><i class="ti ti-heart"></i></div>
-                  <span>علاقه‌مندی‌ها</span></a
-                >
-                <a href="/profile/addresses" class="pdrop-item"
-                  ><div class="pdrop-item-ico">
-                    <i class="ti ti-map-pin"></i>
-                  </div>
-                  <span>آدرس‌های من</span></a
-                >
-                <a href="/profile/wallet" class="pdrop-item"
-                  ><div class="pdrop-item-ico">
-                    <i class="ti ti-wallet"></i>
-                  </div>
-                  <span>کیف پول</span></a
-                >
-                <a href="/contact" class="pdrop-item"
-                  ><div class="pdrop-item-ico">
-                    <i class="ti ti-headset"></i>
-                  </div>
-                  <span>پشتیبانی</span></a
-                >
-                <div class="pdrop-divider"></div>
-                <button class="pdrop-item logout" id="logoutBtn">
-                  <div class="pdrop-item-ico"><i class="ti ti-logout"></i></div>
-                  <span>خروج از حساب</span>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="cart-wrap">
-            <a href="/cart" class="h-btn" aria-label="سبد خرید">
-              <i class="ti ti-shopping-cart"></i>
-            </a>
-            <span class="cart-badge" id="cartCount" style="display: none"
-              >0</span
-            >
-
-            <!-- پنجره بازشونده سبد خرید -->
-            <div class="cart-dropdown" id="cartDropdown">
-              <div id="miniCartItems">
-                <!-- آیتم‌ها با جاوااسکریپت لود می‌شوند -->
-              </div>
-              <div
-                class="mini-cart-footer"
-                id="miniCartFooter"
-                style="display: none"
-              >
-                <div class="mini-cart-total">
-                  <span>مجموع:</span>
-                  <span id="miniCartTotalPrice">۰ تومان</span>
-                </div>
-                <a href="cart.html" class="mini-cart-btn-checkout">
-                  <!-- اسلش اول حذف شد -->
-                  <i class="ti ti-check"></i> مشاهده سبد و تسویه حساب
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- NAVBAR -->
-    <nav class="navbar">
-      <div class="navbar-inner">
-        <div class="nav-cats-wrap">
-          <button class="nav-cats" id="catsToggle">
-            <i class="ti ti-menu-2"></i> همه دسته‌بندی‌ها
-            <i class="ti ti-chevron-down"></i>
-          </button>
-          <div class="megamenu-panel" id="megamenuPanel">
-            <div class="megamenu-cats" id="megamenuCats"></div>
-            <div class="megamenu-content" id="megamenuContent"></div>
-          </div>
-        </div>
-        <a href="/" class="nav-link"><i class="ti ti-home"></i> خانه</a>
-        <a href="/offers" class="nav-link"
-          ><i class="ti ti-flame"></i> پیشنهاد ویژه</a
-        >
-        <a href="/new" class="nav-link"
-          ><i class="ti ti-sparkles"></i> تازه‌ها</a
-        >
-        <a href="/bestsellers" class="nav-link"
-          ><i class="ti ti-trending-up"></i> پرفروش‌ترین</a
-        >
-        <a href="/brands" class="nav-link"
-          ><i class="ti ti-building-store"></i> برندها</a
-        >
-        <a href="/blog" class="nav-link"><i class="ti ti-article"></i> مجله</a>
-      </div>
-    </nav>
-
-    <!-- ═══════════════════════════════════════════════
-         PAGE BODY — iPhone Products Only
-         ═══════════════════════════════════════════════ -->
-    <main class="page-body">
-      <!-- Page header -->
-      <div class="iphone-page-header">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"
-            fill="var(--text-2)"
-          />
-        </svg>
-        <div>
-          <div class="iphone-page-title">خرید آیفون</div>
-          <div class="iphone-page-subtitle">
-            آیفون‌های جدید  در دیجی‌شاپ
-          </div>
-        </div>
-      </div>
-
-      <!-- Product Grid — exactly 4 products -->
-      <div class="iphone-grid">
-        <!-- ═══ iPhone 17 ═══ -->
-        <a
-          href="product?id=iphone-17"
-          class="iphone-card"
-          style="color: inherit"
-        >
-          <div class="iphone-badges">
-            
-            <span class="badge-out-of-stock">
-              <i class="ti ti-x-circle"></i> ناموجود
-            </span>
-          </div>
-          <div class="iphone-card-image">
-            <img src="/images/apple/iphone 17-3.webp" alt="iPhone 17" />
-          </div>
-          <div class="iphone-card-body">
-            <!-- Apple logo -->
-            <svg
-              width="20"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              style="margin-bottom: 10px; display: block"
-            >
-              <path
-                d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"
-                fill="var(--text-3)"
-              />
-            </svg>
-            <div class="iphone-card-name">iPhone 17</div>
-            <div class="iphone-card-desc">
-              تراشه A19، طراحی کاملاً جدید با فریم آلومینیومی، دوربین ۴۸
-              مگاپیکسلی با قابلیت‌های پیشرفته هوش مصنوعی و نمایشگر ۶.۱ اینچی
-              OLED.
-            </div>
-
-            <!-- Storage -->
-            <div class="iphone-option-group">
-              <div class="iphone-option-label">
-                <i class="ti ti-hard-drive"></i> حافظه داخلی
-              </div>
-              <div class="iphone-storage-options">
-                <span class="iphone-storage-chip">۱۲۸ گیگابایت</span>
-                <span class="iphone-storage-chip">۲۵۶ گیگابایت</span>
-                <span class="iphone-storage-chip">۵۱۲ گیگابایت</span>
-              </div>
-            </div>
-
-            <!-- Colors -->
-            <div class="iphone-option-group">
-              <div class="iphone-option-label">
-                <i class="ti ti-palette"></i> رنگ
-              </div>
-              <div class="iphone-color-options">
-                <div
-                  class="iphone-color-swatch"
-                  style="background: #f5f0e8"
-                  title="تیتانیوم طبیعی"
-                ></div>
-                <div
-                  class="iphone-color-swatch"
-                  style="background: #3b5998"
-                  title="تیتانیوم آبی"
-                ></div>
-                <div
-                  class="iphone-color-swatch"
-                  style="background: #f0f0f0"
-                  title="تیتانیوم سفید"
-                ></div>
-                <div
-                  class="iphone-color-swatch"
-                  style="background: #2c2c2e"
-                  title="تیتانیوم مشکی"
-                ></div>
-              </div>
-            </div>
-
-            <!-- Disabled Notify Button -->
-            <button class="iphone-notify-btn" disabled>
-              <i class="ti ti-bell-off"></i> اطلاع‌رسانی هنگام موجودی
-            </button>
-          </div>
-        </a>
-        <!-- ═══ iPhone 17 Pro ═══ -->
-        <a
-          href="/product?id=iphone-17-pro"
-          class="iphone-card"
-          style="color: inherit"
-        >
-          <div class="iphone-badges">
-            
+  <style id="catalog-no-hover-motion">@media (hover:hover){.iphone-card:hover img,.iphone-card:hover svg,.samsung-card:hover img,.samsung-card:hover svg,.xiaomi-card:hover img,.xiaomi-card:hover svg,.prod-card:hover img,.prod-ca…4496 tokens truncated…       
             <span class="badge-out-of-stock">
               <i class="ti ti-x-circle"></i> ناموجود
             </span>
@@ -2238,10 +1823,10 @@
         <div class="footer-brand">
           <a href="/" class="logo"
             ><div class="logo-mark"><i class="ti ti-shopping-bag"></i></div>
-            <div class="logo-text">دیجی<span>شاپ</span></div></a
+            <div class="logo-text">پیکسل <span>لایف</span></div></a
           >
           <p>
-            دیجی‌شاپ، فروشگاه اینترنتی محصولات دیجیتال با بیش از ۱۰ سال تجربه.
+            پیکسل لایف، فروشگاه اینترنتی محصولات دیجیتال با بیش از ۱۰ سال تجربه.
           </p>
           <div class="footer-social">
             <div class="social-btn"><i class="ti ti-brand-instagram"></i></div>
@@ -2283,7 +1868,7 @@
         <div class="footer-col">
           <h4>درباره ما</h4>
           <ul>
-            <li>معرفی دیجی‌شاپ</li>
+            <li>معرفی پیکسل لایف</li>
             <li>فرصت‌های شغلی</li>
             <li>قوانین و مقررات</li>
             <li>حریم خصوصی</li>
@@ -2291,7 +1876,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>© ۱۴۰۴ دیجی‌شاپ — تمامی حقوق محفوظ است.</p>
+        <p>© ۱۴۰۴ پیکسل لایف — تمامی حقوق محفوظ است.</p>
         <div class="footer-trust">
           <div class="ftrust"><i class="ti ti-certificate"></i></div>
           <div class="ftrust"><i class="ti ti-shield-check"></i></div>
