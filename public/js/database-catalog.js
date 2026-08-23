@@ -103,11 +103,11 @@
       : '<span class="pl-catalog-price">' + price(product) + '</span>';
     const imageClass = path === "/mobiles" ? "pl-catalog-media" : config.image;
     const bodyClass = path === "/mobiles" ? "pl-catalog-body" : config.body + " pl-catalog-body";
-    const description = escapeHtml(product.description || product.brand || "");
     const comingSoonBadge = product.comingSoon
       ? '<span class="pl-coming-soon"><i class="ti ti-clock"></i> به‌زودی</span>'
       : "";
-    return `<a href="${href}" class="${config.card} pl-catalog-card" data-stock="${stock}" style="color:inherit;text-decoration:none">${comingSoonBadge}<div class="${imageClass}">${colorDots(product, outOfStock)}${imageMarkup(product, name)}</div><div class="${bodyClass}"><div class="pl-catalog-brand">${escapeHtml(product.brand || "")}</div><div class="${config.name}">${name}</div><div class="${config.desc || "pl-catalog-desc"}">${description}</div><div class="pl-catalog-footer"><div class="pl-catalog-stock">${status}</div>${priceHtml}</div></div></a>`;
+    // نام برند فقط یک‌بار، بالای مدل محصول نمایش داده می‌شود.
+    return `<a href="${href}" class="${config.card} pl-catalog-card" data-stock="${stock}" style="color:inherit;text-decoration:none">${comingSoonBadge}<div class="${imageClass}">${colorDots(product, outOfStock)}${imageMarkup(product, name)}</div><div class="${bodyClass}"><div class="pl-catalog-brand">${escapeHtml(product.brand || "")}</div><div class="${config.name}">${name}</div><div class="pl-catalog-footer"><div class="pl-catalog-stock">${status}</div>${priceHtml}</div></div></a>`;
   }
 
   const requestedParams = new URLSearchParams(window.location.search);
