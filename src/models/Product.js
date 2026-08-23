@@ -64,6 +64,8 @@ const productSchema = new mongoose.Schema(
         hex: { type: String, default: "#334155" },
       },
     ],
+    // رنگ‌ها برای کالای ناموجود به‌صورت پیش‌فرض در صفحه محصول پنهان می‌شوند.
+    hideColorsWhenOutOfStock: { type: Boolean, default: true },
     // هر ردیف یک ترکیب واقعیِ قابل فروش است: حافظه + رنگ + موجودی.
     // برای محصولات قدیمی که تنوع ندارند، stock اصلی همچنان معتبر می‌ماند.
     variants: [
