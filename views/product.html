@@ -6217,33 +6217,41 @@
               .join("");
           }
 
-          document.querySelectorAll(".slider-add-btn").forEach((btn) => {
-            btn.addEventListener("click", () => {
-              const id = btn.dataset.id;
-              const p = PRODUCTS[id];
-              if (!p || p.outOfStock) {
-                showToast("این محصول در حال حاضر ناموجود است");
-                return;
-              }
-              const cart = getCart();
-              const existing = cart.find((item) => item.id === id);
-              if (existing) existing.qty = (existing.qty || 1) + 1;
-              else
-                cart.push({
-                  id,
-                  name: p.name,
-                  storage: p.storages[0],
-                  color: p.colors[0].name,
-                  brand: p.brand || "",
-                  variant: p.storages[0],
-                  image: p.images?.[0] || "",
-                  price: p.price,
-                  qty: 1,
-                });
-              saveCart(cart);
-              showToast("به سبد خرید اضافه شد");
-            });
+          // کارت‌های مشابه و بازدیدهای اخیر پس از آماده‌شدن صفحه ساخته می‌شوند.
+          // بنابراین رویداد را روی document می‌گذاریم تا دکمه‌های جدید هم کار کنند.
+          document.addEventListener("click", (event) => {
+            const btn = event.target.closest(".slider-add-btn");
+            if (!btn) return;
+
+            event.preventDefault();
+            const id = btn.dataset.id;
+            const p = PRODUCTS[id];
+            if (!p || p.outOfStock) {
+              showToast("این محصول در حال حاضر ناموجود است");
+              return;
+            }
+
+            const cart = getCart();
+            const existing = cart.find((item) => item.id === id);
+            if (existing) {
+              existing.qty = (existing.qty || 1) + 1;
+            } else {
+              cart.push({
+                id,
+                name: p.name,
+                storage: p.storages?.[0] || "",
+                color: p.colors?.[0]?.name || "",
+                brand: p.brand || "",
+                variant: p.storages?.[0] || "",
+                image: p.images?.[0] || "",
+                price: p.price,
+                qty: 1,
+              });
+            }
+            saveCart(cart);
+            showToast("به سبد خرید اضافه شد");
           });
+
           document.querySelectorAll(".slider-wish-btn").forEach((btn) => {
             btn.addEventListener("click", () => {
               const id = btn.dataset.id;
