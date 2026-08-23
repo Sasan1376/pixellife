@@ -33,7 +33,7 @@ router.get("/bestsellers", homeController.mobiles);
 router.get("/brands", homeController.mobiles);
 router.get("/blog", homeController.index);
 router.get("/support", homeController.contact);
-router.get("/terms", homeController.index);
+router.get("/terms", homeController.terms);
 router.get("/profile", homeController.profile);
 router.get("/profile/orders", homeController.profile);
 router.get("/profile/wishlist", homeController.profile);
