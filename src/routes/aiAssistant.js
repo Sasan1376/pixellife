@@ -50,8 +50,7 @@ async function findRelevantProducts(message) {
   const filter = conditions.length ? { $or: conditions } : {};
   if (budget) filter.price = { $lte: budget };
   const products = await Product.find(filter).sort({ featured: -1, rating: -1, updatedAt: -1 }).limit(8).lean();
-  if (products.length) return products;
-  return Product.find(budget ? { price: { $lte: budget } } : {}).sort({ featured: -1, rating: -1 }).limit(8).lean();
+  // اگر هیچ تطابقی پیدا نشد، محصول پیش‌فرض برنگردان؛ پاسخ نامرتبط نباید مقایسه بسازد.\n  return products;
 }
 
 function fallbackAnswer(products) {
@@ -67,8 +66,7 @@ router.post("/shopping-assistant", async (req, res) => {
     if (message.length > MAX_MESSAGE_LENGTH) return res.status(400).json({ success: false, message: "پیام بیش از حد طولانی است" });
 
     const products = await findRelevantProducts(message);
-    const productContext = products.map(normalizeProduct);
-    const apiKey = env.openaiApiKey;
+    const productContext = products.map(normalizeProduct);\n    if (!products.length) {\n      return res.json({\n        success: true,\n        answer: "برای راهنمایی خرید، نام محصول، نوع کالا یا بودجه‌تان را بنویسید؛ مثلاً «گوشی مناسب بازی تا ۵۰ میلیون». ",\n        products: [],\n        aiEnabled: Boolean(env.openaiApiKey),\n      });\n    }\n    const apiKey = env.openaiApiKey;
     if (!apiKey) {
       return res.json({ success: true, answer: fallbackAnswer(products), products: productContext, aiEnabled: false });
     }
