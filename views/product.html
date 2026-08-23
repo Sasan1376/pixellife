@@ -5149,6 +5149,7 @@
           product.hasStorage = product.hasStorage !== false;
           product.hasWarranty = product.hasWarranty !== false;
           product.showSpecs = product.showSpecs !== false;
+          product.hideColorsWhenOutOfStock = product.hideColorsWhenOutOfStock !== false;
         }
         const pageBody = document.getElementById("pageBody");
 
@@ -5245,6 +5246,7 @@
             product.oldPrice && product.price
               ? Math.round(100 - (product.price / product.oldPrice) * 100)
               : 0;
+          const shouldShowColors = !product.outOfStock || product.hideColorsWhenOutOfStock === false;
           const reviewArticle = Array.isArray(product.reviewSections)
             ? product.reviewSections
                 .filter((section) => section && section.enabled !== false && (section.title || section.content || section.images?.length))
@@ -5361,7 +5363,7 @@
                 </div>
               </div>` : ""}
 
-              <div class="option-group">
+              <div class="option-group" style="${shouldShowColors ? "" : "display:none"}">
                 <div class="option-label"><i class="ti ti-palette"></i> رنگ: <span class="selected-val" id="colorVal">${selectedColor.name}</span></div>
                 <div class="color-options" id="colorOptions">
                   ${product.colors
