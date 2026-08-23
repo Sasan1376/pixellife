@@ -41,7 +41,7 @@ function categoryPattern(category) {
   };
   const values = aliases[normalized] || [normalized];
   const escaped = values.map((value) => value.replace(/[.*+?^$()|[\]\\]/g, "\\$&"));
-  return new RegExp("^(?:" + escaped.join("|") + ")$", "i");
+  return new RegExp("^\\s*(?:" + escaped.join("|") + ")\\s*$", "i");
 }
 
 function normalizeImagePath(value) {
