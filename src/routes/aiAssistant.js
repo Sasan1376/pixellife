@@ -26,6 +26,11 @@ function normalizeProduct(product) {
   };
 }
 
+function looksLikeShoppingRequest(message) {
+  const text = String(message || "").toLowerCase();
+  return /(گوشی|موبایل|آیفون|iphone|سامسونگ|samsung|شیائومی|xiaomi|اپل|apple|تبلت|لپ.?تاپ|مک.?بوک|کنسول|پلی.?استیشن|ps5|خرید|قیمت|مقایسه|موجودی|بازی|گیم|دوربین|باتری|حافظه|رم|هدفون|هندزفری|بودجه|میلیون)/i.test(text);
+}
+
 function extractBudget(message) {
   const normalized = String(message).replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
   const match = normalized.match(/(?:تا|زیر|حدود)\s*([\d,\.]+)\s*(میلیون|m)?/i);
@@ -36,6 +41,7 @@ function extractBudget(message) {
 
 async function findRelevantProducts(message) {
   const text = String(message).trim();
+  if (!looksLikeShoppingRequest(text)) return [];
   const budget = extractBudget(text);
   const keywords = text.split(/\s+/).map(escapeRegex).filter((word) => word.length > 2).slice(0, 8);
   const conditions = keywords.map((word) => ({
