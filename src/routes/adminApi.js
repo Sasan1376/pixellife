@@ -226,6 +226,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       stock,
       availability,
       colors,
+      hideColorsWhenOutOfStock,
       storages,
       hasStorage,
       warranties,
@@ -268,6 +269,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       images: uploadedImages,
       mainImage: resolveMainImage(mainImageSelection, [], uploadedImages),
       colors: parseColors(colors) || [],
+      hideColorsWhenOutOfStock: parseEnabled(hideColorsWhenOutOfStock),
       storages: storageEnabled ? parseList(storages) || [] : [],
       hasStorage: storageEnabled,
       showReview: parseEnabled(showReview, false),
@@ -299,6 +301,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       stock,
       availability,
       colors,
+      hideColorsWhenOutOfStock,
       storages,
       hasStorage,
       warranties,
@@ -334,6 +337,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       );
     }
     if (colors !== undefined) product.colors = parseColors(colors);
+    if (hideColorsWhenOutOfStock !== undefined) product.hideColorsWhenOutOfStock = parseEnabled(hideColorsWhenOutOfStock);
     if (hasStorage !== undefined) product.hasStorage = parseEnabled(hasStorage);
     if (storages !== undefined && product.hasStorage !== false) product.storages = parseList(storages);
     if (hasWarranty !== undefined) product.hasWarranty = parseEnabled(hasWarranty);
