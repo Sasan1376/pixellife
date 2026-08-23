@@ -26,7 +26,7 @@ app.set("trust proxy", 1);
 // =======================
 // Middleware
 // =======================
-
+/*
 app.use(cors());
 app.use(compression({ threshold: 1024 }));
 
@@ -140,7 +140,7 @@ app.use((req, res, next) => {
     </html>
   `);
 });
-
+*/
 // =======================
 // MongoDB Connection
 // =======================
