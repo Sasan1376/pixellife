@@ -11,6 +11,11 @@
     const addMessage = (text, kind) => { const el = add("div", { className: "pl-ai-msg " + kind }, text); messages.appendChild(el); messages.scrollTop = messages.scrollHeight; return el; };
     toggle.addEventListener("click", () => { panel.classList.add("open"); input.focus(); });
     document.getElementById("plAssistantClose").addEventListener("click", () => panel.classList.remove("open"));
+    document.addEventListener("click", (event) => {
+      if (panel.classList.contains("open") && !panel.contains(event.target) && !toggle.contains(event.target)) {
+        panel.classList.remove("open");
+      }
+    });
     document.getElementById("plAssistantForm").addEventListener("submit", async (event) => {
       event.preventDefault(); const message = input.value.trim(); if (!message) return;
       addMessage(message, "user"); input.value = ""; input.disabled = true;
