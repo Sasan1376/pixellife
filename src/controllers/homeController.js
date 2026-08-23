@@ -261,13 +261,13 @@ function injectDatabaseCatalog(html) {
   // قبل از دریافت دادهٔ واقعی از دیتابیس دیده نشوند.
   html = html.replace(
     /\/js\/database-catalog\.js(?:\?v=[^"'\s>]*)?/g,
-    "/js/database-catalog.js?v=20260821-standard-cards-1",
+    "/js/database-catalog.js?v=20260823-brand-once-3",
   );
 
   if (html.includes("/js/database-catalog.js")) return html;
   return html.replace(
     "</body>",
-    '<script src="/js/database-catalog.js?v=20260821-standard-cards-1"></script>\n</body>',
+    '<script src="/js/database-catalog.js?v=20260823-brand-once-3"></script>\n</body>',
   );
 }
 
