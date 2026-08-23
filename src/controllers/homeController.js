@@ -374,6 +374,7 @@ const homeController = {
     }
   },
   contact: (req, res) => sendViewWithEnamad(res, "contact.html"),
+  terms: (req, res) => sendViewWithEnamad(res, "terms.html"),
   submitContact: async (req, res) => {
     const { name, phone, email, subject, message } = req.body || {};
 
