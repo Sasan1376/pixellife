@@ -459,6 +459,10 @@
                     placeholder="مشکی | #111111&#10;طلایی | #C6A46A"
                   ></textarea>
                   <div class="form-hint">هر رنگ را در یک خط، با قالب «نام رنگ | کد رنگ» وارد کنید.</div>
+                  <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" id="fHideColorsWhenOutOfStock" checked />
+                    <label class="form-check-label" for="fHideColorsWhenOutOfStock">در صورت ناموجود بودن محصول، رنگ‌ها در سایت نمایش داده نشوند</label>
+                  </div>
                   <div class="color-picker-tools">
                     <div class="color-name-field">
                       <label class="form-label mb-1" for="fColorName">نام رنگ انتخابی</label>
@@ -849,6 +853,7 @@
         setMainImageOptions();
         setPickerColor("", "#334155");
         document.getElementById("fShowReview").checked = false;
+        document.getElementById("fHideColorsWhenOutOfStock").checked = true;
         document.getElementById("fComingSoon").checked = false;
         document.getElementById("fShowSpecs").checked = true;
         document.getElementById("fHasWarranty").checked = true;
@@ -880,6 +885,7 @@
         document.getElementById("fShowSpecs").checked = p.showSpecs !== false;
         document.getElementById("fDescription").value = p.description || "";
         document.getElementById("fShowReview").checked = p.showReview === true;
+        document.getElementById("fHideColorsWhenOutOfStock").checked = p.hideColorsWhenOutOfStock !== false;
         renderReviewSections(Array.isArray(p.reviewSections) ? p.reviewSections : []);
         document.getElementById("fSpecs").value = p.specs || "";
         document.getElementById("fColors").value = formatColors(p.colors);
@@ -1050,6 +1056,7 @@
           );
           fd.append("specs", showSpecs ? document.getElementById("fSpecs").value : "");
           fd.append("colors", document.getElementById("fColors").value);
+          fd.append("hideColorsWhenOutOfStock", document.getElementById("fHideColorsWhenOutOfStock").checked);
           fd.append("storages", hasStorage ? document.getElementById("fStorages").value : "");
           fd.append("warranties", hasWarranty ? document.getElementById("fWarranties").value : "");
           fd.append("variants", hasStorage ? document.getElementById("fVariants").value : "");
