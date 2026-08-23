@@ -18,6 +18,10 @@ const env = {
 
   otpLength: parseInt(process.env.OTP_LENGTH, 10) || 5,
   otpExpiryMinutes: parseInt(process.env.OTP_EXPIRY_MINUTES, 10) || 2,
+
+  // دستیار خرید هوشمند (اختیاری؛ بدون کلید، حالت پاسخ جایگزین فعال می‌ماند)
+  openaiApiKey: process.env.OPENAI_API_KEY || "",
+  openaiModel: process.env.OPENAI_MODEL || "gpt-4o-mini",
 };
 
 const requiredVars = ["mongoUri", "jwtSecret"];
