@@ -141,6 +141,28 @@ app.use((req, res, next) => {
   `);
 });
 */
+// فایل‌های عمومی سایت (اسکریپت لیست دسته‌بندی‌ها، CSS، عکس‌ها و فونت‌ها)
+app.use(
+  express.static(path.join(__dirname, "../public"), {
+    etag: true,
+    lastModified: true,
+    maxAge: process.env.NODE_ENV === "production" ? "7d" : 0,
+    setHeaders(res, filePath) {
+      if (/\.(?:png|jpe?g|gif|webp|avif|svg|ico|woff2?)$/i.test(filePath)) {
+        res.setHeader(
+          "Cache-Control",
+          "public, max-age=2592000, stale-while-revalidate=86400",
+        );
+      } else if (/\.(?:css|js)$/i.test(filePath)) {
+        res.setHeader(
+          "Cache-Control",
+          "public, max-age=604800, stale-while-revalidate=86400",
+        );
+      }
+    },
+  }),
+);
+
 // =======================
 // MongoDB Connection
 // =======================
