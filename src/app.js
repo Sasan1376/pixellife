@@ -161,6 +161,7 @@ const adminApiRoutes = require("./routes/adminApi");
 const productRoutes = require("./routes/products");
 const productPageRoutes = require("./routes/productPage");
 const testEmailRoutes = require("./routes/testEmail");
+const aiAssistantRoutes = require("./routes/aiAssistant");
 
 // Home Page
 app.use("/", homeRoutes);
@@ -170,6 +171,9 @@ app.get("/contact", (req, res) => {
 });
 // Authentication
 app.use("/api/auth", authRoutes);
+
+// دستیار خرید هوشمند
+app.use("/api/ai", aiAssistantRoutes);
 
 // Reviews
 app.use("/api/reviews", reviewRoutes);
