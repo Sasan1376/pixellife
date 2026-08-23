@@ -72,7 +72,16 @@ router.post("/shopping-assistant", async (req, res) => {
     if (message.length > MAX_MESSAGE_LENGTH) return res.status(400).json({ success: false, message: "پیام بیش از حد طولانی است" });
 
     const products = await findRelevantProducts(message);
-    const productContext = products.map(normalizeProduct);\n    if (!products.length) {\n      return res.json({\n        success: true,\n        answer: "برای راهنمایی خرید، نام محصول، نوع کالا یا بودجه‌تان را بنویسید؛ مثلاً «گوشی مناسب بازی تا ۵۰ میلیون». ",\n        products: [],\n        aiEnabled: Boolean(env.openaiApiKey),\n      });\n    }\n    const apiKey = env.openaiApiKey;
+    const productContext = products.map(normalizeProduct);
+    if (!products.length) {
+      return res.json({
+        success: true,
+        answer: "برای راهنمایی خرید، نام محصول، نوع کالا یا بودجه‌تان را بنویسید؛ مثلاً «گوشی مناسب بازی تا ۵۰ میلیون».",
+        products: [],
+        aiEnabled: Boolean(env.openaiApiKey),
+      });
+    }
+    const apiKey = env.openaiApiKey;
     if (!apiKey) {
       return res.json({ success: true, answer: fallbackAnswer(products), products: productContext, aiEnabled: false });
     }
