@@ -6178,6 +6178,11 @@
                     String(d._id),
                     mapDbProductToView(d),
                   ]);
+                  // محصولات مشابهِ دریافت‌شده از API را نیز در منبع سبد خرید نگه می‌داریم.
+                  // در غیر این صورت دکمه «افزودن» اطلاعات محصول را پیدا نمی‌کند.
+                  mapped.forEach(([id, p]) => {
+                    PRODUCTS[id] = p;
+                  });
                   document.getElementById("relatedSlider").innerHTML = mapped
                     .map(([id, p]) => miniCard(id, p))
                     .join("");
