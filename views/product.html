@@ -1258,6 +1258,24 @@
         font-weight: 700;
       }
 
+      /* قلب علاقه‌مندی بدون وابستگی به فونت آیکون نمایش داده می‌شود */
+      #wishBtn i {
+        display: none;
+      }
+      #wishBtn::before {
+        content: "♡";
+        font-family: Arial, sans-serif;
+        font-size: 27px;
+        font-weight: 400;
+        line-height: 1;
+        transform: translateY(-1px);
+      }
+      #wishBtn.active::before {
+        content: "♥";
+        font-size: 21px;
+        color: var(--red);
+      }
+
       .product-title {
         font-size: 16px;
         font-weight: 400;
@@ -5331,7 +5349,7 @@
               <div class="product-brand-row">
                 <div class="product-brand-badge">${product.brandLogo === "SAMSUNG_LOGO_SVG" ? SAMSUNG_LOGO_SVG : product.brandLogo === "XIAOMI_LOGO_SVG" ? XIAOMI_LOGO_SVG : product.brandLogo === "REDMI_LOGO_SVG" ? REDMI_LOGO_SVG : product.brandLogo === "APPLE_LOGO_SVG" ? APPLE_LOGO_SVG : ""}<span>${product.brand || ""}</span></div>
                 <div class="action-icons-row">
-                  <button class="icon-action-btn${isWished ? " active" : ""}" id="wishBtn" title="علاقه‌مندی"><i class="ti ${isWished ? "ti-heart-filled" : "ti-heart"}"></i></button>
+                  <button type="button" class="icon-action-btn${isWished ? " active" : ""}" id="wishBtn" title="علاقه‌مندی" aria-label="افزودن به علاقه‌مندی‌ها" aria-pressed="${isWished ? "true" : "false"}"><i class="ti ${isWished ? "ti-heart-filled" : "ti-heart"}"></i></button>
                   <button class="icon-action-btn" id="compareBtn" title="مقایسه"><i class="ti ti-arrows-exchange"></i></button>
                   <button class="icon-action-btn" id="shareBtn" title="اشتراک‌گذاری"><i class="ti ti-share-2"></i></button>
                 </div>
@@ -5848,6 +5866,11 @@
               btn.querySelector("i").className = "ti ti-heart";
               showToast("از علاقه‌مندی‌ها حذف شد");
             }
+            btn.setAttribute("aria-pressed", String(isWished));
+            btn.setAttribute(
+              "aria-label",
+              isWished ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها",
+            );
             saveWishlist(list);
           });
           document
