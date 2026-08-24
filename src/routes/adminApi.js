@@ -7,6 +7,7 @@ const Order = require("../models/Order");
 const AnalyticsDaily = require("../models/AnalyticsDaily");
 const upload = require("../utils/upload");
 const requireAdmin = require("../middleware/adminAuth");
+const adminSession = require("../middleware/adminSession");
 const demoProducts = require("../data/demoProducts");
 const { removeProductImage, saveProductImage } = require("../utils/productImages");
 
@@ -151,6 +152,7 @@ function resolveMainImage(selection, existingImages = [], uploadedImages = []) {
   return current[0] || incoming[0] || "";
 }
 
+router.use(adminSession);
 router.use(requireAdmin);
 router.use((req, res, next) => { res.set("Cache-Control", "no-store, no-cache, must-revalidate, private"); next(); });
 
