@@ -1,5 +1,9 @@
 const express = require("express");
 const router = express.Router();
+
+// این router باید مستقل از middleware سراسری، بدنهٔ درخواست‌های ورود را بخواند.
+router.use(express.json({ limit: "1mb" }));
+router.use(express.urlencoded({ extended: true }));
 const authController = require("../controllers/authController");
 const { protect } = require("../middleware/authMiddleware");
 const {
