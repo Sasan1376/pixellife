@@ -385,6 +385,117 @@
         font-size: 14.5px;
       }
 
+      /* ── WISHLIST ── */
+      .wishlist-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .wishlist-card {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--white);
+        transition: var(--transition);
+      }
+      .wishlist-card:hover {
+        border-color: var(--blue);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+      }
+      .wishlist-card a {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+      }
+      .wishlist-image {
+        height: 150px;
+        padding: 12px;
+        display: grid;
+        place-items: center;
+        background: var(--bg);
+      }
+      .wishlist-image img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+      .wishlist-body {
+        padding: 12px;
+      }
+      .wishlist-brand {
+        color: var(--text-3);
+        font-size: 11.5px;
+      }
+      .wishlist-name {
+        min-height: 42px;
+        margin-top: 4px;
+        color: var(--text-1);
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.65;
+      }
+      .wishlist-price {
+        margin-top: 9px;
+        color: var(--text-1);
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .wishlist-stock {
+        margin-top: 6px;
+        color: var(--green);
+        font-size: 11.5px;
+        font-weight: 600;
+      }
+      .wishlist-stock.out {
+        color: var(--red);
+      }
+      .wishlist-remove {
+        position: absolute;
+        z-index: 2;
+        top: 9px;
+        left: 9px;
+        width: 33px;
+        height: 33px;
+        display: grid;
+        place-items: center;
+        border: 0;
+        border-radius: 50%;
+        background: var(--white);
+        color: var(--red);
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+      }
+      .wishlist-remove:hover {
+        background: var(--red-light);
+      }
+      .wishlist-shop-link {
+        display: inline-flex;
+        margin-top: 18px;
+        padding: 10px 16px;
+        border-radius: var(--radius-sm);
+        background: var(--blue);
+        color: #fff;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      @media (max-width: 650px) {
+        .wishlist-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+        }
+        .wishlist-image {
+          height: 130px;
+        }
+      }
+      @media (max-width: 380px) {
+        .wishlist-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
       /* ── ADDRESSES ── */
       .addr-add-btn {
         display: flex;
@@ -580,6 +691,13 @@
               >
               <i class="ti ti-chevron-left"></i>
             </div>
+            <div class="p-menu-item" data-tab="wishlist">
+              <span class="p-menu-item-label"
+                ><span class="p-menu-ico"><i class="ti ti-heart"></i></span
+                >علاقه‌مندی‌ها</span
+              >
+              <i class="ti ti-chevron-left"></i>
+            </div>
             <div class="p-menu-item" data-tab="addresses">
               <span class="p-menu-item-label"
                 ><span class="p-menu-ico"><i class="ti ti-map-pin"></i></span
@@ -679,6 +797,17 @@
             <div class="empty-state" id="ordersEmpty" style="display: none">
               <i class="ti ti-shopping-bag"></i>
               <p>هنوز سفارشی ثبت نکرده‌اید.</p>
+            </div>
+          </section>
+
+          <!-- ── علاقه‌مندی‌ها ── -->
+          <section class="p-pane" id="pane-wishlist">
+            <h2 class="p-main-title">علاقه‌مندی‌های من</h2>
+            <div class="wishlist-grid" id="wishlistList"></div>
+            <div class="empty-state" id="wishlistEmpty" style="display: none">
+              <i class="ti ti-heart"></i>
+              <p>هنوز محصولی به علاقه‌مندی‌ها اضافه نکرده‌اید.</p>
+              <a class="wishlist-shop-link" href="/mobiles">مشاهده محصولات</a>
             </div>
           </section>
 
@@ -885,7 +1014,7 @@
       }
 
       /* ── تب‌ها ── */
-      const tabs = ["info", "orders", "addresses", "history"];
+      const tabs = ["info", "orders", "wishlist", "addresses", "history"];
       function showTab(tab) {
         if (!tabs.includes(tab)) tab = "info";
         tabs.forEach((t) => {
@@ -902,7 +1031,120 @@
             : "/profile/" + (tab === "addresses" ? "addresses" : tab);
         window.history.replaceState(null, "", path);
         if (tab === "orders") loadOrders();
+        if (tab === "wishlist") loadWishlist();
       }
+
+      function getWishlistIds() {
+        try {
+          const saved = JSON.parse(
+            localStorage.getItem("digishop_wishlist") || "[]",
+          );
+          return Array.isArray(saved) ? saved.map(String) : [];
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function saveWishlistIds(ids) {
+        localStorage.setItem("digishop_wishlist", JSON.stringify(ids));
+      }
+
+      function escapeHtml(value) {
+        return String(value || "").replace(/[&<>"']/g, (character) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        })[character]);
+      }
+
+      function wishlistProductUrl(product) {
+        const id = product._id || product.slug || product.legacyId;
+        return "/product?id=" + encodeURIComponent(id || "");
+      }
+
+      async function loadWishlist() {
+        const list = document.getElementById("wishlistList");
+        const empty = document.getElementById("wishlistEmpty");
+        const ids = [...new Set(getWishlistIds())];
+
+        list.innerHTML = "";
+        empty.style.display = "none";
+        if (!ids.length) {
+          empty.style.display = "block";
+          return;
+        }
+
+        list.innerHTML =
+          '<div class="empty-state"><p>در حال دریافت علاقه‌مندی‌ها...</p></div>';
+        const products = await Promise.all(
+          ids.map(async (id) => {
+            const endpoint = /^[a-f\d]{24}$/i.test(id)
+              ? "/api/products/id/" + encodeURIComponent(id)
+              : "/api/products/" + encodeURIComponent(id);
+            try {
+              const response = await fetch(endpoint, { credentials: "include" });
+              if (!response.ok) return null;
+              const data = await response.json();
+              return data && data.success ? data.product : null;
+            } catch (_) {
+              return null;
+            }
+          }),
+        );
+
+        const availableProducts = products.filter(Boolean);
+        list.innerHTML = "";
+        if (!availableProducts.length) {
+          empty.style.display = "block";
+          return;
+        }
+
+        availableProducts.forEach((product) => {
+          const card = document.createElement("article");
+          const image =
+            product.image ||
+            (Array.isArray(product.images) ? product.images[0] : "") ||
+            "/images/placeholder-product.png";
+          const price = Number(product.price || product.salePrice || 0);
+          const outOfStock = Boolean(product.outOfStock) || Number(product.stock) === 0;
+          card.className = "wishlist-card";
+          card.innerHTML =
+            '<button type="button" class="wishlist-remove" data-wishlist-remove="' +
+            escapeHtml(product._id || product.slug || product.legacyId) +
+            '" aria-label="حذف از علاقه‌مندی‌ها" title="حذف از علاقه‌مندی‌ها"><i class="ti ti-heart-filled"></i></button>' +
+            '<a href="' +
+            wishlistProductUrl(product) +
+            '">' +
+            '<div class="wishlist-image"><img src="' +
+            escapeHtml(image) +
+            '" alt="' +
+            escapeHtml(product.name) +
+            '" onerror="this.style.visibility=\'hidden\'" /></div>' +
+            '<div class="wishlist-body"><div class="wishlist-brand">' +
+            escapeHtml(product.brand) +
+            '</div><div class="wishlist-name">' +
+            escapeHtml(product.name) +
+            '</div><div class="wishlist-price">' +
+            (price ? price.toLocaleString("fa-IR") + " تومان" : "تماس بگیرید") +
+            '</div><div class="wishlist-stock' +
+            (outOfStock ? " out" : "") +
+            '">' +
+            (outOfStock ? "ناموجود" : "موجود در انبار") +
+            "</div></div></a>";
+          list.appendChild(card);
+        });
+      }
+
+      document.getElementById("wishlistList").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-wishlist-remove]");
+        if (!button) return;
+        event.preventDefault();
+        const id = String(button.dataset.wishlistRemove || "");
+        saveWishlistIds(getWishlistIds().filter((savedId) => savedId !== id));
+        loadWishlist();
+      });
 
       const orderStatusText = { awaiting_payment: "در انتظار پرداخت", processing: "در حال پردازش", shipped: "ارسال‌شده", delivered: "تحویل‌شده", cancelled: "لغوشده" };
       async function loadOrders() {
@@ -931,9 +1173,9 @@
       function initTabFromPath() {
         const path = window.location.pathname;
         if (path.includes("/orders")) showTab("orders");
+        else if (path.includes("/wishlist")) showTab("wishlist");
         else if (path.includes("/addresses")) showTab("addresses");
-        else if (path.includes("/wishlist") || path.includes("/wallet"))
-          showTab("history");
+        else if (path.includes("/wallet")) showTab("history");
         else showTab("info");
       }
 
