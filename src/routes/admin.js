@@ -4,9 +4,11 @@ const router = express.Router();
 // فرم ورود ادمین ممکن است JSON یا form-urlencoded ارسال کند.
 router.use(express.json({ limit: "1mb" }));
 router.use(express.urlencoded({ extended: true }));
+router.use(adminSession);
 const path = require("path");
 
 const requireAdmin = require("../middleware/adminAuth");
+const adminSession = require("../middleware/adminSession");
 
 // فایل‌های پنل نباید از کش مرورگر یا CDN خوانده شوند؛ وگرنه تغییرات فرم
 // مدیریت با نسخهٔ قدیمی نمایش داده می‌شوند.
