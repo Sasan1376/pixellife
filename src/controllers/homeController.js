@@ -289,7 +289,9 @@ function sendViewWithEnamad(res, fileName) {
 }
 
 function sendSpecialCatalogView(res, options) {
-  const filePath = path.join(__dirname, "../../views/mobile.html");
+  // صفحهٔ هدفون و ساعت با همان قالب کامل آیفون رندر می‌شود: هدر، ورود،
+  // سبد خرید و کارت‌ها دقیقاً با صفحات اصلی فروشگاه هم‌ظاهر هستند.
+  const filePath = path.join(__dirname, "../../views/iphone.html");
   const key = `special-catalog:${options.slug}`;
 
   try {
@@ -299,24 +301,33 @@ function sendSpecialCatalogView(res, options) {
     }
 
     let html = readView(filePath);
+    const gridStart = html.indexOf('<div class="iphone-grid">');
+    const gridEnd = html.indexOf(
+      "<!-- End of iphone-grid — nothing else follows -->",
+    );
+    if (gridStart !== -1 && gridEnd !== -1) {
+      html =
+        html.slice(0, gridStart) +
+        '<div class="iphone-grid" aria-live="polite"></div>\n      ' +
+        html.slice(gridEnd);
+    }
+
     html = html
-      .replace(/<title>[\s\S]*?<\/title>/, `<title>${options.title} | پیکسل لایف</title>`)
-      .replace('<a class="active" href="/mobiles">موبایل</a>', '<a href="/mobiles">موبایل</a>')
       .replace(
-        /<div class="breadcrumb">[\s\S]*?<\/div>/,
-        `<div class="breadcrumb"><a href="/">خانه</a> <i class="ti ti-chevron-left"></i> ${options.title}</div>`,
+        /<title>[\s\S]*?<\/title>/,
+        `<title>${options.title} | PixelLife</title>`,
       )
       .replace(
-        /<section class="page-head">[\s\S]*?<\/section>/,
-        `<section class="page-head"><div><h1>${options.heading}</h1><p>${options.description}</p></div><div class="page-icon"><i class="ti ${options.icon}"></i></div></section>`,
+        /<div class="iphone-page-title">[\s\S]*?<\/div>/,
+        `<div class="iphone-page-title">${options.heading}</div>`,
       )
       .replace(
-        /<div class="filters">[\s\S]*?<\/div>/,
-        options.filters,
+        /<div class="iphone-page-subtitle">[\s\S]*?<\/div>/,
+        `<div class="iphone-page-subtitle">${options.description}</div>`,
       )
       .replace(
-        /<div class="catalog-title"><h2>[\s\S]*?<\/h2><span>[\s\S]*?<\/span><\/div>/,
-        `<div class="catalog-title"><h2>${options.title}</h2><span>مرتب‌سازی بر اساس جدیدترین‌ها</span></div>`,
+        /<svg width="32" height="32" viewBox="0 0 24 24" fill="none">[\s\S]*?<\/svg>\s*<div>/,
+        `<i class="ti ${options.icon}" style="font-size:32px;color:var(--text-2)"></i><div>`,
       );
 
     html = injectEnamad(html);
