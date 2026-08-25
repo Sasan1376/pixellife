@@ -288,6 +288,49 @@ function sendViewWithEnamad(res, fileName) {
   }
 }
 
+function sendSpecialCatalogView(res, options) {
+  const filePath = path.join(__dirname, "../../views/mobile.html");
+  const key = `special-catalog:${options.slug}`;
+
+  try {
+    res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+    if (IS_PRODUCTION && viewCache.has(key)) {
+      return res.type("html").send(viewCache.get(key));
+    }
+
+    let html = readView(filePath);
+    html = html
+      .replace(/<title>[\s\S]*?<\/title>/, `<title>${options.title} | پیکسل لایف</title>`)
+      .replace('<a class="active" href="/mobiles">موبایل</a>', '<a href="/mobiles">موبایل</a>')
+      .replace(
+        /<div class="breadcrumb">[\s\S]*?<\/div>/,
+        `<div class="breadcrumb"><a href="/">خانه</a> <i class="ti ti-chevron-left"></i> ${options.title}</div>`,
+      )
+      .replace(
+        /<section class="page-head">[\s\S]*?<\/section>/,
+        `<section class="page-head"><div><h1>${options.heading}</h1><p>${options.description}</p></div><div class="page-icon"><i class="ti ${options.icon}"></i></div></section>`,
+      )
+      .replace(
+        /<div class="filters">[\s\S]*?<\/div>/,
+        options.filters,
+      )
+      .replace(
+        /<div class="catalog-title"><h2>[\s\S]*?<\/h2><span>[\s\S]*?<\/span><\/div>/,
+        `<div class="catalog-title"><h2>${options.title}</h2><span>مرتب‌سازی بر اساس جدیدترین‌ها</span></div>`,
+      );
+
+    html = injectEnamad(html);
+    html = injectSharedCategoryNav(html);
+    html = injectMobileBottomNav(html);
+    html = injectDatabaseCatalog(html);
+    if (IS_PRODUCTION) viewCache.set(key, html);
+    res.type("html").send(html);
+  } catch (error) {
+    console.error(`Special catalog view render error (${options.slug}):`, error);
+    res.status(500).send("خطا در بارگذاری صفحه");
+  }
+}
+
 function sendAccessoryBrandView(res, brand) {
   const filePath = path.join(__dirname, "../../views/iphone.html");
   const brandName = String(brand || "").trim();
@@ -424,10 +467,28 @@ const homeController = {
   samsungtab: (req, res) => sendViewWithEnamad(res, "samsungtab.html"),
   ipad: (req, res) => sendViewWithEnamad(res, "ipad.html"),
   xiaomitab: (req, res) => sendViewWithEnamad(res, "xiaomitab.html"),
-  // این دو دسته با همان قالب فهرست محصولات نمایش داده می‌شوند، اما مسیر مستقل
-  // دارند تا لینک هر دسته واقعی و قابل اشتراک‌گذاری باشد.
-  headphones: (req, res) => sendViewWithEnamad(res, "mobile.html"),
-  smartwatches: (req, res) => sendViewWithEnamad(res, "mobile.html"),
+  // این دو دسته از قالب فهرست مشترک استفاده می‌کنند، اما عنوان، فیلترها و
+  // تصویر کارت مخصوص خودشان را دارند.
+  headphones: (req, res) =>
+    sendSpecialCatalogView(res, {
+      slug: "headphones",
+      title: "هدفون و هندزفری",
+      heading: "خرید هدفون و هندزفری",
+      description: "مدل‌های اپل و سامسونگ را یک‌جا مقایسه و انتخاب کنید.",
+      icon: "ti-headphones",
+      filters:
+        '<div class="filters"><a class="filter active" href="/headphones">همه هدفون‌ها</a><a class="filter" href="/headphones?brand=%D8%A7%D9%BE%D9%84">اپل</a><a class="filter" href="/headphones?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF">سامسونگ</a></div>',
+    }),
+  smartwatches: (req, res) =>
+    sendSpecialCatalogView(res, {
+      slug: "smartwatches",
+      title: "ساعت هوشمند",
+      heading: "خرید ساعت هوشمند",
+      description: "جدیدترین ساعت‌های هوشمند اپل و سامسونگ را بررسی کنید.",
+      icon: "ti-device-watch",
+      filters:
+        '<div class="filters"><a class="filter active" href="/smartwatches">همه ساعت‌ها</a><a class="filter" href="/smartwatches?brand=%D8%A7%D9%BE%D9%84">اپل</a><a class="filter" href="/smartwatches?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF">سامسونگ</a></div>',
+    }),
   console: (req, res) => sendViewWithEnamad(res, "console.html"),
   profile: (req, res) => sendViewWithEnamad(res, "profile.html"),
 };
