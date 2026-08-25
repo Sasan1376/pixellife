@@ -116,6 +116,10 @@
         <button class="mobile-category-sheet__close" type="button" aria-label="بستن">×</button>
       </div>
       <div class="mobile-category-sheet__tabs"><span class="mobile-category-sheet__tab">دسته‌بندی‌ها</span></div>
+      <label class="mobile-category-sheet__search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path></svg>
+        <input type="search" autocomplete="off" placeholder="جست‌وجوی دسته یا محصول" aria-label="جست‌وجوی دسته‌ها" />
+      </label>
       <div class="mobile-category-sheet__layout">
         <aside class="mobile-category-sheet__rail" aria-label="دسته‌های اصلی"></aside>
         <section class="mobile-category-sheet__content" aria-live="polite"></section>
@@ -133,29 +137,55 @@
       console: '<svg viewBox="0 0 24 24"><path d="M7 9h10a4 4 0 0 1 3.8 2.8l1 3.5A2 2 0 0 1 19.9 18h-2.3l-2-2H8.4l-2 2H4.1a2 2 0 0 1-1.9-2.7l1-3.5A4 4 0 0 1 7 9z"/><path d="M7 13v3M5.5 14.5h3M16 14h.01M18 15.5h.01"/></svg>'
     };
     const categories = [
-      { id: "mobile", name: "موبایل", links: [{ label: "خرید آیفون", href: "/iphone" }, { label: "گوشی سامسونگ", href: "/samsung" }, { label: "گوشی شیائومی", href: "/xiaomi" }, { label: "همه موبایل‌ها", href: "/mobiles" }] },
-      { id: "mobile-accessories", name: "لوازم جانبی موبایل", links: [{ label: "لوازم جانبی اپل", href: "/accessories/apple" }, { label: "لوازم جانبی سامسونگ", href: "/accessories/samsung" }, { label: "لوازم جانبی شیائومی", href: "/accessories/xiaomi" }, { label: "همه لوازم جانبی موبایل", href: "/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84" }] },
-      { id: "tablet", name: "تبلت", links: [{ label: "تبلت اپل", href: "/ipad" }, { label: "تبلت سامسونگ", href: "/samsungtab" }, { label: "تبلت شیائومی", href: "/xiaomitab" }] },
+      { id: "mobile", name: "موبایل", badge: "پرفروش", links: [{ label: "خرید آیفون", href: "/iphone" }, { label: "گوشی سامسونگ", href: "/samsung" }, { label: "گوشی شیائومی", href: "/xiaomi" }, { label: "همه موبایل‌ها", href: "/mobiles" }] },
+      { id: "mobile-accessories", name: "لوازم جانبی موبایل", badge: "جدید", links: [{ label: "لوازم جانبی اپل", href: "/accessories/apple" }, { label: "لوازم جانبی سامسونگ", href: "/accessories/samsung" }, { label: "لوازم جانبی شیائومی", href: "/accessories/xiaomi" }, { label: "همه لوازم جانبی موبایل", href: "/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84" }] },
+      { id: "tablet", name: "تبلت", badge: "۳ برند", links: [{ label: "تبلت اپل", href: "/ipad" }, { label: "تبلت سامسونگ", href: "/samsungtab" }, { label: "تبلت شیائومی", href: "/xiaomitab" }] },
       { id: "headphone", name: "هدفون و هندزفری", links: [{ label: "هدفون اپل", href: "/headphones?brand=%D8%A7%D9%BE%D9%84" }, { label: "هدفون سامسونگ", href: "/headphones?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" }, { label: "همه هدفون‌ها", href: "/headphones" }] },
       { id: "watch", name: "ساعت هوشمند", links: [{ label: "اپل واچ", href: "/smartwatches?brand=%D8%A7%D9%BE%D9%84" }, { label: "گلکسی واچ", href: "/smartwatches?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" }, { label: "همه ساعت‌ها", href: "/smartwatches" }] },
-      { id: "console", name: "کنسول بازی", links: [{ label: "PS5 Pro", href: "/console" }, { label: "PlayStation 5", href: "/console" }, { label: "لوازم جانبی گیمینگ", href: "/console" }] }
+      { id: "console", name: "کنسول بازی", badge: "پرفروش", links: [{ label: "PS5 Pro", href: "/console" }, { label: "PlayStation 5", href: "/console" }, { label: "لوازم جانبی گیمینگ", href: "/console" }] }
     ];
     const rail = sheet.querySelector(".mobile-category-sheet__rail");
     const categoryContent = sheet.querySelector(".mobile-category-sheet__content");
     const chevron = '<svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>';
+
+    const searchInput = sheet.querySelector(".mobile-category-sheet__search input");
+    const renderContent = (markup) => {
+      categoryContent.classList.remove("is-changing");
+      void categoryContent.offsetWidth;
+      categoryContent.innerHTML = markup;
+      categoryContent.classList.add("is-changing");
+    };
+    const linkMarkup = (link, category) => link.soon
+      ? `<div class="mobile-category-sheet__soon"><span class="mobile-category-sheet__link-main"><span class="mobile-category-sheet__thumb">${icons[category.id]}</span><span>${link.label}</span></span><small>به‌زودی</small></div>`
+      : `<a class="mobile-category-sheet__link" href="${link.href}"><span class="mobile-category-sheet__link-main"><span class="mobile-category-sheet__thumb">${icons[category.id]}</span><span>${link.label}</span></span>${chevron}</a>`;
 
     const renderCategory = (id) => {
       const category = categories.find((item) => item.id === id) || categories[0];
       rail.querySelectorAll(".mobile-category-sheet__rail-item").forEach((item) => {
         item.classList.toggle("is-active", item.dataset.category === category.id);
       });
-      categoryContent.innerHTML = `
+      renderContent(`
         <div class="mobile-category-sheet__content-head">${icons[category.id]}<span>${category.name}</span></div>
         <p class="mobile-category-sheet__content-desc">محصولات و زیر‌دسته‌های ${category.name}</p>
-        ${category.links.map((link) => link.soon
-          ? `<div class="mobile-category-sheet__soon"><span>${link.label}</span><small>به‌زودی</small></div>`
-          : `<a class="mobile-category-sheet__link" href="${link.href}"><span>${link.label}</span>${chevron}</a>`
-        ).join("")}`;
+        ${category.links.map((link) => linkMarkup(link, category)).join("")}`);
+    };
+
+    const renderSearch = (query) => {
+      const normalized = query.trim().toLocaleLowerCase("fa");
+      if (!normalized) {
+        renderCategory(categories[0].id);
+        return;
+      }
+      const results = categories.flatMap((category) =>
+        category.links
+          .filter((link) => (category.name + " " + link.label).toLocaleLowerCase("fa").includes(normalized))
+          .map((link) => ({ category, link })),
+      );
+      rail.querySelectorAll(".mobile-category-sheet__rail-item").forEach((item) => item.classList.remove("is-active"));
+      renderContent(`
+        <div class="mobile-category-sheet__content-head"><span>نتایج جست‌وجو</span></div>
+        <p class="mobile-category-sheet__content-desc">${results.length ? "زیر‌دسته‌های مرتبط با «" + query + "»" : "نتیجه‌ای پیدا نشد."}</p>
+        ${results.map(({ link, category }) => linkMarkup(link, category)).join("")}`);
     };
 
     categories.forEach((category) => {
@@ -163,11 +193,15 @@
       item.type = "button";
       item.className = "mobile-category-sheet__rail-item";
       item.dataset.category = category.id;
-      item.innerHTML = `${icons[category.id]}<span>${category.name}</span>`;
-      item.addEventListener("click", () => renderCategory(category.id));
+      item.innerHTML = `${icons[category.id]}<span>${category.name}</span>${category.badge ? `<small class="mobile-category-sheet__rail-badge">${category.badge}</small>` : ""}`;
+      item.addEventListener("click", () => {
+        if (searchInput) searchInput.value = "";
+        renderCategory(category.id);
+      });
       rail.appendChild(item);
     });
     renderCategory(categories[0].id);
+    searchInput?.addEventListener("input", (event) => renderSearch(event.currentTarget.value));
 
     document.body.append(backdrop, sheet);
     categorySheet = sheet;
