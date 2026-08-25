@@ -1,8 +1,8 @@
 (() => {
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
   const configs = {
-    "/headphones": { grid: ".grid", card: "card product-card", name: "card-name", image: "pl-catalog-media", body: "pl-catalog-body", brand: "card-brand", price: "card-price", category: "هدفون و هندزفری", title: "هدفون و هندزفری", noFallback: true },
-    "/smartwatches": { grid: ".grid", card: "card product-card", name: "card-name", image: "pl-catalog-media", body: "pl-catalog-body", brand: "card-brand", price: "card-price", category: "ساعت هوشمند", title: "ساعت هوشمند", noFallback: true },
+    "/headphones": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", category: "هدفون و هندزفری", title: "هدفون و هندزفری", noFallback: true },
+    "/smartwatches": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", category: "ساعت هوشمند", title: "ساعت هوشمند", noFallback: true },
     "/mobiles": { grid: ".grid", card: "card product-card", name: "card-name", brand: "card-brand", price: "card-price", category: "موبایل", noFallback: true },
     "/iphone": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", brand: "اپل", category: "موبایل", noFallback: true },
     "/samsung": { grid: ".samsung-grid", card: "samsung-card", name: "samsung-card-name", image: "samsung-card-image", body: "samsung-card-body", desc: "samsung-card-desc", brand: "سامسونگ", category: "موبایل", noFallback: true },
