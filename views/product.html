@@ -5359,10 +5359,6 @@
                 <span class="stars">${starsHtml(product.rating)}</span>
                 <span>${product.rating}</span>
                 <span class="rating-link" id="scrollToReviewsBtn">(${product.reviews} نظر)</span>
-                <span class="availability-pill ${product.outOfStock ? "out-stock" : "in-stock"}">
-                  <i class="ti ${product.outOfStock ? "ti-x" : "ti-check"}"></i>
-                  ${product.outOfStock ? "ناموجود" : "موجود در انبار"}
-                </span>
               </div>
                   <div class="product-desc">${product.desc}</div>
 
@@ -5437,11 +5433,6 @@
               </div>
 
               <div class="product-price-row">
-                ${
-                  product.outOfStock
-                    ? '<div class="price-availability"><i class="ti ti-alert-circle"></i> این محصول در حال حاضر ناموجود است</div>'
-                    : ""
-                }
                 <div class="price-row-values">
                   <div class="price-value">
                     ${product.price > 0 ? product.price.toLocaleString("fa-IR") : "—"}
