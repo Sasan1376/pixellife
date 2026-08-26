@@ -163,9 +163,9 @@ const SHARED_CATEGORY_SCRIPT = `
 <script src="/js/shared-category-nav.js?v=1"></script>`;
 
 const MOBILE_BOTTOM_NAV_HEAD = `
-<link rel="stylesheet" href="/css/mobile-bottom-nav.css?v=7" />`;
+<link rel="stylesheet" href="/css/mobile-bottom-nav.css?v=8" />`;
 const MOBILE_BOTTOM_NAV_SCRIPT = `
-<script src="/js/mobile-bottom-nav.js?v=10"></script>`;
+<script src="/js/mobile-bottom-nav.js?v=11"></script>`;
 const CATALOG_NO_FLASH_HEAD = `
 <style id="database-catalog-no-flash">.grid,.iphone-grid,.samsung-grid,.xiaomi-grid,.prod-grid,.xiaomitab-grid,.console-grid{visibility:hidden}</style>`;
 const LOCAL_FONT_HEAD = `\n<link rel="stylesheet" href="/css/local-fonts.css?v=1" />`;
