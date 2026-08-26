@@ -75,10 +75,17 @@
   // روی بعضی صفحه‌ها (به‌خصوص صفحه محصول) اسکریپت‌های داخلی لینک‌ها را
   // مدیریت می‌کنند. مسیر سبد را صریح نگه می‌داریم تا لمس نوار پایین همیشه
   // کاربر را به صفحه سبد خرید ببرد.
-  nav.querySelector('[data-nav="cart"]')?.addEventListener("click", (event) => {
+  const cartItem = nav.querySelector('[data-nav="cart"]');
+  const openCartImmediately = (event) => {
+    if (event.type === "pointerdown" && event.button !== 0) return;
     event.preventDefault();
+    event.stopPropagation();
     window.location.assign("/cart");
-  });
+  };
+  // روی بعضی صفحه‌ها، handlerهای داخلیِ صفحه کلیک را می‌گیرند. pointerdown
+  // باعث می‌شود سبد خرید با اولین لمس باز شود؛ click فقط برای کیبورد/مرورگرهای قدیمی است.
+  cartItem?.addEventListener("pointerdown", openCartImmediately, { capture: true });
+  cartItem?.addEventListener("click", openCartImmediately, { capture: true });
 
   const categoryItem = nav.querySelector('[data-nav="categories"]');
   let categorySheet;
