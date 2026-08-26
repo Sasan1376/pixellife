@@ -5421,8 +5421,9 @@
                   : ""
               }
 
+              ${!product.outOfStock ? `
               <div class="option-group">
-                <div class="option-label"><i class="ti ti-hash"></i> تعداد <span class="selected-val">${product._fromDb && !product.outOfStock ? "(حداکثر " + maxQuantity.toLocaleString("fa-IR") + " عدد)" : ""}</span></div>
+                <div class="option-label"><i class="ti ti-hash"></i> تعداد <span class="selected-val">${product._fromDb ? "(حداکثر " + maxQuantity.toLocaleString("fa-IR") + " عدد)" : ""}</span></div>
                 <div class="quantity-row">
                   <div class="quantity-selector">
                     <button class="qty-btn" id="qtyMinusBtn">−</button>
@@ -5430,7 +5431,7 @@
                     <button class="qty-btn" id="qtyPlusBtn">+</button>
                   </div>
                 </div>
-              </div>
+              </div>` : ""}
 
               <div class="product-price-row">
                 <div class="price-row-values">
@@ -5766,7 +5767,8 @@
             qty = Math.min(Math.max(1, qty), maxQuantity);
             document.getElementById("storageVal").textContent = selectedStorage;
             document.getElementById("colorVal").textContent = selectedColor.name;
-            document.getElementById("qtyVal").textContent = qty;
+            const quantityValueEl = document.getElementById("qtyVal");
+            if (quantityValueEl) quantityValueEl.textContent = qty;
             document.querySelectorAll(".storage-chip").forEach((chip) => {
               const enabled = variants.some((variant) => variant.storage === chip.dataset.val);
               chip.classList.toggle("active", chip.dataset.val === selectedStorage);
@@ -5826,20 +5828,20 @@
           const qtyValEl = document.getElementById("qtyVal");
           document
             .getElementById("qtyMinusBtn")
-            .addEventListener("click", () => {
+            ?.addEventListener("click", () => {
               qty = Math.max(1, qty - 1);
-              qtyValEl.textContent = qty;
+              if (qtyValEl) qtyValEl.textContent = qty;
             });
           document
             .getElementById("qtyPlusBtn")
-            .addEventListener("click", () => {
+            ?.addEventListener("click", () => {
               const allowed = product._fromDb ? maxQuantity : 10;
               if (qty >= allowed) {
                 showToast(`حداکثر ${allowed.toLocaleString("fa-IR")} عدد از این محصول قابل سفارش است`);
                 return;
               }
               qty = Math.min(allowed, qty + 1);
-              qtyValEl.textContent = qty;
+              if (qtyValEl) qtyValEl.textContent = qty;
             });
 
           document.getElementById("wishBtn").addEventListener("click", (e) => {
