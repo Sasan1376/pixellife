@@ -152,6 +152,9 @@ function resolveMainImage(selection, existingImages = [], uploadedImages = []) {
   return current[0] || incoming[0] || "";
 }
 
+// درخواست تغییر وضعیت مشتری از پنل با JSON ارسال می‌شود.
+router.use(express.json({ limit: "1mb" }));
+router.use(express.urlencoded({ extended: true }));
 router.use(adminSession);
 router.use(requireAdmin);
 router.use((req, res, next) => { res.set("Cache-Control", "no-store, no-cache, must-revalidate, private"); next(); });
