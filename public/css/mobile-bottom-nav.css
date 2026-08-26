@@ -97,6 +97,10 @@
     font-weight: 600;
     line-height: 1.25;
     text-decoration: none;
+    min-height: 56px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     pointer-events: auto;
