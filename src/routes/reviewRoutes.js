@@ -38,6 +38,7 @@ router.get("/:productId", async (req, res) => {
 router.post("/", protect, upload.single("avatar"), async (req, res) => {
   try {
     const { productId, rating, comment, pros, cons } = req.body || {};
+    const normalizeList = (value) => Array.isArray(value) ? value : (typeof value === "string" ? JSON.parse(value || "[]") : []);
     const normalizedProductId = String(productId || "").trim();
     const normalizedComment = String(comment || "").trim();
     const numericRating = Number(rating);
@@ -64,8 +65,8 @@ router.post("/", protect, upload.single("avatar"), async (req, res) => {
       avatar,
       rating: numericRating,
       comment: normalizedComment,
-      pros: Array.isArray(pros) ? pros.map((item) => String(item).trim()).filter(Boolean) : [],
-      cons: Array.isArray(cons) ? cons.map((item) => String(item).trim()).filter(Boolean) : [],
+      pros: normalizeList(pros).map((item) => String(item).trim()).filter(Boolean),
+      cons: normalizeList(cons).map((item) => String(item).trim()).filter(Boolean),
       verified: false,
       status: "pending",
     });
