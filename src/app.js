@@ -20,6 +20,11 @@ const Product = require("./models/Product");
 
 const app = express();
 
+// بدنهٔ JSON و کوکیِ ورود باید پیش از همهٔ APIها خوانده شوند.
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
 app.set("etag", "strong");
 app.set("trust proxy", 1);
 
