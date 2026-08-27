@@ -185,6 +185,7 @@ const addressRoutes = require("./routes/addressRoutes");
 const orderRoutes = require("./routes/orders");
 const adminRoutes = require("./routes/admin");
 const adminApiRoutes = require("./routes/adminApi");
+const adminAiProductsRoutes = require("./routes/adminAiProducts");
 const productRoutes = require("./routes/products");
 const productPageRoutes = require("./routes/productPage");
 const testEmailRoutes = require("./routes/testEmail");
@@ -211,6 +212,7 @@ app.use("/api/orders", orderRoutes);
 
 // Admin Panel
 app.use("/admin/api", adminApiRoutes);
+app.use("/admin/api/ai", adminAiProductsRoutes);
 app.use("/admin", adminRoutes);
 // Products API
 app.use("/api/products", productRoutes);
