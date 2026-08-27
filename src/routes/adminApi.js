@@ -309,6 +309,8 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       showSpecs,
       featured,
       comingSoon,
+      amazingOffer,
+      amazingOfferEndsAt,
       stock,
       availability,
       colors,
