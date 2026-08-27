@@ -4,6 +4,8 @@ const router = express.Router();
 const Product = require("../models/Product");
 const User = require("../models/User");
 const Order = require("../models/Order");
+const Review = require("../models/review");
+const mongoose = require("mongoose");
 const AnalyticsDaily = require("../models/AnalyticsDaily");
 const upload = require("../utils/upload");
 const requireAdmin = require("../middleware/adminAuth");
@@ -495,6 +497,63 @@ router.patch("/orders/:id/status", async (req, res) => {
     order.status = status; order.statusHistory.push({ status, note: "وضعیت توسط ادمین تغییر کرد" }); await order.save();
     res.json({ success: true, order });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
+async function refreshProductReviewStats(productId) {
+  const stats = await Review.aggregate([
+    { $match: { productId: String(productId), status: "approved" } },
+    { $group: { _id: null, count: { $sum: 1 }, rating: { $avg: "$rating" } } },
+  ]);
+  const filter = mongoose.isValidObjectId(productId)
+    ? { $or: [{ _id: productId }, { slug: String(productId) }, { legacyId: String(productId) }] }
+    : { $or: [{ slug: String(productId) }, { legacyId: String(productId) }] };
+  await Product.findOneAndUpdate(filter, {
+    reviewCount: stats[0]?.count || 0,
+    rating: stats[0] ? Number(stats[0].rating.toFixed(1)) : 0,
+  });
+}
+
+async function serializeAdminReview(review) {
+  const item = review.toObject ? review.toObject() : review;
+  const productId = String(item.productId);
+  const productFilter = mongoose.isValidObjectId(productId)
+    ? { $or: [{ _id: productId }, { slug: productId }, { legacyId: productId }] }
+    : { $or: [{ slug: productId }, { legacyId: productId }] };
+  const product = await Product.findOne(productFilter).select("name slug brand category mainImage images").lean();
+  return { ...item, product: product || null };
+}
+
+router.get("/reviews", async (req, res) => {
+  try {
+    const status = ["pending", "approved", "rejected"].includes(req.query.status) ? req.query.status : "pending";
+    const reviews = await Review.find({ status })
+      .populate("userId", "firstName lastName mobile email nationalCode birthDate isVerified isActive createdAt lastLogin")
+      .sort({ date: -1 })
+      .lean();
+    const detailed = await Promise.all(reviews.map(serializeAdminReview));
+    res.json({ success: true, reviews: detailed });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.patch("/reviews/:id/status", async (req, res) => {
+  try {
+    const status = req.body?.status;
+    if (!["approved", "rejected", "pending"].includes(status)) {
+      return res.status(400).json({ success: false, message: "وضعیت نظر معتبر نیست" });
+    }
+    const review = await Review.findByIdAndUpdate(
+      req.params.id,
+      { $set: { status, moderatedAt: status === "pending" ? null : new Date() } },
+      { new: true },
+    );
+    if (!review) return res.status(404).json({ success: false, message: "نظر پیدا نشد" });
+    await refreshProductReviewStats(review.productId);
+    res.json({ success: true, review: await serializeAdminReview(review) });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 module.exports = router;
