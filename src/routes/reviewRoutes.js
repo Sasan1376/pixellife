@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const Review = require("../models/review");
 const Product = require("../models/Product");
 const { protect } = require("../middleware/authMiddleware");
+const upload = require("../utils/upload");
+const { saveProductImage } = require("../utils/productImages");
 
 const router = express.Router();
 
@@ -10,6 +12,7 @@ function publicReview(review) {
   return {
     id: review._id,
     userName: review.userName,
+    avatar: review.avatar || "",
     rating: review.rating,
     comment: review.comment,
     pros: review.pros || [],
@@ -32,7 +35,7 @@ router.get("/:productId", async (req, res) => {
   }
 });
 
-router.post("/", protect, async (req, res) => {
+router.post("/", protect, upload.single("avatar"), async (req, res) => {
   try {
     const { productId, rating, comment, pros, cons } = req.body || {};
     const normalizedProductId = String(productId || "").trim();
@@ -47,10 +50,18 @@ router.post("/", protect, async (req, res) => {
       || req.user.mobile
       || "کاربر پیکسل‌لایف";
 
+    let avatar = req.user.avatar || "";
+    if (req.file) {
+      avatar = await saveProductImage(req.file);
+      req.user.avatar = avatar;
+      await req.user.save({ validateBeforeSave: false });
+    }
+
     const review = await Review.create({
       productId: normalizedProductId,
       userId: req.user._id,
       userName,
+      avatar,
       rating: numericRating,
       comment: normalizedComment,
       pros: Array.isArray(pros) ? pros.map((item) => String(item).trim()).filter(Boolean) : [],
