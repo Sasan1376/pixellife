@@ -3218,6 +3218,11 @@
               placeholder="مثلا: قیمت بالا"
             />
           </div>
+          <div class="form-group">
+            <label class="form-label">تصویر شما (اختیاری)</label>
+            <input type="file" class="form-input" id="reviewAvatarInput" accept="image/*" />
+            <small style="color:var(--text-3)">تصویر پس از تأیید نظر، کنار نام شما نمایش داده می‌شود.</small>
+          </div>
           <button class="btn-auth" id="submitReviewBtn">
             <i class="ti ti-check"></i> ثبت نظر
           </button>
@@ -6108,10 +6113,16 @@
               submitReviewBtn.innerHTML =
                 '<i class="ti ti-loader ti-spin"></i> در حال ثبت...';
 
+              const reviewFormData = new FormData();
+              Object.entries(newReview).forEach(([key, value]) => {
+                reviewFormData.append(key, Array.isArray(value) ? JSON.stringify(value) : value);
+              });
+              const avatarFile = document.getElementById("reviewAvatarInput").files[0];
+              if (avatarFile) reviewFormData.append("avatar", avatarFile);
+
               const response = await fetch("/api/reviews", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newReview),
+                body: reviewFormData,
               });
 
               const data = await response.json();
