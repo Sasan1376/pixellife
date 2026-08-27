@@ -23,7 +23,7 @@ function publicReview(review) {
 
 router.get("/:productId", async (req, res) => {
   try {
-    const reviews = await Review.find({ productId: String(req.params.productId) })
+    const reviews = await Review.find({ productId: String(req.params.productId), status: "approved" })
       .sort({ date: -1 })
       .lean();
     res.json({ success: true, reviews: reviews.map(publicReview) });
@@ -56,6 +56,7 @@ router.post("/", protect, async (req, res) => {
       pros: Array.isArray(pros) ? pros.map((item) => String(item).trim()).filter(Boolean) : [],
       cons: Array.isArray(cons) ? cons.map((item) => String(item).trim()).filter(Boolean) : [],
       verified: false,
+      status: "pending",
     });
 
     const stats = await Review.aggregate([
