@@ -100,6 +100,8 @@ const productSchema = new mongoose.Schema(
     rating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
     comingSoon: { type: Boolean, default: false },
+    amazingOffer: { type: Boolean, default: false },
+    amazingOfferEndsAt: { type: Date, default: null },
     stock: {
       type: Number,
       default: 0,
