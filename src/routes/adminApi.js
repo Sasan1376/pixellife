@@ -6,6 +6,7 @@ const User = require("../models/User");
 const Order = require("../models/Order");
 const Review = require("../models/review");
 const mongoose = require("mongoose");
+const { toGregorian, isValidJalaaliDate } = require("jalaali-js");
 const AnalyticsDaily = require("../models/AnalyticsDaily");
 const upload = require("../utils/upload");
 const requireAdmin = require("../middleware/adminAuth");
@@ -53,6 +54,25 @@ function normalizeAvailability(value, stock) {
 function parseEnabled(value, fallback = true) {
   if (value === undefined) return fallback;
   return value === true || value === "true" || value === "on" || value === "1";
+}
+function parseTehranJalaliDate(value) {
+  const normalized = toEnglishDigits(value).trim();
+  if (!normalized) return null;
+  const match = normalized.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})\s+(\d{1,2}):(\d{2})$/);
+  if (!match) {
+    const error = new Error("زمان پایان را به شکل ۱۴۰۵/۰۶/۰۶ ۱۸:۳۰ وارد کنید");
+    error.statusCode = 400;
+    throw error;
+  }
+  const [, jy, jm, jd, hh, mm] = match.map(Number);
+  if (!isValidJalaaliDate(jy, jm, jd) || hh > 23 || mm > 59) {
+    const error = new Error("تاریخ یا ساعت شمسی معتبر نیست");
+    error.statusCode = 400;
+    throw error;
+  }
+  const { gy, gm, gd } = toGregorian(jy, jm, jd);
+  // ساعت ثبت‌شده ساعت تهران است؛ برای ذخیرهٔ UTC، ۳:۳۰ ساعت کم می‌شود.
+  return new Date(Date.UTC(gy, gm - 1, gd, hh - 3, mm));
 }
 
 function parseVariantNumber(value, label, lineNumber) {
@@ -274,7 +294,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       featured: featured === "true" || featured === "on" || featured === true,
       comingSoon: parseEnabled(comingSoon, false),
       amazingOffer: parseEnabled(amazingOffer, false),
-      amazingOfferEndsAt: amazingOfferEndsAt || null,
+      amazingOfferEndsAt: parseTehranJalaliDate(amazingOfferEndsAt),
       stock: rootStock,
       availability: normalizeAvailability(availability, rootStock),
       images: uploadedImages,
@@ -380,7 +400,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       product.comingSoon = parseEnabled(comingSoon, false);
     }
     if (amazingOffer !== undefined) product.amazingOffer = parseEnabled(amazingOffer, false);
-    if (amazingOfferEndsAt !== undefined) product.amazingOfferEndsAt = amazingOfferEndsAt || null;
+    if (amazingOfferEndsAt !== undefined) product.amazingOfferEndsAt = parseTehranJalaliDate(amazingOfferEndsAt);
 
     const existingImages = (Array.isArray(product.images) ? product.images : []).map(normalizeImagePath).filter(Boolean);
     const removed = new Set(parseRemovedImages(removeImages));
