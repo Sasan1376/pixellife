@@ -36,7 +36,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "sitemap": "^9.0.1",
-    "slugify": "^1.6.9"
+    "slugify": "^1.6.9",
+    "jalaali-js": "^1.2.8"
   },
   "devDependencies": {
     "@types/node": "^22.15.29",
