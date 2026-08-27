@@ -6,10 +6,27 @@ const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+function publicReview(review) {
+  return {
+    id: review._id,
+    userName: review.userName,
+    rating: review.rating,
+    comment: review.comment,
+    pros: review.pros || [],
+    cons: review.cons || [],
+    verified: review.verified,
+    date: review.date,
+    helpful: review.helpful || 0,
+    reply: review.reply || null,
+  };
+}
+
 router.get("/:productId", async (req, res) => {
   try {
-    const reviews = await Review.find({ productId: req.params.productId }).sort({ date: -1 });
-    res.json(reviews);
+    const reviews = await Review.find({ productId: String(req.params.productId) })
+      .sort({ date: -1 })
+      .lean();
+    res.json({ success: true, reviews: reviews.map(publicReview) });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -17,22 +34,51 @@ router.get("/:productId", async (req, res) => {
 
 router.post("/", protect, async (req, res) => {
   try {
-    const review = await Review.create(req.body);
+    const { productId, rating, comment, pros, cons } = req.body || {};
+    const normalizedProductId = String(productId || "").trim();
+    const normalizedComment = String(comment || "").trim();
+    const numericRating = Number(rating);
 
-    // آمار محصول تنها از نظرهای واقعی ثبت‌شده در دیتابیس محاسبه می‌شود.
+    if (!normalizedProductId || !normalizedComment || !Number.isInteger(numericRating) || numericRating < 1 || numericRating > 5) {
+      return res.status(400).json({ success: false, error: "اطلاعات نظر کامل و معتبر نیست" });
+    }
+
+    const userName = [req.user.firstName, req.user.lastName].filter(Boolean).join(" ").trim()
+      || req.user.mobile
+      || "کاربر پیکسل‌لایف";
+
+    const review = await Review.create({
+      productId: normalizedProductId,
+      userId: req.user._id,
+      userName,
+      rating: numericRating,
+      comment: normalizedComment,
+      pros: Array.isArray(pros) ? pros.map((item) => String(item).trim()).filter(Boolean) : [],
+      cons: Array.isArray(cons) ? cons.map((item) => String(item).trim()).filter(Boolean) : [],
+      verified: false,
+    });
+
     const stats = await Review.aggregate([
-      { $match: { productId: review.productId } },
+      { $match: { productId: normalizedProductId } },
       { $group: { _id: null, count: { $sum: 1 }, rating: { $avg: "$rating" } } },
     ]);
-    if (stats[0] && mongoose.isValidObjectId(review.productId)) {
-      await Product.findByIdAndUpdate(review.productId, {
+
+    const productFilter = mongoose.isValidObjectId(normalizedProductId)
+      ? { $or: [{ _id: normalizedProductId }, { slug: normalizedProductId }, { legacyId: normalizedProductId }] }
+      : { $or: [{ slug: normalizedProductId }, { legacyId: normalizedProductId }] };
+
+    if (stats[0]) {
+      await Product.findOneAndUpdate(productFilter, {
         reviewCount: stats[0].count,
         rating: Number(stats[0].rating.toFixed(1)),
       });
     }
 
-    res.status(201).json({ success: true, review });
+    res.status(201).json({ success: true, review: publicReview(review) });
   } catch (error) {
+    if (error && error.code === 11000) {
+      return res.status(409).json({ success: false, error: "شما قبلاً برای این محصول نظر ثبت کرده‌اید" });
+    }
     res.status(400).json({ success: false, error: error.message });
   }
 });
