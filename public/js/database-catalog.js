@@ -108,8 +108,12 @@
     const comingSoonBadge = product.comingSoon
       ? '<span class="pl-coming-soon"><i class="ti ti-clock"></i> به‌زودی</span>'
       : "";
+    const amazingActive = product.amazingOffer && (!product.amazingOfferEndsAt || new Date(product.amazingOfferEndsAt) > new Date());
+    const amazingRibbon = amazingActive
+      ? '<span style="position:absolute;top:10px;right:-6px;z-index:8;background:#dc2626;color:#fff;padding:6px 14px 6px 10px;border-radius:0 8px 8px 0;font-size:11px;font-weight:800;box-shadow:0 4px 12px rgba(220,38,38,.35)">شگفت‌انگیز</span>'
+      : "";
     // نام برند فقط یک‌بار، بالای مدل محصول نمایش داده می‌شود.
-    return `<a href="${href}" class="${config.card} pl-catalog-card" data-stock="${stock}" style="color:inherit;text-decoration:none">${comingSoonBadge}<div class="${imageClass}">${colorDots(product, outOfStock)}${imageMarkup(product, name)}</div><div class="${bodyClass}"><div class="pl-catalog-brand">${escapeHtml(product.brand || "")}</div><div class="${config.name}">${name}</div><div class="pl-catalog-footer"><div class="pl-catalog-stock">${status}</div>${priceHtml}</div></div></a>`;
+    return `<a href="${href}" class="${config.card} pl-catalog-card" data-stock="${stock}" style="color:inherit;text-decoration:none;position:relative">${amazingRibbon}${comingSoonBadge}<div class="${imageClass}">${colorDots(product, outOfStock)}${imageMarkup(product, name)}</div><div class="${bodyClass}"><div class="pl-catalog-brand">${escapeHtml(product.brand || "")}</div><div class="${config.name}">${name}</div><div class="pl-catalog-footer"><div class="pl-catalog-stock">${status}</div>${priceHtml}</div></div></a>`;
   }
 
   const requestedParams = new URLSearchParams(window.location.search);
