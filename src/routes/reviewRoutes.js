@@ -60,7 +60,7 @@ router.post("/", protect, async (req, res) => {
     });
 
     const stats = await Review.aggregate([
-      { $match: { productId: normalizedProductId } },
+      { $match: { productId: normalizedProductId, status: "approved" } },
       { $group: { _id: null, count: { $sum: 1 }, rating: { $avg: "$rating" } } },
     ]);
 
