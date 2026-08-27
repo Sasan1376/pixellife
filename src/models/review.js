@@ -12,6 +12,8 @@ const reviewSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
   helpful: { type: Number, default: 0 },
   reply: { type: String, default: null },
+  status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending", index: true },
+  moderatedAt: { type: Date, default: null },
 });
 
 reviewSchema.index({ productId: 1, date: -1 });
