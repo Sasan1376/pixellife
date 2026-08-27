@@ -11,7 +11,7 @@ const { streamProductImage } = require("../utils/productImages");
 
 const PRODUCT_CARD_FIELDS = [
   "name", "slug", "legacyId", "brand", "category", "price", "discount",
-  "featured", "availability", "images", "mainImage", "colors", "variants",
+  "featured", "availability", "amazingOffer", "amazingOfferEndsAt", "images", "mainImage", "colors", "variants",
   "storages", "hasStorage", "rating", "reviewCount", "comingSoon", "stock",
   "createdAt", "updatedAt",
 ].join(" ");
