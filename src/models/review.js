@@ -4,6 +4,7 @@ const reviewSchema = new mongoose.Schema({
   productId: { type: String, required: true, trim: true, index: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
   userName: { type: String, required: true, trim: true },
+  avatar: { type: String, default: "" },
   rating: { type: Number, required: true, min: 1, max: 5 },
   comment: { type: String, required: true, trim: true, maxlength: 2000 },
   pros: { type: [String], default: [] },
