@@ -15,6 +15,6 @@ const reviewSchema = new mongoose.Schema({
 });
 
 reviewSchema.index({ productId: 1, date: -1 });
-reviewSchema.index({ productId: 1, userId: 1 }, { unique: true });
+reviewSchema.index({ productId: 1, userId: 1 }, { unique: true, partialFilterExpression: { userId: { $exists: true } } });
 
 module.exports = mongoose.models.Review || mongoose.model("Review", reviewSchema);
