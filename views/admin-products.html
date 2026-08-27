@@ -409,6 +409,16 @@
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
                   <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="fAmazingOffer" />
+                    <label class="form-check-label text-danger fw-bold" for="fAmazingOffer">پیشنهاد شگفت‌انگیز</label>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">پایان پیشنهاد شگفت‌انگیز</label>
+                  <input type="datetime-local" class="form-control" id="fAmazingOfferEndsAt" />
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                  <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="fHasStorage" checked />
                     <label class="form-check-label" for="fHasStorage">نمایش انتخاب حافظه در صفحه محصول</label>
                   </div>
@@ -867,6 +877,8 @@
         document.getElementById("fShowReview").checked = false;
         document.getElementById("fHideColorsWhenOutOfStock").checked = true;
         document.getElementById("fComingSoon").checked = false;
+        document.getElementById("fAmazingOffer").checked = false;
+        document.getElementById("fAmazingOfferEndsAt").value = "";
         document.getElementById("fShowSpecs").checked = true;
         document.getElementById("fHasWarranty").checked = true;
         renderReviewSections(DEFAULT_REVIEW_SECTIONS);
@@ -892,6 +904,8 @@
         document.getElementById("fAvailability").value = p.availability || "in";
         document.getElementById("fFeatured").checked = !!p.featured;
         document.getElementById("fComingSoon").checked = p.comingSoon === true;
+        document.getElementById("fAmazingOffer").checked = p.amazingOffer === true;
+        document.getElementById("fAmazingOfferEndsAt").value = p.amazingOfferEndsAt ? new Date(p.amazingOfferEndsAt).toISOString().slice(0,16) : "";
         document.getElementById("fHasStorage").checked = p.hasStorage !== false;
         document.getElementById("fHasWarranty").checked = p.hasWarranty !== false;
         document.getElementById("fShowSpecs").checked = p.showSpecs !== false;
@@ -1058,6 +1072,8 @@
           );
           fd.append("featured", document.getElementById("fFeatured").checked);
           fd.append("comingSoon", document.getElementById("fComingSoon").checked);
+          fd.append("amazingOffer", document.getElementById("fAmazingOffer").checked);
+          fd.append("amazingOfferEndsAt", document.getElementById("fAmazingOfferEndsAt").value);
           fd.append("hasStorage", hasStorage);
           fd.append("hasWarranty", hasWarranty);
           fd.append("showSpecs", showSpecs);
