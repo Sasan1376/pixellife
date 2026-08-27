@@ -16,7 +16,7 @@
         </button>
         <div class="megamenu-panel" id="megamenuPanel">
           <div class="megamenu-cats" id="megamenuCats"></div>
-          <div class="megamenu-content" id="megamenuContent"></div><aside class="megamenu-promo" id="megamenuPromo"></aside>
+          <div class="megamenu-content" id="megamenuContent"></div>
         </div>
       </div>
       <a href="/" class="nav-link"><i class="ti ti-home"></i> خانه</a>
@@ -38,7 +38,6 @@
   const panel = navbar.querySelector('#megamenuPanel');
   const cats = navbar.querySelector('#megamenuCats');
   const content = navbar.querySelector('#megamenuContent');
-  const promo = navbar.querySelector('#megamenuPromo');
 
   const categoriesData = [
     {
@@ -113,8 +112,6 @@
     content.querySelectorAll('.megamenu-content-panel').forEach((p) => {
       p.classList.toggle('active', p.dataset.catPanel === catId);
     });
-    const cat = categoriesData.find((item) => item.id === catId);
-    if (promo && cat) promo.innerHTML = `<div class="promo-kicker"><i class="ti ti-sparkles"></i> منتخب PixelLife</div><strong>${cat.name}</strong><p>پرفروش‌ترین انتخاب‌های این دسته را ببینید.</p><a href="${cat.seeAllHref}">مشاهده محصولات <i class="ti ti-arrow-left"></i></a>`;
   }
 
   categoriesData.forEach((cat, idx) => {
@@ -138,7 +135,6 @@
         <a href="${cat.seeAllHref}" class="megamenu-link see-all">مشاهده همه ${cat.name}<i class="ti ti-arrow-left"></i></a>
       </div>`;
     content.appendChild(catPanel);
-    if (idx === 0) activateCat(cat.id);
 
     const activate = (event) => {
       if (event) event.stopPropagation();
