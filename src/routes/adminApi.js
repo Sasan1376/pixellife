@@ -58,9 +58,10 @@ function parseEnabled(value, fallback = true) {
 function parseTehranJalaliDate(value) {
   const normalized = toEnglishDigits(value).trim();
   if (!normalized) return null;
-  const match = normalized.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})\s+(\d{1,2}):(\d{2})$/);
+  // جداکننده‌ها می‌توانند اسلش، خط تیره، فاصله یا علائم فارسی باشند.
+  const match = normalized.match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})\D+(\d{1,2})\D+(\d{1,2})/);
   if (!match) {
-    const error = new Error("زمان پایان را به شکل ۱۴۰۵/۰۶/۰۶ ۱۸:۳۰ وارد کنید");
+    const error = new Error("تاریخ و ساعت شمسی را وارد کنید؛ نمونه: ۱۴۰۵/۰۶/۰۶ ۱۸:۳۰");
     error.statusCode = 400;
     throw error;
   }
