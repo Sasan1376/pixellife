@@ -110,11 +110,14 @@
     const discount = Number(product.discount || 0);
     const stock = Number(product.stock || 0);
     const inStock = product.availability === "in" && stock !== 0;
+    const amazingActive = product.amazingOffer && (!product.amazingOfferEndsAt || new Date(product.amazingOfferEndsAt) > new Date());
+    const amazingRibbon = amazingActive ? `<span style="position:absolute;top:8px;right:-7px;z-index:4;background:#e11d48;color:#fff;padding:5px 12px 5px 9px;border-radius:0 7px 7px 0;font-size:11px;font-weight:800;box-shadow:0 3px 10px rgba(225,29,72,.35)">شگفت‌انگیز</span>` : "";
 
     if (grid.classList.contains("iphone-grid")) {
       return `
         <a href="${href}" class="iphone-card" style="color: inherit">
           <div class="iphone-badges">
+            ${amazingRibbon}
             ${product.comingSoon ? '<span class="badge-coming-soon"><i class="ti ti-clock"></i> به‌زودی</span>' : ""}
             <span class="${inStock ? "badge-in-stock" : "badge-out-of-stock"}"><i class="ti ti-${inStock ? "check" : "x"}-circle"></i> ${inStock ? "موجود" : "ناموجود"}</span>
           </div>
