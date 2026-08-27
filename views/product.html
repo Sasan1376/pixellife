@@ -6121,38 +6121,8 @@
               }
 
               if (data.success) {
-                demoReviews.unshift({
-                  name: data.review.userName,
-                  verified: data.review.verified,
-                  rating: data.review.rating,
-                  date: "همین الان",
-                  comment: data.review.comment,
-                  pros: data.review.pros,
-                  cons: data.review.cons,
-                  helpful: data.review.helpful,
-                  reply: data.review.reply,
-                });
-                renderReviews();
-
-                const reviewsCountEl =
-                  document.getElementById("scrollToReviewsBtn");
-                if (reviewsCountEl) {
-                  const newCount =
-                    (parseInt(
-                      product.reviews.replace(/[۰-۹]/g, (d) =>
-                        "۰۱۲۳۴۵۶۷۸۹".indexOf(d),
-                      ),
-                    ) || 0) + 1;
-                  product.reviews = newCount.toLocaleString("fa-IR");
-                  reviewsCountEl.textContent = `(${product.reviews} نظر)`;
-                }
-
                 closeReviewModal();
-                showToast("نظر شما با موفقیت در دیتابیس ثبت شد");
-
-                document
-                  .getElementById("customerReviewsSection")
-                  .scrollIntoView({ behavior: "smooth", block: "start" });
+                showToast("نظر شما ثبت شد و پس از تأیید مدیر نمایش داده می‌شود");
               }
             } catch (error) {
               showToast(error.message || "خطا در ثبت نظر");
