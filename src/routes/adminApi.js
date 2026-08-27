@@ -72,7 +72,7 @@ function parseTehranJalaliDate(value) {
   }
   const { gy, gm, gd } = toGregorian(jy, jm, jd);
   // ساعت ثبت‌شده ساعت تهران است؛ برای ذخیرهٔ UTC، ۳:۳۰ ساعت کم می‌شود.
-  return new Date(Date.UTC(gy, gm - 1, gd, hh - 3, mm));
+  return new Date(Date.UTC(gy, gm - 1, gd, hh - 3, mm - 30));
 }
 
 function parseVariantNumber(value, label, lineNumber) {
