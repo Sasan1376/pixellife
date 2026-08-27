@@ -5310,6 +5310,7 @@
               // فقط نظرهای واقعی ثبت‌شده توسط کاربران نمایش داده می‌شوند.
               demoReviews = data.reviews.map((r) => ({
                 name: r.userName,
+                avatar: r.avatar || "",
                 verified: r.verified,
                 rating: r.rating,
                 date: new Date(r.date).toLocaleDateString("fa-IR"),
