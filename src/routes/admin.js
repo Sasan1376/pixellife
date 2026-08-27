@@ -72,6 +72,10 @@ router.get("/reviews", requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, "../../views/admin-reviews.html"));
 });
 
+router.get("/ai-products", requireAdmin, (req, res) => {
+  res.sendFile(path.join(__dirname, "../../views/admin-ai-products.html"));
+});
+
 router.get("/analytics", requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, "../../views/admin-analytics.html"));
 });
