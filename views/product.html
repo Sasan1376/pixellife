@@ -6155,7 +6155,7 @@
                   .scrollIntoView({ behavior: "smooth", block: "start" });
               }
             } catch (error) {
-              showToast("خطا در ارتباط با سرور");
+              showToast(error.message || "خطا در ثبت نظر");
             } finally {
               submitReviewBtn.disabled = false;
               submitReviewBtn.innerHTML = '<i class="ti ti-check"></i> ثبت نظر';
