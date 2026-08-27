@@ -526,7 +526,10 @@ async function serializeAdminReview(review) {
 router.get("/reviews", async (req, res) => {
   try {
     const status = ["pending", "approved", "rejected"].includes(req.query.status) ? req.query.status : "pending";
-    const reviews = await Review.find({ status })
+    const filter = status === "pending"
+      ? { $or: [{ status: "pending" }, { status: { $exists: false } }] }
+      : { status };
+    const reviews = await Review.find(filter)
       .populate("userId", "firstName lastName mobile email nationalCode birthDate isVerified isActive createdAt lastLogin")
       .sort({ date: -1 })
       .lean();
