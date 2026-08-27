@@ -5298,12 +5298,12 @@
               const response = await fetch(`/api/reviews/${productId}`);
               const data = await response.json();
 
-              if (!response.ok || !Array.isArray(data)) {
+              if (!response.ok || !data.success || !Array.isArray(data.reviews)) {
                 throw new Error("دریافت نظرات ناموفق بود");
               }
 
               // فقط نظرهای واقعی ثبت‌شده توسط کاربران نمایش داده می‌شوند.
-              demoReviews = data.map((r) => ({
+              demoReviews = data.reviews.map((r) => ({
                 name: r.userName,
                 verified: r.verified,
                 rating: r.rating,
