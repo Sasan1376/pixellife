@@ -1179,6 +1179,7 @@
         z-index: 2;
       }
       .badge-coming-soon,
+      .badge-amazing,
       .badge-out-of-stock,
       .badge-discount {
         display: inline-flex;
@@ -1193,6 +1194,8 @@
       .badge-coming-soon {
         background: var(--blue);
       }
+      .badge-amazing { background: #dc2626; box-shadow: 0 4px 12px rgba(220,38,38,.28); }
+      .amazing-countdown { position:absolute; top:58px; right:12px; z-index:3; display:inline-flex; align-items:center; gap:7px; color:#be123c; background:#fff1f2; border:1px solid #fecdd3; border-radius:9px; padding:7px 10px; font-weight:800; font-size:12px; }
       .badge-out-of-stock {
         background: var(--red);
       }
@@ -4444,6 +4447,8 @@
           reviews: doc.reviewCount != null ? toFaDigits(doc.reviewCount) : "۰",
           desc: doc.description || "",
           comingSoon: !!doc.comingSoon,
+          amazingOffer: !!doc.amazingOffer,
+          amazingOfferEndsAt: doc.amazingOfferEndsAt || null,
           stock: Math.max(0, Number(doc.stock) || 0),
           outOfStock: doc.availability === "out" || Number(doc.stock) <= 0,
           price: doc.price,
@@ -5333,10 +5338,12 @@
             <div class="product-gallery">
               <div class="gallery-main" id="galleryMain">
                 <div class="product-badges">
+                  ${product.amazingOffer && (!product.amazingOfferEndsAt || new Date(product.amazingOfferEndsAt) > new Date()) ? '<span class="badge-amazing"><i class="ti ti-bolt"></i> شگفت‌انگیز</span>' : ""}
                   ${product.comingSoon ? '<span class="badge-coming-soon"><i class="ti ti-clock"></i> به‌زودی</span>' : ""}
                   ${product.outOfStock ? '<span class="badge-out-of-stock"><i class="ti ti-circle-x"></i> ناموجود</span>' : ""}
                   ${discountPct > 0 ? `<span class="badge-discount"><i class="ti ti-tag"></i> ${discountPct}% تخفیف</span>` : ""}
                 </div>
+                ${product.amazingOffer && product.amazingOfferEndsAt && new Date(product.amazingOfferEndsAt) > new Date() ? `<div class="amazing-countdown" id="amazingCountdown"><i class="ti ti-clock"></i> پایان: <b>--:--:--</b></div>` : ""}
                 <button class="gallery-nav-btn gallery-nav-prev" id="galPrevBtn"><i class="ti ti-chevron-right"></i></button>
                 <div id="galleryImgHolder">${productImageHtml(product, 0)}</div>
                 <button class="gallery-nav-btn gallery-nav-next" id="galNextBtn"><i class="ti ti-chevron-left"></i></button>
@@ -5923,6 +5930,12 @@
                 ? '<i class="ti ti-chevron-up"></i> بستن مشخصات'
                 : '<i class="ti ti-chevron-down"></i> نمایش کامل مشخصات';
             });
+          }
+
+          const amazingTimer = document.getElementById("amazingCountdown");
+          if (amazingTimer && product.amazingOfferEndsAt) {
+            const updateAmazingTimer = () => { const remaining = new Date(product.amazingOfferEndsAt).getTime() - Date.now(); if (remaining <= 0) { amazingTimer.remove(); return; } const h = Math.floor(remaining / 3600000), m = Math.floor((remaining % 3600000) / 60000), s = Math.floor((remaining % 60000) / 1000); amazingTimer.querySelector("b").textContent = [h,m,s].map(n => String(n).padStart(2,"0")).join(":"); };
+            updateAmazingTimer(); setInterval(updateAmazingTimer, 1000);
           }
 
           const reviewsListEl = document.getElementById("reviewsList");
