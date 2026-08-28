@@ -36,7 +36,7 @@
   if (!document.getElementById("database-catalog-amazing-timer-style")) {
     const style = document.createElement("style");
     style.id = "database-catalog-amazing-timer-style";
-    style.textContent = ".pl-amazing-timer{display:flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;margin:8px 0 0!important;padding:7px 8px!important;border-radius:9px!important;background:#fff1f2!important;color:#be123c!important;font:800 12px Vazirmatn,Tahoma,sans-serif!important;line-height:1.45!important;white-space:nowrap!important}.pl-amazing-timer i{font-size:15px!important}@media(max-width:640px){.pl-amazing-timer{font-size:10px!important;padding:6px 5px!important;gap:3px!important}}";
+    style.textContent = ".pl-catalog-discount{position:absolute!important;left:10px!important;top:10px!important;z-index:9!important;background:#16a34a!important;color:#fff!important;padding:4px 7px!important;border-radius:8px!important;font:800 11px Vazirmatn,Tahoma,sans-serif!important;direction:ltr!important}.pl-amazing-timer{display:flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;margin:8px 0 0!important;padding:7px 8px!important;border-radius:9px!important;background:#fff1f2!important;color:#be123c!important;font:800 12px Vazirmatn,Tahoma,sans-serif!important;line-height:1.45!important;white-space:nowrap!important}.pl-amazing-timer i{font-size:15px!important}@media(max-width:640px){.pl-amazing-timer{font-size:10px!important;padding:6px 5px!important;gap:3px!important}}";
     document.head.appendChild(style);
   }
 
@@ -122,8 +122,12 @@
     const amazingTimer = amazingActive && product.amazingOfferEndsAt
       ? '<div class="pl-amazing-timer"><i class="ti ti-clock"></i><span data-amazing-end="' + escapeHtml(product.amazingOfferEndsAt) + '"></span></div>'
       : "";
+    const discountPercent = Math.max(0, Number(product.discountPercent || product.discount || 0));
+    const discountBadge = discountPercent > 0
+      ? '<span class="pl-catalog-discount">' + discountPercent + '%</span>'
+      : "";
     // نام برند فقط یک‌بار، بالای مدل محصول نمایش داده می‌شود.
-    return `<a href="${href}" class="${config.card} pl-catalog-card" data-stock="${stock}" style="color:inherit;text-decoration:none;position:relative">${amazingRibbon}${comingSoonBadge}<div class="${imageClass}">${colorDots(product, outOfStock)}${imageMarkup(product, name)}</div><div class="${bodyClass}"><div class="pl-catalog-brand">${escapeHtml(product.brand || "")}</div><div class="${config.name}">${name}</div><div class="pl-catalog-footer"><div class="pl-catalog-stock">${status}</div>${priceHtml}${amazingTimer}</div></div></a>`;
+    return `<a href="${href}" class="${config.card} pl-catalog-card" data-stock="${stock}" style="color:inherit;text-decoration:none;position:relative">${amazingRibbon}${discountBadge}${comingSoonBadge}<div class="${imageClass}">${colorDots(product, outOfStock)}${imageMarkup(product, name)}</div><div class="${bodyClass}"><div class="pl-catalog-brand">${escapeHtml(product.brand || "")}</div><div class="${config.name}">${name}</div><div class="pl-catalog-footer"><div class="pl-catalog-stock">${status}</div>${priceHtml}${amazingTimer}</div></div></a>`;
   }
 
   const requestedParams = new URLSearchParams(window.location.search);
