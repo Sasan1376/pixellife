@@ -1,12 +1,11 @@
 (function () {
-  if (window.location.pathname === '/' || window.location.pathname === '/index.html') return;
-  if (window.__pixelLifeSharedCategoryNavV3) return;
-  window.__pixelLifeSharedCategoryNavV3 = true;
+  if (window.__pixelLifeSharedCategoryNavV4) return;
+  window.__pixelLifeSharedCategoryNavV4 = true;
 
   const navbar = document.querySelector('.navbar');
   if (!navbar) return;
 
-  // Rebuild the ENTIRE navbar content to match index.html exactly.
+  // Rebuild the ENTIRE navbar content to keep navigation consistent everywhere.
   navbar.innerHTML = `
     <div class="navbar-inner">
       <div class="nav-cats-wrap">
@@ -19,6 +18,7 @@
           <div class="megamenu-content" id="megamenuContent"></div>
         </div>
       </div>
+      <a href="/amazing" class="nav-link"><i class="ti ti-bolt"></i> شگفت‌انگیز</a>
       <a href="/" class="nav-link"><i class="ti ti-home"></i> خانه</a>
       <a href="/offers" class="nav-link"><i class="ti ti-flame"></i> پیشنهاد ویژه</a>
       <a href="/new" class="nav-link"><i class="ti ti-sparkles"></i> تازه‌ها</a>
@@ -199,4 +199,52 @@
   document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape' && isOpen) closeMegamenu();
   });
+
+  // در صفحه اصلی، خود کادر آبی شگفت‌انگیز نیز به صفحه کامل پیشنهادها متصل باشد.
+  if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+    const explicitSelectors = [
+      '.amazing-section', '.amazing-offers', '.amazing-offers-section',
+      '.amazing-box', '.special-offer-section', '[data-amazing-section]'
+    ];
+    let amazingBox = document.querySelector(explicitSelectors.join(','));
+
+    if (!amazingBox) {
+      const labels = Array.from(document.querySelectorAll('h1,h2,h3,h4,strong,span,div'))
+        .filter((el) => /شگفت[‌\s-]*انگیز/.test((el.textContent || '').trim()))
+        .sort((a, b) => (a.textContent || '').length - (b.textContent || '').length);
+      const label = labels[0];
+      if (label) {
+        let node = label;
+        while (node && node !== document.body) {
+          const style = window.getComputedStyle(node);
+          const bg = style.backgroundColor || '';
+          const hasBlueBackground = /rgb\(\s*(?:37|59)\s*,\s*(?:99|130)\s*,\s*(?:235|246)\s*\)/.test(bg) ||
+            /linear-gradient/.test(style.backgroundImage || '');
+          if ((node.tagName === 'SECTION' || node.tagName === 'DIV') && hasBlueBackground) {
+            amazingBox = node;
+            break;
+          }
+          node = node.parentElement;
+        }
+      }
+    }
+
+    if (amazingBox && !amazingBox.dataset.amazingLinked) {
+      amazingBox.dataset.amazingLinked = 'true';
+      amazingBox.style.cursor = 'pointer';
+      amazingBox.setAttribute('role', 'link');
+      amazingBox.setAttribute('tabindex', amazingBox.getAttribute('tabindex') || '0');
+      const goAmazing = (event) => {
+        if (event.target.closest('a,button,input,select,textarea')) return;
+        window.location.href = '/amazing';
+      };
+      amazingBox.addEventListener('click', goAmazing);
+      amazingBox.addEventListener('keydown', (event) => {
+        if ((event.key === 'Enter' || event.key === ' ') && !event.target.closest('a,button,input,select,textarea')) {
+          event.preventDefault();
+          window.location.href = '/amazing';
+        }
+      });
+    }
+  }
 })();
