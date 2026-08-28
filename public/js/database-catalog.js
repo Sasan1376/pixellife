@@ -33,6 +33,13 @@
     document.head.appendChild(style);
   }
 
+  if (!document.getElementById("database-catalog-amazing-timer-style")) {
+    const style = document.createElement("style");
+    style.id = "database-catalog-amazing-timer-style";
+    style.textContent = ".pl-amazing-timer{display:flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;margin:8px 0 0!important;padding:7px 8px!important;border-radius:9px!important;background:#fff1f2!important;color:#be123c!important;font:800 12px Vazirmatn,Tahoma,sans-serif!important;line-height:1.45!important;white-space:nowrap!important}.pl-amazing-timer i{font-size:15px!important}@media(max-width:640px){.pl-amazing-timer{font-size:10px!important;padding:6px 5px!important;gap:3px!important}}";
+    document.head.appendChild(style);
+  }
+
   if (!document.getElementById("database-catalog-coming-soon-style")) {
     const style = document.createElement("style");
     style.id = "database-catalog-coming-soon-style";
@@ -112,8 +119,11 @@
     const amazingRibbon = amazingActive
       ? '<span style="position:absolute;top:10px;right:-6px;z-index:8;background:#dc2626;color:#fff;padding:6px 14px 6px 10px;border-radius:0 8px 8px 0;font-size:11px;font-weight:800;box-shadow:0 4px 12px rgba(220,38,38,.35)">شگفت‌انگیز</span>'
       : "";
+    const amazingTimer = amazingActive && product.amazingOfferEndsAt
+      ? '<div class="pl-amazing-timer"><i class="ti ti-clock"></i><span data-amazing-end="' + escapeHtml(product.amazingOfferEndsAt) + '"></span></div>'
+      : "";
     // نام برند فقط یک‌بار، بالای مدل محصول نمایش داده می‌شود.
-    return `<a href="${href}" class="${config.card} pl-catalog-card" data-stock="${stock}" style="color:inherit;text-decoration:none;position:relative">${amazingRibbon}${comingSoonBadge}<div class="${imageClass}">${colorDots(product, outOfStock)}${imageMarkup(product, name)}</div><div class="${bodyClass}"><div class="pl-catalog-brand">${escapeHtml(product.brand || "")}</div><div class="${config.name}">${name}</div><div class="pl-catalog-footer"><div class="pl-catalog-stock">${status}</div>${priceHtml}</div></div></a>`;
+    return `<a href="${href}" class="${config.card} pl-catalog-card" data-stock="${stock}" style="color:inherit;text-decoration:none;position:relative">${amazingRibbon}${comingSoonBadge}<div class="${imageClass}">${colorDots(product, outOfStock)}${imageMarkup(product, name)}</div><div class="${bodyClass}"><div class="pl-catalog-brand">${escapeHtml(product.brand || "")}</div><div class="${config.name}">${name}</div><div class="pl-catalog-footer"><div class="pl-catalog-stock">${status}</div>${priceHtml}${amazingTimer}</div></div></a>`;
   }
 
   const requestedParams = new URLSearchParams(window.location.search);
@@ -164,6 +174,20 @@
       // موازی نباید دادهٔ قدیمی را دوباره برگرداند.
       grid.innerHTML = data.products.map(card).join("");
       grid.dataset.databaseCatalog = "ready";
+      const updateAmazingTimers = () => {
+        let expired = false;
+        grid.querySelectorAll("[data-amazing-end]").forEach((el) => {
+          const diff = new Date(el.dataset.amazingEnd).getTime() - Date.now();
+          if (diff <= 0) { expired = true; return; }
+          const h = Math.floor(diff / 3600000);
+          const m = Math.floor((diff % 3600000) / 60000);
+          const s = Math.floor((diff % 60000) / 1000);
+          el.textContent = h.toLocaleString("fa-IR") + ":" + String(m).padStart(2, "0").toLocaleString("fa-IR") + ":" + String(s).padStart(2, "0").toLocaleString("fa-IR") + " باقی‌مانده";
+        });
+        if (expired) window.location.reload();
+      };
+      updateAmazingTimers();
+      window.setInterval(updateAmazingTimers, 1000);
     })
     .catch(() => {
       if (config.noFallback) {
