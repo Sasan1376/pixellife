@@ -257,17 +257,17 @@ function injectDatabaseCatalog(html) {
     html = html.replace("</head>", `${CATALOG_NO_FLASH_HEAD}\n</head>`);
   }
 
-  // همهٔ صفحه‌های فهرست از نسخهٔ تازهٔ کاتالوگ استفاده کنند تا کارت‌های نمونه
-  // قبل از دریافت دادهٔ واقعی از دیتابیس دیده نشوند.
+  // فقط یک رندرکنندهٔ کارت بارگذاری شود؛ نسخهٔ قدیمی بعد از نسخهٔ جدید
+  // کارت‌ها را بازنویسی می‌کرد و تایمر/درصد پیشنهاد شگفت‌انگیز را حذف می‌کرد.
   html = html.replace(
-    /\/js\/database-catalog\.js(?:\?v=[^"'\s>]*)?/g,
-    "/js/database-catalog.js?v=20260825-headphone-mobile-1",
+    /<script[^>]+src=["']\/js\/database-catalog\.js(?:\?v=[^"'\s>]*)?["'][^>]*><\/script>\s*/g,
+    "",
   );
 
-  if (html.includes("/js/database-catalog.js")) return html;
+  if (html.includes("/js/database-catalog-amazing-v1.js")) return html;
   return html.replace(
     "</body>",
-    '<script src="/js/database-catalog.js?v=20260825-headphone-mobile-1"></script>\n</body>',
+    '<script src="/js/database-catalog-amazing-v1.js"></script>\n</body>',
   );
 }
 
