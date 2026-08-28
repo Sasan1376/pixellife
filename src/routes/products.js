@@ -86,7 +86,7 @@ router.get("/image/:id", (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const filter = {};
-    const { brand, category, featured, exclude, limit, sort } = req.query;
+    const { brand, category, featured, amazing, exclude, limit, sort } = req.query;
 
     if (brand) {
       const brandAliases = {
@@ -103,9 +103,20 @@ router.get("/", async (req, res) => {
 
     if (category) filter.category = categoryPattern(category);
     if (featured !== undefined) filter.featured = toBoolean(featured);
+    if (amazing !== undefined) {
+      const amazingEnabled = toBoolean(amazing);
+      filter.amazingOffer = amazingEnabled;
+      if (amazingEnabled) {
+        filter.$or = [
+          { amazingOfferEndsAt: { $exists: false } },
+          { amazingOfferEndsAt: null },
+          { amazingOfferEndsAt: { $gt: new Date() } },
+        ];
+      }
+    }
     if (exclude) filter._id = { $ne: exclude };
 
-    const order = sort === "price-asc" ? { price: 1 } : sort === "price-desc" ? { price: -1 } : { featured: -1, createdAt: -1 };
+    const order = sort === "price-asc" ? { price: 1 } : sort === "price-desc" ? { price: -1 } : { amazingOffer: -1, featured: -1, createdAt: -1 };
     const products = await Product.find(filter).select(PRODUCT_CARD_FIELDS).sort(order).limit(safeLimit(limit)).lean();
 
     res.json({ success: true, products: products.map(serializeProduct) });
