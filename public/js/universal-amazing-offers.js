@@ -10,7 +10,8 @@
     const href = card.getAttribute("href") || "";
     const key = decodeURIComponent((href.match(/[?&](?:slug|id)=([^&]+)/) || href.match(/\/product\/([^?#]+)/) || [])[1] || "");
     const text = (card.textContent || "").replace(/\s+/g, " ").trim();
-    return offers.find((p) => key && [p.slug, String(p._id)].includes(key)) || offers.find((p) => p.name && text.includes(p.name));
+    // فقط تطابق دقیق شناسه/اسلاگ؛ تطبیق متنی ممکن است روی کارت‌های دیگر هم اعمال شود.
+    return key ? offers.find((p) => [p.slug, String(p._id)].includes(key)) : null;
   };
   const clock = () => {
     document.querySelectorAll("[data-universal-amazing-end]").forEach((el) => {
