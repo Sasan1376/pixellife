@@ -32,7 +32,7 @@ router.get("/amazing", (req, res) => {
 });
 
 // Keep shared header/footer links valid until their dedicated pages are added.
-router.get("/offers", homeController.mobiles);
+router.get("/offers", (req, res) => res.redirect(302, "/amazing"));
 router.get("/new", homeController.mobiles);
 router.get("/bestsellers", homeController.mobiles);
 router.get("/brands", homeController.mobiles);
