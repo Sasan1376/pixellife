@@ -1635,6 +1635,25 @@
         color: var(--text-3);
       }
 
+
+      /* ═══ PIXELLIFE AMAZING OFFERS ═══ */
+      .amazing-offers { margin: 28px 0 40px; border-radius: 20px; overflow: hidden; background: linear-gradient(125deg,#4338ca,#2563eb 52%,#0f172a); box-shadow: 0 14px 32px rgba(37,99,235,.24); color:#fff; }
+      .amazing-offers-inner { display:grid; grid-template-columns: 205px minmax(0,1fr); direction:rtl; }
+      .amazing-offers-brand { padding:28px 20px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; background:linear-gradient(155deg,rgba(255,255,255,.15),rgba(255,255,255,.03)); border-left:1px solid rgba(255,255,255,.2); }
+      .amazing-offers-brand .bolt { font-size:44px; line-height:1; color:#fbbf24; filter:drop-shadow(0 4px 8px rgba(0,0,0,.18)); }
+      .amazing-offers-brand h2 { font-size:22px; line-height:1.45; font-weight:800; margin:9px 0 5px; }
+      .amazing-offers-brand p { font-size:12px; color:rgba(255,255,255,.8); }
+      .amazing-offers-list { min-width:0; padding:16px; display:flex; gap:12px; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.6) transparent; }
+      .amazing-offers-list::-webkit-scrollbar{height:6px}.amazing-offers-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.55);border-radius:99px}
+      .amazing-card { flex:0 0 184px; scroll-snap-align:start; position:relative; padding:12px; border-radius:13px; background:var(--white); color:var(--text-1); box-shadow:0 4px 13px rgba(15,23,42,.16); transition:transform .2s ease,box-shadow .2s ease; }
+      .amazing-card:hover{transform:translateY(-4px);box-shadow:0 12px 20px rgba(15,23,42,.25)}
+      .amazing-card img{width:100%;height:125px;object-fit:contain;display:block;margin-bottom:9px}
+      .amazing-card h3{font-size:12px;line-height:1.75;font-weight:650;height:42px;overflow:hidden;margin:0 0 7px}
+      .amazing-card-price{font-size:14px;font-weight:800;direction:ltr;text-align:right}.amazing-card-price span{font-size:10px;color:var(--text-3);font-weight:500}
+      .amazing-card-discount{position:absolute;top:10px;right:10px;background:#ef4444;color:#fff;border-radius:8px;padding:3px 7px;font-size:11px;font-weight:800}
+      .amazing-empty{align-self:center;font-size:13px;color:rgba(255,255,255,.85);padding:28px}
+      @media(max-width:768px){.amazing-offers{margin:20px 0 30px;border-radius:16px}.amazing-offers-inner{grid-template-columns:1fr}.amazing-offers-brand{min-height:108px;padding:16px;flex-direction:row;gap:12px;border-left:0;border-bottom:1px solid rgba(255,255,255,.2);text-align:right}.amazing-offers-brand .bolt{font-size:34px}.amazing-offers-brand h2{font-size:18px;margin:0}.amazing-offers-list{padding:12px;gap:10px}.amazing-card{flex-basis:155px}.amazing-card img{height:105px}}
+
       /* ═══ SIMPLE BANNER (بنر ساده) ═══ */
       .simple-banner {
         margin-bottom: 40px;
@@ -2477,6 +2496,18 @@
       </section>
 
       <!-- ═══ کدهای جدید را دقیقاً اینجا کپی کنید ═══ -->
+
+      <!-- ═══ PIXELLIFE AMAZING OFFERS ═══ -->
+      <section class="amazing-offers" id="amazingOffers" aria-label="پیشنهادهای شگفت‌انگیز پیکسل لایف" hidden>
+        <div class="amazing-offers-inner">
+          <div class="amazing-offers-brand">
+            <i class="ti ti-bolt bolt" aria-hidden="true"></i>
+            <div><h2>شگفت‌انگیزهای پیکسل‌لایف</h2><p>فرصت‌های محدود با تخفیف ویژه</p></div>
+          </div>
+          <div class="amazing-offers-list" id="amazingOffersList" aria-live="polite"></div>
+        </div>
+      </section>
+
       <!-- ═══ SERVICES SECTION (خدمات سایت) ═══ -->
       <section class="services-section">
         <div class="service-item">
@@ -3505,6 +3536,35 @@
         div.textContent = str == null ? "" : String(str);
         return div.innerHTML;
       }
+
+
+      /* ══ شگفت‌انگیزهای PixelLife (حداکثر ۷ محصول فعال) ══ */
+      async function loadAmazingOffers() {
+        const section = document.getElementById("amazingOffers");
+        const list = document.getElementById("amazingOffersList");
+        if (!section || !list) return;
+        try {
+          const res = await fetch("/api/products");
+          const json = await res.json();
+          if (!json.success) throw new Error("Products unavailable");
+          const now = Date.now();
+          const products = (json.products || []).filter((p) => p.amazingOffer && p.amazingOfferEndsAt && new Date(p.amazingOfferEndsAt).getTime() > now).slice(0, 7);
+          if (!products.length) return;
+          list.innerHTML = products.map((p) => {
+            const image = escapeHtml(p.mainImage || (p.images && p.images[0]) || "/images/product-placeholder.svg");
+            const name = escapeHtml(p.name);
+            const slug = escapeHtml(p.slug);
+            const price = Number(p.price || 0).toLocaleString("fa-IR");
+            const discount = Math.max(0, Number(p.discountPercent || p.discount || 0));
+            return '<a class="amazing-card" href="/product/' + slug + '">' +
+              (discount ? '<span class="amazing-card-discount">' + discount.toLocaleString("fa-IR") + '%</span>' : '<span class="amazing-card-discount"><i class="ti ti-bolt"></i> ویژه</span>') +
+              '<img src="' + image + '" alt="' + name + '" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'/images/product-placeholder.svg\';">' +
+              '<h3>' + name + '</h3><div class="amazing-card-price">' + price + ' <span>تومان</span></div></a>';
+          }).join("");
+          section.hidden = false;
+        } catch (err) { section.hidden = true; }
+      }
+      loadAmazingOffers();
 
       /* ══ محصولات منتخب (از دیتابیس واقعی) ══ */
       async function loadFeaturedProducts() {
