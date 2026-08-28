@@ -182,7 +182,7 @@
           const h = Math.floor(diff / 3600000);
           const m = Math.floor((diff % 3600000) / 60000);
           const s = Math.floor((diff % 60000) / 1000);
-          el.textContent = h.toLocaleString("fa-IR") + ":" + String(m).padStart(2, "0").toLocaleString("fa-IR") + ":" + String(s).padStart(2, "0").toLocaleString("fa-IR") + " باقی‌مانده";
+          el.textContent = h + ":" + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0") + " باقی‌مانده";
         });
         if (expired) window.location.reload();
       };
