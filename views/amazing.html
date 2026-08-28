@@ -58,7 +58,7 @@
           const hours = Math.floor((diff % 86400000) / 3600000);
           const mins = Math.floor((diff % 3600000) / 60000);
           const secs = Math.floor((diff % 60000) / 1000);
-          return days > 0 ? `${days.toLocaleString('fa-IR')} روز و ${hours.toLocaleString('fa-IR')} ساعت باقی‌مانده` : `${hours.toLocaleString('fa-IR')}:${String(mins).padStart(2, '0').toLocaleString('fa-IR')}:${String(secs).padStart(2, '0').toLocaleString('fa-IR')} باقی‌مانده`;
+          return days > 0 ? `${days.toLocaleString('fa-IR')} روز و ${hours.toLocaleString('fa-IR')} ساعت باقی‌مانده` : `${hours}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')} باقی‌مانده`;
         };
         const render = () => {
           const q = String(search.value || '').trim().toLowerCase();
