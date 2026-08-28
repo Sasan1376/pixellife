@@ -1231,16 +1231,18 @@
       /* ═══ HERO SECTION & SLIDER ═══ */
       .hero-section {
         display: grid;
-        grid-template-columns: 1fr; /* تبدیل به یک ستون کامل */
+        grid-template-columns: 150px minmax(0, 1fr) 150px;
         gap: 16px;
         margin-bottom: 40px;
+        direction: ltr;
       }
+      .hero-section > * { direction: rtl; }
       .hero-slider-container {
         position: relative;
         border-radius: var(--radius-lg);
         overflow: hidden;
         box-shadow: var(--shadow);
-        height: 400px;
+        height: 420px;
         background: var(--bg);
       }
 
@@ -1497,9 +1499,14 @@
 
       /* Responsive */
       @media (max-width: 992px) {
-        .hero-slider-container {
-          height: 350px;
-        }
+        .hero-section { grid-template-columns: 110px minmax(0, 1fr) 110px; gap: 10px; }
+        .hero-slider-container, .hero-side-banner { height: 340px; }
+      }
+      @media (max-width: 768px) {
+        .hero-section { display:block; margin-bottom:24px; }
+        .hero-slider-container { height:auto; aspect-ratio: 2.84 / 1; border-radius:12px; }
+        .hero-side-banner { display:none; }
+        .hero-nav-btn { width:34px; height:34px; }
       }
       /* ═══ SERVICES (خدمات سایت) ═══ */
       .services-section {
@@ -2442,6 +2449,10 @@
     <main class="page-body">
         <!-- ═══ HERO SECTION (اسلایدر ریسپانسیو با دو عکس) ═══ -->
       <section class="hero-section">
+        <a class="hero-side-banner" href="/offers" aria-label="پیشنهادهای ویژه PixelLife">
+          <img src="/images/samsung-a57-promo.webp" alt="پیشنهاد ویژه PixelLife" loading="lazy" decoding="async">
+          <span class="hero-side-banner-content"><strong class="hero-side-banner-title">پیشنهاد ویژه</strong><span class="hero-side-banner-desc">تخفیف‌های محدود PixelLife</span></span>
+        </a>
         <div class="hero-slider-container" id="heroSlider">
           <div class="hero-slider-track" id="heroTrack">
             
@@ -2467,6 +2478,10 @@
           <!-- Dots -->
           <div class="hero-dots" id="heroDots"></div>
         </div>
+        <a class="hero-side-banner" href="/console" aria-label="مشاهده کنسول‌های بازی">
+          <img src="/images/ps5-pro-blue-promo-banner.webp" alt="کنسول‌های بازی PixelLife" loading="lazy" decoding="async">
+          <span class="hero-side-banner-content"><strong class="hero-side-banner-title">دنیای گیمینگ</strong><span class="hero-side-banner-desc">کنسول و لوازم بازی</span></span>
+        </a>
       </section>
 
       <!-- ═══ CATEGORY ICONS ═══ -->
