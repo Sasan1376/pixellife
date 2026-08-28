@@ -63,6 +63,12 @@
 
   const fallbackHtml = grid.innerHTML;
   const fallbackClassName = grid.className;
+  if (!document.getElementById("category-amazing-offer-style")) {
+    const style = document.createElement("style");
+    style.id = "category-amazing-offer-style";
+    style.textContent = ".category-amazing-ribbon{position:absolute;top:10px;right:10px;z-index:10;background:#dc2626;color:#fff;padding:5px 10px;border-radius:9px;font:800 11px Vazirmatn,Tahoma,sans-serif;box-shadow:0 3px 9px rgba(220,38,38,.22)}.category-amazing-discount{position:absolute;top:10px;left:10px;z-index:10;background:#dc2626;color:#fff;padding:4px 7px;border-radius:8px;font:800 11px Vazirmatn,Tahoma,sans-serif;direction:ltr}.category-amazing-timer{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:9px;padding:7px 8px;border-radius:9px;background:#fff1f2;color:#be123c;font:800 12px Vazirmatn,Tahoma,sans-serif;white-space:nowrap}.category-amazing-timer i{font-size:15px}";
+    document.head.appendChild(style);
+  }
 
   function getImage(product) {
     const image = Array.isArray(product.images) && product.images.length ? product.images[0] : "";
@@ -111,7 +117,9 @@
     const stock = Number(product.stock || 0);
     const inStock = product.availability === "in" && stock !== 0;
     const amazingActive = product.amazingOffer && (!product.amazingOfferEndsAt || new Date(product.amazingOfferEndsAt) > new Date());
-    const amazingRibbon = amazingActive ? `<span style="position:absolute;top:8px;right:-7px;z-index:4;background:#e11d48;color:#fff;padding:5px 12px 5px 9px;border-radius:0 7px 7px 0;font-size:11px;font-weight:800;box-shadow:0 3px 10px rgba(225,29,72,.35)">شگفت‌انگیز</span>` : "";
+    const amazingRibbon = amazingActive ? '<span class="category-amazing-ribbon">شگفت‌انگیز</span>' : "";
+    const discountBadge = amazingActive && discount > 0 ? '<span class="category-amazing-discount">' + discount + '%</span>' : "";
+    const amazingTimer = amazingActive && product.amazingOfferEndsAt ? '<div class="category-amazing-timer"><i class="ti ti-clock"></i><span data-amazing-end="' + product.amazingOfferEndsAt + '"></span></div>' : "";
 
     if (grid.classList.contains("iphone-grid")) {
       return `
@@ -129,7 +137,7 @@
               <path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z" fill="var(--text-3)" />
             </svg>
             <div class="iphone-card-name">${name}</div>
-            <div class="iphone-card-desc">${desc}</div>
+            <div class="iphone-card-desc">${desc}</div>${amazingTimer}
           </div>
         </a>`;
     }
@@ -137,12 +145,12 @@
     if (grid.classList.contains("samsung-grid")) {
       return `
         <a href="${href}" class="samsung-card" style="color: inherit">
-          <div class="prod-badges">${product.comingSoon ? '<span class="badge-coming-soon"><i class="ti ti-clock"></i> به‌زودی</span>' : ""}</div>
+          <div class="prod-badges">${amazingRibbon}${discountBadge}${product.comingSoon ? '<span class="badge-coming-soon"><i class="ti ti-clock"></i> به‌زودی</span>' : ""}</div>
           <div class="samsung-card-image"><img src="${image}" alt="${name}" /></div>
           <div class="samsung-card-body">
             <span class="samsung-brand-logo">${brand}</span>
             <div class="samsung-card-name">${name}</div>
-            <div class="samsung-card-desc">${desc}</div>
+            <div class="samsung-card-desc">${desc}</div>${amazingTimer}
             <div class="prod-option-group" style="margin-top:12px">
               <div class="prod-option-label"><i class="ti ti-cash"></i> قیمت</div>
               <div class="prod-storage-options"><span class="prod-storage-chip">${price} تومان</span></div>
@@ -161,7 +169,7 @@
         <div class="prod-card-body">
           <span class="prod-brand-logo">${brand}</span>
           <div class="prod-card-name">${name}</div>
-          <div class="prod-card-desc">${desc}</div>
+          <div class="prod-card-desc">${desc}</div>${amazingTimer}
           <div class="prod-option-group">
             <div class="prod-option-label"><i class="ti ti-cash"></i> قیمت</div>
             <div class="prod-storage-options"><span class="prod-storage-chip">${price} تومان</span></div>
@@ -189,6 +197,18 @@
         return;
       }
       grid.innerHTML = products.map(renderCard).join("");
+      const updateAmazingTimers = () => {
+        grid.querySelectorAll("[data-amazing-end]").forEach((el) => {
+          const diff = new Date(el.dataset.amazingEnd).getTime() - Date.now();
+          if (diff <= 0) { window.location.reload(); return; }
+          const h = Math.floor(diff / 3600000);
+          const m = Math.floor((diff % 3600000) / 60000);
+          const s = Math.floor((diff % 60000) / 1000);
+          el.textContent = h + ":" + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0") + " باقی‌مانده";
+        });
+      };
+      updateAmazingTimers();
+      window.setInterval(updateAmazingTimers, 1000);
     } catch (error) {
       grid.innerHTML = fallbackHtml;
       console.warn("[category-products] falling back to static cards:", error);
