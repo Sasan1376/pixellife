@@ -117,7 +117,7 @@
       : "";
     const amazingActive = product.amazingOffer && (!product.amazingOfferEndsAt || new Date(product.amazingOfferEndsAt) > new Date());
     const amazingRibbon = amazingActive
-      ? '<span style="position:absolute;top:10px;right:-6px;z-index:8;background:#dc2626;color:#fff;padding:6px 14px 6px 10px;border-radius:0 8px 8px 0;font-size:11px;font-weight:800;box-shadow:0 4px 12px rgba(220,38,38,.35)">شگفت‌انگیز</span>'
+      ? '<span style="position:absolute;top:10px;right:10px;z-index:8;background:#dc2626;color:#fff;padding:5px 10px;border-radius:9px;font-size:11px;font-weight:800;box-shadow:0 3px 9px rgba(220,38,38,.22)">شگفت‌انگیز</span>'
       : "";
     const amazingTimer = amazingActive && product.amazingOfferEndsAt
       ? '<div class="pl-amazing-timer"><i class="ti ti-clock"></i><span data-amazing-end="' + escapeHtml(product.amazingOfferEndsAt) + '"></span></div>'
