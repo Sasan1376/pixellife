@@ -9,6 +9,23 @@ router.use((req, res, next) => {
 const Product = require("../models/Product");
 const { streamProductImage } = require("../utils/productImages");
 
+// پیشنهاد شگفت‌انگیز پس از زمان پایان، در خود دیتابیس هم غیرفعال شود.
+async function expireAmazingOffers() {
+  await Product.updateMany(
+    { amazingOffer: true, amazingOfferEndsAt: { $type: "date", $lte: new Date() } },
+    { $set: { amazingOffer: false } },
+  );
+}
+
+router.use(async (req, res, next) => {
+  try {
+    await expireAmazingOffers();
+  } catch (error) {
+    console.error("Amazing offer expiry error:", error);
+  }
+  next();
+});
+
 const PRODUCT_CARD_FIELDS = [
   "name", "slug", "legacyId", "brand", "category", "price", "discount",
   "featured", "availability", "amazingOffer", "amazingOfferEndsAt", "images", "mainImage", "colors", "variants",
