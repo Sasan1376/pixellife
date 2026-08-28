@@ -57,7 +57,8 @@
           const days = Math.floor(diff / 86400000);
           const hours = Math.floor((diff % 86400000) / 3600000);
           const mins = Math.floor((diff % 3600000) / 60000);
-          return days > 0 ? `${days.toLocaleString('fa-IR')} روز و ${hours.toLocaleString('fa-IR')} ساعت باقی‌مانده` : `${hours.toLocaleString('fa-IR')} ساعت و ${mins.toLocaleString('fa-IR')} دقیقه باقی‌مانده`;
+          const secs = Math.floor((diff % 60000) / 1000);
+          return days > 0 ? `${days.toLocaleString('fa-IR')} روز و ${hours.toLocaleString('fa-IR')} ساعت باقی‌مانده` : `${hours.toLocaleString('fa-IR')}:${String(mins).padStart(2, '0').toLocaleString('fa-IR')}:${String(secs).padStart(2, '0').toLocaleString('fa-IR')} باقی‌مانده`;
         };
         const render = () => {
           const q = String(search.value || '').trim().toLowerCase();
@@ -79,7 +80,13 @@
           .then((data) => { products = Array.isArray(data.products) ? data.products : []; render(); })
           .catch(() => { grid.innerHTML = '<div class="state"><div><i class="ti ti-alert-circle"></i>خطا در دریافت محصولات. دوباره صفحه را باز کنید.</div></div>'; heroCount.textContent = 'خطا در دریافت'; });
         search.addEventListener('input', render);
-        setInterval(() => { if (products.length) render(); }, 60000);
+        setInterval(() => {
+          document.querySelectorAll('.timer span[data-end]').forEach((el) => {
+            const text = remaining(el.dataset.end);
+            if (text === 'پایان یافته') { render(); return; }
+            el.textContent = text;
+          });
+        }, 1000);
       })();
     </script>
   </body>
