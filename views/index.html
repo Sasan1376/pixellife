@@ -2458,7 +2458,10 @@
             
             <!-- اسلاید اول (آیفون) -->
             <a class="hero-slide" href="/iphone" style="min-width: 100%; display: block; padding: 0;">
-              <img src="/images/iphone17_banner.webp" alt="بنر آیفون ۱۷" fetchpriority="high" decoding="async" style="width: 100%; height: auto; display: block;">
+              <picture>
+                <source media="(max-width: 768px)" srcset="/images/iphone17_banner_mobile.webp" />
+                <img src="/images/iphone17_banner.webp" alt="بنر آیفون ۱۷" fetchpriority="high" decoding="async" style="width: 100%; height: auto; display: block;">
+              </picture>
             </a>
             
             <!-- اسلاید دوم (سامسونگ) -->
