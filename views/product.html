@@ -1848,6 +1848,40 @@
       .review-section:last-child {
         margin-bottom: 0;
       }
+      /* بررسی محصول ابتدا خلاصه است و با درخواست کاربر کامل باز می‌شود. */
+      .review-section--more,
+      #productReviewSection:not(.review-expanded) .review-section-img--collapsed {
+        display: none;
+      }
+      #productReviewSection.review-expanded .review-section--more {
+        display: block;
+      }
+      .review-article-nav--collapsed {
+        display: none;
+      }
+      #productReviewSection.review-expanded .review-article-nav--collapsed {
+        display: flex;
+      }
+      .review-article-toggle {
+        width: 100%;
+        min-height: 46px;
+        margin-top: 6px;
+        border: 1.5px solid var(--blue);
+        border-radius: var(--radius-sm);
+        background: var(--blue-light);
+        color: var(--blue);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+      }
+      .review-article-toggle:hover {
+        background: var(--blue);
+        color: #fff;
+      }
       .review-section-title {
         display: flex;
         align-items: center;
@@ -5493,17 +5527,17 @@
 
           <div class="section-block" id="productReviewSection" style="display:${product.showReview && reviewArticle.length ? "" : "none"}">
             <div class="section-heading"><i class="ti ti-article"></i> بررسی تخصصی ${product.name}</div>
-            <div class="review-article-nav">
+            <div class="review-article-nav review-article-nav--collapsed" id="reviewArticleNav">
               ${reviewArticle.map((s, i) => `<a class="review-nav-chip" href="#rev-sec-${i}">${s.title}</a>`).join("")}
              </div>
                         ${reviewArticle
                           .map(
                             (s, i) => `
-              <div class="review-section" id="rev-sec-${i}">
+              <div class="review-section${i > 0 ? " review-section--more" : ""}" id="rev-sec-${i}">
                 <div class="review-section-title"><i class="ti ${s.icon}"></i> ${s.title}</div>
                 <div class="review-section-body">${s.body}</div>
                 ${
-                  s.images?.map((image) => `<img src="${image.src}" alt="${s.title}" class="review-section-img review-section-img--${image.size}" />`).join("") || ""
+                  s.images?.map((image) => `<img src="${image.src}" alt="${s.title}" class="review-section-img review-section-img--${image.size}${i === 0 ? " review-section-img--collapsed" : ""}" />`).join("") || ""
                 }
                 ${
                   i === 6
@@ -5513,6 +5547,7 @@
               </div>`,
                           )
                           .join("")}
+            ${reviewArticle.length > 1 ? `<button type="button" class="review-article-toggle" id="reviewArticleToggle" aria-expanded="false"><i class="ti ti-chevron-down"></i> بررسی کامل محصول</button>` : ""}
 
             <div class="review-section" style="display:none">
               <div class="review-section-title"><i class="ti ti-thumb-up"></i> نقاط قوت و ضعف</div>
@@ -5929,6 +5964,18 @@
               specsToggleBtn.innerHTML = expanded
                 ? '<i class="ti ti-chevron-up"></i> بستن مشخصات'
                 : '<i class="ti ti-chevron-down"></i> نمایش کامل مشخصات';
+            });
+          }
+
+          const reviewArticleToggle = document.getElementById("reviewArticleToggle");
+          const productReviewSection = document.getElementById("productReviewSection");
+          if (reviewArticleToggle && productReviewSection) {
+            reviewArticleToggle.addEventListener("click", () => {
+              const expanded = productReviewSection.classList.toggle("review-expanded");
+              reviewArticleToggle.setAttribute("aria-expanded", String(expanded));
+              reviewArticleToggle.innerHTML = expanded
+                ? '<i class="ti ti-chevron-up"></i> بستن بررسی کامل محصول'
+                : '<i class="ti ti-chevron-down"></i> بررسی کامل محصول';
             });
           }
 
