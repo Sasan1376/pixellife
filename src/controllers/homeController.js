@@ -86,7 +86,8 @@ const MOBILE_HERO_FIX = `
 
     .hero-slider-container {
       height: auto !important;
-      aspect-ratio: 1136 / 400;
+      /* نسبت بلندتر برای موبایل؛ نزدیک به اسلایدر خانومی */
+      aspect-ratio: 1.65 / 1;
       min-height: 0 !important;
       border-radius: 14px !important;
     }
