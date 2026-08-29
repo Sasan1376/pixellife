@@ -1912,8 +1912,21 @@
         .hero-side-banner {
           display: none;
         }
+        /* بنر موبایل: نسبت عریض و بلندتر، هم‌اندازهٔ اسلایدر فروشگاه‌های بزرگ */
         .hero-slider-container {
-          height: 300px;
+          height: auto;
+          aspect-ratio: 1.65 / 1;
+          min-height: 0;
+          border-radius: 18px;
+        }
+        .hero-slide,
+        .hero-slide > img {
+          height: 100% !important;
+        }
+        .hero-slide > img {
+          width: 100% !important;
+          object-fit: cover;
+          object-position: center;
         }
         .hero-slide-content {
           max-width: 80%;
