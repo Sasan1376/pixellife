@@ -3450,27 +3450,29 @@
       const heroSlider = document.getElementById("heroSlider");
       const heroSlideCount = heroSlides.length;
 
-      // برای حلقهٔ بدون پرش: یک نسخه از ابتدا و انتهای اسلایدر در دو سر Track قرار می‌گیرد.
-      const firstSlideClone = heroSlides[0].cloneNode(true);
-      const lastSlideClone = heroSlides[heroSlideCount - 1].cloneNode(true);
-      firstSlideClone.setAttribute("aria-hidden", "true");
-      lastSlideClone.setAttribute("aria-hidden", "true");
-      heroTrack.appendChild(firstSlideClone);
-      heroTrack.insertBefore(lastSlideClone, heroTrack.firstChild);
-
-      // اسلایدهای کمکیِ حلقه نباید lazy بمانند؛ وگرنه در عبور از آخرین بنر، فریم سفید دیده می‌شود.
-      heroTrack.querySelectorAll("img").forEach((img) => {
-        img.loading = "eager";
-        const picture = img.closest("picture");
-        const mobileSource = picture?.querySelector('source[media="(max-width: 768px)"]');
-        const preload = new Image();
-        preload.src = window.matchMedia("(max-width: 768px)").matches && mobileSource
-          ? mobileSource.srcset
-          : (img.currentSrc || img.src);
+      // همهٔ بنرها پیش از حرکت آماده می‌شوند؛ هیچ اسلاید کمکی یا فضای خالی نداریم.
+      heroSlides.forEach((slide) => {
+        slide.querySelectorAll("img").forEach((img) => {
+          img.loading = "eager";
+          const picture = img.closest("picture");
+          const mobileSource = picture?.querySelector('source[media="(max-width: 768px)"]');
+          const preload = new Image();
+          preload.src = window.matchMedia("(max-width: 768px)").matches && mobileSource
+            ? mobileSource.srcset
+            : (img.currentSrc || img.src);
+        });
       });
 
-      let currentSlide = 1;
+      let currentSlide = 0;
       let autoSlideInterval;
+      let isHeroAnimating = false;
+      let pendingHeroMove = "";
+
+      function updateDots(activeIndex = currentSlide) {
+        document.querySelectorAll(".hero-dot").forEach((dot, i) => {
+          dot.classList.toggle("active", i === activeIndex);
+        });
+      }
 
       // Create Dots
       heroSlides.forEach((_, i) => {
@@ -3478,47 +3480,62 @@
         dot.classList.add("hero-dot");
         if (i === 0) dot.classList.add("active");
         dot.addEventListener("click", () => {
-          currentSlide = i + 1;
-          updateSlider();
+          if (isHeroAnimating || i === currentSlide) return;
+          heroTrack.style.transition = "none";
+          while (currentSlide !== i) {
+            heroTrack.appendChild(heroTrack.firstElementChild);
+            currentSlide = (currentSlide + 1) % heroSlideCount;
+          }
+          heroTrack.style.transform = "translateX(0)";
+          void heroTrack.offsetWidth;
+          heroTrack.style.transition = "";
+          updateDots();
           resetAutoSlide();
         });
         heroDotsContainer.appendChild(dot);
       });
 
-      function updateSlider() {
-        heroTrack.style.transform = `translateX(${-currentSlide * 100}%)`;
-        const activeIndex = (currentSlide - 1 + heroSlideCount) % heroSlideCount;
-        document.querySelectorAll(".hero-dot").forEach((dot, i) => {
-          dot.classList.toggle("active", i === activeIndex);
-        });
-      }
-
-      function jumpWithoutAnimation(targetSlide) {
-        heroTrack.style.transition = "none";
-        currentSlide = targetSlide;
-        updateSlider();
-        void heroTrack.offsetWidth;
-        heroTrack.style.transition = "";
-      }
-
-      heroTrack.addEventListener("transitionend", (event) => {
-        if (event.target !== heroTrack || event.propertyName !== "transform") return;
-        if (currentSlide === heroSlideCount + 1) jumpWithoutAnimation(1);
-        if (currentSlide === 0) jumpWithoutAnimation(heroSlideCount);
-      });
-
       function nextSlide() {
-        currentSlide += 1;
-        updateSlider();
+        if (isHeroAnimating) return;
+        isHeroAnimating = true;
+        pendingHeroMove = "next";
+        updateDots((currentSlide + 1) % heroSlideCount);
+        heroTrack.style.transform = "translateX(-100%)";
       }
 
       function prevSlide() {
-        currentSlide -= 1;
-        updateSlider();
+        if (isHeroAnimating) return;
+        isHeroAnimating = true;
+        pendingHeroMove = "prev";
+        heroTrack.style.transition = "none";
+        heroTrack.insertBefore(heroTrack.lastElementChild, heroTrack.firstElementChild);
+        heroTrack.style.transform = "translateX(-100%)";
+        void heroTrack.offsetWidth;
+        heroTrack.style.transition = "";
+        requestAnimationFrame(() => {
+          heroTrack.style.transform = "translateX(0)";
+        });
+        updateDots((currentSlide - 1 + heroSlideCount) % heroSlideCount);
       }
 
-      // Track ابتدا روی اسلاید واقعی اول می‌ایستد، نه روی نسخهٔ کمکی.
-      jumpWithoutAnimation(1);
+      heroTrack.addEventListener("transitionend", (event) => {
+        if (event.target !== heroTrack || event.propertyName !== "transform" || !isHeroAnimating) return;
+
+        if (pendingHeroMove === "next") {
+          heroTrack.style.transition = "none";
+          heroTrack.appendChild(heroTrack.firstElementChild);
+          heroTrack.style.transform = "translateX(0)";
+          currentSlide = (currentSlide + 1) % heroSlideCount;
+          void heroTrack.offsetWidth;
+          heroTrack.style.transition = "";
+        } else if (pendingHeroMove === "prev") {
+          currentSlide = (currentSlide - 1 + heroSlideCount) % heroSlideCount;
+        }
+
+        pendingHeroMove = "";
+        isHeroAnimating = false;
+        updateDots();
+      });
 
       function startAutoSlide() {
         clearInterval(autoSlideInterval);
