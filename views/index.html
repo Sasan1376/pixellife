@@ -3443,13 +3443,22 @@
 
       /* ═══ HERO SLIDER LOGIC ═══ */
       const heroTrack = document.getElementById("heroTrack");
-      const heroSlides = document.querySelectorAll(".hero-slide");
+      const heroSlides = Array.from(document.querySelectorAll(".hero-slide"));
       const heroDotsContainer = document.getElementById("heroDots");
       const heroPrevBtn = document.getElementById("heroPrev");
       const heroNextBtn = document.getElementById("heroNext");
       const heroSlider = document.getElementById("heroSlider");
+      const heroSlideCount = heroSlides.length;
 
-      let currentSlide = 0;
+      // برای حلقهٔ بدون پرش: یک نسخه از ابتدا و انتهای اسلایدر در دو سر Track قرار می‌گیرد.
+      const firstSlideClone = heroSlides[0].cloneNode(true);
+      const lastSlideClone = heroSlides[heroSlideCount - 1].cloneNode(true);
+      firstSlideClone.setAttribute("aria-hidden", "true");
+      lastSlideClone.setAttribute("aria-hidden", "true");
+      heroTrack.appendChild(firstSlideClone);
+      heroTrack.insertBefore(lastSlideClone, heroTrack.firstChild);
+
+      let currentSlide = 1;
       let autoSlideInterval;
 
       // Create Dots
@@ -3458,7 +3467,7 @@
         dot.classList.add("hero-dot");
         if (i === 0) dot.classList.add("active");
         dot.addEventListener("click", () => {
-          currentSlide = i;
+          currentSlide = i + 1;
           updateSlider();
           resetAutoSlide();
         });
@@ -3467,21 +3476,38 @@
 
       function updateSlider() {
         heroTrack.style.transform = `translateX(${-currentSlide * 100}%)`;
+        const activeIndex = (currentSlide - 1 + heroSlideCount) % heroSlideCount;
         document.querySelectorAll(".hero-dot").forEach((dot, i) => {
-          dot.classList.toggle("active", i === currentSlide);
+          dot.classList.toggle("active", i === activeIndex);
         });
       }
 
+      function jumpWithoutAnimation(targetSlide) {
+        heroTrack.style.transition = "none";
+        currentSlide = targetSlide;
+        updateSlider();
+        void heroTrack.offsetWidth;
+        heroTrack.style.transition = "";
+      }
+
+      heroTrack.addEventListener("transitionend", (event) => {
+        if (event.target !== heroTrack || event.propertyName !== "transform") return;
+        if (currentSlide === heroSlideCount + 1) jumpWithoutAnimation(1);
+        if (currentSlide === 0) jumpWithoutAnimation(heroSlideCount);
+      });
+
       function nextSlide() {
-        currentSlide = (currentSlide + 1) % heroSlides.length;
+        currentSlide += 1;
         updateSlider();
       }
 
       function prevSlide() {
-        currentSlide =
-          (currentSlide - 1 + heroSlides.length) % heroSlides.length;
+        currentSlide -= 1;
         updateSlider();
       }
+
+      // Track ابتدا روی اسلاید واقعی اول می‌ایستد، نه روی نسخهٔ کمکی.
+      jumpWithoutAnimation(1);
 
       function startAutoSlide() {
         clearInterval(autoSlideInterval);
