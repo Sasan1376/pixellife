@@ -3458,6 +3458,17 @@
       heroTrack.appendChild(firstSlideClone);
       heroTrack.insertBefore(lastSlideClone, heroTrack.firstChild);
 
+      // اسلایدهای کمکیِ حلقه نباید lazy بمانند؛ وگرنه در عبور از آخرین بنر، فریم سفید دیده می‌شود.
+      heroTrack.querySelectorAll("img").forEach((img) => {
+        img.loading = "eager";
+        const picture = img.closest("picture");
+        const mobileSource = picture?.querySelector('source[media="(max-width: 768px)"]');
+        const preload = new Image();
+        preload.src = window.matchMedia("(max-width: 768px)").matches && mobileSource
+          ? mobileSource.srcset
+          : (img.currentSrc || img.src);
+      });
+
       let currentSlide = 1;
       let autoSlideInterval;
 
