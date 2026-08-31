@@ -51,6 +51,7 @@
     { href: "/admin/products", icon: "ti-package", text: "همهٔ محصولات", match: "/admin/products" },
     { href: "/admin/products?category=mobile", icon: "ti-device-mobile", text: "موبایل" },
     { href: "/admin/products?category=tablet", icon: "ti-tablet", text: "تبلت" },
+    { href: "/admin/products?category=accessories", icon: "ti-charging-pile", text: "کابل، شارژر و آداپتور" },
     { href: "/admin/products?category=headphones", icon: "ti-headphones", text: "هدفون و هندزفری" },
     { href: "/admin/products?category=watch", icon: "ti-watch", text: "ساعت هوشمند" },
     { href: "/admin/products?category=console", icon: "ti-device-gamepad-2", text: "کنسول بازی" }
