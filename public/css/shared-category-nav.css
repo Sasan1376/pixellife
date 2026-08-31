@@ -85,7 +85,7 @@
 
 .megamenu-panel {
   position: absolute !important;
-  top: calc(100% + 1px) !important;
+  top: 100% !important;
   right: 0 !important;
   left: auto !important;
   width: 920px !important;
