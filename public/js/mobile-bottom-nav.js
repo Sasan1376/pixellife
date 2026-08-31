@@ -148,7 +148,7 @@
         { label: "خرید آیفون", href: "/iphone" },
         { label: "گوشی سامسونگ", href: "/samsung" },
         { label: "گوشی شیائومی", href: "/xiaomi" },
-        { label: "همه لوازم جانبی موبایل", href: "/accessories" },
+        { label: "همه محصولات موبایل", href: "/mobiles" },
         { label: "کابل، شارژر و آداپتور", href: "/accessories/chargers", brands: [
           { label: "اپل", href: "/accessories/chargers?brand=%D8%A7%D9%BE%D9%84" },
           { label: "سامسونگ", href: "/accessories/chargers?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" },
@@ -157,7 +157,7 @@
         { label: "لوازم جانبی اپل", href: "/accessories/apple" },
         { label: "لوازم جانبی سامسونگ", href: "/accessories/samsung" },
         { label: "لوازم جانبی شیائومی", href: "/accessories/xiaomi" },
-        { label: "همه محصولات موبایل", href: "/mobiles" }
+        { label: "همه لوازم جانبی موبایل", href: "/accessories" }
       ] },
       { id: "tablet", name: "تبلت", badge: "۳ برند", links: [{ label: "تبلت اپل", href: "/ipad" }, { label: "تبلت سامسونگ", href: "/samsungtab" }, { label: "تبلت شیائومی", href: "/xiaomitab" }] },
       { id: "headphone", name: "هدفون و هندزفری", links: [{ label: "هدفون اپل", href: "/headphones?brand=%D8%A7%D9%BE%D9%84" }, { label: "هدفون سامسونگ", href: "/headphones?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" }, { label: "همه هدفون‌ها", href: "/headphones" }] },
