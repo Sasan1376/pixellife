@@ -66,7 +66,7 @@
                 { label: 'شیائومی', href: '/accessories/chargers?brand=%D8%B4%DB%8C%D8%A7%D8%A6%D9%88%D9%85%DB%8C' },
               ],
             },
-            { label: 'همه لوازم جانبی موبایل', href: '/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84' },
+            { label: 'همه لوازم جانبی موبایل', href: '/accessories' },
           ],
         },
         {
