@@ -34,7 +34,7 @@
   if (!nav) return;
 
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
-  const isCategoryPath = ["/categories", "/mobiles", "/iphone", "/samsung", "/xiaomi", "/accessories/apple", "/accessories/samsung", "/accessories/xiaomi", "/ipad", "/samsungtab", "/xiaomitab", "/console", "/headphones", "/smartwatches"].includes(path);
+  const isCategoryPath = ["/categories", "/mobiles", "/iphone", "/samsung", "/xiaomi", "/accessories", "/accessories/chargers", "/accessories/apple", "/accessories/samsung", "/accessories/xiaomi", "/ipad", "/samsungtab", "/xiaomitab", "/console", "/headphones", "/smartwatches"].includes(path);
 
   nav.querySelectorAll(".mobile-bottom-nav__item").forEach((item) => {
     const key = item.dataset.nav;
@@ -148,6 +148,7 @@
         { label: "خرید آیفون", href: "/iphone" },
         { label: "گوشی سامسونگ", href: "/samsung" },
         { label: "گوشی شیائومی", href: "/xiaomi" },
+        { label: "همه لوازم جانبی موبایل", href: "/accessories" },
         { label: "کابل، شارژر و آداپتور", href: "/accessories/chargers", brands: [
           { label: "اپل", href: "/accessories/chargers?brand=%D8%A7%D9%BE%D9%84" },
           { label: "سامسونگ", href: "/accessories/chargers?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" },
