@@ -17,6 +17,7 @@ router.get("/product", homeController.product);
 router.get("/product.html", homeController.product);
 router.get("/samsung", homeController.samsung);
 router.get("/xiaomi", homeController.xiaomi);
+router.get("/accessories", homeController.accessoriesAll);
 router.get("/accessories/chargers", homeController.accessoriesChargers);
 router.get("/accessories/apple", homeController.accessoriesApple);
 router.get("/accessories/samsung", homeController.accessoriesSamsung);
