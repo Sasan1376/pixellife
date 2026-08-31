@@ -44,24 +44,41 @@
       id: 'mobile',
       name: 'موبایل',
       icon: 'ti-device-mobile',
-      links: [
-        { label: 'خرید آیفون', href: '/iphone' },
-        { label: 'خرید گوشی سامسونگ', href: '/samsung' },
-        { label: 'خرید گوشی شیائومی', href: '/xiaomi' },
+      groups: [
+        {
+          title: 'انتخاب موبایل',
+          links: [
+            { label: 'خرید آیفون', href: '/iphone' },
+            { label: 'خرید گوشی سامسونگ', href: '/samsung' },
+            { label: 'خرید گوشی شیائومی', href: '/xiaomi' },
+            { label: 'همه محصولات موبایل', href: '/mobiles' },
+          ],
+        },
+        {
+          title: 'لوازم جانبی موبایل',
+          links: [
+            {
+              label: 'کابل، شارژر و آداپتور',
+              href: '/accessories/chargers',
+              children: [
+                { label: 'اپل', href: '/accessories/chargers?brand=%D8%A7%D9%BE%D9%84' },
+                { label: 'سامسونگ', href: '/accessories/chargers?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF' },
+                { label: 'شیائومی', href: '/accessories/chargers?brand=%D8%B4%DB%8C%D8%A7%D8%A6%D9%88%D9%85%DB%8C' },
+              ],
+            },
+            { label: 'همه لوازم جانبی موبایل', href: '/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84' },
+          ],
+        },
+        {
+          title: 'برندهای لوازم جانبی',
+          links: [
+            { label: 'لوازم جانبی اپل', href: '/accessories/apple' },
+            { label: 'لوازم جانبی سامسونگ', href: '/accessories/samsung' },
+            { label: 'لوازم جانبی شیائومی', href: '/accessories/xiaomi' },
+          ],
+        },
       ],
       seeAllHref: '/mobiles',
-    },
-    {
-      id: 'mobile-accessories',
-      name: 'لوازم جانبی موبایل',
-      icon: 'ti-headphones',
-      links: [
-        { label: 'کابل، شارژر و آداپتور', href: '/accessories/chargers' },
-        { label: 'لوازم جانبی اپل', href: '/accessories/apple' },
-        { label: 'لوازم جانبی سامسونگ', href: '/accessories/samsung' },
-        { label: 'لوازم جانبی شیائومی', href: '/accessories/xiaomi' },
-      ],
-      seeAllHref: '/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84',
     },
     {
       id: 'tablet',
@@ -129,12 +146,23 @@
     const catPanel = document.createElement('div');
     catPanel.className = 'megamenu-content-panel' + (idx === 0 ? ' active' : '');
     catPanel.dataset.catPanel = cat.id;
+    const groupsMarkup = Array.isArray(cat.groups) && cat.groups.length
+      ? `<div class="megamenu-groups">${cat.groups.map((group) => `
+          <section class="megamenu-group">
+            <h3 class="megamenu-group-title">${group.title}</h3>
+            <div class="megamenu-group-links">
+              ${group.links.map((link) => {
+                const parent = `<a href="${link.href}" class="megamenu-link">${link.label}<i class="ti ti-chevron-left"></i></a>`;
+                if (!Array.isArray(link.children) || !link.children.length) return parent;
+                return `<div class="megamenu-nested">${parent}<div class="megamenu-child-links">${link.children.map((child) => `<a href="${child.href}" class="megamenu-child-link">${child.label}</a>`).join('')}</div></div>`;
+              }).join('')}
+            </div>
+          </section>`).join('')}</div>`
+      : `<div class="megamenu-links">${cat.links.map((link) => `<a href="${link.href}" class="megamenu-link">${link.label}<i class="ti ti-chevron-left"></i></a>`).join('')}</div>`;
     catPanel.innerHTML = `
       <div class="megamenu-content-title"><i class="ti ${cat.icon}"></i>${cat.name}</div>
-      <div class="megamenu-links">
-        ${cat.links.map((l) => `<a href="${l.href}" class="megamenu-link">${l.label}<i class="ti ti-chevron-left"></i></a>`).join('')}
-        <a href="${cat.seeAllHref}" class="megamenu-link see-all">مشاهده همه ${cat.name}<i class="ti ti-arrow-left"></i></a>
-      </div>`;
+      ${groupsMarkup}
+      <a href="${cat.seeAllHref}" class="megamenu-link see-all">مشاهده همه ${cat.name}<i class="ti ti-arrow-left"></i></a>`;
     content.appendChild(catPanel);
 
     const activate = (event) => {
