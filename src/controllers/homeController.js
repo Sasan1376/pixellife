@@ -13,7 +13,7 @@ function readView(filePath) {
 }
 
 function sendCachedHtml(res, cacheKey, render) {
-  res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+  res.set("Cache-Control", "no-cache, max-age=0, must-revalidate");
   if (IS_PRODUCTION && viewCache.has(cacheKey)) {
     return res.type("html").send(viewCache.get(cacheKey));
   }
@@ -296,7 +296,7 @@ function sendSpecialCatalogView(res, options) {
   const key = `special-catalog:${options.slug}`;
 
   try {
-    res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+    res.set("Cache-Control", "no-cache, max-age=0, must-revalidate");
     if (IS_PRODUCTION && viewCache.has(key)) {
       return res.type("html").send(viewCache.get(key));
     }
@@ -348,7 +348,7 @@ function sendAccessoryBrandView(res, brand) {
   const brandName = String(brand || "").trim();
 
   try {
-    res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+    res.set("Cache-Control", "no-cache, max-age=0, must-revalidate");
     if (IS_PRODUCTION && viewCache.has(`accessory:${brandName}`)) {
       return res.type("html").send(viewCache.get(`accessory:${brandName}`));
     }
@@ -403,7 +403,7 @@ const homeController = {
     const indexPath = path.join(__dirname, "../../views/index.html");
 
     try {
-      res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+      res.set("Cache-Control", "no-cache, max-age=0, must-revalidate");
       if (IS_PRODUCTION && viewCache.has("rendered:index")) {
         return res.type("html").send(viewCache.get("rendered:index"));
       }
