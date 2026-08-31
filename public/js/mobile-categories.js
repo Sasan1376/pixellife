@@ -18,22 +18,34 @@
     {
       id: "mobile",
       name: "موبایل",
-      links: [
-        { label: "خرید آیفون", href: "/iphone" },
-        { label: "خرید گوشی سامسونگ", href: "/samsung" },
-        { label: "خرید گوشی شیائومی", href: "/xiaomi" }
+      sections: [
+        {
+          title: "انتخاب موبایل",
+          links: [
+            { label: "خرید آیفون", href: "/iphone" },
+            { label: "گوشی سامسونگ", href: "/samsung" },
+            { label: "گوشی شیائومی", href: "/xiaomi" }
+          ]
+        },
+        {
+          title: "لوازم جانبی موبایل",
+          links: [
+            {
+              label: "کابل، شارژر و آداپتور",
+              href: "/accessories/chargers",
+              children: [
+                { label: "اپل", href: "/accessories/chargers?brand=%D8%A7%D9%BE%D9%84" },
+                { label: "سامسونگ", href: "/accessories/chargers?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" },
+                { label: "شیائومی", href: "/accessories/chargers?brand=%D8%B4%DB%8C%D8%A7%D8%A6%D9%88%D9%85%DB%8C" }
+              ]
+            },
+            { label: "لوازم جانبی اپل", href: "/accessories/apple" },
+            { label: "لوازم جانبی سامسونگ", href: "/accessories/samsung" },
+            { label: "لوازم جانبی شیائومی", href: "/accessories/xiaomi" }
+          ]
+        }
       ],
       allHref: "/mobiles"
-    },
-    {
-      id: "mobile-accessories",
-      name: "لوازم جانبی موبایل",
-      links: [
-        { label: "لوازم جانبی اپل", href: "/accessories/apple" },
-        { label: "لوازم جانبی سامسونگ", href: "/accessories/samsung" },
-        { label: "لوازم جانبی شیائومی", href: "/accessories/xiaomi" }
-      ],
-      allHref: "/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84"
     },
     {
       id: "tablet",
@@ -66,26 +78,43 @@
     {
       id: "console",
       name: "کنسول بازی",
-      links: [
-        { label: "خرید کنسول سونی", href: "/console" }
-      ],
+      links: [{ label: "خرید کنسول سونی", href: "/console" }],
       allHref: "/console"
     }
   ];
 
   let activeId = categories[0].id;
 
+  const categoryLinks = (category) =>
+    Array.isArray(category.sections)
+      ? category.sections.flatMap((section) => section.links || [])
+      : (category.links || []);
+
+  const renderLink = (link) => {
+    const parent = link.soon
+      ? '<div class="mobile-category-link is-soon"><span>' + link.label + '</span><small>به‌زودی</small></div>'
+      : '<a class="mobile-category-link" href="' + link.href + '"><span>' + link.label + '</span>' + chevron + '</a>';
+    if (!Array.isArray(link.children) || !link.children.length) return parent;
+    const children = link.children.map((child) =>
+      '<a class="mobile-category-child" href="' + child.href + '">' + child.label + '</a>'
+    ).join("");
+    return '<div class="mobile-category-nested">' + parent + '<div class="mobile-category-children">' + children + '</div></div>';
+  };
+
   function renderContent(category) {
-    const links = category.links
-      .map((link) => link.soon
-        ? '<div class="mobile-category-link is-soon"><span>' + link.label + '</span><small>به‌زودی</small></div>'
-        : '<a class="mobile-category-link" href="' + link.href + '"><span>' + link.label + '</span>' + chevron + '</a>')
-      .join("");
+    const sections = Array.isArray(category.sections) && category.sections.length
+      ? category.sections
+      : [{ title: category.name, links: category.links || [] }];
+    const sectionMarkup = sections.map((section) =>
+      '<section class="mobile-category-section"><h3>' + section.title + '</h3><div class="mobile-category-section-links">' +
+      section.links.map(renderLink).join("") +
+      '</div></section>'
+    ).join("");
 
     content.innerHTML =
       '<div class="mobile-category-content-head">' + icons[category.id] + '<span>' + category.name + '</span></div>' +
-      links +
-      (category.allHref ? '<a class="mobile-category-all" href="' + category.allHref + '">مشاهده همه ' + category.name + chevron + '</a>' : '');
+      '<div class="mobile-category-groups">' + sectionMarkup + '</div>' +
+      (category.allHref ? '<a class="mobile-category-all" href="' + category.allHref + '">مشاهده همه ' + category.name + chevron + '</a>' : "");
   }
 
   function activate(id) {
@@ -115,7 +144,7 @@
 
     const matched = categories.filter((category) =>
       category.name.toLocaleLowerCase("fa").includes(query) ||
-      category.links.some((link) => link.label.toLocaleLowerCase("fa").includes(query))
+      categoryLinks(category).some((link) => link.label.toLocaleLowerCase("fa").includes(query) || (link.children || []).some((child) => child.label.toLocaleLowerCase("fa").includes(query)))
     );
 
     rail.querySelectorAll(".mobile-category-rail-item").forEach((item) => {
