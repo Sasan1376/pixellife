@@ -78,7 +78,7 @@
           ],
         },
       ],
-      seeAllHref: '/mobiles',
+
     },
     {
       id: 'tablet',
@@ -162,7 +162,7 @@
     catPanel.innerHTML = `
       <div class="megamenu-content-title"><i class="ti ${cat.icon}"></i>${cat.name}</div>
       ${groupsMarkup}
-      <a href="${cat.seeAllHref}" class="megamenu-link see-all">مشاهده همه ${cat.name}<i class="ti ti-arrow-left"></i></a>`;
+      ${cat.seeAllHref ? `<a href="${cat.seeAllHref}" class="megamenu-link see-all">مشاهده همه ${cat.name}<i class="ti ti-arrow-left"></i></a>` : ""}`;
     content.appendChild(catPanel);
 
     const activate = (event) => {
