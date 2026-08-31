@@ -8,15 +8,15 @@
       style.textContent = `
         #plAssistantToggle {
           position: fixed; right: 22px; bottom: 92px; z-index: 1750;
-          width: 62px; height: 62px; padding: 0; border: 2px solid #bfdbfe; border-radius: 50%;
+          width: 64px; height: 64px; padding: 0; border: 0; border-radius: 50%;
           display: grid; place-items: center; cursor: pointer; color: #fff;
-          background: #75acf0;
-          box-shadow: 0 8px 20px rgba(96, 165, 250, .28);
-          transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+          background: #4f8df4;
+          box-shadow: 0 5px 12px rgba(37, 99, 235, .22);
+          transition: transform .16s ease, box-shadow .16s ease;
         }
-        #plAssistantToggle:hover { transform: translateY(-2px) scale(1.02); background: #8bbcf7; box-shadow: 0 11px 24px rgba(96, 165, 250, .34); }
-        #plAssistantToggle:focus-visible { outline: 3px solid rgba(147, 197, 253, .65); outline-offset: 3px; }
-        #plAssistantToggle svg { width: 38px; height: 38px; display: block; }
+        #plAssistantToggle:hover { transform: translateY(-1px); box-shadow: 0 7px 15px rgba(37, 99, 235, .28); }
+        #plAssistantToggle:focus-visible { outline: 3px solid rgba(147, 197, 253, .6); outline-offset: 3px; }
+        #plAssistantToggle svg { width: 40px; height: 40px; display: block; }
 
         #plAssistant {
           position: fixed; right: 22px; bottom: 166px; z-index: 1749;
@@ -42,7 +42,7 @@
         .pl-ai-form button { border:0; border-radius:10px; padding:0 13px; background:#75acf0; color:#fff; font:700 12px Vazirmatn,Tahoma,sans-serif; cursor:pointer; }
 
         @media (max-width: 768px) {
-          #plAssistantToggle { right: 16px; bottom: 84px; width: 58px; height: 58px; }
+          #plAssistantToggle { right: 16px; bottom: 84px; width: 60px; height: 60px; }
           #plAssistant { right: 16px; bottom: 154px; max-height: min(500px, calc(100vh - 176px)); }
         }
       `;
@@ -50,7 +50,7 @@
     }
 
     const toggle = add("button", { id: "plAssistantToggle", type: "button", title: "دستیار خرید هوشمند", ariaLabel: "باز کردن دستیار خرید هوشمند" });
-    toggle.innerHTML = '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 16h28c6.6 0 12 5.4 12 12v14c0 6.6-5.4 12-12 12H36l-4 6-4-6H18C11.4 54 6 48.6 6 42V28c0-6.6 5.4-12 12-12Z" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linejoin="round"/><circle cx="23" cy="35" r="3" fill="currentColor"/><circle cx="32" cy="35" r="3" fill="currentColor"/><circle cx="41" cy="35" r="3" fill="currentColor"/></svg>';
+    toggle.innerHTML = '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 15h28c6.6 0 12 5.4 12 12v14c0 6.6-5.4 12-12 12H36.5l-4.5 6-4.5-6H18C11.4 53 6 47.6 6 41V27c0-6.6 5.4-12 12-12Z" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="23" cy="34" r="3" fill="currentColor"/><circle cx="32" cy="34" r="3" fill="currentColor"/><circle cx="41" cy="34" r="3" fill="currentColor"/></svg>';
     const panel = add("section", { id: "plAssistant", ariaLabel: "دستیار خرید PixelLife" });
     panel.innerHTML = '<div class="pl-ai-head"><div class="pl-ai-title"><span>دستیار خرید PixelLife</span><small dir="rtl">قدرت گرفته از <bdi>OpenAI</bdi></small></div><button id="plAssistantClose" type="button" aria-label="بستن">×</button></div><div class="pl-ai-messages" id="plAssistantMessages"><div class="pl-ai-msg bot">سلام! برای انتخاب گوشی، تبلت یا کنسول مناسب راهنمایی‌تان می‌کنم. بودجه و کاربردتان را بنویسید.</div></div><form class="pl-ai-form" id="plAssistantForm"><input id="plAssistantInput" maxlength="800" autocomplete="off" placeholder="مثلاً گوشی مناسب بازی تا ۵۰ میلیون" /><button type="submit">ارسال</button></form>';
     document.body.append(toggle, panel);
