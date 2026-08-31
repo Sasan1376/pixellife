@@ -123,13 +123,17 @@
   const hoverMedia = window.matchMedia('(hover: hover) and (pointer: fine)');
   document.documentElement.classList.toggle('desktop-hover', hoverMedia.matches);
 
+  function showCatPanel(catId) {
+    content.querySelectorAll('.megamenu-content-panel').forEach((panel) => {
+      panel.classList.toggle('active', panel.dataset.catPanel === catId);
+    });
+  }
+
   function activateCat(catId) {
     cats.querySelectorAll('.megamenu-cat-btn').forEach((btn) => {
       btn.classList.toggle('active', btn.dataset.cat === catId);
     });
-    content.querySelectorAll('.megamenu-content-panel').forEach((p) => {
-      p.classList.toggle('active', p.dataset.catPanel === catId);
-    });
+    showCatPanel(catId);
   }
 
   function clearActiveCat() {
@@ -184,6 +188,8 @@
   function openMegamenu() {
     clearTimeout(closeTimer);
     isOpen = true;
+    // با ورود به منو، جزئیات اولیه دیده می‌شود اما هیچ دسته‌ای هایلایت نیست.
+    if (!content.querySelector('.megamenu-content-panel.active')) showCatPanel('mobile');
     panel.classList.add('open');
     backdrop.classList.add('open');
     toggle.classList.add('active');
