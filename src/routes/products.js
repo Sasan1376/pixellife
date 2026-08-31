@@ -61,7 +61,7 @@ function categoryPattern(category) {
   const aliases = {
     "موبایل": ["موبایل", "mobile", "گوشی موبایل", "گوشی"],
     "تبلت": ["تبلت", "tablet"],
-    "لوازم جانبی موبایل": ["لوازم جانبی موبایل", "mobile accessories", "accessories"],
+    "لوازم جانبی موبایل": ["لوازم جانبی موبایل", "mobile accessories", "accessories", "کابل، شارژر و آداپتور", "کابل شارژ و آداپتور", "کابل و شارژر", "chargers", "cables", "chargers and adapters"],
     "کابل، شارژر و آداپتور": ["کابل، شارژر و آداپتور", "کابل شارژ و آداپتور", "کابل و شارژر", "chargers", "cables", "chargers and adapters"],
     "کنسول بازی": ["کنسول بازی", "کنسول", "console", "gaming console"],
     "هدفون و هندزفری": ["هدفون و هندزفری", "هدفون", "هندزفری", "headphones"],
