@@ -187,7 +187,7 @@ router.use(async (req, res, next) => {
   try {
     await Product.updateMany(
       {
-        category: /^(?:موبایل|mobile|گوشی موبایل|گوشی|phone)$/i,
+        category: /^(?:موبایل|mobile|گوشی موبایل|گوشی|phone|لوازم جانبی موبایل|mobile accessories|accessories)$/i,
         name: /(کابل|شارژر|آداپتور|تبدیل|charger|adapter|cable)/i,
       },
       { $set: { category: "کابل، شارژر و آداپتور" } },
