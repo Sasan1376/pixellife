@@ -132,10 +132,15 @@
     });
   }
 
+  function clearActiveCat() {
+    cats.querySelectorAll('.megamenu-cat-btn.active').forEach((btn) => btn.classList.remove('active'));
+    content.querySelectorAll('.megamenu-content-panel.active').forEach((panel) => panel.classList.remove('active'));
+  }
+
   categoriesData.forEach((cat, idx) => {
     const catBtn = document.createElement('button');
     catBtn.type = 'button';
-    catBtn.className = 'megamenu-cat-btn' + (idx === 0 ? ' active' : '');
+    catBtn.className = 'megamenu-cat-btn';
     catBtn.dataset.cat = cat.id;
     catBtn.innerHTML = `
       <i class="ti ${cat.icon} cat-ico"></i>
@@ -144,7 +149,7 @@
     cats.appendChild(catBtn);
 
     const catPanel = document.createElement('div');
-    catPanel.className = 'megamenu-content-panel' + (idx === 0 ? ' active' : '');
+    catPanel.className = 'megamenu-content-panel';
     catPanel.dataset.catPanel = cat.id;
     const groupsMarkup = Array.isArray(cat.groups) && cat.groups.length
       ? `<div class="megamenu-groups">${cat.groups.map((group) => `
@@ -186,6 +191,7 @@
 
   function closeMegamenu() {
     isOpen = false;
+    clearActiveCat();
     panel.classList.remove('open');
     backdrop.classList.remove('open');
     toggle.classList.remove('active');
@@ -198,7 +204,10 @@
 
   if (hoverMedia.matches) {
     wrap.addEventListener('mouseenter', openMegamenu);
-    wrap.addEventListener('mouseleave', scheduleClose);
+    wrap.addEventListener('mouseleave', () => {
+      clearActiveCat();
+      scheduleClose();
+    });
   }
 
   function updateHeaderHeight() {
