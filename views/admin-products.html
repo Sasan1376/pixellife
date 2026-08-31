@@ -788,7 +788,7 @@
         if (!key) return true;
         const value = String(product.category || "").toLowerCase();
         const checks = {
-          mobile: ["mobile", "موبایل", "phone", "iphone", "samsung", "xiaomi"],
+          mobile: ["mobile", "موبایل", "گوشی", "phone"],
           tablet: ["tablet", "تبلت", "ipad"],
           headphones: ["headphone", "headset", "earphone", "هدفون", "هندزفری"],
           watch: ["watch", "ساعت"],
@@ -811,7 +811,7 @@
             return;
           }
 
-          tableBody.innerHTML = json.products
+          tableBody.innerHTML = products
             .map((p) => {
               const img = p.mainImage || (p.images && p.images[0]) || "";
               const fallbackImage =
@@ -1138,6 +1138,10 @@
           window.location.href = "/admin/login";
         });
 
+      if (categoryFilter && categoryLabels[categoryFilter]) {
+        const heading = document.querySelector(".app-content-header h3");
+        if (heading) heading.textContent = "محصولات دستهٔ " + categoryLabels[categoryFilter];
+      }
       loadProducts();
     </script>
   <script src="/js/admin-sidebar.js?v=4" defer></script></body>
