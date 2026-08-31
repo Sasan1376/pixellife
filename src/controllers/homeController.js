@@ -7,7 +7,7 @@ const viewCache = new Map();
 
 // با هر انتشار، URL فایل‌های CSS و JS عوض می‌شود تا مرورگری که نسخهٔ
 // قدیمی را با قانون کش قبلی نگه داشته نیز ناچار به دریافت نسخهٔ تازه باشد.
-const ASSET_REVISION = "20260831-cache-fix-6";
+const ASSET_REVISION = "20260831-cache-fix-7";
 
 function injectAssetRevision(html) {
   return html.replace(
@@ -479,7 +479,14 @@ const homeController = {
       });
     }
   },
-  mobiles: (req, res) => sendViewWithEnamad(res, "mobile.html"),
+  mobiles: (req, res) =>
+    sendSpecialCatalogView(res, {
+      slug: "mobiles",
+      title: "همه محصولات موبایل",
+      heading: "همه محصولات موبایل",
+      description: "تمام گوشی‌های موبایل را یک‌جا بررسی و مقایسه کنید.",
+      icon: "ti-device-mobile",
+    }),
   categories: (req, res) => sendViewWithEnamad(res, "categories.html"),
   login: (req, res) => sendViewWithEnamad(res, "login.html"),
   cart: (req, res) => sendViewWithEnamad(res, "cart.html"),
