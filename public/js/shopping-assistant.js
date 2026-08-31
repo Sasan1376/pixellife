@@ -55,13 +55,13 @@
     }
 
     const toggle = add("button", { id: "plAssistantToggle", type: "button", title: "دستیار خرید هوشمند", ariaLabel: "باز کردن دستیار خرید هوشمند" });
-    toggle.innerHTML = '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="#2563eb"/><path d="M19 17h26c5 0 9 4 9 9v13c0 5-4 9-9 9h-8l-5 7-5-7h-8c-5 0-9-4-9-9V26c0-5 4-9 9-9Z" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24" cy="33" r="2.7" fill="#fff"/><circle cx="32" cy="33" r="2.7" fill="#fff"/><circle cx="40" cy="33" r="2.7" fill="#fff"/></svg>';
+    toggle.innerHTML = '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="#2563eb"/><g transform="translate(5.12 5.12) scale(.84)"><path d="M19 17h26c5 0 9 4 9 9v13c0 5-4 9-9 9h-8l-5 7-5-7h-8c-5 0-9-4-9-9V26c0-5 4-9 9-9Z" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24" cy="33" r="2.7" fill="#fff"/><circle cx="32" cy="33" r="2.7" fill="#fff"/><circle cx="40" cy="33" r="2.7" fill="#fff"/></g></svg>';
     const panel = add("section", { id: "plAssistant", ariaLabel: "دستیار خرید PixelLife" });
     panel.innerHTML = '<div class="pl-ai-head"><div class="pl-ai-title"><span>دستیار خرید PixelLife</span><small dir="rtl">قدرت گرفته از <bdi>OpenAI</bdi></small></div><button id="plAssistantClose" type="button" aria-label="بستن">×</button></div><div class="pl-ai-messages" id="plAssistantMessages"><div class="pl-ai-msg bot">سلام! برای انتخاب گوشی، تبلت یا کنسول مناسب راهنمایی‌تان می‌کنم. بودجه و کاربردتان را بنویسید.</div></div><form class="pl-ai-form" id="plAssistantForm"><input id="plAssistantInput" maxlength="800" autocomplete="off" placeholder="مثلاً گوشی مناسب بازی تا ۵۰ میلیون" /><button type="submit">ارسال</button></form>';
     document.body.append(toggle, panel);
     const input = document.getElementById("plAssistantInput"), messages = document.getElementById("plAssistantMessages");
     const addMessage = (text, kind) => { const el = add("div", { className: "pl-ai-msg " + kind }, text); messages.appendChild(el); messages.scrollTop = messages.scrollHeight; return el; };
-    toggle.addEventListener("click", () => { panel.classList.add("open"); input.focus(); });
+    toggle.addEventListener("click", () => { const isOpen = panel.classList.toggle("open"); toggle.setAttribute("aria-expanded", String(isOpen)); if (isOpen) input.focus(); });
     document.getElementById("plAssistantClose").addEventListener("click", () => panel.classList.remove("open"));
     document.addEventListener("click", (event) => {
       if (panel.classList.contains("open") && !panel.contains(event.target) && !toggle.contains(event.target)) {
