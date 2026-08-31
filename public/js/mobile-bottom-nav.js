@@ -145,7 +145,17 @@
     };
     const categories = [
       { id: "mobile", name: "موبایل", badge: "پرفروش", links: [{ label: "خرید آیفون", href: "/iphone" }, { label: "گوشی سامسونگ", href: "/samsung" }, { label: "گوشی شیائومی", href: "/xiaomi" }, { label: "همه موبایل‌ها", href: "/mobiles" }] },
-      { id: "mobile-accessories", name: "لوازم جانبی موبایل", badge: "جدید", links: [{ label: "لوازم جانبی اپل", href: "/accessories/apple" }, { label: "لوازم جانبی سامسونگ", href: "/accessories/samsung" }, { label: "لوازم جانبی شیائومی", href: "/accessories/xiaomi" }, { label: "همه لوازم جانبی موبایل", href: "/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84" }] },
+      { id: "mobile-accessories", name: "لوازم جانبی موبایل", badge: "جدید", links: [
+        { label: "کابل، شارژر و آداپتور", href: "/accessories/chargers", brands: [
+          { label: "اپل", href: "/accessories/chargers?brand=%D8%A7%D9%BE%D9%84" },
+          { label: "سامسونگ", href: "/accessories/chargers?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" },
+          { label: "شیائومی", href: "/accessories/chargers?brand=%D8%B4%DB%8C%D8%A7%D8%A6%D9%88%D9%85%DB%8C" }
+        ] },
+        { label: "لوازم جانبی اپل", href: "/accessories/apple" },
+        { label: "لوازم جانبی سامسونگ", href: "/accessories/samsung" },
+        { label: "لوازم جانبی شیائومی", href: "/accessories/xiaomi" },
+        { label: "همه لوازم جانبی موبایل", href: "/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84" }
+      ] },
       { id: "tablet", name: "تبلت", badge: "۳ برند", links: [{ label: "تبلت اپل", href: "/ipad" }, { label: "تبلت سامسونگ", href: "/samsungtab" }, { label: "تبلت شیائومی", href: "/xiaomitab" }] },
       { id: "headphone", name: "هدفون و هندزفری", links: [{ label: "هدفون اپل", href: "/headphones?brand=%D8%A7%D9%BE%D9%84" }, { label: "هدفون سامسونگ", href: "/headphones?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" }, { label: "همه هدفون‌ها", href: "/headphones" }] },
       { id: "watch", name: "ساعت هوشمند", links: [{ label: "اپل واچ", href: "/smartwatches?brand=%D8%A7%D9%BE%D9%84" }, { label: "گلکسی واچ", href: "/smartwatches?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" }, { label: "همه ساعت‌ها", href: "/smartwatches" }] },
@@ -162,9 +172,14 @@
       categoryContent.innerHTML = markup;
       categoryContent.classList.add("is-changing");
     };
-    const linkMarkup = (link, category) => link.soon
-      ? `<div class="mobile-category-sheet__soon"><span class="mobile-category-sheet__link-main"><span class="mobile-category-sheet__thumb">${icons[category.id]}</span><span>${link.label}</span></span><small>به‌زودی</small></div>`
-      : `<a class="mobile-category-sheet__link" href="${link.href}"><span class="mobile-category-sheet__link-main"><span class="mobile-category-sheet__thumb">${icons[category.id]}</span><span>${link.label}</span></span>${chevron}</a>`;
+    const linkMarkup = (link, category) => {
+      if (link.soon) {
+        return `<div class="mobile-category-sheet__soon"><span class="mobile-category-sheet__link-main"><span class="mobile-category-sheet__thumb">${icons[category.id]}</span><span>${link.label}</span></span><small>به‌زودی</small></div>`;
+      }
+      const parent = `<a class="mobile-category-sheet__link" href="${link.href}"><span class="mobile-category-sheet__link-main"><span class="mobile-category-sheet__thumb">${icons[category.id]}</span><span>${link.label}</span></span>${chevron}</a>`;
+      if (!Array.isArray(link.brands) || !link.brands.length) return parent;
+      return `<section class="mobile-category-sheet__group">${parent}<div class="mobile-category-sheet__brand-links" aria-label="برندهای ${link.label}">${link.brands.map((brand) => `<a class="mobile-category-sheet__brand-link" href="${brand.href}">${brand.label}</a>`).join("")}</div></section>`;
+    };
 
     const renderCategory = (id) => {
       const category = categories.find((item) => item.id === id) || categories[0];
