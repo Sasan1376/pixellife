@@ -205,15 +205,18 @@
 
   function scheduleClose() {
     clearTimeout(closeTimer);
-    closeTimer = setTimeout(closeMegamenu, 200);
+    // فاصلهٔ بسیار کوچک بین دکمه و پنل نباید منو را ببندد یا محتوا را پاک کند.
+    closeTimer = setTimeout(closeMegamenu, 700);
   }
 
   if (hoverMedia.matches) {
+    const keepMegamenuOpen = () => clearTimeout(closeTimer);
     wrap.addEventListener('mouseenter', openMegamenu);
-    wrap.addEventListener('mouseleave', () => {
-      clearActiveCat();
-      scheduleClose();
-    });
+    wrap.addEventListener('mouseleave', scheduleClose);
+    // محافظ اضافه برای عبور سریع موس میان دکمهٔ سه‌خط و پنل بازشده.
+    toggle.addEventListener('mouseenter', keepMegamenuOpen);
+    panel.addEventListener('mouseenter', keepMegamenuOpen);
+    panel.addEventListener('mouseleave', scheduleClose);
   }
 
   function updateHeaderHeight() {
