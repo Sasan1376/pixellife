@@ -30,6 +30,7 @@
         {
           title: "لوازم جانبی موبایل",
           links: [
+            { label: "همه لوازم جانبی موبایل", href: "/accessories" },
             {
               label: "کابل، شارژر و آداپتور",
               href: "/accessories/chargers",
