@@ -783,7 +783,7 @@
       }
 
       const categoryFilter = new URLSearchParams(location.search).get("category");
-      const categoryLabels = { mobile: "موبایل", tablet: "تبلت", headphones: "هدفون و هندزفری", watch: "ساعت هوشمند", console: "کنسول بازی" };
+      const categoryLabels = { mobile: "موبایل", accessories: "کابل، شارژر و آداپتور", tablet: "تبلت", headphones: "هدفون و هندزفری", watch: "ساعت هوشمند", console: "کنسول بازی" };
       function categoryMatches(product, key) {
         if (!key) return true;
         const value = String(product.category || "").toLowerCase();
