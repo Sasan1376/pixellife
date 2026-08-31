@@ -782,6 +782,20 @@
         select.value = available ? selectedValue : "";
       }
 
+      const categoryFilter = new URLSearchParams(location.search).get("category");
+      const categoryLabels = { mobile: "موبایل", tablet: "تبلت", headphones: "هدفون و هندزفری", watch: "ساعت هوشمند", console: "کنسول بازی" };
+      function categoryMatches(product, key) {
+        if (!key) return true;
+        const value = String(product.category || "").toLowerCase();
+        const checks = {
+          mobile: ["mobile", "موبایل", "phone", "iphone", "samsung", "xiaomi"],
+          tablet: ["tablet", "تبلت", "ipad"],
+          headphones: ["headphone", "headset", "earphone", "هدفون", "هندزفری"],
+          watch: ["watch", "ساعت"],
+          console: ["console", "کنسول", "playstation", "xbox"]
+        };
+        return (checks[key] || []).some(term => value.includes(term));
+      }
       async function loadProducts() {
         tableBody.innerHTML =
           '<tr><td colspan="7" class="text-center text-muted py-4">در حال بارگذاری...</td></tr>';
@@ -790,7 +804,8 @@
           const json = await res.json();
           if (!json.success) throw new Error(json.message);
 
-          if (json.products.length === 0) {
+          const products = json.products.filter(product => categoryMatches(product, categoryFilter));
+          if (products.length === 0) {
             tableBody.innerHTML =
               '<tr><td colspan="7" class="text-center text-muted py-4">هنوز محصولی ثبت نشده است.</td></tr>';
             return;
