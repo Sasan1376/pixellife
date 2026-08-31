@@ -180,6 +180,23 @@ router.use(express.json({ limit: "1mb" }));
 router.use(express.urlencoded({ extended: true }));
 router.use(adminSession);
 router.use(requireAdmin);
+
+// محصولات قدیمیِ کابل/شارژر که پیش‌تر با دستهٔ «موبایل» ثبت شده‌اند، پیش از
+// نمایش پنل ادمین به دستهٔ درست منتقل می‌شوند تا هرگز در فهرست موبایل نباشند.
+router.use(async (req, res, next) => {
+  try {
+    await Product.updateMany(
+      {
+        category: /^(?:موبایل|mobile|گوشی موبایل|گوشی|phone)$/i,
+        name: /(کابل|شارژر|آداپتور|تبدیل|charger|adapter|cable)/i,
+      },
+      { $set: { category: "کابل، شارژر و آداپتور" } },
+    );
+  } catch (error) {
+    console.error("Admin accessory category migration error:", error);
+  }
+  next();
+});
 router.use((req, res, next) => { res.set("Cache-Control", "no-store, no-cache, must-revalidate, private"); next(); });
 
 function analyticsDateKey(date) {
