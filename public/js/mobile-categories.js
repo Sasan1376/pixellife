@@ -45,8 +45,7 @@
             { label: "لوازم جانبی شیائومی", href: "/accessories/xiaomi" }
           ]
         }
-      ],
-      allHref: "/mobiles"
+      ]
     },
     {
       id: "tablet",
