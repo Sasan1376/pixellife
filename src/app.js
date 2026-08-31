@@ -159,9 +159,11 @@ app.use(
           "public, max-age=2592000, stale-while-revalidate=86400",
         );
       } else if (/\.(?:css|js)$/i.test(filePath)) {
+        // تغییرات ظاهری و منطق سایت باید در همهٔ مرورگرها بلافاصله
+        // اعتبارسنجی شوند؛ ETag فقط در صورت تغییر، نسخهٔ تازه را دانلود می‌کند.
         res.setHeader(
           "Cache-Control",
-          "public, max-age=604800, stale-while-revalidate=86400",
+          "no-cache, max-age=0, must-revalidate",
         );
       }
     },
