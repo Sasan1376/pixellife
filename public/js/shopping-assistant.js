@@ -2,8 +2,28 @@
   const add = (tag, attrs = {}, text = "") => { const el = document.createElement(tag); Object.assign(el, attrs); if (text) el.textContent = text; return el; };
   const start = () => {
     if (document.getElementById("plAssistant")) return;
+
+    if (!document.getElementById("pl-assistant-toggle-style")) {
+      const style = add("style", { id: "pl-assistant-toggle-style" });
+      style.textContent = `
+        #plAssistantToggle {
+          position: fixed; right: 22px; bottom: 92px; z-index: 1750;
+          width: 62px; height: 62px; padding: 0; border: 0; border-radius: 50%;
+          display: grid; place-items: center; cursor: pointer; color: #fff;
+          background: linear-gradient(145deg, #3b82f6, #2563eb);
+          box-shadow: 0 10px 24px rgba(37, 99, 235, .32), 0 3px 8px rgba(15, 23, 42, .14);
+          transition: transform .18s ease, box-shadow .18s ease;
+        }
+        #plAssistantToggle:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 14px 28px rgba(37, 99, 235, .38), 0 4px 10px rgba(15, 23, 42, .14); }
+        #plAssistantToggle:focus-visible { outline: 3px solid rgba(96, 165, 250, .42); outline-offset: 3px; }
+        #plAssistantToggle svg { width: 37px; height: 37px; display: block; }
+        @media (max-width: 768px) { #plAssistantToggle { right: 16px; bottom: 84px; width: 58px; height: 58px; } }
+      `;
+      document.head.appendChild(style);
+    }
+
     const toggle = add("button", { id: "plAssistantToggle", type: "button", title: "دستیار خرید هوشمند", ariaLabel: "باز کردن دستیار خرید هوشمند" });
-    toggle.innerHTML = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 5.2a10.8 10.8 0 1 0 10.8 10.8" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M16 9a7 7 0 1 0 7 7" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" opacity=".92"/><circle cx="16" cy="16" r="2.6" fill="currentColor"/><path d="m25.2 5 .75 2.05L28 7.8l-2.05.75-.75 2.05-.75-2.05-2.05-.75 2.05-.75z" fill="currentColor"/></svg>';
+    toggle.innerHTML = '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M17 15h30c6.1 0 11 4.9 11 11v17c0 6.1-4.9 11-11 11H35.5L30 60l-5.5-6H17c-6.1 0-11-4.9-11-11V26c0-6.1 4.9-11 11-11Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><circle cx="23" cy="34" r="3.2" fill="currentColor"/><circle cx="32" cy="34" r="3.2" fill="currentColor"/><circle cx="41" cy="34" r="3.2" fill="currentColor"/></svg>';
     const panel = add("section", { id: "plAssistant", ariaLabel: "دستیار خرید PixelLife" });
     panel.innerHTML = '<div class="pl-ai-head"><div class="pl-ai-title"><span>دستیار خرید PixelLife</span><small dir="rtl">قدرت گرفته از <bdi>OpenAI</bdi></small></div><button id="plAssistantClose" type="button" aria-label="بستن">×</button></div><div class="pl-ai-messages" id="plAssistantMessages"><div class="pl-ai-msg bot">سلام! برای انتخاب گوشی، تبلت یا کنسول مناسب راهنمایی‌تان می‌کنم. بودجه و کاربردتان را بنویسید.</div></div><form class="pl-ai-form" id="plAssistantForm"><input id="plAssistantInput" maxlength="800" autocomplete="off" placeholder="مثلاً گوشی مناسب بازی تا ۵۰ میلیون" /><button type="submit">ارسال</button></form>';
     document.body.append(toggle, panel);
