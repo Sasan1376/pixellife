@@ -56,6 +56,7 @@
       name: 'لوازم جانبی موبایل',
       icon: 'ti-headphones',
       links: [
+        { label: 'کابل، شارژر و آداپتور', href: '/accessories/chargers' },
         { label: 'لوازم جانبی اپل', href: '/accessories/apple' },
         { label: 'لوازم جانبی سامسونگ', href: '/accessories/samsung' },
         { label: 'لوازم جانبی شیائومی', href: '/accessories/xiaomi' },
