@@ -24,13 +24,13 @@
           links: [
             { label: "خرید آیفون", href: "/iphone" },
             { label: "گوشی سامسونگ", href: "/samsung" },
-            { label: "گوشی شیائومی", href: "/xiaomi" }
+            { label: "گوشی شیائومی", href: "/xiaomi" },
+            { label: "همه محصولات موبایل", href: "/mobiles" }
           ]
         },
         {
           title: "لوازم جانبی موبایل",
           links: [
-            { label: "همه لوازم جانبی موبایل", href: "/accessories" },
             {
               label: "کابل، شارژر و آداپتور",
               href: "/accessories/chargers",
@@ -42,7 +42,8 @@
             },
             { label: "لوازم جانبی اپل", href: "/accessories/apple" },
             { label: "لوازم جانبی سامسونگ", href: "/accessories/samsung" },
-            { label: "لوازم جانبی شیائومی", href: "/accessories/xiaomi" }
+            { label: "لوازم جانبی شیائومی", href: "/accessories/xiaomi" },
+            { label: "همه لوازم جانبی موبایل", href: "/accessories" }
           ]
         }
       ]
