@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 router.use((req, res, next) => {
-  res.set("Cache-Control", req.method === "GET" ? "public, max-age=5, stale-while-revalidate=30" : "no-store");
+  res.set("Cache-Control", req.method === "GET" ? "no-cache, max-age=0, must-revalidate" : "no-store");
   next();
 });
 
