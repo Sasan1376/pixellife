@@ -225,6 +225,68 @@
   margin-top: 8px !important;
   padding-top: 14px !important;
 }
+.megamenu-groups {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 24px !important;
+}
+.megamenu-group {
+  min-width: 0 !important;
+}
+.megamenu-group-title {
+  display: flex !important;
+  align-items: center !important;
+  min-height: 30px !important;
+  margin: 0 0 8px !important;
+  padding-right: 9px !important;
+  border-right: 3px solid #ef4444 !important;
+  color: var(--text-1) !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+.megamenu-group-links {
+  display: grid !important;
+  gap: 1px !important;
+}
+.megamenu-group .megamenu-link {
+  min-height: 32px !important;
+  padding: 5px 2px !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+}
+.megamenu-nested {
+  padding-bottom: 7px !important;
+  border-bottom: 1px solid var(--border) !important;
+  margin-bottom: 5px !important;
+}
+.megamenu-nested > .megamenu-link {
+  color: var(--text-1) !important;
+  font-weight: 750 !important;
+}
+.megamenu-child-links {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 5px !important;
+  padding: 2px 2px 1px !important;
+}
+.megamenu-child-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 25px !important;
+  padding: 3px 7px !important;
+  border: 1px solid #dbeafe !important;
+  border-radius: 7px !important;
+  background: #f8fbff !important;
+  color: var(--blue) !important;
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+}
+.megamenu-child-link:hover {
+  border-color: var(--blue) !important;
+  background: var(--blue-light) !important;
+}
 .megamenu-backdrop {
   position: fixed !important;
   inset: 0 !important;
