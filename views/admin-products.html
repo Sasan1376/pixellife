@@ -796,16 +796,22 @@
       const categoryLabels = { mobile: "موبایل", accessories: "کابل، شارژر و آداپتور", tablet: "تبلت", headphones: "هدفون و هندزفری", watch: "ساعت هوشمند", console: "کنسول بازی" };
       function categoryMatches(product, key) {
         if (!key) return true;
-        const value = String(product.category || "").toLowerCase();
+        const value = String(product.category || "")
+          .trim()
+          .toLowerCase()
+          .replace(/[يى]/g, "ی")
+          .replace(/[ك]/g, "ک")
+          .replace(/\s+/g, " ");
         const checks = {
-          mobile: ["mobile", "موبایل", "گوشی", "phone"],
-          accessories: ["کابل، شارژر و آداپتور", "کابل شارژ و آداپتور", "کابل و شارژر", "chargers", "cables"],
+          // تطابق دقیق لازم است؛ «لوازم جانبی موبایل» یا کابل نباید در موبایل دیده شود.
+          mobile: ["mobile", "موبایل", "گوشی موبایل", "گوشی", "phone"],
+          accessories: ["کابل، شارژر و آداپتور", "کابل شارژ و آداپتور", "کابل و شارژر", "chargers", "cables", "chargers and adapters"],
           tablet: ["tablet", "تبلت", "ipad"],
           headphones: ["headphone", "headset", "earphone", "هدفون", "هندزفری"],
           watch: ["watch", "ساعت"],
           console: ["console", "کنسول", "playstation", "xbox"]
         };
-        return (checks[key] || []).some(term => value.includes(term));
+        return (checks[key] || []).includes(value);
       }
       async function loadProducts() {
         tableBody.innerHTML =
@@ -1155,5 +1161,5 @@
       }
       loadProducts();
     </script>
-  <script src="/js/admin-sidebar.js?v=5" defer></script></body>
+  <script src="/js/admin-sidebar.js?v=6" defer></script></body>
 </html>
