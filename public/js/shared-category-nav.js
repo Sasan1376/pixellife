@@ -205,8 +205,8 @@
 
   function scheduleClose() {
     clearTimeout(closeTimer);
-    // فاصلهٔ بسیار کوچک بین دکمه و پنل نباید منو را ببندد یا محتوا را پاک کند.
-    closeTimer = setTimeout(closeMegamenu, 700);
+    // یک فرصت کوتاه برای عبور طبیعی موس میان دکمه و پنل.
+    closeTimer = setTimeout(closeMegamenu, 150);
   }
 
   if (hoverMedia.matches) {
