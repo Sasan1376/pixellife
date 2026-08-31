@@ -5,6 +5,20 @@ const ContactMessage = require("../models/ContactMessage");
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const viewCache = new Map();
 
+// با هر انتشار، URL فایل‌های CSS و JS عوض می‌شود تا مرورگری که نسخهٔ
+// قدیمی را با قانون کش قبلی نگه داشته نیز ناچار به دریافت نسخهٔ تازه باشد.
+const ASSET_REVISION = "20260831-cache-fix-1";
+
+function injectAssetRevision(html) {
+  return html.replace(
+    /((?:src|href)=["']\/(?:css|js)\/[^"']+)(["'])/gi,
+    (match, url, quote) => {
+      if (url.includes("pl_rev=")) return match;
+      return url + (url.includes("?") ? "&" : "?") + "pl_rev=" + ASSET_REVISION + quote;
+    },
+  );
+}
+
 function readView(filePath) {
   if (IS_PRODUCTION && viewCache.has(filePath)) return viewCache.get(filePath);
   const html = fs.readFileSync(filePath, "utf8");
@@ -17,7 +31,7 @@ function sendCachedHtml(res, cacheKey, render) {
   if (IS_PRODUCTION && viewCache.has(cacheKey)) {
     return res.type("html").send(viewCache.get(cacheKey));
   }
-  const html = render();
+  const html = injectAssetRevision(render());
   if (IS_PRODUCTION) viewCache.set(cacheKey, html);
   return res.type("html").send(html);
 }
@@ -334,7 +348,7 @@ function sendSpecialCatalogView(res, options) {
     html = injectEnamad(html);
     html = injectSharedCategoryNav(html);
     html = injectMobileBottomNav(html);
-    html = injectDatabaseCatalog(html);
+    html = injectAssetRevision(injectDatabaseCatalog(html));
     if (IS_PRODUCTION) viewCache.set(key, html);
     res.type("html").send(html);
   } catch (error) {
@@ -389,7 +403,7 @@ function sendAccessoryBrandView(res, brand) {
     html = injectEnamad(html);
     html = injectSharedCategoryNav(html);
     html = injectMobileBottomNav(html);
-    html = injectDatabaseCatalog(html);
+    html = injectAssetRevision(injectDatabaseCatalog(html));
     if (IS_PRODUCTION) viewCache.set(`accessory:${brandName}`, html);
     res.type("html").send(html);
   } catch (error) {
@@ -420,7 +434,7 @@ const homeController = {
         html = html.replace("</body>", `${SHARED_CATEGORY_SCRIPT}\n</body>`);
       }
 
-      html = injectMobileBottomNav(html);
+      html = injectAssetRevision(injectMobileBottomNav(html));
       if (IS_PRODUCTION) viewCache.set("rendered:index", html);
       res.type("html").send(html);
     } catch (error) {
