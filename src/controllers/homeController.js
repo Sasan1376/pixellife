@@ -473,6 +473,14 @@ const homeController = {
   product: (req, res) => sendViewWithEnamad(res, "product.html"),
   samsung: (req, res) => sendViewWithEnamad(res, "samsung.html"),
   xiaomi: (req, res) => sendViewWithEnamad(res, "xiaomi.html"),
+  accessoriesChargers: (req, res) =>
+    sendSpecialCatalogView(res, {
+      slug: "accessories-chargers",
+      title: "کابل، شارژر و آداپتور",
+      heading: "کابل، شارژر و آداپتور",
+      description: "کابل، شارژر و آداپتورهای موبایل را یک‌جا بررسی و انتخاب کنید.",
+      icon: "ti-charging-pile",
+    }),
   accessoriesApple: (req, res) => sendAccessoryBrandView(res, "اپل"),
   accessoriesSamsung: (req, res) => sendAccessoryBrandView(res, "سامسونگ"),
   accessoriesXiaomi: (req, res) => sendAccessoryBrandView(res, "شیائومی"),
