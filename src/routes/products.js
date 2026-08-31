@@ -10,6 +10,15 @@ const Product = require("../models/Product");
 const { streamProductImage } = require("../utils/productImages");
 
 // پیشنهاد شگفت‌انگیز پس از زمان پایان، در خود دیتابیس هم غیرفعال شود.
+async function moveCableAndChargerProductsToAccessories() {
+  const mobileCategories = /^(?:موبایل|mobile|گوشی موبایل|گوشی|phone)$/i;
+  const accessoryNames = /(کابل|شارژر|آداپتور|تبدیل|charger|adapter|cable)/i;
+  await Product.updateMany(
+    { category: mobileCategories, name: accessoryNames },
+    { $set: { category: "کابل، شارژر و آداپتور" } },
+  );
+}
+
 async function expireAmazingOffers() {
   await Product.updateMany(
     { amazingOffer: true, amazingOfferEndsAt: { $type: "date", $lte: new Date() } },
@@ -20,6 +29,7 @@ async function expireAmazingOffers() {
 router.use(async (req, res, next) => {
   try {
     await expireAmazingOffers();
+    await moveCableAndChargerProductsToAccessories();
   } catch (error) {
     console.error("Amazing offer expiry error:", error);
   }
@@ -52,6 +62,7 @@ function categoryPattern(category) {
     "موبایل": ["موبایل", "mobile", "گوشی موبایل", "گوشی"],
     "تبلت": ["تبلت", "tablet"],
     "لوازم جانبی موبایل": ["لوازم جانبی موبایل", "mobile accessories", "accessories"],
+    "کابل، شارژر و آداپتور": ["کابل، شارژر و آداپتور", "کابل شارژ و آداپتور", "کابل و شارژر", "chargers", "cables", "chargers and adapters"],
     "کنسول بازی": ["کنسول بازی", "کنسول", "console", "gaming console"],
     "هدفون و هندزفری": ["هدفون و هندزفری", "هدفون", "هندزفری", "headphones"],
     "ساعت هوشمند": ["ساعت هوشمند", "smartwatch", "smart watch"],
