@@ -161,7 +161,7 @@ const PROFILE_DROPDOWN_LAYER_FIX = `
 const SHARED_CATEGORY_HEAD = `
 <link rel="stylesheet" href="/css/shared-category-nav.css?v=1" />`;
 const SHARED_CATEGORY_SCRIPT = `
-<script src="/js/shared-category-nav.js?v=1"></script>`;
+<script src="/js/shared-category-nav.js?v=2"></script>`;
 
 const MOBILE_BOTTOM_NAV_HEAD = `
 <link rel="stylesheet" href="/css/mobile-bottom-nav.css?v=9" />`;
