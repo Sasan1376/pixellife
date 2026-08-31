@@ -11,7 +11,7 @@ const { streamProductImage } = require("../utils/productImages");
 
 // پیشنهاد شگفت‌انگیز پس از زمان پایان، در خود دیتابیس هم غیرفعال شود.
 async function moveCableAndChargerProductsToAccessories() {
-  const mobileCategories = /^(?:موبایل|mobile|گوشی موبایل|گوشی|phone)$/i;
+  const mobileCategories = /^(?:موبایل|mobile|گوشی موبایل|گوشی|phone|لوازم جانبی موبایل|mobile accessories|accessories)$/i;
   const accessoryNames = /(کابل|شارژر|آداپتور|تبدیل|charger|adapter|cable)/i;
   await Product.updateMany(
     { category: mobileCategories, name: accessoryNames },
