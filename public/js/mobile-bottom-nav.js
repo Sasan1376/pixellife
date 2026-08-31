@@ -144,8 +144,10 @@
       console: '<svg viewBox="0 0 24 24"><path d="M7 9h10a4 4 0 0 1 3.8 2.8l1 3.5A2 2 0 0 1 19.9 18h-2.3l-2-2H8.4l-2 2H4.1a2 2 0 0 1-1.9-2.7l1-3.5A4 4 0 0 1 7 9z"/><path d="M7 13v3M5.5 14.5h3M16 14h.01M18 15.5h.01"/></svg>'
     };
     const categories = [
-      { id: "mobile", name: "موبایل", badge: "پرفروش", links: [{ label: "خرید آیفون", href: "/iphone" }, { label: "گوشی سامسونگ", href: "/samsung" }, { label: "گوشی شیائومی", href: "/xiaomi" }, { label: "همه موبایل‌ها", href: "/mobiles" }] },
-      { id: "mobile-accessories", name: "لوازم جانبی موبایل", badge: "جدید", links: [
+      { id: "mobile", name: "موبایل", badge: "پرفروش", links: [
+        { label: "خرید آیفون", href: "/iphone" },
+        { label: "گوشی سامسونگ", href: "/samsung" },
+        { label: "گوشی شیائومی", href: "/xiaomi" },
         { label: "کابل، شارژر و آداپتور", href: "/accessories/chargers", brands: [
           { label: "اپل", href: "/accessories/chargers?brand=%D8%A7%D9%BE%D9%84" },
           { label: "سامسونگ", href: "/accessories/chargers?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" },
@@ -154,7 +156,7 @@
         { label: "لوازم جانبی اپل", href: "/accessories/apple" },
         { label: "لوازم جانبی سامسونگ", href: "/accessories/samsung" },
         { label: "لوازم جانبی شیائومی", href: "/accessories/xiaomi" },
-        { label: "همه لوازم جانبی موبایل", href: "/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84" }
+        { label: "همه محصولات موبایل", href: "/mobiles" }
       ] },
       { id: "tablet", name: "تبلت", badge: "۳ برند", links: [{ label: "تبلت اپل", href: "/ipad" }, { label: "تبلت سامسونگ", href: "/samsungtab" }, { label: "تبلت شیائومی", href: "/xiaomitab" }] },
       { id: "headphone", name: "هدفون و هندزفری", links: [{ label: "هدفون اپل", href: "/headphones?brand=%D8%A7%D9%BE%D9%84" }, { label: "هدفون سامسونگ", href: "/headphones?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" }, { label: "همه هدفون‌ها", href: "/headphones" }] },
