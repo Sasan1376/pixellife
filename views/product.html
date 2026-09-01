@@ -6305,10 +6305,24 @@
               return;
             }
 
+            const maxStock = Math.max(0, Number(p.stock) || 0);
+            if (maxStock < 1) {
+              showToast("این محصول در حال حاضر ناموجود است");
+              return;
+            }
+
             const cart = getCart();
-            const existing = cart.find((item) => item.id === id);
+            const existing = cart.find((item) => String(item.id) === String(id));
             if (existing) {
-              existing.qty = (existing.qty || 1) + 1;
+              const currentQty = cartQuantity(existing);
+              if (currentQty >= maxStock) {
+                showToast(`بیش از موجودی این کالا (${maxStock.toLocaleString("fa-IR")} عدد) نمی‌توانید اضافه کنید`);
+                return;
+              }
+              existing.qty = currentQty + 1;
+              existing.quantity = existing.qty;
+              existing.stock = maxStock;
+              existing.available = true;
             } else {
               cart.push({
                 id,
@@ -6319,8 +6333,8 @@
                 variant: p.storages?.[0] || "",
                 image: p.images?.[0] || "",
                 price: p.price,
-                stock: Math.max(0, Number(p.stock) || 0),
-                available: !p.outOfStock && Number(p.stock) > 0,
+                stock: maxStock,
+                available: true,
                 qty: 1,
               });
             }
