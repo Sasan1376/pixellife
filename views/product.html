@@ -1334,6 +1334,43 @@
         border-bottom: 1px solid var(--border);
       }
 
+      /* Customer attention note */
+      .product-attention {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin: -6px 0 24px;
+        padding: 13px 14px;
+        border: 1px solid var(--blue-mid);
+        border-radius: var(--radius-sm);
+        background: var(--blue-light);
+        color: var(--text-2);
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.9;
+      }
+      .product-attention__icon {
+        width: 23px;
+        height: 23px;
+        flex: 0 0 23px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--blue);
+        color: #fff;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 800;
+        line-height: 1;
+        margin-top: 1px;
+      }
+      .product-attention__text {
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+
       /* Quick Specs Card - App Store Style */
       .quick-specs-card {
         margin-bottom: 24px;
@@ -4480,6 +4517,7 @@
           rating: doc.rating ? String(doc.rating) : "۰",
           reviews: doc.reviewCount != null ? toFaDigits(doc.reviewCount) : "۰",
           desc: doc.description || "",
+          attentionNote: String(doc.attentionNote || "").trim(),
           comingSoon: !!doc.comingSoon,
           amazingOffer: !!doc.amazingOffer,
           amazingOfferEndsAt: doc.amazingOfferEndsAt || null,
@@ -5426,6 +5464,11 @@
                 <button class="btn-more-specs" id="btnMoreSpecs">
                   <i class="ti ti-list-details"></i> همه ویژگی‌ها و نکات (مشخصات بیشتر)
                 </button>
+              </div>` : ""}
+
+              ${product.attentionNote ? `<div class="product-attention" role="note">
+                <i class="product-attention__icon" aria-hidden="true">i</i>
+                <div class="product-attention__text">${escapeCartText(product.attentionNote).replace(/\n/g, "<br>")}</div>
               </div>` : ""}
 
               ${product.hasStorage ? `<div class="option-group">
