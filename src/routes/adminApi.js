@@ -8,6 +8,7 @@ const Review = require("../models/review");
 const mongoose = require("mongoose");
 const { toGregorian, isValidJalaaliDate } = require("jalaali-js");
 const AnalyticsDaily = require("../models/AnalyticsDaily");
+const BehaviorEvent = require("../models/BehaviorEvent");
 const upload = require("../utils/upload");
 const requireAdmin = require("../middleware/adminAuth");
 const adminSession = require("../middleware/adminSession");
@@ -215,6 +216,130 @@ router.get("/analytics/overview", async (req, res) => {
     const [todayStats,week,month,topPages] = await Promise.all([stats(today),stats(analyticsDateKey(new Date(Date.now()-6*86400000))),stats(from),AnalyticsDaily.aggregate([{$match:{date:{$gte:from,$lte:today}}},{$group:{_id:"$page",views:{$sum:"$views"}}},{$sort:{views:-1}},{$limit:8}])]);
     res.json({success:true,today:todayStats,week,month,topPages:topPages.map(x=>({page:x._id,views:x.views}))});
   } catch (_) { res.status(500).json({success:false,message:"دریافت آمار بازدید ناموفق بود"}); }
+});
+
+function analyticsDays(value) {
+  const parsed = Number.parseInt(value, 10);
+  return [7, 30, 90].includes(parsed) ? parsed : 30;
+}
+
+async function attachProductNames(rows) {
+  const ids = [...new Set(rows.map((row) => String(row._id || row.productId || "")).filter(Boolean))];
+  const objectIds = ids.filter((id) => mongoose.isValidObjectId(id));
+  const products = await Product.find({
+    $or: [
+      ...(objectIds.length ? [{ _id: { $in: objectIds } }] : []),
+      { slug: { $in: ids } },
+      { legacyId: { $in: ids } },
+    ],
+  }).select("name slug legacyId").lean();
+  const names = new Map();
+  products.forEach((product) => {
+    names.set(String(product._id), product.name);
+    if (product.slug) names.set(String(product.slug), product.name);
+    if (product.legacyId) names.set(String(product.legacyId), product.name);
+  });
+  return rows.map((row) => ({
+    ...row,
+    productId: String(row._id || row.productId || ""),
+    name: names.get(String(row._id || row.productId || "")) || "محصول حذف‌شده یا نامشخص",
+  }));
+}
+
+router.get("/analytics/behavior", async (req, res) => {
+  try {
+    const days = analyticsDays(req.query.days);
+    const from = new Date(Date.now() - days * 86400000);
+    const match = { createdAt: { $gte: from } };
+
+    const [summaryRows, topProductRows, searchTerms, abandonedRows, filterRows] = await Promise.all([
+      BehaviorEvent.aggregate([
+        { $match: match },
+        {
+          $group: {
+            _id: null,
+            pageViews: { $sum: { $cond: [{ $eq: ["$type", "page_view"] }, 1, 0] } },
+            productViews: { $sum: { $cond: [{ $eq: ["$type", "product_view"] }, 1, 0] } },
+            cartAdds: { $sum: { $cond: [{ $eq: ["$type", "add_to_cart"] }, 1, 0] } },
+            wishlistAdds: { $sum: { $cond: [{ $eq: ["$type", "add_to_wishlist"] }, 1, 0] } },
+            checkoutStarts: { $sum: { $cond: [{ $eq: ["$type", "begin_checkout"] }, 1, 0] } },
+            orderItems: { $sum: { $cond: [{ $eq: ["$type", "order_created"] }, 1, 0] } },
+            visitors: { $addToSet: "$visitorHash" },
+          },
+        },
+        { $project: { _id: 0, pageViews: 1, productViews: 1, cartAdds: 1, wishlistAdds: 1, checkoutStarts: 1, orderItems: 1, uniqueVisitors: { $size: "$visitors" } } },
+      ]),
+      BehaviorEvent.aggregate([
+        { $match: { ...match, productId: { $ne: "" }, type: { $in: ["product_view", "add_to_cart", "order_created"] } } },
+        {
+          $group: {
+            _id: "$productId",
+            views: { $sum: { $cond: [{ $eq: ["$type", "product_view"] }, 1, 0] } },
+            cartAdds: { $sum: { $cond: [{ $eq: ["$type", "add_to_cart"] }, 1, 0] } },
+            orders: { $sum: { $cond: [{ $eq: ["$type", "order_created"] }, 1, 0] } },
+          },
+        },
+        { $sort: { orders: -1, cartAdds: -1, views: -1 } },
+        { $limit: 10 },
+      ]),
+      BehaviorEvent.aggregate([
+        { $match: { ...match, type: "search", searchTerm: { $ne: "" } } },
+        { $group: { _id: "$searchTerm", count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 10 },
+      ]),
+      BehaviorEvent.aggregate([
+        { $match: { ...match, productId: { $ne: "" }, type: { $in: ["add_to_cart", "order_created"] } } },
+        {
+          $group: {
+            _id: { visitor: "$visitorHash", product: "$productId" },
+            cartAdds: { $sum: { $cond: [{ $eq: ["$type", "add_to_cart"] }, 1, 0] } },
+            orders: { $sum: { $cond: [{ $eq: ["$type", "order_created"] }, 1, 0] } },
+          },
+        },
+        { $match: { cartAdds: { $gt: 0 }, orders: 0 } },
+        { $group: { _id: "$_id.product", abandonedVisitors: { $sum: 1 } } },
+        { $sort: { abandonedVisitors: -1 } },
+        { $limit: 10 },
+      ]),
+      BehaviorEvent.aggregate([
+        { $match: { ...match, type: "filter_apply" } },
+        { $project: { label: { $ifNull: ["$filters.label", ""] }, brand: 1, category: 1 } },
+        { $match: { $or: [{ label: { $ne: "" } }, { brand: { $ne: "" } }, { category: { $ne: "" } }] } },
+        { $group: { _id: { label: "$label", brand: "$brand", category: "$category" }, count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 10 },
+      ]),
+    ]);
+
+    const summary = summaryRows[0] || {
+      pageViews: 0, productViews: 0, cartAdds: 0, wishlistAdds: 0,
+      checkoutStarts: 0, orderItems: 0, uniqueVisitors: 0,
+    };
+    summary.cartRate = summary.productViews ? Number(((summary.cartAdds / summary.productViews) * 100).toFixed(1)) : 0;
+    summary.conversionRate = summary.uniqueVisitors ? Number(((summary.orderItems / summary.uniqueVisitors) * 100).toFixed(1)) : 0;
+
+    const [topProducts, abandonedProducts] = await Promise.all([
+      attachProductNames(topProductRows),
+      attachProductNames(abandonedRows),
+    ]);
+    res.json({
+      success: true,
+      days,
+      from,
+      summary,
+      topProducts,
+      abandonedProducts,
+      searchTerms: searchTerms.map((row) => ({ term: row._id, count: row.count })),
+      filters: filterRows.map((row) => ({
+        label: row._id.label || row._id.brand || row._id.category || "فیلتر نامشخص",
+        count: row.count,
+      })),
+    });
+  } catch (error) {
+    console.error("Behavior dashboard error:", error);
+    res.status(500).json({ success: false, message: "دریافت گزارش رفتار کاربران ناموفق بود" });
+  }
 });
 
 router.post("/products/import-demo", async (req, res) => {
