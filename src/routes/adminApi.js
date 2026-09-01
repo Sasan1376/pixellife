@@ -502,6 +502,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       price,
       discount,
       description,
+      attentionNote,
       specs,
       showSpecs,
       featured,
@@ -545,6 +546,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       price: Number(price),
       discount: Number(discount) || 0,
       description,
+      attentionNote: String(attentionNote || "").trim(),
       specs: specsEnabled ? specs : "",
       showSpecs: specsEnabled,
       featured: featured === "true" || featured === "on" || featured === true,
@@ -581,6 +583,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       price,
       discount,
       description,
+      attentionNote,
       specs,
       showSpecs,
       featured,
@@ -615,6 +618,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
     if (price) product.price = Number(price);
     if (discount !== undefined) product.discount = Number(discount) || 0;
     if (description !== undefined) product.description = description;
+    if (attentionNote !== undefined) product.attentionNote = String(attentionNote || "").trim();
     if (showSpecs !== undefined) product.showSpecs = parseEnabled(showSpecs);
     if (specs !== undefined && product.showSpecs !== false) product.specs = specs;
     if (showReview !== undefined) product.showReview = parseEnabled(showReview, false);
