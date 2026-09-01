@@ -36,6 +36,11 @@ const productSchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    attentionNote: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     specs: {
       type: String,
     },
