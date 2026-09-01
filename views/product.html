@@ -6319,6 +6319,8 @@
                 variant: p.storages?.[0] || "",
                 image: p.images?.[0] || "",
                 price: p.price,
+                stock: Math.max(0, Number(p.stock) || 0),
+                available: !p.outOfStock && Number(p.stock) > 0,
                 qty: 1,
               });
             }
