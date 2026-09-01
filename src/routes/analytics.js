@@ -48,4 +48,40 @@ router.post("/track", async (req, res) => {
   }
 });
 
+
+// رویدادهای رفتاری فقط با فهرست بسته‌ای از نوع رویداد و با نرخ محدود پذیرفته می‌شوند.
+const { recordBehaviorEvent } = require("../services/behaviorAnalytics");
+const ALLOWED_EVENTS = new Set([
+  "page_view", "product_view", "product_click", "search", "filter_apply",
+  "add_to_cart", "remove_from_cart", "add_to_wishlist", "remove_from_wishlist",
+  "begin_checkout",
+]);
+const eventRateLimits = new Map();
+
+function canTrackEvent(req) {
+  const key = req.ip || "unknown";
+  const now = Date.now();
+  const state = eventRateLimits.get(key);
+  if (!state || now - state.startedAt > 10 * 60 * 1000) {
+    eventRateLimits.set(key, { startedAt: now, count: 1 });
+    return true;
+  }
+  state.count += 1;
+  return state.count <= 120;
+}
+
+router.post("/events", async (req, res) => {
+  try {
+    const event = req.body && typeof req.body === "object" ? req.body : {};
+    if (!ALLOWED_EVENTS.has(event.type) || !canTrackEvent(req)) {
+      return res.status(400).json({ success: false });
+    }
+    await recordBehaviorEvent(req, res, event);
+    return res.status(201).json({ success: true });
+  } catch (error) {
+    console.error("Behavior analytics error:", error.message);
+    return res.status(500).json({ success: false });
+  }
+});
+
 module.exports = router;
