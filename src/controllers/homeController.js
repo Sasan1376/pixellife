@@ -31,7 +31,7 @@ function sendCachedHtml(res, cacheKey, render) {
   if (IS_PRODUCTION && viewCache.has(cacheKey)) {
     return res.type("html").send(viewCache.get(cacheKey));
   }
-  const html = injectAssetRevision(render());
+  const html = injectAssetRevision(injectBehaviorTracker(render()));
   if (IS_PRODUCTION) viewCache.set(cacheKey, html);
   return res.type("html").send(html);
 }
@@ -181,6 +181,8 @@ const MOBILE_BOTTOM_NAV_HEAD = `
 <link rel="stylesheet" href="/css/mobile-bottom-nav.css?v=10" />`;
 const MOBILE_BOTTOM_NAV_SCRIPT = `
 <script src="/js/mobile-bottom-nav.js?v=12"></script>`;
+const BEHAVIOR_TRACKER_SCRIPT = `
+<script src="/js/behavior-tracker.js?v=1" defer></script>`;
 const CATALOG_NO_FLASH_HEAD = `
 <style id="database-catalog-no-flash">.grid,.iphone-grid,.samsung-grid,.xiaomi-grid,.prod-grid,.xiaomitab-grid,.console-grid{visibility:hidden}</style>`;
 const LOCAL_FONT_HEAD = `\n<link rel="stylesheet" href="/css/local-fonts.css?v=1" />`;
@@ -204,6 +206,13 @@ function injectLocalFonts(html) {
   }
   return html;
 }
+function injectBehaviorTracker(html) {
+  if (!html || html.includes("/js/behavior-tracker.js")) return html;
+  return html.includes("</body>")
+    ? html.replace("</body>", `${BEHAVIOR_TRACKER_SCRIPT}\n</body>`)
+    : html + BEHAVIOR_TRACKER_SCRIPT;
+}
+
 function injectMobileBottomNav(html) {
   if (!html) return html;
   html = injectLocalFonts(html);
@@ -348,7 +357,7 @@ function sendSpecialCatalogView(res, options) {
     html = injectEnamad(html);
     html = injectSharedCategoryNav(html);
     html = injectMobileBottomNav(html);
-    html = injectAssetRevision(injectDatabaseCatalog(html));
+    html = injectAssetRevision(injectBehaviorTracker(injectDatabaseCatalog(html)));
     if (IS_PRODUCTION) viewCache.set(key, html);
     res.type("html").send(html);
   } catch (error) {
@@ -434,7 +443,7 @@ const homeController = {
         html = html.replace("</body>", `${SHARED_CATEGORY_SCRIPT}\n</body>`);
       }
 
-      html = injectAssetRevision(injectMobileBottomNav(html));
+      html = injectAssetRevision(injectBehaviorTracker(injectMobileBottomNav(html)));
       if (IS_PRODUCTION) viewCache.set("rendered:index", html);
       res.type("html").send(html);
     } catch (error) {
@@ -539,6 +548,7 @@ const homeController = {
         '<div class="filters"><a class="filter active" href="/smartwatches">همه ساعت‌ها</a><a class="filter" href="/smartwatches?brand=%D8%A7%D9%BE%D9%84">اپل</a><a class="filter" href="/smartwatches?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF">سامسونگ</a></div>',
     }),
   console: (req, res) => sendViewWithEnamad(res, "console.html"),
+  amazing: (req, res) => sendViewWithEnamad(res, "amazing.html"),
   profile: (req, res) => sendViewWithEnamad(res, "profile.html"),
 };
 
