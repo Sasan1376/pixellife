@@ -447,6 +447,16 @@
                   ></textarea>
                 </div>
                 <div class="col-12">
+                  <label class="form-label" for="fAttentionNote">توضیح / توجه برای مشتری</label>
+                  <textarea
+                    class="form-control"
+                    id="fAttentionNote"
+                    rows="2"
+                    placeholder="مثلاً: لطفاً پیش از خرید، سازگاری این محصول با دستگاه خود را بررسی کنید."
+                  ></textarea>
+                  <div class="form-hint">در صفحه محصول، پس از مشخصات اصلی و همراه آیکون «i» نمایش داده می‌شود.</div>
+                </div>
+                <div class="col-12">
                   <label class="form-label">مشخصات فنی</label>
                   <div class="form-check form-switch mb-2">
                     <input class="form-check-input" type="checkbox" role="switch" id="fShowSpecs" checked />
@@ -947,6 +957,7 @@
         document.getElementById("fHasWarranty").checked = p.hasWarranty !== false;
         document.getElementById("fShowSpecs").checked = p.showSpecs !== false;
         document.getElementById("fDescription").value = p.description || "";
+        document.getElementById("fAttentionNote").value = p.attentionNote || "";
         document.getElementById("fShowReview").checked = p.showReview === true;
         document.getElementById("fHideColorsWhenOutOfStock").checked = p.hideColorsWhenOutOfStock !== false;
         renderReviewSections(Array.isArray(p.reviewSections) ? p.reviewSections : []);
@@ -1118,6 +1129,10 @@
           fd.append(
             "description",
             document.getElementById("fDescription").value,
+          );
+          fd.append(
+            "attentionNote",
+            document.getElementById("fAttentionNote").value,
           );
           fd.append("specs", showSpecs ? document.getElementById("fSpecs").value : "");
           fd.append("colors", document.getElementById("fColors").value);
