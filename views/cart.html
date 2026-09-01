@@ -3392,9 +3392,6 @@
                   <span>هزینه ارسال</span
                   ><span class="val" id="sumShipping">رایگان</span>
                 </div>
-                <div class="summary-row">
-                  <span>مالیات (۹٪)</span><span class="val" id="sumTax">۰</span>
-                </div>
                 <div
                   class="summary-row discount"
                   id="sumDiscountRow"
@@ -3798,10 +3795,10 @@
         );
         const productDiscount = subtotal - discountedSubtotal;
         const shipping = discountedSubtotal >= 5000000 ? 0 : 150000;
-        const taxableAmount =
-          discountedSubtotal + shipping - couponDiscount - giftDiscount;
-        const tax = Math.round(taxableAmount * 0.09);
-        const total = Math.max(0, taxableAmount + tax);
+        const total = Math.max(
+          0,
+          discountedSubtotal + shipping - couponDiscount - giftDiscount,
+        );
         const totalSavings =
           productDiscount +
           couponDiscount +
@@ -3816,7 +3813,6 @@
           priceText(discountedSubtotal);
         document.getElementById("sumShipping").textContent =
           shipping === 0 ? "رایگان" : priceText(shipping);
-        document.getElementById("sumTax").textContent = priceText(tax);
 
         const discountRow = document.getElementById("sumDiscountRow");
         if (productDiscount > 0) {
