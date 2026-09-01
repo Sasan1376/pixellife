@@ -3592,11 +3592,14 @@
       }
 
       function normalizeCartItem(item) {
+        // موجودیِ آیتم‌های قدیمی ممکن است تا زمان همگام‌سازی با API ثبت نشده باشد.
+        // در این فاصله محصول را ناموجود نشان نده؛ فقط وقتی موجودی واقعاً صفر است ناموجود است.
+        const hasStock = item && item.stock !== undefined && item.stock !== null && item.stock !== "";
         const stock = getCartStock(item);
-        item.stock = stock;
-        item.available = item.available !== false && stock > 0;
+        if (hasStock) item.stock = stock;
+        item.available = item.available !== false && (!hasStock || stock > 0);
         const quantity = getCartQuantity(item);
-        item.quantity = item.available ? Math.min(quantity, stock) : quantity;
+        item.quantity = item.available && hasStock ? Math.min(quantity, stock) : quantity;
         item.qty = item.quantity;
         return item;
       }
@@ -3721,14 +3724,15 @@
           const discountAmount =
             (item.originalPrice - item.price) * item.quantity;
 
+          const hasStock = item.stock !== undefined && item.stock !== null && item.stock !== "";
           let stockClass = "in-stock";
-          let stockText = `موجود در انبار (${toPersian(item.stock)} عدد)`;
-          let stockIcon = "ti-circle-check";
+          let stockText = hasStock ? `موجود در انبار (${toPersian(item.stock)} عدد)` : "در حال بررسی موجودی";
+          let stockIcon = hasStock ? "ti-circle-check" : "ti-refresh";
           if (!item.available) {
             stockClass = "out-of-stock";
             stockText = "ناموجود";
             stockIcon = "ti-circle-x";
-          } else if (item.stock <= 5) {
+          } else if (hasStock && item.stock <= 5) {
             stockClass = "low-stock";
             stockText = `تنها ${toPersian(item.stock)} عدد باقی‌مانده`;
             stockIcon = "ti-alert-circle";
