@@ -28,10 +28,7 @@ router.get("/xiaomitab", homeController.xiaomitab);
 router.get("/headphones", homeController.headphones);
 router.get("/smartwatches", homeController.smartwatches);
 router.get("/console", homeController.console);
-router.get("/amazing", (req, res) => {
-  res.set("Cache-Control", "public, max-age=30, stale-while-revalidate=120");
-  res.sendFile(path.join(__dirname, "../../views/amazing.html"));
-});
+router.get("/amazing", homeController.amazing);
 
 // Keep shared header/footer links valid until their dedicated pages are added.
 router.get("/offers", (req, res) => res.redirect(302, "/amazing"));
