@@ -88,6 +88,13 @@ body.app-dark,
   color: #1d4ed8 !important;
 }
 
+/* جلوگیری از دیده‌شدن لحظه‌ای سایدبار قدیمی پیش از اجرای admin-sidebar.js */
+.app-sidebar:not(.admin-unified-sidebar) {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* منوی مشترک پنل مدیریت */
 .admin-unified-sidebar { width: 270px !important; min-height:100vh; overflow-y:auto; }
 .admin-sidebar-brand { height:72px; display:flex; align-items:center; padding:0 18px; border-bottom:1px solid #e7edf5; }
