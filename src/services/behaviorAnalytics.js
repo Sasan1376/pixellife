@@ -50,13 +50,15 @@ function cleanFilters(value) {
 }
 
 async function recordBehaviorEvent(req, res, event, source = "client") {
+  const visitorHash = ensureVisitorHash(req, res);
   const sessionId = cleanText(event.sessionId, 64);
-  if (!/^[a-f0-9]{16,64}$/i.test(sessionId)) return null;
+  const hasSessionId = /^[a-f0-9]{16,64}$/i.test(sessionId);
+  if (!hasSessionId && source !== "server") return null;
 
   return BehaviorEvent.create({
     type: event.type,
-    visitorHash: ensureVisitorHash(req, res),
-    sessionHash: hash(sessionId),
+    visitorHash,
+    sessionHash: hasSessionId ? hash(sessionId) : visitorHash,
     userId: resolveUserId(req),
     page: cleanText(event.page, 180) || "/",
     productId: cleanText(event.productId, 120),
