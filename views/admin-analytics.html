@@ -22,7 +22,7 @@
     .data-row{display:grid;grid-template-columns:minmax(0,1fr) 64px 64px 64px;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #f1f5f9;font-size:12px}
     .data-row:last-child,.simple-row:last-child{border-bottom:0}.product-name{font-weight:700;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.data-row b{font-size:12px;text-align:center;color:#475569}.data-head{color:#94a3b8;font-size:11px;padding-top:10px}
     .simple-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f1f5f9;font-size:13px}.simple-row span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#475569}.simple-row b{color:#2563eb}
-    .empty{padding:25px 4px;color:#94a3b8;text-align:center;font-size:13px}.loading{opacity:.55;pointer-events:none}
+    .empty{padding:25px 4px;color:#94a3b8;text-align:center;font-size:13px}.loading{opacity:.55;pointer-events:none}.analytics-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.ai-button{border:0;border-radius:10px;padding:10px 14px;background:#2563eb;color:#fff;font:700 13px inherit;cursor:pointer}.ai-button:disabled{opacity:.65;cursor:wait}.ai-panel{margin-bottom:18px;border-color:#bfdbfe}.ai-panel .panel-title{background:#eff6ff;color:#1d4ed8}.ai-report{padding:17px 18px;white-space:pre-wrap;line-height:2;color:#334155;font-size:13px}.ai-status{color:#64748b;font-size:12px}
     @media(max-width:768px){.analytics-head{align-items:flex-start;flex-direction:column}.data-row{grid-template-columns:minmax(0,1fr) 48px 48px 48px;gap:5px}.panel-body{padding:4px 13px}.metric-value{font-size:24px}}
   </style>
 </head>
@@ -42,12 +42,19 @@
       <div class="app-content-header"><div class="container-fluid">
         <div class="analytics-head">
           <div><h3>تحلیل رفتار کاربران</h3><p>آمار تجمیعی و ناشناس؛ داده‌ها حداکثر ۱۸۰ روز نگهداری می‌شوند.</p></div>
-          <select id="period" class="period-select" aria-label="بازه زمانی">
-            <option value="7">۷ روز اخیر</option><option value="30" selected>۳۰ روز اخیر</option><option value="90">۹۰ روز اخیر</option>
-          </select>
+          <div class="analytics-actions">
+            <select id="period" class="period-select" aria-label="بازه زمانی">
+              <option value="7">۷ روز اخیر</option><option value="30" selected>۳۰ روز اخیر</option><option value="90">۹۰ روز اخیر</option>
+            </select>
+            <button type="button" id="aiAnalysisBtn" class="ai-button">تحلیل هوشمند گزارش</button>
+          </div>
         </div>
       </div></div>
       <div class="app-content"><div class="container-fluid" id="dashboard">
+        <section class="panel ai-panel" id="aiPanel" hidden>
+          <div class="panel-title"><span>گزارش هوشمند PixelLife</span><small id="aiStatus" class="ai-status"></small></div>
+          <div id="aiReport" class="ai-report"></div>
+        </section>
         <div class="row g-3 mb-3">
           <div class="col-6 col-lg-3"><div class="metric-card metric-blue"><div class="metric-label">بازدید صفحه</div><div class="metric-value" id="pageViews">۰</div><div class="metric-note">تمام صفحات فروشگاه</div></div></div>
           <div class="col-6 col-lg-3"><div class="metric-card"><div class="metric-label">بازدیدکننده یکتا</div><div class="metric-value" id="visitors">۰</div><div class="metric-note">شناسه ناشناس، بدون اطلاعات شخصی</div></div></div>
@@ -99,6 +106,30 @@
       }
     }
     document.getElementById("period").addEventListener("change", loadDashboard);
+    document.getElementById("aiAnalysisBtn").addEventListener("click", async () => {
+      const button = document.getElementById("aiAnalysisBtn");
+      const panel = document.getElementById("aiPanel");
+      const report = document.getElementById("aiReport");
+      const status = document.getElementById("aiStatus");
+      button.disabled = true; button.textContent = "در حال تحلیل…";
+      panel.hidden = false; status.textContent = "فقط آمار تجمیعی ارسال می‌شود"; report.textContent = "در حال آماده‌سازی تحلیل…";
+      try {
+        const response = await fetch("/admin/api/analytics/behavior/insights", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ days: Number(document.getElementById("period").value) }),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "خطا در تحلیل");
+        report.textContent = data.analysis;
+        status.textContent = "بر اساس بازه انتخاب‌شده";
+      } catch (error) {
+        report.textContent = error.message || "تحلیل هوشمند در دسترس نیست.";
+        status.textContent = "خطا";
+      } finally {
+        button.disabled = false; button.textContent = "تحلیل هوشمند گزارش";
+      }
+    });
     loadDashboard();
   </script>
   <script src="/js/admin-sidebar.js?v=5" defer></script>
