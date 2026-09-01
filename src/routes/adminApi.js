@@ -1,4 +1,5 @@
 const express = require("express");
+const axios = require("axios");
 const router = express.Router();
 
 const Product = require("../models/Product");
@@ -339,6 +340,118 @@ router.get("/analytics/behavior", async (req, res) => {
   } catch (error) {
     console.error("Behavior dashboard error:", error);
     res.status(500).json({ success: false, message: "دریافت گزارش رفتار کاربران ناموفق بود" });
+  }
+});
+
+const analyticsAiCooldown = new Map();
+
+router.post("/analytics/behavior/insights", async (req, res) => {
+  try {
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(503).json({ success: false, message: "OPENAI_API_KEY در تنظیمات Render ثبت نشده است" });
+    }
+
+    const key = req.sessionID || req.ip || "admin";
+    const now = Date.now();
+    if (now - (analyticsAiCooldown.get(key) || 0) < 30000) {
+      return res.status(429).json({ success: false, message: "لطفاً برای تحلیل بعدی ۳۰ ثانیه صبر کنید" });
+    }
+    analyticsAiCooldown.set(key, now);
+
+    const days = analyticsDays(req.body?.days);
+    const from = new Date(Date.now() - days * 86400000);
+    const match = { createdAt: { $gte: from } };
+    const [summaryRows, productRows, searchRows, abandonedRows] = await Promise.all([
+      BehaviorEvent.aggregate([
+        { $match: match },
+        { $group: {
+          _id: null,
+          pageViews: { $sum: { $cond: [{ $eq: ["$type", "page_view"] }, 1, 0] } },
+          productViews: { $sum: { $cond: [{ $eq: ["$type", "product_view"] }, 1, 0] } },
+          cartAdds: { $sum: { $cond: [{ $eq: ["$type", "add_to_cart"] }, 1, 0] } },
+          checkoutStarts: { $sum: { $cond: [{ $eq: ["$type", "begin_checkout"] }, 1, 0] } },
+          orderItems: { $sum: { $cond: [{ $eq: ["$type", "order_created"] }, 1, 0] } },
+          visitors: { $addToSet: "$visitorHash" },
+        } },
+        { $project: { _id: 0, pageViews: 1, productViews: 1, cartAdds: 1, checkoutStarts: 1, orderItems: 1, uniqueVisitors: { $size: "$visitors" } } },
+      ]),
+      BehaviorEvent.aggregate([
+        { $match: { ...match, productId: { $ne: "" }, type: { $in: ["product_view", "add_to_cart", "order_created"] } } },
+        { $group: {
+          _id: "$productId",
+          views: { $sum: { $cond: [{ $eq: ["$type", "product_view"] }, 1, 0] } },
+          cartAdds: { $sum: { $cond: [{ $eq: ["$type", "add_to_cart"] }, 1, 0] } },
+          orders: { $sum: { $cond: [{ $eq: ["$type", "order_created"] }, 1, 0] } },
+        } },
+        { $sort: { orders: -1, cartAdds: -1, views: -1 } }, { $limit: 6 },
+      ]),
+      BehaviorEvent.aggregate([
+        { $match: { ...match, type: "search", searchTerm: { $ne: "" } } },
+        { $group: { _id: "$searchTerm", count: { $sum: 1 } } },
+        { $sort: { count: -1 } }, { $limit: 6 },
+      ]),
+      BehaviorEvent.aggregate([
+        { $match: { ...match, productId: { $ne: "" }, type: { $in: ["add_to_cart", "order_created"] } } },
+        { $group: {
+          _id: { visitor: "$visitorHash", product: "$productId" },
+          cartAdds: { $sum: { $cond: [{ $eq: ["$type", "add_to_cart"] }, 1, 0] } },
+          orders: { $sum: { $cond: [{ $eq: ["$type", "order_created"] }, 1, 0] } },
+        } },
+        { $match: { cartAdds: { $gt: 0 }, orders: 0 } },
+        { $group: { _id: "$_id.product", abandonedVisitors: { $sum: 1 } } },
+        { $sort: { abandonedVisitors: -1 } }, { $limit: 6 },
+      ]),
+    ]);
+
+    const summary = summaryRows[0] || { pageViews: 0, productViews: 0, cartAdds: 0, checkoutStarts: 0, orderItems: 0, uniqueVisitors: 0 };
+    if (!summary.pageViews && !summary.productViews && !summary.cartAdds) {
+      return res.json({ success: true, analysis: "هنوز دادهٔ رفتاری کافی برای تحلیل وجود ندارد. پس از ثبت بازدید و تعامل واقعی کاربران، دوباره تحلیل را اجرا کنید." });
+    }
+
+    const [products, abandonedProducts] = await Promise.all([
+      attachProductNames(productRows),
+      attachProductNames(abandonedRows),
+    ]);
+    const report = {
+      periodDays: days,
+      summary,
+      topProducts: products.map(({ name, views, cartAdds, orders }) => ({ name, views, cartAdds, orders })),
+      abandonedProducts: abandonedProducts.map(({ name, abandonedVisitors }) => ({ name, abandonedVisitors })),
+      topSearches: searchRows.map((row) => ({ term: row._id, count: row.count })),
+    };
+
+    const prompt = [
+      "شما تحلیل‌گر فروش فروشگاه دیجیتال PixelLife هستید.",
+      "فقط بر اساس آمار تجمیعی زیر تحلیل فارسی بده و هیچ عدد، محصول یا دلیل تأییدنشده نساز.",
+      "اطلاعات شخصی کاربر وجود ندارد؛ تلاش نکن هویت افراد را حدس بزنی.",
+      "پاسخ کوتاه و عملی باشد و دقیقاً سه بخش داشته باشد:",
+      "۱) مشاهدات کلیدی، ۲) فرصت‌ها/ریسک‌ها، ۳) حداکثر ۵ اقدام اولویت‌دار.",
+      "اگر داده کم است، صریحاً محدودیت داده را بگو.",
+      "گزارش داده:",
+      JSON.stringify(report),
+    ].join("\n");
+
+    const response = await axios.post(
+      "https://api.openai.com/v1/responses",
+      {
+        model: process.env.OPENAI_ANALYTICS_MODEL || process.env.OPENAI_MODEL || "gpt-5.6-terra",
+        input: prompt,
+        max_output_tokens: 900,
+      },
+      {
+        headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}`, "Content-Type": "application/json" },
+        timeout: 60000,
+      },
+    );
+    const analysis = String(response.data?.output_text || "").trim();
+    if (!analysis) throw new Error("پاسخ قابل‌نمایش از هوش مصنوعی دریافت نشد");
+    res.json({ success: true, analysis });
+  } catch (error) {
+    console.error("Behavior AI analysis error:", error.response?.data?.error?.message || error.message);
+    res.status(error.response?.status || 500).json({
+      success: false,
+      message: error.response?.data?.error?.message || "تحلیل هوشمند فعلاً در دسترس نیست",
+    });
   }
 });
 
