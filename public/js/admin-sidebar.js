@@ -71,7 +71,7 @@
     '<a href="/admin/reviews" class="admin-nav-link' + active("/admin/reviews") + '"><i class="ti ti-message-star"></i><span>مدیریت نظرات</span></a>' +
     '<div class="admin-nav-divider">ابزارها</div>' +
     '<a href="/admin/ai-products" class="admin-nav-link' + active("/admin/ai-products") + '"><i class="ti ti-sparkles"></i><span>دستیار هوشمند محصولات</span></a>' +
-    '<a href="/admin/analytics" class="admin-nav-link' + active("/admin/analytics") + '"><i class="ti ti-chart-bar"></i><span>آمار بازدید</span></a>' +
+    '<a href="/admin/analytics" class="admin-nav-link' + active("/admin/analytics") + '"><i class="ti ti-chart-bar"></i><span>تحلیل رفتار مشتریان</span></a>' +
     '<a href="/" class="admin-nav-link admin-site-link" target="_blank"><i class="ti ti-external-link"></i><span>مشاهدهٔ سایت</span></a></nav>';
 
   let aside = document.querySelector(".app-sidebar");
