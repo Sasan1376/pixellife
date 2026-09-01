@@ -166,7 +166,11 @@
         transform: translateX(-50%) translateY(0);
       }
     </style>
-  </head>
+  
+  <style id="admin-sidebar-critical">
+    .app-sidebar:not(.admin-unified-sidebar){visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+  </style>
+</head>
   <body class="layout-fixed sidebar-expand-lg">
     <div class="app-wrapper">
       <nav class="app-header navbar navbar-expand bg-white border-bottom">
