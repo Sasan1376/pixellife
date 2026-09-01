@@ -4,6 +4,7 @@ const { protect } = require("../middleware/authMiddleware");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 const Address = require("../models/Address");
+const { recordBehaviorEvent } = require("../services/behaviorAnalytics");
 
 router.post("/", protect, async (req, res, next) => {
   try {
@@ -24,6 +25,7 @@ router.post("/", protect, async (req, res, next) => {
     });
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const order = await Order.create({ user: req.user._id, items, shippingAddress: { receiverName: address.receiverName || `${req.user.firstName || ""} ${req.user.lastName || ""}`.trim() || "گیرنده", receiverMobile: address.receiverMobile || req.user.mobile, province: address.province, city: address.city, fullAddress: address.fullAddress, postalCode: address.postalCode || "" }, subtotal, total: subtotal });
+    await Promise.all(items.map((item, index) => recordBehaviorEvent(req, res, { type: "order_created", page: "/checkout", productId: String(item.product), brand: item.brand || "", category: products[index]?.category || "" }, "server")));
     res.status(201).json({ success: true, message: "سفارش ثبت شد", order: { id: order._id, orderNumber: order.orderNumber, total: order.total, status: order.status } });
   } catch (error) { next(error); }
 });
