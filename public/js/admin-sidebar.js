@@ -46,20 +46,23 @@
   document.head.append(style);
 
   const currentPath = location.pathname;
+  const selectedCategory = new URLSearchParams(location.search).get("category") || "";
   const productOpen = currentPath === "/admin/products";
+  // ترتیب و نام‌ها دقیقاً با منوی دسته‌بندی صفحهٔ اصلی یکسان هستند.
   const links = [
-    { href: "/admin/products", icon: "ti-package", text: "همهٔ محصولات", match: "/admin/products" },
-    { href: "/admin/products?category=mobile", icon: "ti-device-mobile", text: "موبایل" },
-    { href: "/admin/products?category=tablet", icon: "ti-tablet", text: "تبلت" },
-    { href: "/admin/products?category=accessories", icon: "ti-charging-pile", text: "کابل، شارژر و آداپتور" },
-    { href: "/admin/products?category=headphones", icon: "ti-headphones", text: "هدفون و هندزفری" },
-    { href: "/admin/products?category=watch", icon: "ti-watch", text: "ساعت هوشمند" },
-    { href: "/admin/products?category=console", icon: "ti-device-gamepad-2", text: "کنسول بازی" }
+    { href: "/admin/products", icon: "ti-package", text: "همهٔ محصولات", match: "" },
+    { href: "/admin/products?category=mobile", icon: "ti-device-mobile", text: "موبایل", match: "mobile" },
+    { href: "/admin/products?category=accessories", icon: "ti-charging-pile", text: "لوازم جانبی موبایل", match: "accessories" },
+    { href: "/admin/products?category=tablet", icon: "ti-tablet", text: "تبلت", match: "tablet" },
+    { href: "/admin/products?category=headphones", icon: "ti-headphones", text: "هدفون و هندزفری", match: "headphones" },
+    { href: "/admin/products?category=watch", icon: "ti-watch", text: "ساعت هوشمند", match: "watch" },
+    { href: "/admin/products?category=console", icon: "ti-device-gamepad-2", text: "کنسول بازی", match: "console" }
   ];
   const active = (path) => currentPath === path ? " active" : "";
-  const categoryLinks = links.map(link =>
-    '<li><a class="admin-submenu-link' + (link.match && currentPath === link.match ? " active" : "") + '" href="' + link.href + '"><i class="ti ' + link.icon + '"></i><span>' + link.text + '</span></a></li>'
-  ).join("");
+  const categoryLinks = links.map(link => {
+    const isActive = currentPath === "/admin/products" && selectedCategory === link.match;
+    return '<li><a class="admin-submenu-link' + (isActive ? " active" : "") + '" href="' + link.href + '"><i class="ti ' + link.icon + '"></i><span>' + link.text + '</span></a></li>';
+  }).join("");
 
   const sidebar = '<div class="admin-sidebar-brand"><a href="/admin/products"><span class="admin-brand-mark">P</span><span>Pixel<span>Life</span></span></a></div>' +
     '<nav class="admin-sidebar-nav" aria-label="منوی مدیریت">' +
