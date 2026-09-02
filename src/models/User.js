@@ -62,6 +62,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    // اتصال امن حساب کاربر به بازوی بله برای ارسال فاکتور
+    baleChatId: { type: String, default: "", index: true },
+    baleLinkCode: { type: String, default: "", select: false },
+    baleLinkExpiresAt: { type: Date, default: null, select: false },
     lastLogin: {
       type: Date,
       default: null,
