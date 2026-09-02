@@ -7,7 +7,7 @@ const viewCache = new Map();
 
 // با هر انتشار، URL فایل‌های CSS و JS عوض می‌شود تا مرورگری که نسخهٔ
 // قدیمی را با قانون کش قبلی نگه داشته نیز ناچار به دریافت نسخهٔ تازه باشد.
-const ASSET_REVISION = "20260902-sitewide-assistant-19";
+const ASSET_REVISION = "20260902-bale-checkout-1";
 
 function injectAssetRevision(html) {
   return html.replace(
@@ -28,6 +28,9 @@ function readView(filePath) {
 
 function sendCachedHtml(res, cacheKey, render) {
   res.set("Cache-Control", "no-cache, max-age=0, must-revalidate");
+  res.set("Pragma", "no-cache");
+  res.set("Expires", "0");
+  cacheKey = `${cacheKey}:${ASSET_REVISION}`;
   if (IS_PRODUCTION && viewCache.has(cacheKey)) {
     return res.type("html").send(viewCache.get(cacheKey));
   }
@@ -521,7 +524,13 @@ const homeController = {
     }),
   categories: (req, res) => sendViewWithEnamad(res, "categories.html"),
   login: (req, res) => sendViewWithEnamad(res, "login.html"),
-  cart: (req, res) => sendViewWithEnamad(res, "cart.html"),
+  cart: (req, res) => {
+    // منطق پرداخت نباید هرگز با نسخهٔ قبلی مرورگر یا CDN اجرا شود.
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+    sendViewWithEnamad(res, "cart.html");
+  },
   iphone: (req, res) => sendViewWithEnamad(res, "iphone.html"),
   product: (req, res) => sendViewWithEnamad(res, "product.html"),
   samsung: (req, res) => sendViewWithEnamad(res, "samsung.html"),
