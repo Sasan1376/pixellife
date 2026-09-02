@@ -7,7 +7,7 @@ const viewCache = new Map();
 
 // با هر انتشار، URL فایل‌های CSS و JS عوض می‌شود تا مرورگری که نسخهٔ
 // قدیمی را با قانون کش قبلی نگه داشته نیز ناچار به دریافت نسخهٔ تازه باشد.
-const ASSET_REVISION = "20260901-clean-card-layout-18";
+const ASSET_REVISION = "20260902-sitewide-assistant-19";
 
 function injectAssetRevision(html) {
   return html.replace(
@@ -31,7 +31,7 @@ function sendCachedHtml(res, cacheKey, render) {
   if (IS_PRODUCTION && viewCache.has(cacheKey)) {
     return res.type("html").send(viewCache.get(cacheKey));
   }
-  const html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(render())));
+  const html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectShoppingAssistant(render()))));
   if (IS_PRODUCTION) viewCache.set(cacheKey, html);
   return res.type("html").send(html);
 }
@@ -226,6 +226,16 @@ function injectBehaviorTracker(html) {
     : html + BEHAVIOR_TRACKER_SCRIPT;
 }
 
+// دستیار خرید در تمام صفحه‌های عمومی فروشگاه درج می‌شود. صفحهٔ محصول از قبل
+// این اسکریپت را دارد؛ شرط زیر از درج دوبارهٔ آن جلوگیری می‌کند.
+const SHOPPING_ASSISTANT_SCRIPT = '<script src="/js/shopping-assistant.js?v=14" defer></script>';
+function injectShoppingAssistant(html) {
+  if (!html || html.includes("/js/shopping-assistant.js")) return html;
+  return html.includes("</body>")
+    ? html.replace("</body>", `${SHOPPING_ASSISTANT_SCRIPT}\n</body>`)
+    : html + SHOPPING_ASSISTANT_SCRIPT;
+}
+
 function injectMobileBottomNav(html) {
   if (!html) return html;
   html = injectLocalFonts(html);
@@ -370,7 +380,7 @@ function sendSpecialCatalogView(res, options) {
     html = injectEnamad(html);
     html = injectSharedCategoryNav(html);
     html = injectMobileBottomNav(html);
-    html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectDatabaseCatalog(html))));
+    html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectShoppingAssistant(injectDatabaseCatalog(html)))));
     if (IS_PRODUCTION) viewCache.set(key, html);
     res.type("html").send(html);
   } catch (error) {
@@ -425,7 +435,7 @@ function sendAccessoryBrandView(res, brand) {
     html = injectEnamad(html);
     html = injectSharedCategoryNav(html);
     html = injectMobileBottomNav(html);
-    html = injectAssetRevision(injectPageLoader(injectDatabaseCatalog(html)));
+    html = injectAssetRevision(injectPageLoader(injectShoppingAssistant(injectDatabaseCatalog(html))));
     if (IS_PRODUCTION) viewCache.set(`accessory:${brandName}`, html);
     res.type("html").send(html);
   } catch (error) {
@@ -456,7 +466,7 @@ const homeController = {
         html = html.replace("</body>", `${SHARED_CATEGORY_SCRIPT}\n</body>`);
       }
 
-      html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectMobileBottomNav(html))));
+      html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectShoppingAssistant(injectMobileBottomNav(html)))));
       if (IS_PRODUCTION) viewCache.set("rendered:index", html);
       res.type("html").send(html);
     } catch (error) {
