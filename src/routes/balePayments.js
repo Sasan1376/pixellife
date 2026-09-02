@@ -158,7 +158,11 @@ router.get("/bale/orders/:orderId/status", protect, async (req, res, next) => {
 });
 
 router.post("/bale/webhook/:secret", async (req, res) => {
-  if (!isConfigured() || !crypto.timingSafeEqual(Buffer.from(String(req.params.secret)), Buffer.from(webhookSecret()))) {
+  const providedSecret = String(req.params.secret || "");
+  const expectedSecret = webhookSecret();
+  const secretMatches = providedSecret.length === expectedSecret.length &&
+    crypto.timingSafeEqual(Buffer.from(providedSecret), Buffer.from(expectedSecret));
+  if (!isConfigured() || !secretMatches) {
     return res.status(403).json({ ok: false });
   }
   const update = req.body || {};
