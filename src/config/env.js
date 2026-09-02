@@ -22,6 +22,13 @@ const env = {
   // دستیار خرید هوشمند (اختیاری؛ بدون کلید، حالت پاسخ جایگزین فعال می‌ماند)
   openaiApiKey: process.env.OPENAI_API_KEY || "",
   openaiModel: process.env.OPENAI_MODEL || "gpt-4o-mini",
+
+  // درگاه پرداخت بله
+  baleBotToken: process.env.BALE_BOT_TOKEN || "",
+  balePaymentToken: process.env.BALE_PAYMENT_TOKEN || "",
+  baleBotUsername: process.env.BALE_BOT_USERNAME || "pixellifepaybot",
+  baleWebhookSecret: process.env.BALE_WEBHOOK_SECRET || "",
+  siteUrl: process.env.SITE_URL || "https://pixellife.ir",
 };
 
 const requiredVars = ["mongoUri", "jwtSecret"];
