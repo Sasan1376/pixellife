@@ -192,6 +192,7 @@ const productRoutes = require("./routes/products");
 const productPageRoutes = require("./routes/productPage");
 const testEmailRoutes = require("./routes/testEmail");
 const aiAssistantRoutes = require("./routes/aiAssistant");
+const { router: balePaymentRoutes, configureWebhook: configureBaleWebhook } = require("./routes/balePayments");
 
 // Home Page
 app.use("/", homeRoutes);
@@ -211,6 +212,7 @@ app.use("/api/reviews", reviewRoutes);
 // Addresses (آدرس‌های کاربر)
 app.use("/api/addresses", addressRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/payments", balePaymentRoutes);
 
 // Admin Panel
 app.use("/admin/api", adminApiRoutes);
@@ -306,6 +308,9 @@ app.use(errorHandler);
 // =======================
 
 const PORT = env.port || 3000;
+
+// پس از بالا آمدن سرویس، آدرس Webhook بله ثبت/به‌روزرسانی می‌شود.
+configureBaleWebhook();
 
 app.listen(PORT, () => {
   console.log(`✅ PixelLife Server running on port ${PORT}`);
