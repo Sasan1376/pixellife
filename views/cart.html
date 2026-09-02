@@ -3429,7 +3429,7 @@
                 id="checkoutBtn"
                 aria-label="تکمیل خرید"
               >
-                <i class="ti ti-lock"></i> تکمیل سفارش
+                <i class="ti ti-brand-bale"></i> پرداخت با بله
               </button>
               <a href="/" class="btn-continue-shopping"
                 ><i class="ti ti-arrow-right"></i> ادامه خرید</a
@@ -4034,26 +4034,34 @@
             window.location.href = "/profile/addresses";
             return;
           }
-          const response = await fetch("/api/orders", {
+          const orderPayload = {
+            addressId: checkoutAddress._id,
+            items: availableItems.map((item) => ({
+              productId: item.id,
+              quantity: getCartQuantity(item),
+              color: item.color,
+              storage: item.variant,
+              warranty: item.warranty,
+            })),
+          };
+          const response = await fetch("/api/payments/bale/checkout", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              addressId: checkoutAddress._id,
-              items: availableItems.map((item) => ({
-                productId: item.id,
-                quantity: getCartQuantity(item),
-                color: item.color,
-                storage: item.variant,
-                warranty: item.warranty,
-              })),
-            }),
+            body: JSON.stringify(orderPayload),
           });
           const result = await response.json();
-          if (!response.ok || !result.success) throw new Error(result.message || "ثبت سفارش ناموفق بود");
+          if (response.status === 409 && result.code === "BALE_NOT_CONNECTED") {
+            const linkResponse = await fetch("/api/payments/bale/link", { method: "POST" });
+            const linkResult = await linkResponse.json();
+            if (!linkResponse.ok || !linkResult.success) throw new Error(linkResult.message || "اتصال به بله انجام نشد");
+            window.open(linkResult.connectUrl, "_blank", "noopener");
+            throw new Error("بازوی بله در پنجره جدید باز شد. دکمه «شروع» را بزنید، سپس به این صفحه برگردید و دوباره پرداخت را انتخاب کنید.");
+          }
+          if (!response.ok || !result.success) throw new Error(result.message || "ارسال فاکتور بله ناموفق بود");
           cartData = cartData.filter((item) => !item.available);
           saveCart();
-          showToast(`سفارش ${result.order.orderNumber} ثبت شد`);
-          setTimeout(() => { window.location.href = "/profile/orders"; }, 900);
+          showToast(`فاکتور سفارش ${result.order.orderNumber} در بله ارسال شد`);
+          setTimeout(() => { window.location.href = "/profile/orders"; }, 1300);
         } catch (error) {
           showToast(error.message || "ثبت سفارش ناموفق بود");
         } finally {
