@@ -18,10 +18,10 @@ function webhookSecret() {
     crypto.createHash("sha256").update(process.env.BALE_BOT_TOKEN || "").digest("hex");
 }
 function siteUrl(req) {
-  return String(process.env.SITE_URL || \`\${req.protocol}://\${req.get("host")}\`).replace(/\/$/, "");
+  return String(process.env.SITE_URL || `${req.protocol}://${req.get("host")}`).replace(/\/$/, "");
 }
 function baleUrl(method) {
-  return \`\${BALE_API_BASE}\${encodeURIComponent(process.env.BALE_BOT_TOKEN)}/\${method}\`;
+  return `${BALE_API_BASE}${encodeURIComponent(process.env.BALE_BOT_TOKEN)}/${method}`;
 }
 async function baleCall(method, payload) {
   if (!isConfigured()) throw new Error("تنظیمات درگاه بله کامل نیست");
@@ -57,7 +57,7 @@ async function buildOrder(user, body) {
     const product = products[index];
     const quantity = Math.max(1, Math.floor(Number(item.quantity) || 0));
     if (!product || product.availability === "out" || Number(product.stock) < quantity) {
-      throw new Error(\`محصول «\${product?.name || "انتخاب‌شده"}» موجود نیست\`);
+      throw new Error(`محصول «${product?.name || "انتخاب‌شده"}» موجود نیست`);
     }
     const price = Math.round(Number(product.price) * (1 - Math.max(0, Number(product.discount) || 0) / 100));
     return {
@@ -73,7 +73,7 @@ async function buildOrder(user, body) {
   const order = await Order.create({
     user: user._id, items,
     shippingAddress: {
-      receiverName: address.receiverName || \`\${user.firstName || ""} \${user.lastName || ""}\`.trim() || "گیرنده",
+      receiverName: address.receiverName || `${user.firstName || ""} ${user.lastName || ""}`.trim() || "گیرنده",
       receiverMobile: address.receiverMobile || user.mobile,
       province: address.province, city: address.city, fullAddress: address.fullAddress, postalCode: address.postalCode || "",
     },
@@ -101,7 +101,7 @@ router.post("/bale/link", protect, async (req, res, next) => {
     res.json({
       success: true,
       expiresInSeconds: 600,
-      connectUrl: \`https://ble.ir/\${BOT_USERNAME}?start=\${code}\`,
+      connectUrl: `https://ble.ir/${BOT_USERNAME}?start=${code}`,
       message: "بازو را باز کنید و دکمه شروع را بزنید؛ سپس به سایت برگردید.",
     });
   } catch (error) { next(error); }
@@ -115,7 +115,7 @@ router.post("/bale/checkout", protect, async (req, res, next) => {
     }
 
     const order = await buildOrder(req.user, req.body);
-    const payload = \`PL\${String(order._id).replace(/[^a-f0-9]/gi, "")}\`;
+    const payload = `PL${String(order._id).replace(/[^a-f0-9]/gi, "")}`;
     const amountRial = Math.round(order.total * 10);
     order.balePayment = {
       payload, chatId: String(req.user.baleChatId), amountRial, status: "created",
@@ -126,8 +126,8 @@ router.post("/bale/checkout", protect, async (req, res, next) => {
     try {
       await baleCall("sendInvoice", {
         chat_id: String(req.user.baleChatId),
-        title: \`سفارش \${order.orderNumber}\`.slice(0, 32),
-        description: \`پرداخت سفارش پیکسل‌لایف — مهلت پرداخت ۳۰ دقیقه\`.slice(0, 255),
+        title: `سفارش ${order.orderNumber}`.slice(0, 32),
+        description: `پرداخت سفارش پیکسل‌لایف — مهلت پرداخت ۳۰ دقیقه`.slice(0, 255),
         payload,
         provider_token: process.env.BALE_PAYMENT_TOKEN,
         start_parameter: payload.slice(0, 32),
@@ -137,7 +137,7 @@ router.post("/bale/checkout", protect, async (req, res, next) => {
     } catch (error) {
       order.balePayment.status = "failed";
       order.paymentStatus = "failed";
-      order.statusHistory.push({ status: "awaiting_payment", note: \`ارسال فاکتور بله ناموفق بود: \${error.message}\` });
+      order.statusHistory.push({ status: "awaiting_payment", note: `ارسال فاکتور بله ناموفق بود: ${error.message}` });
       await order.save();
       throw error;
     }
@@ -212,7 +212,7 @@ router.post("/bale/webhook/:secret", async (req, res) => {
         order.balePayment.status = "paid";
         order.balePayment.chargeId = chargeId;
         order.balePayment.paidAt = new Date();
-        order.statusHistory.push({ status: "processing", note: \`پرداخت بله تأیید شد. شناسه تراکنش: \${chargeId}\` });
+        order.statusHistory.push({ status: "processing", note: `پرداخت بله تأیید شد. شناسه تراکنش: ${chargeId}` });
         await order.save();
       }
     }
@@ -225,7 +225,7 @@ router.post("/bale/webhook/:secret", async (req, res) => {
 async function configureWebhook() {
   if (!isConfigured() || process.env.BALE_WEBHOOK_AUTO_SETUP === "false") return;
   const base = String(process.env.SITE_URL || "https://pixellife.ir").replace(/\/$/, "");
-  const url = \`\${base}/api/payments/bale/webhook/\${webhookSecret()}\`;
+  const url = `${base}/api/payments/bale/webhook/${webhookSecret()}`;
   try {
     await baleCall("setWebhook", { url });
     console.log("✅ Bale webhook configured");
