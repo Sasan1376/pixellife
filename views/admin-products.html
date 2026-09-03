@@ -727,14 +727,62 @@
           total += Math.max(0, Number(amount));
         }
         stockInput.value = total;
-        stockInput.readOnly = true;
-        stockInput.classList.add("bg-light");
+        stockInput.readOnly = false;
+        stockInput.classList.remove("bg-light");
         availability.value = total > 0 ? "in" : "out";
         availability.disabled = true;
-        stockLabel.textContent = "موجودی کل (خودکار)";
-        stockHint.textContent = "برای تغییر تعداد، موجودی هر حافظه و رنگ را از جدول «ویرایش سریع تعداد موجودی هر تنوع» پایین‌تر تغییر دهید.";
+        stockLabel.textContent = "موجودی کل (تعداد)";
+        stockHint.textContent = "این عدد قابل تغییر است؛ پس از تغییر، موجودی تنوع‌ها نیز به‌صورت خودکار هماهنگ می‌شود.";
         summary.className = "variant-stock-summary";
-        summary.textContent = "موجودی کلی خودکار: " + total.toLocaleString("fa-IR") + " عدد — وضعیت: " + (total > 0 ? "موجود" : "ناموجود");
+        summary.textContent = "موجودی کلی: " + total.toLocaleString("fa-IR") + " عدد — وضعیت: " + (total > 0 ? "موجود" : "ناموجود");
+        return true;
+      }
+
+      function applyTotalStockToVariants(showError = false) {
+        const field = document.getElementById("fVariants");
+        const stockInput = document.getElementById("fStock");
+        if (!document.getElementById("fHasStorage").checked) return true;
+
+        const lines = field.value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+        if (!lines.length) return true;
+        const desiredValue = englishNumber(stockInput.value);
+        if (!/^\d+(?:\.\d+)?$/.test(desiredValue)) {
+          if (showError) showToast("موجودی کل باید یک عدد صفر یا بیشتر باشد.");
+          return false;
+        }
+
+        const rows = lines.map((line, index) => {
+          const parts = line.split("|").map((part) => part.trim());
+          const currentValue = englishNumber(parts[3]);
+          if (parts.length < 4 || !parts[0] || !parts[1] || !/^\d+(?:\.\d+)?$/.test(currentValue)) {
+            if (showError) showToast("ابتدا ردیف " + (index + 1).toLocaleString("fa-IR") + " تنوع را کامل کنید.");
+            return null;
+          }
+          return { parts, stock: Math.max(0, Number(currentValue)) };
+        });
+        if (rows.some((row) => !row)) return false;
+
+        const desired = Math.max(0, Number(desiredValue));
+        const current = rows.reduce((sum, row) => sum + row.stock, 0);
+        let difference = desired - current;
+        if (difference > 0) {
+          // افزایش موجودی روی اولین تنوع اعمال می‌شود تا هیچ تنوع موجودی منفی نگیرد.
+          rows[0].stock += difference;
+        } else if (difference < 0) {
+          // کاهش از آخرین تنوع‌ها شروع می‌شود و هیچ ردیفی منفی نخواهد شد.
+          let remaining = Math.abs(difference);
+          for (let index = rows.length - 1; index >= 0 && remaining > 0; index -= 1) {
+            const decrease = Math.min(rows[index].stock, remaining);
+            rows[index].stock -= decrease;
+            remaining -= decrease;
+          }
+        }
+        field.value = rows.map((row) => {
+          row.parts[3] = String(row.stock);
+          return row.parts.join(" | ");
+        }).join("\n");
+        syncVariantInventoryInputs();
+        renderVariantInventoryEditor();
         return true;
       }
 
@@ -1030,6 +1078,9 @@
       });
       document.getElementById("fColors").addEventListener("input", renderColorPalette);
       document.getElementById("fVariants").addEventListener("input", () => syncVariantInventoryInputs());
+      document.getElementById("fStock").addEventListener("change", () => {
+        applyTotalStockToVariants();
+      });
       document.getElementById("addReviewSectionBtn").addEventListener("click", () => {
         const sections = [...document.querySelectorAll("[data-review-section]")].map((element) => ({ enabled: element.querySelector("[data-review-enabled]").checked, title: element.querySelector("[data-review-title]").value, content: element.querySelector("[data-review-content]").value, images: JSON.parse(element.dataset.existingImages || "[]"), imageSizes: [...element.querySelectorAll("[data-existing-review-image-size]")].map((input) => input.value) }));
         sections.push({ enabled: true, title: "", content: "", images: [], imageSizes: [] });
@@ -1119,6 +1170,7 @@
           const hasStorage = document.getElementById("fHasStorage").checked;
           const hasWarranty = document.getElementById("fHasWarranty").checked;
           const showSpecs = document.getElementById("fShowSpecs").checked;
+          if (hasStorage && !applyTotalStockToVariants(true)) return;
           if (hasStorage && !syncVariantInventoryInputs(true)) return;
           const id = document.getElementById("productId").value;
           const fd = new FormData();
