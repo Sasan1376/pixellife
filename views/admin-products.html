@@ -457,9 +457,17 @@
                   <div class="form-hint">در صفحه محصول، پس از مشخصات اصلی و همراه آیکون «i» نمایش داده می‌شود.</div>
                 </div>
                 <div class="col-12">
-                  <label class="form-label" for="fVideoUrl">لینک ویدیوی محصول</label>
-                  <input type="url" class="form-control" id="fVideoUrl" dir="ltr" placeholder="https://.../products/your-product/video.mp4" />
-                  <div class="form-hint">لینک عمومی MP4 از آروان‌کلاد را وارد کنید؛ ویدیو کنار تصاویر محصول نمایش داده می‌شود و روی سرور فروشگاه ذخیره نمی‌شود.</div>
+                  <div class="review-editor">
+                    <label class="form-label mb-1">ویدیوهای محصول (حداکثر ۵ ویدیو)</label>
+                    <div class="form-hint mt-0 mb-2">لینک عمومی MP4 آروان‌کلاد را برای هر ویدیو وارد کنید. هر لینک در گالری محصول مانند یک تصویر جدا نمایش داده می‌شود.</div>
+                    <div class="row g-2" id="productVideoUrls">
+                      <div class="col-md-6"><input type="url" class="form-control product-video-url" dir="ltr" placeholder="ویدیو ۱ — لینک MP4" /></div>
+                      <div class="col-md-6"><input type="url" class="form-control product-video-url" dir="ltr" placeholder="ویدیو ۲ — اختیاری" /></div>
+                      <div class="col-md-6"><input type="url" class="form-control product-video-url" dir="ltr" placeholder="ویدیو ۳ — اختیاری" /></div>
+                      <div class="col-md-6"><input type="url" class="form-control product-video-url" dir="ltr" placeholder="ویدیو ۴ — اختیاری" /></div>
+                      <div class="col-md-6"><input type="url" class="form-control product-video-url" dir="ltr" placeholder="ویدیو ۵ — اختیاری" /></div>
+                    </div>
+                  </div>
                 </div>
                 <div class="col-12">
                   <label class="form-label">مشخصات فنی</label>
@@ -1026,7 +1034,12 @@
         document.getElementById("fShowSpecs").checked = p.showSpecs !== false;
         document.getElementById("fDescription").value = p.description || "";
         document.getElementById("fAttentionNote").value = p.attentionNote || "";
-        document.getElementById("fVideoUrl").value = p.videoUrl || "";
+        const videoUrls = Array.isArray(p.videoUrls) && p.videoUrls.length
+          ? p.videoUrls
+          : (p.videoUrl ? [p.videoUrl] : []);
+        document.querySelectorAll(".product-video-url").forEach((input, index) => {
+          input.value = videoUrls[index] || "";
+        });
         document.getElementById("fShowReview").checked = p.showReview === true;
         document.getElementById("fHideColorsWhenOutOfStock").checked = p.hideColorsWhenOutOfStock !== false;
         renderReviewSections(Array.isArray(p.reviewSections) ? p.reviewSections : []);
@@ -1207,7 +1220,13 @@
             "attentionNote",
             document.getElementById("fAttentionNote").value,
           );
-          fd.append("videoUrl", document.getElementById("fVideoUrl").value);
+          fd.append(
+            "videoUrls",
+            [...document.querySelectorAll(".product-video-url")]
+              .map((input) => input.value.trim())
+              .filter(Boolean)
+              .join("\n"),
+          );
           fd.append("specs", showSpecs ? document.getElementById("fSpecs").value : "");
           fd.append("colors", document.getElementById("fColors").value);
           fd.append("hideColorsWhenOutOfStock", document.getElementById("fHideColorsWhenOutOfStock").checked);
