@@ -3566,7 +3566,7 @@
         if (isVideoGalleryItem(p, idx)) {
           const videoUrl = p.videoUrls[idx - (Array.isArray(p.images) ? p.images.length : 0)];
           if (mode === "thumb") {
-            return '<span class="video-gallery-thumb" aria-label="پیش‌نمایش ثابت ویدیوی محصول"><video muted playsinline preload="metadata" aria-hidden="true"><source src="' + videoUrl + '" type="video/mp4"></video><span class="video-gallery-thumb__label">ویدیو</span></span>';
+            return '<span class="video-gallery-thumb" aria-label="پیش‌نمایش ثابت ویدیوی محصول"><video muted playsinline preload="auto" aria-hidden="true"><source src="' + videoUrl + '" type="video/mp4"></video><span class="video-gallery-thumb__label">ویدیو</span></span>';
           }
           return '<video controls playsinline preload="metadata" aria-label="ویدیوی معرفی ' + p.name + '"><source src="' + videoUrl + '" type="video/mp4">مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.</video>';
         }
@@ -5805,6 +5805,19 @@
 
           const galleryImgHolder = document.getElementById("galleryImgHolder");
           const galleryThumbs = document.querySelectorAll(".gallery-thumb");
+          // برخی مرورگرهای موبایل بدون autoplay، فریم اول ویدیو را در بندانگشتی نمایش نمی‌دهند.
+          // با رفتنِ کوتاه به ابتدای ویدیو، فقط یک فریم ثابت دیده می‌شود و ویدیو پخش نخواهد شد.
+          document.querySelectorAll(".video-gallery-thumb video").forEach((preview) => {
+            const captureFirstFrame = () => {
+              if (!Number.isFinite(preview.duration) || preview.duration <= 0) return;
+              try {
+                preview.currentTime = Math.min(0.05, preview.duration / 2);
+              } catch (_) {}
+            };
+            if (preview.readyState >= 1) captureFirstFrame();
+            else preview.addEventListener("loadedmetadata", captureFirstFrame, { once: true });
+            preview.addEventListener("seeked", () => preview.pause());
+          });
           function setGalleryIndex(idx) {
             galleryIndex = ((idx % galleryTotal) + galleryTotal) % galleryTotal;
             galleryImgHolder.innerHTML = productImageHtml(
