@@ -63,6 +63,12 @@ const productSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    // لینک عمومی ویدیو (مثلاً از فضای ابری آروان). فایل ویدیو روی سرور فروشگاه ذخیره نمی‌شود.
+    videoUrl: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     colors: [
       {
         name: { type: String, trim: true },
