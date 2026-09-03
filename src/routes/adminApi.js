@@ -111,19 +111,20 @@ function parseVariants(value) {
     return { storage: rawStorage, color: { name: rawColor, hex }, stock, ...(price !== undefined ? { price } : {}) };
   });
 }
-function applyVariantInventory(data, variants) {
+function applyVariantInventory(data, variants, availability) {
   if (!Array.isArray(variants) || !variants.length) return data;
   const storages = [...new Set(variants.map((item) => item.storage).filter(Boolean))];
   const colors = [...new Map(variants.map((item) => [item.color.name, item.color])).values()];
   const stock = variants.reduce((total, item) => total + Math.max(0, Number(item.stock) || 0), 0);
-  return { ...data, variants, storages, colors, stock, availability: stock > 0 ? "in" : "out" };
+  // مدیر می‌تواند کالای دارای تنوع را موقتاً ناموجود کند؛ ولی «موجود» فقط با تعداد مثبت معتبر است.
+  return { ...data, variants, storages, colors, stock, availability: normalizeAvailability(availability, stock) };
 }
 
 function reconcileVariantInventory(product) {
   const variants = Array.isArray(product?.variants) ? product.variants : [];
   if (!variants.length) return false;
 
-  const normalized = applyVariantInventory({}, variants);
+  const normalized = applyVariantInventory({}, variants, product.availability);
   const changed =
     Number(product.stock) !== normalized.stock ||
     product.availability !== normalized.availability ||
@@ -590,7 +591,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       reviewSections: parseReviewSections(reviewSections, uploadedReviewImages),
       warranties: warrantyEnabled ? parseList(warranties) || [] : [],
       hasWarranty: warrantyEnabled,
-    }, variantInventory));
+    }, variantInventory, availability));
 
     await product.save();
     res.json({ success: true, product: serializeProduct(product) });
@@ -663,7 +664,11 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
     if (variants !== undefined && product.hasStorage !== false) {
       const variantInventory = parseVariants(variants);
       if (variantInventory.length) {
-        const normalized = applyVariantInventory({}, variantInventory);
+        const normalized = applyVariantInventory(
+          {},
+          variantInventory,
+          availability !== undefined ? availability : product.availability,
+        );
         product.variants = normalized.variants;
         product.storages = normalized.storages;
         product.colors = normalized.colors;
