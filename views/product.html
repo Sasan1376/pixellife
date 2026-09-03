@@ -942,7 +942,8 @@
         cursor: zoom-in;
       }
       .gallery-main svg,
-      .gallery-main img {
+      .gallery-main img,
+      .gallery-main video {
         max-height: 500px;
         max-width: 100%;
         width: auto;
@@ -1033,7 +1034,8 @@
         flex-shrink: 0;
       }
       .gallery-thumb svg,
-      .gallery-thumb img {
+      .gallery-thumb img,
+      .gallery-thumb video {
         max-height: 48px;
         max-width: 100%;
         width: auto;
@@ -1054,6 +1056,19 @@
       }
       .gallery-variant-3 {
         transform: rotate(-4deg);
+      }
+      .video-gallery-thumb {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        place-items: center;
+        color: var(--blue);
+        background: var(--blue-light);
+        font-size: 23px;
+      }
+      .gallery-main video {
+        cursor: default;
+        background: #000;
       }
 
       /* Fullscreen gallery modal */
@@ -1076,7 +1091,8 @@
         visibility: visible;
       }
       .fullscreen-gallery img,
-      .fullscreen-gallery svg {
+      .fullscreen-gallery svg,
+      .fullscreen-gallery video {
         max-height: 78vh;
         max-width: 78vw;
         object-fit: contain;
@@ -3502,6 +3518,15 @@
         </svg>`;
       }
 
+      function safeMediaUrl(value) {
+        try {
+          const url = new URL(String(value || ""));
+          return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+        } catch (_) {
+          return "";
+        }
+      }
+
       const FALLBACK_GALLERY_VARIANTS = [
         "",
         "gallery-variant-1",
@@ -3509,11 +3534,21 @@
         "gallery-variant-3",
       ];
       function galleryCount(p) {
-        return p.images && p.images.length
-          ? p.images.length
-          : FALLBACK_GALLERY_VARIANTS.length;
+        const imageCount = Array.isArray(p.images) ? p.images.length : 0;
+        if (imageCount || p.videoUrl) return imageCount + (p.videoUrl ? 1 : 0);
+        return FALLBACK_GALLERY_VARIANTS.length;
       }
-      function productImageHtml(p, idx) {
+      function isVideoGalleryItem(p, idx) {
+        const imageCount = Array.isArray(p.images) ? p.images.length : 0;
+        return Boolean(p.videoUrl) && idx === imageCount;
+      }
+      function productImageHtml(p, idx, mode = "main") {
+        if (isVideoGalleryItem(p, idx)) {
+          if (mode === "thumb") {
+            return '<span class="video-gallery-thumb" aria-label="ویدیوی محصول"><i class="ti ti-player-play-filled"></i></span>';
+          }
+          return '<video controls playsinline preload="metadata" aria-label="ویدیوی معرفی ' + p.name + '"><source src="' + p.videoUrl + '" type="video/mp4">مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.</video>';
+        }
         if (p.images && p.images.length) {
           const src =
             p.images[
@@ -4518,6 +4553,7 @@
           reviews: doc.reviewCount != null ? toFaDigits(doc.reviewCount) : "۰",
           desc: doc.description || "",
           attentionNote: String(doc.attentionNote || "").trim(),
+          videoUrl: safeMediaUrl(doc.videoUrl),
           comingSoon: !!doc.comingSoon,
           amazingOffer: !!doc.amazingOffer,
           amazingOfferEndsAt: doc.amazingOfferEndsAt || null,
@@ -5425,7 +5461,7 @@
                 ${Array.from({ length: Math.min(galleryTotal, 6) })
                   .map(
                     (_, i) =>
-                      `<div class="gallery-thumb${i === 0 ? " active" : ""}" data-idx="${i}">${productImageHtml(product, i)}</div>`,
+                      `<div class="gallery-thumb${i === 0 ? " active" : ""}" data-idx="${i}">${productImageHtml(product, i, "thumb")}</div>`,
                   )
                   .join("")}
               </div>
@@ -5773,7 +5809,7 @@
           fsThumbs.innerHTML = Array.from({ length: galleryTotal })
             .map(
               (_, i) =>
-                `<button class="fullscreen-thumb${i === 0 ? " active" : ""}" data-idx="${i}">${productImageHtml(product, i)}</button>`,
+                `<button class="fullscreen-thumb${i === 0 ? " active" : ""}" data-idx="${i}">${productImageHtml(product, i, "thumb")}</button>`,
             )
             .join("");
           function updateFullscreenThumbs() {
