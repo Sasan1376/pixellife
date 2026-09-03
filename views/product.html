@@ -3579,19 +3579,22 @@
       ];
       function galleryCount(p) {
         const imageCount = Array.isArray(p.images) ? p.images.length : 0;
-        if (imageCount || p.videoUrl) return imageCount + (p.videoUrl ? 1 : 0);
+        const videoCount = Array.isArray(p.videoUrls) ? p.videoUrls.length : 0;
+        if (imageCount || videoCount) return imageCount + videoCount;
         return FALLBACK_GALLERY_VARIANTS.length;
       }
       function isVideoGalleryItem(p, idx) {
         const imageCount = Array.isArray(p.images) ? p.images.length : 0;
-        return Boolean(p.videoUrl) && idx === imageCount;
+        const videoCount = Array.isArray(p.videoUrls) ? p.videoUrls.length : 0;
+        return idx >= imageCount && idx < imageCount + videoCount;
       }
       function productImageHtml(p, idx, mode = "main") {
         if (isVideoGalleryItem(p, idx)) {
+          const videoUrl = p.videoUrls[idx - (Array.isArray(p.images) ? p.images.length : 0)];
           if (mode === "thumb") {
-            return '<span class="video-gallery-thumb" aria-label="پیش‌نمایش ویدیوی محصول"><video muted autoplay loop playsinline preload="metadata" aria-hidden="true"><source src="' + p.videoUrl + '" type="video/mp4"></video><span class="video-gallery-thumb__shade"><span class="video-gallery-thumb__play"></span></span><span class="video-gallery-thumb__label">ویدیو</span></span>';
+            return '<span class="video-gallery-thumb" aria-label="پیش‌نمایش ویدیوی محصول"><video muted autoplay loop playsinline preload="metadata" aria-hidden="true"><source src="' + videoUrl + '" type="video/mp4"></video><span class="video-gallery-thumb__shade"><span class="video-gallery-thumb__play"></span></span><span class="video-gallery-thumb__label">ویدیو</span></span>';
           }
-          return '<video controls playsinline preload="metadata" aria-label="ویدیوی معرفی ' + p.name + '"><source src="' + p.videoUrl + '" type="video/mp4">مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.</video>';
+          return '<video controls playsinline preload="metadata" aria-label="ویدیوی معرفی ' + p.name + '"><source src="' + videoUrl + '" type="video/mp4">مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.</video>';
         }
         if (p.images && p.images.length) {
           const src =
@@ -4597,7 +4600,12 @@
           reviews: doc.reviewCount != null ? toFaDigits(doc.reviewCount) : "۰",
           desc: doc.description || "",
           attentionNote: String(doc.attentionNote || "").trim(),
-          videoUrl: safeMediaUrl(doc.videoUrl),
+          videoUrls: (() => {
+            const values = Array.isArray(doc.videoUrls) && doc.videoUrls.length
+              ? doc.videoUrls
+              : (doc.videoUrl ? [doc.videoUrl] : []);
+            return [...new Set(values.map(safeMediaUrl).filter(Boolean))].slice(0, 5);
+          })(),
           comingSoon: !!doc.comingSoon,
           amazingOffer: !!doc.amazingOffer,
           amazingOfferEndsAt: doc.amazingOfferEndsAt || null,
