@@ -69,6 +69,11 @@ const productSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    // تا پنج ویدیو در گالری هر محصول؛ videoUrl برای سازگاری با محصولات قبلی نگه داشته شده است.
+    videoUrls: [{
+      type: String,
+      trim: true,
+    }],
     colors: [
       {
         name: { type: String, trim: true },
