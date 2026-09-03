@@ -179,6 +179,18 @@ function parseReviewSections(value, uploadedImages = []) {
     }).filter((section) => section.title || section.content || section.images.length);
   } catch (_) { return []; }
 }
+function normalizeVideoUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  try {
+    const url = new URL(raw);
+    if (!["http:", "https:"].includes(url.protocol)) return "";
+    return url.toString();
+  } catch (_) {
+    return "";
+  }
+}
+
 function serializeProduct(product) {
   const data = product.toObject ? product.toObject() : product;
   const images = (Array.isArray(data.images) ? data.images : []).map(normalizeImagePath).filter(Boolean);
@@ -529,6 +541,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       discount,
       description,
       attentionNote,
+      videoUrl,
       specs,
       showSpecs,
       featured,
@@ -573,6 +586,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       discount: Number(discount) || 0,
       description,
       attentionNote: String(attentionNote || "").trim(),
+      videoUrl: normalizeVideoUrl(videoUrl),
       specs: specsEnabled ? specs : "",
       showSpecs: specsEnabled,
       featured: featured === "true" || featured === "on" || featured === true,
@@ -610,6 +624,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       discount,
       description,
       attentionNote,
+      videoUrl,
       specs,
       showSpecs,
       featured,
@@ -645,6 +660,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
     if (discount !== undefined) product.discount = Number(discount) || 0;
     if (description !== undefined) product.description = description;
     if (attentionNote !== undefined) product.attentionNote = String(attentionNote || "").trim();
+    if (videoUrl !== undefined) product.videoUrl = normalizeVideoUrl(videoUrl);
     if (showSpecs !== undefined) product.showSpecs = parseEnabled(showSpecs);
     if (specs !== undefined && product.showSpecs !== false) product.specs = specs;
     if (showReview !== undefined) product.showReview = parseEnabled(showReview, false);
