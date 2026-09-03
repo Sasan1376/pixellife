@@ -191,6 +191,13 @@ function normalizeVideoUrl(value) {
   }
 }
 
+function parseVideoUrls(value) {
+  const source = Array.isArray(value)
+    ? value
+    : String(value || "").split(/\r?\n/);
+  return [...new Set(source.map(normalizeVideoUrl).filter(Boolean))].slice(0, 5);
+}
+
 function serializeProduct(product) {
   const data = product.toObject ? product.toObject() : product;
   const images = (Array.isArray(data.images) ? data.images : []).map(normalizeImagePath).filter(Boolean);
@@ -542,6 +549,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       description,
       attentionNote,
       videoUrl,
+      videoUrls,
       specs,
       showSpecs,
       featured,
@@ -578,6 +586,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
     const uploadedReviewImages = await Promise.all(uploadedFiles(req, "reviewImages").map(saveProductImage));
     const variantInventory = storageEnabled ? parseVariants(variants) : [];
     const rootStock = parseStock(stock);
+    const normalizedVideoUrls = parseVideoUrls(videoUrls || videoUrl);
     const product = new Product(applyVariantInventory({
       name,
       brand,
@@ -586,7 +595,8 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       discount: Number(discount) || 0,
       description,
       attentionNote: String(attentionNote || "").trim(),
-      videoUrl: normalizeVideoUrl(videoUrl),
+      videoUrl: normalizedVideoUrls[0] || "",
+      videoUrls: normalizedVideoUrls,
       specs: specsEnabled ? specs : "",
       showSpecs: specsEnabled,
       featured: featured === "true" || featured === "on" || featured === true,
@@ -625,6 +635,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       description,
       attentionNote,
       videoUrl,
+      videoUrls,
       specs,
       showSpecs,
       featured,
@@ -660,7 +671,11 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
     if (discount !== undefined) product.discount = Number(discount) || 0;
     if (description !== undefined) product.description = description;
     if (attentionNote !== undefined) product.attentionNote = String(attentionNote || "").trim();
-    if (videoUrl !== undefined) product.videoUrl = normalizeVideoUrl(videoUrl);
+    if (videoUrls !== undefined || videoUrl !== undefined) {
+      const normalizedVideoUrls = parseVideoUrls(videoUrls !== undefined ? videoUrls : videoUrl);
+      product.videoUrls = normalizedVideoUrls;
+      product.videoUrl = normalizedVideoUrls[0] || "";
+    }
     if (showSpecs !== undefined) product.showSpecs = parseEnabled(showSpecs);
     if (specs !== undefined && product.showSpecs !== false) product.specs = specs;
     if (showReview !== undefined) product.showReview = parseEnabled(showReview, false);
