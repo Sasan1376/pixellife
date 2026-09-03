@@ -119,6 +119,25 @@ function applyVariantInventory(data, variants) {
   return { ...data, variants, storages, colors, stock, availability: stock > 0 ? "in" : "out" };
 }
 
+function reconcileVariantInventory(product) {
+  const variants = Array.isArray(product?.variants) ? product.variants : [];
+  if (!variants.length) return false;
+
+  const normalized = applyVariantInventory({}, variants);
+  const changed =
+    Number(product.stock) !== normalized.stock ||
+    product.availability !== normalized.availability ||
+    JSON.stringify(product.storages || []) !== JSON.stringify(normalized.storages) ||
+    JSON.stringify(product.colors || []) !== JSON.stringify(normalized.colors);
+
+  if (!changed) return false;
+  product.stock = normalized.stock;
+  product.availability = normalized.availability;
+  product.storages = normalized.storages;
+  product.colors = normalized.colors;
+  return true;
+}
+
 function normalizeImagePath(value) {
   const image = String(value || "").trim();
   if (!image) return "";
@@ -487,6 +506,12 @@ router.post("/products/import-demo", async (req, res) => {
 router.get("/products", async (req, res) => {
   try {
     const products = await Product.find().sort({ createdAt: -1 });
+    // تنوع‌ها منبع قطعی موجودی‌اند. این یکسان‌سازی، محصولات قدیمی را نیز
+    // هنگام باز شدن پنل اصلاح می‌کند تا عدد جدول، سبد خرید و صفحه محصول یکی باشد.
+    const inventoryChanged = products.filter(reconcileVariantInventory);
+    if (inventoryChanged.length) {
+      await Promise.all(inventoryChanged.map((product) => product.save()));
+    }
     res.json({ success: true, products: products.map(serializeProduct) });
   } catch (error) {
     res.status(error.statusCode || 500).json({ success: false, message: error.message });
