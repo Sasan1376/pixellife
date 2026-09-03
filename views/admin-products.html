@@ -716,7 +716,7 @@
           if (parts.length < 4 || !parts[0] || !parts[1] || !/^\d+(?:\.\d+)?$/.test(amount)) {
             stockInput.readOnly = true;
             stockInput.classList.add("bg-light");
-            availability.disabled = true;
+            availability.disabled = false;
             stockLabel.textContent = "موجودی کل (خودکار)";
             stockHint.textContent = "ابتدا ردیف ناقص تنوع را کامل کنید، سپس تعداد هر تنوع را تغییر دهید.";
             summary.className = "variant-stock-summary error";
@@ -729,8 +729,9 @@
         stockInput.value = total;
         stockInput.readOnly = false;
         stockInput.classList.remove("bg-light");
-        availability.value = total > 0 ? "in" : "out";
-        availability.disabled = true;
+        if (total === 0) availability.value = "out";
+        else if (availability.value !== "out") availability.value = "in";
+        availability.disabled = false;
         stockLabel.textContent = "موجودی کل (تعداد)";
         stockHint.textContent = "این عدد قابل تغییر است؛ پس از تغییر، موجودی تنوع‌ها نیز به‌صورت خودکار هماهنگ می‌شود.";
         summary.className = "variant-stock-summary";
