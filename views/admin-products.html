@@ -379,7 +379,7 @@
                   />
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label">موجودی (تعداد)</label>
+                  <label class="form-label" id="stockFieldLabel">موجودی (تعداد)</label>
                   <input
                     type="text"
                     inputmode="numeric"
@@ -388,7 +388,7 @@
                     value="0"
                     placeholder="مثلاً ۱۰"
                   />
-                  <div class="form-hint">عدد فارسی یا انگلیسی پذیرفته می‌شود.</div>
+                  <div class="form-hint" id="stockFieldHint">عدد فارسی یا انگلیسی پذیرفته می‌شود.</div>
                 </div>
                 <div class="col-md-4">
                   <label class="form-label">وضعیت موجودی</label>
@@ -685,10 +685,15 @@
         const field = document.getElementById("fVariants");
         const stockInput = document.getElementById("fStock");
         const availability = document.getElementById("fAvailability");
+        const stockLabel = document.getElementById("stockFieldLabel");
+        const stockHint = document.getElementById("stockFieldHint");
         const summary = document.getElementById("variantStockSummary");
         if (!document.getElementById("fHasStorage").checked) {
           stockInput.readOnly = false;
           stockInput.classList.remove("bg-light");
+          availability.disabled = false;
+          stockLabel.textContent = "موجودی (تعداد)";
+          stockHint.textContent = "عدد فارسی یا انگلیسی پذیرفته می‌شود.";
           summary.className = "variant-stock-summary";
           summary.textContent = "این کالا انتخاب حافظه ندارد؛ موجودی کلی را مستقیماً وارد کنید.";
           return true;
@@ -697,6 +702,9 @@
         if (!lines.length) {
           stockInput.readOnly = false;
           stockInput.classList.remove("bg-light");
+          availability.disabled = false;
+          stockLabel.textContent = "موجودی (تعداد)";
+          stockHint.textContent = "تا وقتی تنوعی ثبت نشده، موجودی کلی را مستقیماً وارد کنید.";
           summary.className = "variant-stock-summary";
           summary.textContent = "در صورت ثبت تنوع، موجودی کلی محصول از جمع تعداد این ردیف‌ها محاسبه می‌شود.";
           return true;
@@ -708,6 +716,9 @@
           if (parts.length < 4 || !parts[0] || !parts[1] || !/^\d+(?:\.\d+)?$/.test(amount)) {
             stockInput.readOnly = true;
             stockInput.classList.add("bg-light");
+            availability.disabled = true;
+            stockLabel.textContent = "موجودی کل (خودکار)";
+            stockHint.textContent = "ابتدا ردیف ناقص تنوع را کامل کنید، سپس تعداد هر تنوع را تغییر دهید.";
             summary.className = "variant-stock-summary error";
             summary.textContent = "ردیف " + (index + 1).toLocaleString("fa-IR") + " ناقص است: حافظه، رنگ و تعداد معتبر را وارد کنید.";
             if (showError) showToast(summary.textContent);
@@ -719,6 +730,9 @@
         stockInput.readOnly = true;
         stockInput.classList.add("bg-light");
         availability.value = total > 0 ? "in" : "out";
+        availability.disabled = true;
+        stockLabel.textContent = "موجودی کل (خودکار)";
+        stockHint.textContent = "برای تغییر تعداد، موجودی هر حافظه و رنگ را از جدول «ویرایش سریع تعداد موجودی هر تنوع» پایین‌تر تغییر دهید.";
         summary.className = "variant-stock-summary";
         summary.textContent = "موجودی کلی خودکار: " + total.toLocaleString("fa-IR") + " عدد — وضعیت: " + (total > 0 ? "موجود" : "ناموجود");
         return true;
