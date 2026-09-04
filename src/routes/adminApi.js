@@ -6,6 +6,7 @@ const Product = require("../models/Product");
 const User = require("../models/User");
 const Order = require("../models/Order");
 const Review = require("../models/review");
+const { refreshProductReviewStats } = require("../services/reviewStats");
 const mongoose = require("mongoose");
 const { toGregorian, isValidJalaaliDate } = require("jalaali-js");
 const AnalyticsDaily = require("../models/AnalyticsDaily");
@@ -847,20 +848,6 @@ router.patch("/orders/:id/status", async (req, res) => {
     res.json({ success: true, order });
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 });
-
-async function refreshProductReviewStats(productId) {
-  const stats = await Review.aggregate([
-    { $match: { productId: String(productId), status: "approved" } },
-    { $group: { _id: null, count: { $sum: 1 }, rating: { $avg: "$rating" } } },
-  ]);
-  const filter = mongoose.isValidObjectId(productId)
-    ? { $or: [{ _id: productId }, { slug: String(productId) }, { legacyId: String(productId) }] }
-    : { $or: [{ slug: String(productId) }, { legacyId: String(productId) }] };
-  await Product.findOneAndUpdate(filter, {
-    reviewCount: stats[0]?.count || 0,
-    rating: stats[0] ? Number(stats[0].rating.toFixed(1)) : 0,
-  });
-}
 
 async function serializeAdminReview(review) {
   const item = review.toObject ? review.toObject() : review;
