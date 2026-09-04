@@ -5,6 +5,7 @@ const Product = require("../models/Product");
 const { protect } = require("../middleware/authMiddleware");
 const upload = require("../utils/upload");
 const { saveProductImage } = require("../utils/productImages");
+const { refreshProductReviewStats } = require("../services/reviewStats");
 
 const router = express.Router();
 
@@ -71,21 +72,7 @@ router.post("/", protect, upload.single("avatar"), async (req, res) => {
       status: "pending",
     });
 
-    const stats = await Review.aggregate([
-      { $match: { productId: normalizedProductId, status: "approved" } },
-      { $group: { _id: null, count: { $sum: 1 }, rating: { $avg: "$rating" } } },
-    ]);
-
-    const productFilter = mongoose.isValidObjectId(normalizedProductId)
-      ? { $or: [{ _id: normalizedProductId }, { slug: normalizedProductId }, { legacyId: normalizedProductId }] }
-      : { $or: [{ slug: normalizedProductId }, { legacyId: normalizedProductId }] };
-
-    if (stats[0]) {
-      await Product.findOneAndUpdate(productFilter, {
-        reviewCount: stats[0].count,
-        rating: Number(stats[0].rating.toFixed(1)),
-      });
-    }
+    await refreshProductReviewStats(normalizedProductId);
 
     res.status(201).json({ success: true, review: publicReview(review) });
   } catch (error) {
