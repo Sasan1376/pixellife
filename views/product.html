@@ -3188,89 +3188,138 @@
         }
       }
 
-      /* جزئیات محصول زیر گالری با اسکرول طبیعی؛ فقط در موبایل */
+      /* Bottom Sheet محصول شبیه نسخه موبایل دیجیکالا */
       .mobile-product-sheet {
         display: none;
       }
       @media (max-width: 768px) {
-        body.mobile-product-scroll-layout {
-          overflow-x: hidden;
-          overflow-y: auto;
-          overscroll-behavior-y: auto;
+        body.mobile-product-sheet-active {
+          overflow: hidden;
+          overscroll-behavior: none;
         }
-        body.mobile-product-scroll-layout .page-body {
-          height: auto;
-          min-height: 0;
-          overflow: visible;
-          padding: 10px 12px 118px;
+        body.mobile-product-sheet-active .page-body {
+          height: calc(100dvh - 116px);
+          min-height: 470px;
+          overflow: hidden;
+          padding: 10px 12px 104px;
           background: #f8fafc;
           box-sizing: border-box;
         }
-        body.mobile-product-scroll-layout .product-layout {
+        body.mobile-product-sheet-active .product-layout {
           display: block;
-          height: auto;
+          height: 100%;
           min-height: 0;
           padding: 0;
           border: 0;
           border-radius: 0;
           background: transparent;
-          overflow: visible;
+          overflow: hidden;
         }
-        body.mobile-product-scroll-layout .product-gallery {
+        body.mobile-product-sheet-active .product-gallery {
+          position: relative;
           height: auto;
           min-height: 0;
-          gap: 10px;
-          padding: 0 0 10px;
+          gap: 0;
+          padding: 0;
         }
-        body.mobile-product-scroll-layout .gallery-main {
+        body.mobile-product-sheet-active .gallery-main {
           width: 100%;
-          height: auto;
-          min-height: min(64dvh, 560px);
-          max-height: none;
+          height: clamp(292px, 40dvh, 420px);
+          min-height: 292px;
+          max-height: 420px;
+          padding: 12px 10px;
           background: #fff;
           border-radius: 18px;
           overflow: hidden;
+          box-sizing: border-box;
         }
-        body.mobile-product-scroll-layout .gallery-main img,
-        body.mobile-product-scroll-layout .gallery-main svg,
-        body.mobile-product-scroll-layout .gallery-main video {
+        body.mobile-product-sheet-active .gallery-main img,
+        body.mobile-product-sheet-active .gallery-main svg,
+        body.mobile-product-sheet-active .gallery-main video {
           width: auto;
-          max-width: 94%;
-          max-height: min(58dvh, 520px);
+          max-width: 82%;
+          max-height: min(32dvh, 350px);
           object-fit: contain;
         }
-        body.mobile-product-scroll-layout .gallery-main:hover img,
-        body.mobile-product-scroll-layout .gallery-main:hover svg {
+        body.mobile-product-sheet-active .gallery-main:hover img,
+        body.mobile-product-sheet-active .gallery-main:hover svg {
           transform: none;
         }
+        body.mobile-product-sheet-active .gallery-thumbs {
+          position: absolute;
+          z-index: 5;
+          top: 50%;
+          left: 8px;
+          width: 58px;
+          height: auto;
+          max-height: calc(100% - 28px);
+          padding: 2px;
+          display: flex;
+          flex-direction: column;
+          flex-wrap: nowrap;
+          gap: 7px;
+          overflow-x: hidden;
+          overflow-y: auto;
+          background: rgba(255, 255, 255, 0.82);
+          border-radius: 12px;
+          transform: translateY(-50%);
+          scrollbar-width: none;
+          box-sizing: border-box;
+        }
+        body.mobile-product-sheet-active .gallery-thumbs::-webkit-scrollbar {
+          display: none;
+        }
+        body.mobile-product-sheet-active .gallery-thumb {
+          width: 52px;
+          height: 52px;
+          min-width: 52px;
+          max-width: 52px;
+          flex: 0 0 52px;
+        }
+        body.mobile-product-sheet-active .gallery-thumb img,
+        body.mobile-product-sheet-active .gallery-thumb svg,
+        body.mobile-product-sheet-active .gallery-thumb video {
+          max-width: 46px;
+          max-height: 46px;
+        }
         .mobile-product-sheet {
-          position: relative;
-          z-index: 10;
-          right: auto;
-          bottom: auto;
-          left: auto;
-          display: block;
-          width: calc(100% + 24px);
-          margin: 0 -12px;
-          overflow: visible;
+          position: fixed;
+          z-index: 1500;
+          top: max(56px, env(safe-area-inset-top));
+          right: 0;
+          bottom: calc(92px + env(safe-area-inset-bottom));
+          left: 0;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
           color: var(--text-1);
           background: #fff;
           border: 1px solid #e4e9f1;
           border-bottom: 0;
           border-radius: 22px 22px 0 0;
-          box-shadow: 0 -8px 24px rgba(15, 35, 64, 0.10);
-          transform: none;
-          touch-action: pan-y;
+          box-shadow: 0 -12px 35px rgba(15, 35, 64, 0.16);
+          transform: translate3d(0, calc(100% - 250px), 0);
+          transition: transform 280ms cubic-bezier(0.22, 0.72, 0, 1);
+          will-change: transform;
+          touch-action: none;
+          contain: layout paint;
+        }
+        .mobile-product-sheet.is-dragging {
+          transition: none;
+          user-select: none;
         }
         .mobile-product-sheet-handle {
           position: relative;
-          display: block;
+          z-index: 3;
+          flex: 0 0 34px;
           width: 100%;
           height: 34px;
           padding: 0;
           border: 0;
-          background: transparent;
-          pointer-events: none;
+          background: #fff;
+          cursor: grab;
+          touch-action: none;
+          -webkit-tap-highlight-color: transparent;
         }
         .mobile-product-sheet-handle::before {
           content: "";
@@ -3282,15 +3331,29 @@
           border-radius: 999px;
           background: #cbd3df;
           transform: translateX(-50%);
+          transition: width 180ms ease, background-color 180ms ease;
+        }
+        .mobile-product-sheet.is-expanded .mobile-product-sheet-handle::before {
+          width: 50px;
+          background: var(--primary, #2f6fed);
         }
         .mobile-product-sheet-content {
-          width: 100%;
           min-height: 0;
-          overflow: visible;
+          flex: 1;
+          overflow-x: hidden;
+          overflow-y: hidden;
           padding: 0 14px 22px;
-          box-sizing: border-box;
-          touch-action: pan-y;
+          overscroll-behavior: contain;
+          touch-action: none;
           -webkit-overflow-scrolling: touch;
+          scrollbar-width: thin;
+          box-sizing: border-box;
+        }
+        .mobile-product-sheet.is-expanded .mobile-product-sheet-content {
+          overflow-y: auto;
+        }
+        .mobile-product-sheet :is(a, button, input, select, textarea, label) {
+          touch-action: manipulation;
         }
         .mobile-product-sheet .product-info-col {
           display: flex;
@@ -3325,6 +3388,11 @@
         #plAssistant {
           bottom: calc(178px + env(safe-area-inset-bottom)) !important;
           max-height: calc(100dvh - 205px);
+        }
+      }
+      @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+        .mobile-product-sheet {
+          transition-duration: 1ms;
         }
       }
       </style>
@@ -6804,17 +6872,23 @@
 
             const productPageBody = document.getElementById("pageBody");
             const productLayout = productPageBody?.querySelector(".product-layout");
+            const productGallery = productLayout?.querySelector(".product-gallery");
             const productInfo = productLayout?.querySelector(".product-info-col");
-            if (!productPageBody || !productLayout || !productInfo || document.getElementById("mobileProductSheet")) return;
+            const purchaseBar = document.getElementById("mobilePurchaseBar");
+            if (!productPageBody || !productLayout || !productGallery || !productInfo || document.getElementById("mobileProductSheet")) return;
 
             const sheet = document.createElement("section");
             sheet.className = "mobile-product-sheet";
             sheet.id = "mobileProductSheet";
             sheet.setAttribute("aria-label", "جزئیات محصول");
+            sheet.setAttribute("data-state", "half");
 
-            const handle = document.createElement("div");
+            const handle = document.createElement("button");
+            handle.type = "button";
             handle.className = "mobile-product-sheet-handle";
-            handle.setAttribute("aria-hidden", "true");
+            handle.setAttribute("aria-label", "باز و بسته کردن جزئیات محصول");
+            handle.setAttribute("aria-controls", "mobileProductSheetContent");
+            handle.setAttribute("aria-expanded", "false");
 
             const content = document.createElement("div");
             content.className = "mobile-product-sheet-content";
@@ -6835,7 +6909,165 @@
             sheet.appendChild(handle);
             sheet.appendChild(content);
             productLayout.insertAdjacentElement("afterend", sheet);
-            document.body.classList.add("mobile-product-scroll-layout");
+            document.body.classList.add("mobile-product-sheet-active");
+
+            let snapPoints = { expanded: 0, half: 0, peek: 0 };
+            let currentState = "half";
+            let currentY = 0;
+            let gesture = null;
+            let resizeFrame = 0;
+
+            function calculateSnapPoints() {
+              const sheetRect = sheet.getBoundingClientRect();
+              const sheetHeight = sheetRect.height;
+              const computedTop = Number.parseFloat(getComputedStyle(sheet).top) || 56;
+              const galleryBottom = productGallery.getBoundingClientRect().bottom;
+              const barTop = purchaseBar?.getBoundingClientRect().top || window.innerHeight - 92;
+              const minimumVisible = Math.min(Math.max(window.innerHeight * 0.31, 220), 320);
+              const desiredTop = Math.max(
+                computedTop + 80,
+                Math.min(galleryBottom + 6, barTop - minimumVisible),
+              );
+              const halfPoint = Math.max(0, desiredTop - computedTop);
+              const peekPoint = Math.max(halfPoint, sheetHeight - 112);
+              snapPoints = {
+                expanded: 0,
+                half: Math.min(halfPoint, peekPoint),
+                peek: peekPoint,
+              };
+            }
+
+            function stateClassName(state) {
+              return state === "expanded"
+                ? "is-expanded"
+                : state === "peek"
+                  ? "is-peek"
+                  : "is-half";
+            }
+
+            function renderTranslate(value) {
+              currentY = Math.min(snapPoints.peek, Math.max(0, value));
+              sheet.style.transform = "translate3d(0, " + currentY + "px, 0)";
+            }
+
+            function applyState(state, animate) {
+              calculateSnapPoints();
+              currentState = state;
+              sheet.classList.remove("is-expanded", "is-half", "is-peek", "is-dragging");
+              sheet.classList.add(stateClassName(state));
+              if (!animate) sheet.classList.add("is-dragging");
+              renderTranslate(snapPoints[state]);
+              sheet.setAttribute("data-state", state);
+              handle.setAttribute("aria-expanded", state === "expanded" ? "true" : "false");
+              if (state !== "expanded") content.scrollTop = 0;
+              if (!animate) {
+                requestAnimationFrame(() => sheet.classList.remove("is-dragging"));
+              }
+            }
+
+            function closestState(projectedY) {
+              return Object.keys(snapPoints).reduce((closest, state) => {
+                return Math.abs(snapPoints[state] - projectedY) < Math.abs(snapPoints[closest] - projectedY)
+                  ? state
+                  : closest;
+              }, "half");
+            }
+
+            function isInteractiveTarget(target) {
+              return target instanceof Element && Boolean(
+                target.closest("a, button:not(.mobile-product-sheet-handle), input, select, textarea, label"),
+              );
+            }
+
+            function onPointerDown(event) {
+              if (!event.isPrimary || (event.pointerType === "mouse" && event.button !== 0)) return;
+              if (isInteractiveTarget(event.target)) return;
+
+              calculateSnapPoints();
+              gesture = {
+                pointerId: event.pointerId,
+                startY: event.clientY,
+                startTranslate: currentY,
+                startScroll: content.scrollTop,
+                lastY: event.clientY,
+                lastTime: performance.now(),
+                velocity: 0,
+                moved: false,
+                mode: currentState === "expanded" ? "content" : "sheet",
+                startedOnHandle: event.target === handle || handle.contains(event.target),
+              };
+            }
+
+            function onPointerMove(event) {
+              if (!gesture || gesture.pointerId !== event.pointerId) return;
+              const deltaY = event.clientY - gesture.startY;
+              const now = performance.now();
+              const elapsed = Math.max(1, now - gesture.lastTime);
+              gesture.velocity = (event.clientY - gesture.lastY) / elapsed;
+              gesture.lastY = event.clientY;
+              gesture.lastTime = now;
+
+              if (!gesture.moved && Math.abs(deltaY) <= 6) return;
+              if (!gesture.moved) {
+                gesture.moved = true;
+                sheet.classList.add("is-dragging");
+                sheet.setPointerCapture?.(event.pointerId);
+              }
+
+              if (gesture.mode === "content") {
+                const requestedScroll = gesture.startScroll - deltaY;
+                if (requestedScroll >= 0) {
+                  content.scrollTop = requestedScroll;
+                } else {
+                  content.scrollTop = 0;
+                  gesture.mode = "sheet";
+                  gesture.startTranslate = snapPoints.expanded;
+                  gesture.startY = event.clientY - Math.abs(requestedScroll);
+                  renderTranslate(Math.abs(requestedScroll));
+                }
+              } else {
+                renderTranslate(gesture.startTranslate + deltaY);
+              }
+              event.preventDefault();
+            }
+
+            function finishGesture(event) {
+              if (!gesture || gesture.pointerId !== event.pointerId) return;
+              const finished = gesture;
+              gesture = null;
+              sheet.releasePointerCapture?.(event.pointerId);
+              sheet.classList.remove("is-dragging");
+
+              if (!finished.moved) {
+                if (finished.startedOnHandle) {
+                  applyState(currentState === "expanded" ? "half" : "expanded", true);
+                }
+                return;
+              }
+
+              if (finished.mode === "content") {
+                applyState("expanded", true);
+                return;
+              }
+
+              const projectedY = Math.min(
+                snapPoints.peek,
+                Math.max(0, currentY + finished.velocity * 150),
+              );
+              applyState(closestState(projectedY), true);
+            }
+
+            sheet.addEventListener("pointerdown", onPointerDown);
+            sheet.addEventListener("pointermove", onPointerMove, { passive: false });
+            sheet.addEventListener("pointerup", finishGesture);
+            sheet.addEventListener("pointercancel", finishGesture);
+
+            window.addEventListener("resize", () => {
+              cancelAnimationFrame(resizeFrame);
+              resizeFrame = requestAnimationFrame(() => applyState(currentState, false));
+            });
+
+            requestAnimationFrame(() => applyState("half", false));
           }
 
           initMobileProductSheet();
