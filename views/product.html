@@ -929,6 +929,31 @@
         gap: 16px;
         position: relative;
       }
+      #galleryImgHolder {
+        width: 100%;
+        min-width: 0;
+        overflow: hidden;
+      }
+      .gallery-track {
+        display: flex;
+        direction: ltr;
+        width: 100%;
+        transition: transform 260ms cubic-bezier(0.22, 0.72, 0, 1);
+        will-change: transform;
+      }
+      .gallery-track.is-dragging {
+        transition: none;
+      }
+      .gallery-slide {
+        flex: 0 0 100%;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .mobile-gallery-counter {
+        display: none;
+      }
       .gallery-main {
         display: flex;
         align-items: center;
@@ -3211,7 +3236,65 @@
           overflow: hidden;
         }
         body.mobile-product-sheet-active .product-gallery {
+          height: var(--mobile-gallery-height, 280px);
+          min-height: 0;
+          gap: 0;
+          overflow: hidden;
+          border: 1px solid #e4e9f1;
+          border-radius: 20px;
+          background: #fff;
           touch-action: none;
+        }
+        body.mobile-product-sheet-active .gallery-main {
+          width: 100%;
+          height: 100%;
+          min-height: 0;
+          border-radius: 20px;
+          touch-action: none;
+        }
+        body.mobile-product-sheet-active #galleryImgHolder,
+        body.mobile-product-sheet-active .gallery-track,
+        body.mobile-product-sheet-active .gallery-slide {
+          height: 100%;
+        }
+        body.mobile-product-sheet-active .gallery-slide > img,
+        body.mobile-product-sheet-active .gallery-slide > video,
+        body.mobile-product-sheet-active .gallery-slide > div,
+        body.mobile-product-sheet-active .gallery-slide > div > svg {
+          width: 100%;
+          height: 100%;
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+          transform: none;
+        }
+        body.mobile-product-sheet-active .gallery-main:hover img,
+        body.mobile-product-sheet-active .gallery-main:hover svg {
+          transform: none;
+        }
+        body.mobile-product-sheet-active .gallery-thumbs,
+        body.mobile-product-sheet-active .gallery-nav-btn,
+        body.mobile-product-sheet-active .zoom-hint {
+          display: none;
+        }
+        body.mobile-product-sheet-active .mobile-gallery-counter {
+          position: absolute;
+          left: 14px;
+          bottom: 12px;
+          z-index: 4;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 48px;
+          height: 28px;
+          padding: 0 10px;
+          border-radius: 999px;
+          background: rgba(15, 23, 42, 0.68);
+          color: #fff;
+          font-size: 12px;
+          font-weight: 700;
+          direction: ltr;
+          pointer-events: none;
         }
         .mobile-product-sheet {
           position: fixed;
@@ -5728,7 +5811,17 @@
                 </div>
                 ${product.amazingOffer && product.amazingOfferEndsAt && new Date(product.amazingOfferEndsAt) > new Date() ? `<div class="amazing-countdown" id="amazingCountdown"><i class="ti ti-clock"></i> پایان: <b>--:--:--</b></div>` : ""}
                 <button class="gallery-nav-btn gallery-nav-prev" id="galPrevBtn"><i class="ti ti-chevron-right"></i></button>
-                <div id="galleryImgHolder">${productImageHtml(product, 0)}</div>
+                <div id="galleryImgHolder">
+                  <div class="gallery-track" id="galleryTrack">
+                    ${Array.from({ length: galleryTotal })
+                      .map(
+                        (_, i) =>
+                          `<div class="gallery-slide" data-idx="${i}">${productImageHtml(product, i)}</div>`,
+                      )
+                      .join("")}
+                  </div>
+                </div>
+                <span class="mobile-gallery-counter" id="mobileGalleryCounter">1 / ${galleryTotal}</span>
                 <button class="gallery-nav-btn gallery-nav-next" id="galNextBtn"><i class="ti ti-chevron-left"></i></button>
                 <span class="zoom-hint"><i class="ti ti-zoom-in"></i> برای بزرگنمایی کلیک کنید</span>
               </div>
@@ -6068,6 +6161,8 @@
           pushRecentlyViewed(productId);
 
           const galleryImgHolder = document.getElementById("galleryImgHolder");
+          const galleryTrack = document.getElementById("galleryTrack");
+          const mobileGalleryCounter = document.getElementById("mobileGalleryCounter");
           const galleryThumbs = document.querySelectorAll(".gallery-thumb");
           // برخی مرورگرهای موبایل بدون autoplay، فریم اول ویدیو را در بندانگشتی نمایش نمی‌دهند.
           // با رفتنِ کوتاه به ابتدای ویدیو، فقط یک فریم ثابت دیده می‌شود و ویدیو پخش نخواهد شد.
@@ -6082,12 +6177,18 @@
             else preview.addEventListener("loadedmetadata", captureFirstFrame, { once: true });
             preview.addEventListener("seeked", () => preview.pause());
           });
-          function setGalleryIndex(idx) {
+          function setGalleryIndex(idx, animate = true) {
             galleryIndex = ((idx % galleryTotal) + galleryTotal) % galleryTotal;
-            galleryImgHolder.innerHTML = productImageHtml(
-              product,
-              galleryIndex,
-            );
+            if (galleryTrack) {
+              galleryTrack.classList.toggle("is-dragging", !animate);
+              galleryTrack.style.transform = "translate3d(" + (-galleryIndex * 100) + "%, 0, 0)";
+              if (!animate) {
+                requestAnimationFrame(() => galleryTrack.classList.remove("is-dragging"));
+              }
+            }
+            if (mobileGalleryCounter) {
+              mobileGalleryCounter.textContent = (galleryIndex + 1) + " / " + galleryTotal;
+            }
             galleryThumbs.forEach((t, i) =>
               t.classList.toggle("active", i === galleryIndex),
             );
@@ -6104,6 +6205,80 @@
               openFullscreen();
             }),
           );
+
+          const galleryMain = document.getElementById("galleryMain");
+          let gallerySwipe = null;
+          let suppressGalleryOpenUntil = 0;
+
+          function resetGalleryTrackPosition() {
+            if (!galleryTrack) return;
+            galleryTrack.classList.remove("is-dragging");
+            galleryTrack.style.transform = "translate3d(" + (-galleryIndex * 100) + "%, 0, 0)";
+          }
+
+          galleryMain.addEventListener("pointerdown", (event) => {
+            if (!window.matchMedia("(max-width: 768px)").matches) return;
+            if (!event.isPrimary || (event.pointerType === "mouse" && event.button !== 0)) return;
+            if (event.target.closest("button, video[controls]")) return;
+            gallerySwipe = {
+              pointerId: event.pointerId,
+              startX: event.clientX,
+              startY: event.clientY,
+              lastX: event.clientX,
+              lastTime: performance.now(),
+              velocityX: 0,
+              axis: null,
+              active: false,
+            };
+          });
+
+          galleryMain.addEventListener("pointermove", (event) => {
+            if (!gallerySwipe || gallerySwipe.pointerId !== event.pointerId || !galleryTrack) return;
+            const deltaX = event.clientX - gallerySwipe.startX;
+            const deltaY = event.clientY - gallerySwipe.startY;
+            if (!gallerySwipe.axis && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 7) {
+              gallerySwipe.axis = Math.abs(deltaX) > Math.abs(deltaY) * 1.08 ? "horizontal" : "vertical";
+            }
+            if (gallerySwipe.axis !== "horizontal") return;
+
+            const now = performance.now();
+            const elapsed = Math.max(1, now - gallerySwipe.lastTime);
+            gallerySwipe.velocityX = (event.clientX - gallerySwipe.lastX) / elapsed;
+            gallerySwipe.lastX = event.clientX;
+            gallerySwipe.lastTime = now;
+            gallerySwipe.active = true;
+            galleryTrack.classList.add("is-dragging");
+            galleryMain.setPointerCapture?.(event.pointerId);
+            galleryTrack.style.transform =
+              "translate3d(calc(" + (-galleryIndex * 100) + "% + " + deltaX + "px), 0, 0)";
+            event.preventDefault();
+          }, { passive: false });
+
+          function finishGallerySwipe(event) {
+            if (!gallerySwipe || gallerySwipe.pointerId !== event.pointerId) return;
+            const swipe = gallerySwipe;
+            gallerySwipe = null;
+            galleryMain.releasePointerCapture?.(event.pointerId);
+
+            if (!swipe.active) {
+              resetGalleryTrackPosition();
+              return;
+            }
+
+            const deltaX = event.clientX - swipe.startX;
+            const shouldAdvance = Math.abs(deltaX) > Math.min(72, galleryMain.clientWidth * 0.18)
+              || Math.abs(swipe.velocityX) > 0.32;
+            suppressGalleryOpenUntil = performance.now() + 450;
+
+            if (!shouldAdvance) {
+              resetGalleryTrackPosition();
+              return;
+            }
+            setGalleryIndex(galleryIndex + (deltaX < 0 ? 1 : -1));
+          }
+
+          galleryMain.addEventListener("pointerup", finishGallerySwipe);
+          galleryMain.addEventListener("pointercancel", finishGallerySwipe);
 
           const fsGallery = document.getElementById("fullscreenGallery");
           const fsImageWrap = document.getElementById("fsImageWrap");
@@ -6134,12 +6309,18 @@
             setGalleryIndex(parseInt(thumb.dataset.idx, 10));
             openFullscreen();
           });
-          document
-            .getElementById("galleryMain")
-            .addEventListener("click", (e) => {
-              if (e.target.closest(".gallery-nav-btn")) return;
-              openFullscreen();
-            });
+          galleryMain.addEventListener("click", (e) => {
+            if (e.target.closest(".gallery-nav-btn, video[controls]")) return;
+            if (performance.now() < suppressGalleryOpenUntil) {
+              e.preventDefault();
+              return;
+            }
+            const clickedSlide = e.target.closest(".gallery-slide");
+            if (clickedSlide) {
+              setGalleryIndex(parseInt(clickedSlide.dataset.idx, 10));
+            }
+            openFullscreen();
+          });
           document
             .getElementById("fsCloseBtn")
             .addEventListener("click", () =>
@@ -6849,14 +7030,33 @@
             let pullGesture = null;
             let resizeFrame = 0;
 
+            function viewportHeight() {
+              return window.visualViewport?.height || window.innerHeight;
+            }
+
+            function mobilePreviewHeight() {
+              return Math.max(178, Math.min(224, viewportHeight() * 0.27));
+            }
+
+            function syncMobileGalleryLayout() {
+              const barTop = purchaseBar?.getBoundingClientRect().top || viewportHeight() - 92;
+              const galleryTop = productGallery.getBoundingClientRect().top;
+              const previewHeight = mobilePreviewHeight();
+              const targetGalleryBottom = barTop - previewHeight + 34;
+              const availableHeight = targetGalleryBottom - galleryTop;
+              const galleryHeight = Math.max(248, Math.min(350, availableHeight));
+              productGallery.style.setProperty("--mobile-gallery-height", galleryHeight + "px");
+              return previewHeight;
+            }
+
             function calculateSnapPoints() {
+              const previewHeight = syncMobileGalleryLayout();
               const computedTop = Number.parseFloat(getComputedStyle(sheet).top) || 56;
-              const galleryBottom = productGallery.getBoundingClientRect().bottom;
-              const barTop = purchaseBar?.getBoundingClientRect().top || window.innerHeight - 92;
-              const attachedTop = Math.min(galleryBottom + 4, barTop - 42);
+              const barTop = purchaseBar?.getBoundingClientRect().top || viewportHeight() - 92;
+              const previewTop = barTop - previewHeight;
               snapPoints = {
                 expanded: 0,
-                half: Math.max(0, attachedTop - computedTop),
+                half: Math.max(0, previewTop - computedTop),
               };
             }
 
@@ -6889,11 +7089,15 @@
               gesture = {
                 pointerId: event.pointerId,
                 startY: event.clientY,
+                startX: event.clientX,
                 startTranslate: currentY,
                 lastY: event.clientY,
                 lastTime: performance.now(),
                 velocity: 0,
                 moved: false,
+                axis: null,
+                cancelled: false,
+                startedInGallery: productGallery.contains(event.target),
                 startedOnHandle: event.target === handle || handle.contains(event.target),
               };
             }
@@ -6911,6 +7115,14 @@
             function onPointerMove(event) {
               if (!gesture || gesture.pointerId !== event.pointerId) return;
               const deltaY = event.clientY - gesture.startY;
+              const deltaX = event.clientX - gesture.startX;
+
+              if (gesture.startedInGallery && !gesture.axis && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 7) {
+                gesture.axis = Math.abs(deltaX) > Math.abs(deltaY) * 1.08 ? "horizontal" : "vertical";
+                if (gesture.axis === "horizontal") gesture.cancelled = true;
+              }
+              if (gesture.cancelled) return;
+
               const now = performance.now();
               const elapsed = Math.max(1, now - gesture.lastTime);
               gesture.velocity = (event.clientY - gesture.lastY) / elapsed;
@@ -6933,6 +7145,7 @@
               const finished = gesture;
               gesture = null;
               productPageBody.releasePointerCapture?.(event.pointerId);
+              if (finished.cancelled) return;
               productPageBody.classList.remove("is-sheet-dragging");
               sheet.classList.remove("is-dragging");
 
