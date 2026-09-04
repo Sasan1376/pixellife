@@ -3201,80 +3201,17 @@
           height: calc(100dvh - 116px);
           min-height: 440px;
           overflow: hidden;
-          padding: 10px 12px 104px;
-          background: #f8fafc;
+          padding-bottom: 104px;
           box-sizing: border-box;
         }
         body.mobile-product-sheet-active .product-layout {
           display: block;
           height: 100%;
           min-height: 0;
-          padding: 0;
-          border: 0;
-          border-radius: 0;
-          background: transparent;
           overflow: hidden;
         }
         body.mobile-product-sheet-active .product-gallery {
-          position: relative;
-          height: auto;
-          min-height: 0;
-          gap: 10px;
-          padding: 0;
-        }
-        body.mobile-product-sheet-active .gallery-main {
-          width: 100%;
-          height: var(--mobile-gallery-main-height, min(52dvh, 500px));
-          min-height: 220px;
-          max-height: 520px;
-          padding: 12px 10px;
-          background: #fff;
-          border-radius: 18px;
-          overflow: hidden;
-          box-sizing: border-box;
-        }
-        body.mobile-product-sheet-active .gallery-main img,
-        body.mobile-product-sheet-active .gallery-main svg,
-        body.mobile-product-sheet-active .gallery-main video {
-          width: auto;
-          max-width: 94%;
-          max-height: calc(100% - 20px);
-          object-fit: contain;
-        }
-        body.mobile-product-sheet-active .gallery-main:hover img,
-        body.mobile-product-sheet-active .gallery-main:hover svg {
-          transform: none;
-        }
-        body.mobile-product-sheet-active .gallery-thumbs {
-          position: static;
-          width: 100%;
-          height: 76px;
-          max-height: 76px;
-          padding: 4px 2px 8px;
-          display: flex;
-          flex-direction: row;
-          flex-wrap: nowrap;
-          gap: 10px;
-          overflow-x: auto;
-          overflow-y: hidden;
-          background: transparent;
-          border-radius: 0;
-          transform: none;
-          scrollbar-width: thin;
-          box-sizing: border-box;
-        }
-        body.mobile-product-sheet-active .gallery-thumb {
-          width: 66px;
-          height: 66px;
-          min-width: 66px;
-          max-width: 66px;
-          flex: 0 0 66px;
-        }
-        body.mobile-product-sheet-active .gallery-thumb img,
-        body.mobile-product-sheet-active .gallery-thumb svg,
-        body.mobile-product-sheet-active .gallery-thumb video {
-          max-width: 58px;
-          max-height: 58px;
+          touch-action: none;
         }
         .mobile-product-sheet {
           position: fixed;
@@ -3292,7 +3229,7 @@
           border-bottom: 0;
           border-radius: 22px 22px 0 0;
           box-shadow: 0 -12px 35px rgba(15, 35, 64, 0.16);
-          transform: translate3d(0, calc(100% - 250px), 0);
+          transform: translate3d(0, calc(100% - 180px), 0);
           transition: transform 240ms cubic-bezier(0.22, 0.72, 0, 1);
           will-change: transform;
           touch-action: pan-y;
@@ -3384,6 +3321,7 @@
           bottom: calc(178px + env(safe-area-inset-bottom)) !important;
           max-height: calc(100dvh - 205px);
         }
+      }
       @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
         .mobile-product-sheet {
           transition-duration: 1ms;
@@ -6867,11 +6805,9 @@
             const productPageBody = document.getElementById("pageBody");
             const productLayout = productPageBody?.querySelector(".product-layout");
             const productGallery = productLayout?.querySelector(".product-gallery");
-            const galleryMain = productGallery?.querySelector(".gallery-main");
-            const galleryThumbs = productGallery?.querySelector(".gallery-thumbs");
             const productInfo = productLayout?.querySelector(".product-info-col");
             const purchaseBar = document.getElementById("mobilePurchaseBar");
-            if (!productPageBody || !productLayout || !productGallery || !galleryMain || !productInfo || document.getElementById("mobileProductSheet")) return;
+            if (!productPageBody || !productLayout || !productGallery || !productInfo || document.getElementById("mobileProductSheet")) return;
 
             const sheet = document.createElement("section");
             sheet.className = "mobile-product-sheet";
@@ -6913,26 +6849,11 @@
             let pullGesture = null;
             let resizeFrame = 0;
 
-            function fitGallery() {
-              const barTop = purchaseBar?.getBoundingClientRect().top || window.innerHeight - 92;
-              const galleryTop = productGallery.getBoundingClientRect().top;
-              const thumbsHeight = galleryThumbs && galleryThumbs.children.length ? 76 : 0;
-              const previewHeight = Math.min(Math.max(window.innerHeight * 0.27, 190), 270);
-              const availableMainHeight = Math.max(
-                220,
-                Math.min(520, barTop - galleryTop - thumbsHeight - previewHeight - 16),
-              );
-              galleryMain.style.setProperty("--mobile-gallery-main-height", availableMainHeight + "px");
-              galleryMain.style.height = availableMainHeight + "px";
-            }
-
             function calculateSnapPoints() {
-              fitGallery();
               const computedTop = Number.parseFloat(getComputedStyle(sheet).top) || 56;
               const galleryBottom = productGallery.getBoundingClientRect().bottom;
               const barTop = purchaseBar?.getBoundingClientRect().top || window.innerHeight - 92;
-              const minimumVisible = Math.min(Math.max(window.innerHeight * 0.24, 175), 245);
-              const attachedTop = Math.min(galleryBottom + 4, barTop - minimumVisible);
+              const attachedTop = Math.min(galleryBottom + 4, barTop - 42);
               snapPoints = {
                 expanded: 0,
                 half: Math.max(0, attachedTop - computedTop),
@@ -6963,7 +6884,7 @@
               );
             }
 
-            function beginSheetGesture(event) {
+            function beginGesture(event) {
               calculateSnapPoints();
               gesture = {
                 pointerId: event.pointerId,
@@ -6981,10 +6902,10 @@
               if (!event.isPrimary || (event.pointerType === "mouse" && event.button !== 0)) return;
               if (isInteractiveTarget(event.target)) return;
 
-              if (currentState === "expanded" && event.target !== handle && !handle.contains(event.target)) {
+              if (currentState === "expanded" && content.contains(event.target) && event.target !== handle) {
                 return;
               }
-              beginSheetGesture(event);
+              beginGesture(event);
             }
 
             function onPointerMove(event) {
@@ -6999,18 +6920,20 @@
               if (!gesture.moved && Math.abs(deltaY) <= 4) return;
               if (!gesture.moved) {
                 gesture.moved = true;
+                productPageBody.classList.add("is-sheet-dragging");
                 sheet.classList.add("is-dragging");
-                sheet.setPointerCapture?.(event.pointerId);
+                productPageBody.setPointerCapture?.(event.pointerId);
               }
-              renderTranslate(gesture.startTranslate + deltaY * 1.18);
+              renderTranslate(gesture.startTranslate + deltaY * 1.22);
               event.preventDefault();
             }
 
-            function finishSheetGesture(event) {
+            function finishGesture(event) {
               if (!gesture || gesture.pointerId !== event.pointerId) return;
               const finished = gesture;
               gesture = null;
-              sheet.releasePointerCapture?.(event.pointerId);
+              productPageBody.releasePointerCapture?.(event.pointerId);
+              productPageBody.classList.remove("is-sheet-dragging");
               sheet.classList.remove("is-dragging");
 
               if (!finished.moved) {
@@ -7019,21 +6942,21 @@
                 }
                 return;
               }
-              if (finished.velocity < -0.32) {
+              if (finished.velocity < -0.28) {
                 applyState("expanded", true);
                 return;
               }
-              if (finished.velocity > 0.32) {
+              if (finished.velocity > 0.28) {
                 applyState("half", true);
                 return;
               }
-              applyState(currentY < snapPoints.half * 0.52 ? "expanded" : "half", true);
+              applyState(currentY < snapPoints.half * 0.54 ? "expanded" : "half", true);
             }
 
-            sheet.addEventListener("pointerdown", onPointerDown);
-            sheet.addEventListener("pointermove", onPointerMove, { passive: false });
-            sheet.addEventListener("pointerup", finishSheetGesture);
-            sheet.addEventListener("pointercancel", finishSheetGesture);
+            productPageBody.addEventListener("pointerdown", onPointerDown);
+            productPageBody.addEventListener("pointermove", onPointerMove, { passive: false });
+            productPageBody.addEventListener("pointerup", finishGesture);
+            productPageBody.addEventListener("pointercancel", finishGesture);
 
             content.addEventListener("touchstart", (event) => {
               if (currentState !== "expanded" || content.scrollTop > 0 || isInteractiveTarget(event.target)) {
@@ -7052,17 +6975,16 @@
               if (deltaY <= 7) return;
               pullGesture.active = true;
               sheet.classList.add("is-dragging");
-              renderTranslate(deltaY * 1.12);
+              renderTranslate(deltaY * 1.16);
               event.preventDefault();
             }, { passive: false });
 
             content.addEventListener("touchend", () => {
               if (!pullGesture) return;
-              const shouldCollapse = pullGesture.active && currentY > snapPoints.half * 0.18;
+              const shouldCollapse = pullGesture.active && currentY > snapPoints.half * 0.16;
               pullGesture = null;
               sheet.classList.remove("is-dragging");
-              if (shouldCollapse) applyState("half", true);
-              else applyState("expanded", true);
+              applyState(shouldCollapse ? "half" : "expanded", true);
             });
 
             window.addEventListener("resize", () => {
