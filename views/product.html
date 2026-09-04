@@ -3213,6 +3213,46 @@
         }
       }
 
+      /* ویدیوهای بررسی محصول */
+      .product-review-videos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+      }
+      .product-review-video-card {
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: #fff;
+      }
+      .product-review-video-card video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: #0f172a;
+        object-fit: contain;
+      }
+      .product-review-video-label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 12px;
+        color: var(--text);
+        font-size: 0.88rem;
+        font-weight: 700;
+      }
+      @media (max-width: 768px) {
+        .product-review-videos-grid {
+          grid-auto-flow: column;
+          grid-auto-columns: minmax(78%, 310px);
+          grid-template-columns: none;
+          overflow-x: auto;
+          padding-bottom: 4px;
+          scroll-snap-type: x proximity;
+        }
+        .product-review-video-card { scroll-snap-align: start; }
+      }
+
       /* جریان طبیعی صفحه محصول در موبایل؛ گالری چسبان و جزئیات عادی */
       .mobile-product-sheet {
         display: none;
@@ -4925,6 +4965,11 @@
               : (doc.videoUrl ? [doc.videoUrl] : []);
             return [...new Set(values.map(safeMediaUrl).filter(Boolean))].slice(0, 5);
           })(),
+          reviewVideoUrls: [...new Set(
+            (Array.isArray(doc.reviewVideoUrls) ? doc.reviewVideoUrls : [])
+              .map(safeMediaUrl)
+              .filter(Boolean),
+          )].slice(0, 5),
           comingSoon: !!doc.comingSoon,
           amazingOffer: !!doc.amazingOffer,
           amazingOfferEndsAt: doc.amazingOfferEndsAt || null,
@@ -6070,6 +6115,23 @@
             </div>
           </div>
 
+          ${Array.isArray(product.reviewVideoUrls) && product.reviewVideoUrls.length
+            ? `
+          <div class="section-block" id="productReviewVideosSection">
+            <div class="section-heading"><i class="ti ti-video"></i> ویدیوهای بررسی محصول</div>
+            <div class="product-review-videos-grid">
+              ${product.reviewVideoUrls.map((url, index) => `
+                <article class="product-review-video-card">
+                  <video controls playsinline preload="metadata" aria-label="ویدیوی بررسی ${toFaDigits(index + 1)} محصول ${product.name}">
+                    <source src="${url}" type="video/mp4" />
+                    مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                  </video>
+                  <div class="product-review-video-label"><i class="ti ti-video"></i> ویدیوی بررسی ${toFaDigits(index + 1)}</div>
+                </article>`).join("")}
+            </div>
+          </div>`
+            : ""}
+
           <div class="section-block" id="customerReviewsSection">
             <div class="section-heading"><i class="ti ti-messages"></i> نظرات کاربران</div>
             <div class="reviews-summary-grid">
@@ -6304,7 +6366,7 @@
           // ویدیو در هیچ نمای پنهان یا پس از خروج از گالری نباید صدا پخش کند.
           function pauseProductVideos(exceptVideo = null) {
             document
-              .querySelectorAll("#galleryTrack video, #fsImageWrap video")
+.querySelectorAll("#galleryTrack video, #fsImageWrap video, #productReviewVideosSection video")
               .forEach((video) => {
                 if (video !== exceptVideo) video.pause();
               });
@@ -7060,6 +7122,7 @@
               const sectionLinks = [
                 { target: "fullSpecsSection", label: "مشخصات" },
                 { target: "productReviewSection", label: "بررسی تخصصی" },
+                { target: "productReviewVideosSection", label: "ویدیوهای بررسی" },
                 { target: "customerReviewsSection", label: "دیدگاه و پرسش" },
               ].filter(({ target }) => {
                 const section = document.getElementById(target);
