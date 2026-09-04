@@ -6929,7 +6929,8 @@
                 Math.min(galleryBottom + 6, barTop - minimumVisible),
               );
               const halfPoint = Math.max(0, desiredTop - computedTop);
-              const peekPoint = Math.max(halfPoint, sheetHeight - 112);
+              // در حالت بسته فقط دستگیره باقی می‌ماند و پنل تقریباً کامل پایین می‌رود.
+              const peekPoint = Math.max(halfPoint, sheetHeight - 40);
               snapPoints = {
                 expanded: 0,
                 half: Math.min(halfPoint, peekPoint),
@@ -7040,7 +7041,12 @@
 
               if (!finished.moved) {
                 if (finished.startedOnHandle) {
-                  applyState(currentState === "expanded" ? "half" : "expanded", true);
+                  const nextState = currentState === "expanded"
+                    ? "half"
+                    : currentState === "peek"
+                      ? "half"
+                      : "expanded";
+                  applyState(nextState, true);
                 }
                 return;
               }
@@ -7050,9 +7056,19 @@
                 return;
               }
 
+              // حرکت سریع رو به پایین پنل را کامل جمع و حرکت سریع رو به بالا آن را باز می‌کند.
+              if (finished.velocity > 0.55) {
+                applyState("peek", true);
+                return;
+              }
+              if (finished.velocity < -0.55) {
+                applyState("expanded", true);
+                return;
+              }
+
               const projectedY = Math.min(
                 snapPoints.peek,
-                Math.max(0, currentY + finished.velocity * 150),
+                Math.max(0, currentY + finished.velocity * 170),
               );
               applyState(closestState(projectedY), true);
             }
