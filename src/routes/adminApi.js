@@ -551,6 +551,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       attentionNote,
       videoUrl,
       videoUrls,
+      reviewVideoUrls,
       specs,
       showSpecs,
       featured,
@@ -598,6 +599,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       attentionNote: String(attentionNote || "").trim(),
       videoUrl: normalizedVideoUrls[0] || "",
       videoUrls: normalizedVideoUrls,
+      reviewVideoUrls: parseVideoUrls(reviewVideoUrls),
       specs: specsEnabled ? specs : "",
       showSpecs: specsEnabled,
       featured: featured === "true" || featured === "on" || featured === true,
@@ -637,6 +639,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       attentionNote,
       videoUrl,
       videoUrls,
+      reviewVideoUrls,
       specs,
       showSpecs,
       featured,
@@ -676,6 +679,9 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       const normalizedVideoUrls = parseVideoUrls(videoUrls !== undefined ? videoUrls : videoUrl);
       product.videoUrls = normalizedVideoUrls;
       product.videoUrl = normalizedVideoUrls[0] || "";
+    }
+    if (reviewVideoUrls !== undefined) {
+      product.reviewVideoUrls = parseVideoUrls(reviewVideoUrls);
     }
     if (showSpecs !== undefined) product.showSpecs = parseEnabled(showSpecs);
     if (specs !== undefined && product.showSpecs !== false) product.specs = specs;
