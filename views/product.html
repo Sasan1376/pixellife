@@ -3078,7 +3078,112 @@
           border-radius: 0;
         }
       }
-    </style>
+    
+      /* نوار خرید ثابتِ صفحهٔ محصول — فقط در موبایل */
+      .mobile-purchase-bar {
+        display: none;
+      }
+      @media (max-width: 768px) {
+        body {
+          padding-bottom: calc(var(--mobile-bottom-nav-height) + 104px + env(safe-area-inset-bottom));
+        }
+        .mobile-purchase-bar {
+          position: fixed;
+          z-index: 1550;
+          right: 0;
+          bottom: calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom));
+          left: 0;
+          display: grid;
+          grid-template-columns: minmax(108px, 0.88fr) minmax(164px, 1.32fr);
+          align-items: center;
+          gap: 10px;
+          min-height: 92px;
+          padding: 12px 16px;
+          background: #fff;
+          border-top: 1px solid #e6ebf3;
+          box-shadow: 0 -8px 22px rgba(15, 35, 64, 0.10);
+          box-sizing: border-box;
+        }
+        .mobile-purchase-price {
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 4px;
+          color: #17233d;
+        }
+        .mobile-purchase-old-row {
+          min-height: 19px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 11px;
+          line-height: 1;
+        }
+        .mobile-purchase-old {
+          color: #98a2b3;
+          text-decoration: line-through;
+          text-decoration-thickness: 1px;
+          white-space: nowrap;
+        }
+        .mobile-purchase-discount {
+          padding: 4px 6px;
+          color: #fff;
+          background: #ef4444;
+          border-radius: 6px;
+          font-weight: 800;
+          white-space: nowrap;
+        }
+        .mobile-purchase-current {
+          overflow: hidden;
+          font-size: clamp(15px, 4.2vw, 19px);
+          font-weight: 900;
+          line-height: 1.25;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        .mobile-purchase-current span {
+          margin-right: 3px;
+          font-size: 12px;
+          font-weight: 700;
+        }
+        .mobile-purchase-add {
+          width: 100%;
+          min-height: 52px;
+          padding: 10px 8px;
+          color: #fff;
+          background: var(--primary, #2f6fed);
+          border: 0;
+          border-radius: 10px;
+          font-family: inherit;
+          font-size: clamp(14px, 4vw, 17px);
+          font-weight: 850;
+          cursor: pointer;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .mobile-purchase-add:active {
+          transform: scale(0.98);
+          background: #245bd1;
+        }
+        .mobile-purchase-bar.is-out-of-stock {
+          display: block;
+          min-height: 76px;
+          padding: 12px 16px;
+        }
+        .mobile-purchase-unavailable {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 52px;
+          color: #b42318;
+          background: #fff4f3;
+          border: 1px solid #fecdc9;
+          border-radius: 10px;
+          font-size: 18px;
+          font-weight: 900;
+        }
+      }
+</style>
       <link rel="stylesheet" href="/css/shopping-assistant.css?v=4" />
   </head>
   <body>
@@ -5610,6 +5715,21 @@
             </div>
           </div>
 
+          <div class="mobile-purchase-bar${product.outOfStock ? " is-out-of-stock" : ""}" id="mobilePurchaseBar" role="region" aria-label="بخش خرید محصول">
+            ${
+              product.outOfStock
+                ? '<div class="mobile-purchase-unavailable">ناموجود</div>'
+                : `<div class="mobile-purchase-price">
+                    <div class="mobile-purchase-old-row">
+                      ${product.oldPrice > 0 && product.oldPrice > product.price ? `<span class="mobile-purchase-old">${product.oldPrice.toLocaleString("fa-IR")}</span>` : ""}
+                      ${discountPct > 0 ? `<span class="mobile-purchase-discount">${discountPct}٪</span>` : ""}
+                    </div>
+                    <div class="mobile-purchase-current">${product.price > 0 ? product.price.toLocaleString("fa-IR") : "—"}<span>تومان</span></div>
+                  </div>
+                  <button type="button" class="mobile-purchase-add" id="mobileAddCartBtn">افزودن به سبد خرید</button>`
+            }
+          </div>
+
                     ${product.showSpecs && Object.keys(product.specs || {}).length ? `<div class="section-block" id="fullSpecsSection">
             <div class="section-heading"><i class="ti ti-list-details"></i> مشخصات فنی</div>
             <div class="specs-table-wrap" id="specsTableWrap">
@@ -6522,6 +6642,14 @@
           const addCartBtn = document.getElementById("addCartBtn");
           if (addCartBtn) {
             addCartBtn.addEventListener("click", () => {
+              addCurrentToCart();
+              showToast("به سبد خرید اضافه شد");
+            });
+          }
+
+          const mobileAddCartBtn = document.getElementById("mobileAddCartBtn");
+          if (mobileAddCartBtn) {
+            mobileAddCartBtn.addEventListener("click", () => {
               addCurrentToCart();
               showToast("به سبد خرید اضافه شد");
             });
