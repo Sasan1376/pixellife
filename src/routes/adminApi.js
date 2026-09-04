@@ -6,7 +6,7 @@ const Product = require("../models/Product");
 const User = require("../models/User");
 const Order = require("../models/Order");
 const Review = require("../models/review");
-const { refreshProductReviewStats } = require("../services/reviewStats");
+const { refreshProductReviewStats, refreshAllProductReviewStats } = require("../services/reviewStats");
 const mongoose = require("mongoose");
 const { toGregorian, isValidJalaaliDate } = require("jalaali-js");
 const AnalyticsDaily = require("../models/AnalyticsDaily");
@@ -861,6 +861,8 @@ async function serializeAdminReview(review) {
 
 router.get("/reviews", async (req, res) => {
   try {
+    // همگام‌سازی یک‌باره/ایمن آمار نظرهای قدیمی هنگام باز شدن مدیریت نظرات.
+    await refreshAllProductReviewStats();
     const status = ["pending", "approved", "rejected"].includes(req.query.status) ? req.query.status : "pending";
     const filter = status === "pending"
       ? { $or: [{ status: "pending" }, { status: { $exists: false } }] }
