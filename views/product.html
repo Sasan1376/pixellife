@@ -6191,13 +6191,10 @@
             preview.addEventListener("seeked", () => preview.pause());
           });
           function setGalleryIndex(idx, animate = true) {
+            // هر تغییر اسلاید، حتی روی دسکتاپ، صدای ویدیوی قبلی را قطع می‌کند.
+            pauseProductVideos();
             galleryIndex = ((idx % galleryTotal) + galleryTotal) % galleryTotal;
             if (galleryTrack) {
-              // ویدیوی اسلاید قبلی نباید در پس‌زمینه پخش بماند.
-              galleryTrack.querySelectorAll("video").forEach((video) => {
-                const slide = video.closest(".gallery-slide");
-                if (slide && Number(slide.dataset.idx) !== galleryIndex) video.pause();
-              });
               galleryTrack.classList.toggle("is-dragging", !animate);
               galleryTrack.style.transform = "translate3d(" + (-galleryIndex * 100) + "%, 0, 0)";
               if (!animate) {
@@ -6303,6 +6300,33 @@
           const fsImageWrap = document.getElementById("fsImageWrap");
           const fsCounter = document.getElementById("fsCounter");
           const fsThumbs = document.getElementById("fsThumbs");
+
+          // ویدیو در هیچ نمای پنهان یا پس از خروج از گالری نباید صدا پخش کند.
+          function pauseProductVideos(exceptVideo = null) {
+            document
+              .querySelectorAll("#galleryTrack video, #fsImageWrap video")
+              .forEach((video) => {
+                if (video !== exceptVideo) video.pause();
+              });
+          }
+          galleryMain.addEventListener(
+            "play",
+            (event) => {
+              if (event.target instanceof HTMLVideoElement) {
+                pauseProductVideos(event.target);
+              }
+            },
+            true,
+          );
+          fsImageWrap.addEventListener(
+            "play",
+            (event) => {
+              if (event.target instanceof HTMLVideoElement) {
+                pauseProductVideos(event.target);
+              }
+            },
+            true,
+          );
           fsThumbs.innerHTML = Array.from({ length: galleryTotal })
             .map(
               (_, i) =>
@@ -6317,6 +6341,7 @@
               );
           }
           function openFullscreen() {
+            pauseProductVideos();
             fsImageWrap.innerHTML = productImageHtml(product, galleryIndex);
             fsCounter.textContent = `${galleryIndex + 1} / ${galleryTotal}`;
             updateFullscreenThumbs();
@@ -6340,11 +6365,14 @@
             }
             openFullscreen();
           });
+          function closeFullscreen() {
+            pauseProductVideos();
+            fsGallery.classList.remove("open");
+            fsImageWrap.innerHTML = "";
+          }
           document
             .getElementById("fsCloseBtn")
-            .addEventListener("click", () =>
-              fsGallery.classList.remove("open"),
-            );
+            .addEventListener("click", closeFullscreen);
           document.getElementById("fsPrevBtn").addEventListener("click", () => {
             setGalleryIndex(galleryIndex - 1);
             openFullscreen();
@@ -6354,11 +6382,11 @@
             openFullscreen();
           });
           fsGallery.addEventListener("click", (e) => {
-            if (e.target === fsGallery) fsGallery.classList.remove("open");
+            if (e.target === fsGallery) closeFullscreen();
           });
           document.addEventListener("keydown", (e) => {
             if (!fsGallery.classList.contains("open")) return;
-            if (e.key === "Escape") fsGallery.classList.remove("open");
+            if (e.key === "Escape") closeFullscreen();
             if (e.key === "ArrowLeft") {
               setGalleryIndex(galleryIndex + 1);
               openFullscreen();
@@ -6368,6 +6396,10 @@
               openFullscreen();
             }
           });
+          document.addEventListener("visibilitychange", () => {
+            if (document.hidden) pauseProductVideos();
+          });
+          window.addEventListener("pagehide", () => pauseProductVideos());
 
           function syncVariantSelection(preferredStorage, preferredColorName) {
             if (!product.hasStorage) {
