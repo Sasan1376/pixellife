@@ -3286,6 +3286,10 @@
           object-fit: contain;
           transform: none;
         }
+        /* ویدیو باید مانند عکس‌ها اجازهٔ سوایپ افقی بدهد؛ پخش با لمس ساده حفظ می‌شود. */
+        body.mobile-product-flow-active .gallery-slide > video {
+          touch-action: pan-y;
+        }
         body.mobile-product-flow-active .gallery-main:hover img,
         body.mobile-product-flow-active .gallery-main:hover svg {
           transform: none;
@@ -6189,6 +6193,11 @@
           function setGalleryIndex(idx, animate = true) {
             galleryIndex = ((idx % galleryTotal) + galleryTotal) % galleryTotal;
             if (galleryTrack) {
+              // ویدیوی اسلاید قبلی نباید در پس‌زمینه پخش بماند.
+              galleryTrack.querySelectorAll("video").forEach((video) => {
+                const slide = video.closest(".gallery-slide");
+                if (slide && Number(slide.dataset.idx) !== galleryIndex) video.pause();
+              });
               galleryTrack.classList.toggle("is-dragging", !animate);
               galleryTrack.style.transform = "translate3d(" + (-galleryIndex * 100) + "%, 0, 0)";
               if (!animate) {
@@ -6225,10 +6234,11 @@
             galleryTrack.style.transform = "translate3d(" + (-galleryIndex * 100) + "%, 0, 0)";
           }
 
+          // با capture، حرکت افقی روی خودِ ویدیوی native هم به گالری می‌رسد.
           galleryMain.addEventListener("pointerdown", (event) => {
             if (!window.matchMedia("(max-width: 768px)").matches) return;
             if (!event.isPrimary || (event.pointerType === "mouse" && event.button !== 0)) return;
-            if (event.target.closest("button, video[controls]")) return;
+            if (event.target.closest("button")) return;
             gallerySwipe = {
               pointerId: event.pointerId,
               startX: event.clientX,
@@ -6239,7 +6249,7 @@
               axis: null,
               active: false,
             };
-          });
+          }, true);
 
           galleryMain.addEventListener("pointermove", (event) => {
             if (!gallerySwipe || gallerySwipe.pointerId !== event.pointerId || !galleryTrack) return;
