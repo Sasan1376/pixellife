@@ -74,6 +74,11 @@ const productSchema = new mongoose.Schema(
       type: String,
       trim: true,
     }],
+    // تا پنج ویدیوی بررسی مستقل از گالری محصول.
+    reviewVideoUrls: [{
+      type: String,
+      trim: true,
+    }],
     colors: [
       {
         name: { type: String, trim: true },
