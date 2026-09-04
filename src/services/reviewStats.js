@@ -31,4 +31,12 @@ async function refreshProductReviewStats(productId) {
   );
 }
 
-module.exports = { refreshProductReviewStats };
+async function refreshAllProductReviewStats() {
+  const productIds = await Review.distinct("productId", { productId: { $exists: true, $ne: "" } });
+  for (const productId of productIds) {
+    await refreshProductReviewStats(productId);
+  }
+  return productIds.length;
+}
+
+module.exports = { refreshProductReviewStats, refreshAllProductReviewStats };
