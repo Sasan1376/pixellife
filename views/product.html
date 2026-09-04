@@ -3254,13 +3254,24 @@
       }
       @media (max-width: 768px) {
         .product-review-videos-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
+          display: grid;
+          grid-auto-flow: column;
+          grid-auto-columns: 148px;
+          grid-template-columns: none;
+          justify-content: start;
           gap: 10px;
+          overflow-x: auto;
+          overscroll-behavior-x: contain;
+          padding: 2px 1px 8px;
+          scroll-snap-type: x proximity;
+          -webkit-overflow-scrolling: touch;
+          touch-action: pan-x;
         }
         .product-review-video-card {
-          width: 100%;
-          min-width: 0;
+          width: 148px;
+          min-width: 148px;
           border-radius: 12px;
+          scroll-snap-align: start;
         }
       }
 
