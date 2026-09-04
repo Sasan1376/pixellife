@@ -3240,22 +3240,28 @@
           min-height: 0;
           gap: 0;
           overflow: hidden;
-          border: 1px solid #e4e9f1;
-          border-radius: 20px;
-          background: #fff;
+          border: 0;
+          border-radius: 18px;
+          background: #f7f7f8;
           touch-action: none;
         }
         body.mobile-product-sheet-active .gallery-main {
           width: 100%;
           height: 100%;
           min-height: 0;
-          border-radius: 20px;
+          border-radius: 18px;
+          background: #f7f7f8;
           touch-action: none;
         }
         body.mobile-product-sheet-active #galleryImgHolder,
         body.mobile-product-sheet-active .gallery-track,
         body.mobile-product-sheet-active .gallery-slide {
           height: 100%;
+        }
+        body.mobile-product-sheet-active .gallery-slide {
+          padding: 10px 14px 18px;
+          background: #f7f7f8;
+          box-sizing: border-box;
         }
         body.mobile-product-sheet-active .gallery-slide > img,
         body.mobile-product-sheet-active .gallery-slide > video,
@@ -3311,9 +3317,9 @@
           border: 1px solid #e4e9f1;
           border-bottom: 0;
           border-radius: 22px 22px 0 0;
-          box-shadow: 0 -12px 35px rgba(15, 35, 64, 0.16);
+          box-shadow: 0 -2px 10px rgba(15, 35, 64, 0.06);
           transform: translate3d(0, calc(100% - 180px), 0);
-          transition: transform 240ms cubic-bezier(0.22, 0.72, 0, 1);
+          transition: transform 360ms cubic-bezier(0.2, 0.72, 0, 1);
           will-change: transform;
           touch-action: pan-y;
           contain: layout paint;
@@ -3374,8 +3380,22 @@
           display: flex;
           width: 100%;
           max-width: 100%;
-          padding: 2px 2px 10px;
+          padding: 0 2px 10px;
           box-sizing: border-box;
+        }
+        .mobile-product-sheet .product-brand-row {
+          margin-bottom: 4px;
+        }
+        .mobile-product-sheet .product-rating-row {
+          gap: 7px;
+          margin-bottom: 10px;
+        }
+        .mobile-product-sheet .product-desc {
+          margin-bottom: 16px;
+          padding-bottom: 16px;
+          color: #7b8492;
+          font-size: 12.5px;
+          line-height: 1.8;
         }
         .mobile-product-sheet .section-block {
           margin: 12px 0 0;
@@ -3391,8 +3411,10 @@
         .mobile-product-sheet .product-title {
           padding-left: 4px;
           padding-right: 4px;
-          font-size: 17px;
-          line-height: 1.9;
+          margin-bottom: 5px;
+          font-size: 16.5px;
+          font-weight: 750;
+          line-height: 1.75;
         }
         .mobile-product-sheet-spacer {
           height: 24px;
@@ -6991,10 +7013,10 @@
             if (!productPageBody || !productLayout || !productGallery || !productInfo || document.getElementById("mobileProductSheet")) return;
 
             const sheet = document.createElement("section");
-            sheet.className = "mobile-product-sheet";
+            sheet.className = "mobile-product-sheet is-dragging";
             sheet.id = "mobileProductSheet";
             sheet.setAttribute("aria-label", "جزئیات محصول");
-            sheet.setAttribute("data-state", "half");
+            sheet.setAttribute("data-state", "scroll");
 
             const handle = document.createElement("button");
             handle.type = "button";
@@ -7023,8 +7045,7 @@
             productLayout.insertAdjacentElement("afterend", sheet);
             document.body.classList.add("mobile-product-sheet-active");
 
-            let snapPoints = { expanded: 0, half: 0 };
-            let currentState = "half";
+            let limits = { top: 0, bottom: 0 };
             let currentY = 0;
             let gesture = null;
             let pullGesture = null;
@@ -7035,65 +7056,65 @@
             }
 
             function mobilePreviewHeight() {
-              return Math.max(178, Math.min(224, viewportHeight() * 0.27));
+              return Math.max(166, Math.min(194, viewportHeight() * 0.255));
             }
 
             function syncMobileGalleryLayout() {
               const barTop = purchaseBar?.getBoundingClientRect().top || viewportHeight() - 92;
               const galleryTop = productGallery.getBoundingClientRect().top;
               const previewHeight = mobilePreviewHeight();
-              const targetGalleryBottom = barTop - previewHeight + 34;
+              const targetGalleryBottom = barTop - previewHeight - 8;
               const availableHeight = targetGalleryBottom - galleryTop;
-              const galleryHeight = Math.max(248, Math.min(350, availableHeight));
+              const galleryHeight = Math.max(242, Math.min(330, availableHeight));
               productGallery.style.setProperty("--mobile-gallery-height", galleryHeight + "px");
               return previewHeight;
             }
 
-            function calculateSnapPoints() {
+            function calculateLimits() {
               const previewHeight = syncMobileGalleryLayout();
               const computedTop = Number.parseFloat(getComputedStyle(sheet).top) || 56;
               const barTop = purchaseBar?.getBoundingClientRect().top || viewportHeight() - 92;
-              const previewTop = barTop - previewHeight;
-              snapPoints = {
-                expanded: 0,
-                half: Math.max(0, previewTop - computedTop),
+              limits = {
+                top: 0,
+                bottom: Math.max(0, barTop - previewHeight - computedTop),
               };
             }
 
-            function renderTranslate(value) {
-              currentY = Math.min(snapPoints.half, Math.max(0, value));
-              sheet.style.transform = "translate3d(0, " + currentY + "px, 0)";
+            function updateSheetMode() {
+              const fullyExpanded = currentY <= 1;
+              sheet.classList.toggle("is-expanded", fullyExpanded);
+              sheet.classList.toggle("is-half", !fullyExpanded);
+              sheet.setAttribute("data-state", fullyExpanded ? "expanded" : "scroll");
+              handle.setAttribute("aria-expanded", fullyExpanded ? "true" : "false");
+              if (!fullyExpanded && content.scrollTop !== 0) content.scrollTop = 0;
             }
 
-            function applyState(state, animate) {
-              calculateSnapPoints();
-              currentState = state;
-              sheet.classList.remove("is-expanded", "is-half", "is-dragging");
-              sheet.classList.add(state === "expanded" ? "is-expanded" : "is-half");
-              if (!animate) sheet.classList.add("is-dragging");
-              renderTranslate(snapPoints[state]);
-              sheet.setAttribute("data-state", state);
-              handle.setAttribute("aria-expanded", state === "expanded" ? "true" : "false");
-              if (state !== "expanded") content.scrollTop = 0;
-              if (!animate) requestAnimationFrame(() => sheet.classList.remove("is-dragging"));
+            function renderTranslate(value) {
+              currentY = Math.min(limits.bottom, Math.max(limits.top, value));
+              sheet.style.transform = "translate3d(0, " + currentY + "px, 0)";
+              sheet.style.setProperty("--sheet-progress", limits.bottom ? String(1 - currentY / limits.bottom) : "1");
+              updateSheetMode();
+            }
+
+            function animateTo(value) {
+              calculateLimits();
+              sheet.classList.remove("is-dragging");
+              renderTranslate(value);
             }
 
             function isInteractiveTarget(target) {
               return target instanceof Element && Boolean(
-                target.closest("a, button:not(.mobile-product-sheet-handle), input, select, textarea, label"),
+                target.closest("a, button:not(.mobile-product-sheet-handle), input, select, textarea, label, video[controls]"),
               );
             }
 
             function beginGesture(event) {
-              calculateSnapPoints();
+              calculateLimits();
               gesture = {
                 pointerId: event.pointerId,
                 startY: event.clientY,
                 startX: event.clientX,
                 startTranslate: currentY,
-                lastY: event.clientY,
-                lastTime: performance.now(),
-                velocity: 0,
                 moved: false,
                 axis: null,
                 cancelled: false,
@@ -7106,7 +7127,7 @@
               if (!event.isPrimary || (event.pointerType === "mouse" && event.button !== 0)) return;
               if (isInteractiveTarget(event.target)) return;
 
-              if (currentState === "expanded" && content.contains(event.target) && event.target !== handle) {
+              if (currentY <= 1 && content.contains(event.target) && event.target !== handle) {
                 return;
               }
               beginGesture(event);
@@ -7117,26 +7138,20 @@
               const deltaY = event.clientY - gesture.startY;
               const deltaX = event.clientX - gesture.startX;
 
-              if (gesture.startedInGallery && !gesture.axis && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 7) {
+              if (gesture.startedInGallery && !gesture.axis && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 2) {
                 gesture.axis = Math.abs(deltaX) > Math.abs(deltaY) * 1.08 ? "horizontal" : "vertical";
                 if (gesture.axis === "horizontal") gesture.cancelled = true;
               }
               if (gesture.cancelled) return;
+              if (Math.abs(deltaY) < 0.5) return;
 
-              const now = performance.now();
-              const elapsed = Math.max(1, now - gesture.lastTime);
-              gesture.velocity = (event.clientY - gesture.lastY) / elapsed;
-              gesture.lastY = event.clientY;
-              gesture.lastTime = now;
-
-              if (!gesture.moved && Math.abs(deltaY) <= 4) return;
               if (!gesture.moved) {
                 gesture.moved = true;
                 productPageBody.classList.add("is-sheet-dragging");
                 sheet.classList.add("is-dragging");
                 productPageBody.setPointerCapture?.(event.pointerId);
               }
-              renderTranslate(gesture.startTranslate + deltaY * 1.22);
+              renderTranslate(gesture.startTranslate + deltaY);
               event.preventDefault();
             }
 
@@ -7145,25 +7160,13 @@
               const finished = gesture;
               gesture = null;
               productPageBody.releasePointerCapture?.(event.pointerId);
-              if (finished.cancelled) return;
               productPageBody.classList.remove("is-sheet-dragging");
               sheet.classList.remove("is-dragging");
 
-              if (!finished.moved) {
-                if (finished.startedOnHandle) {
-                  applyState(currentState === "expanded" ? "half" : "expanded", true);
-                }
-                return;
+              if (finished.cancelled || finished.moved) return;
+              if (finished.startedOnHandle) {
+                animateTo(currentY <= 1 ? limits.bottom : limits.top);
               }
-              if (finished.velocity < -0.28) {
-                applyState("expanded", true);
-                return;
-              }
-              if (finished.velocity > 0.28) {
-                applyState("half", true);
-                return;
-              }
-              applyState(currentY < snapPoints.half * 0.54 ? "expanded" : "half", true);
             }
 
             productPageBody.addEventListener("pointerdown", onPointerDown);
@@ -7172,40 +7175,56 @@
             productPageBody.addEventListener("pointercancel", finishGesture);
 
             content.addEventListener("touchstart", (event) => {
-              if (currentState !== "expanded" || content.scrollTop > 0 || isInteractiveTarget(event.target)) {
+              if (currentY > 1 || content.scrollTop > 0 || isInteractiveTarget(event.target)) {
                 pullGesture = null;
                 return;
               }
               const touch = event.touches[0];
-              pullGesture = touch ? { startY: touch.clientY, active: false } : null;
+              pullGesture = touch
+                ? { startY: touch.clientY, startTranslate: currentY, moved: false }
+                : null;
             }, { passive: true });
 
             content.addEventListener("touchmove", (event) => {
-              if (!pullGesture || currentState !== "expanded" || content.scrollTop > 0) return;
+              if (!pullGesture || content.scrollTop > 0) return;
               const touch = event.touches[0];
               if (!touch) return;
               const deltaY = touch.clientY - pullGesture.startY;
-              if (deltaY <= 7) return;
-              pullGesture.active = true;
+              if (deltaY <= 0.5) return;
+
+              pullGesture.moved = true;
               sheet.classList.add("is-dragging");
-              renderTranslate(deltaY * 1.16);
+              renderTranslate(pullGesture.startTranslate + deltaY);
               event.preventDefault();
             }, { passive: false });
 
             content.addEventListener("touchend", () => {
               if (!pullGesture) return;
-              const shouldCollapse = pullGesture.active && currentY > snapPoints.half * 0.16;
               pullGesture = null;
               sheet.classList.remove("is-dragging");
-              applyState(shouldCollapse ? "half" : "expanded", true);
             });
+
+            function resizeLayout() {
+              const oldBottom = limits.bottom;
+              const progress = oldBottom > 0 ? currentY / oldBottom : 1;
+              calculateLimits();
+              sheet.classList.add("is-dragging");
+              renderTranslate(limits.bottom * progress);
+              requestAnimationFrame(() => sheet.classList.remove("is-dragging"));
+            }
 
             window.addEventListener("resize", () => {
               cancelAnimationFrame(resizeFrame);
-              resizeFrame = requestAnimationFrame(() => applyState(currentState, false));
+              resizeFrame = requestAnimationFrame(resizeLayout);
+            });
+            window.visualViewport?.addEventListener("resize", () => {
+              cancelAnimationFrame(resizeFrame);
+              resizeFrame = requestAnimationFrame(resizeLayout);
             });
 
-            requestAnimationFrame(() => applyState("half", false));
+            calculateLimits();
+            renderTranslate(limits.bottom);
+            requestAnimationFrame(() => sheet.classList.remove("is-dragging"));
           }
 
           initMobileProductSheet();
