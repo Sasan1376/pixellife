@@ -3368,6 +3368,49 @@
         body.mobile-product-flow-active .section-block + .section-block {
           border-top: 8px solid #f5f7fa;
         }
+        body.mobile-product-flow-active .mobile-product-section-nav {
+          position: sticky;
+          top: 72px;
+          z-index: 5;
+          display: flex;
+          align-items: center;
+          gap: 22px;
+          width: 100%;
+          min-height: 50px;
+          padding: 0 16px;
+          overflow-x: auto;
+          overscroll-behavior-x: contain;
+          scrollbar-width: none;
+          border-top: 1px solid #f0f2f5;
+          border-bottom: 1px solid #e8ebef;
+          background: rgba(255, 255, 255, 0.98);
+          box-sizing: border-box;
+          -webkit-overflow-scrolling: touch;
+        }
+        body.mobile-product-flow-active .mobile-product-section-nav::-webkit-scrollbar {
+          display: none;
+        }
+        body.mobile-product-flow-active .mobile-product-section-tab {
+          flex: 0 0 auto;
+          min-height: 50px;
+          padding: 0;
+          border: 0;
+          border-bottom: 3px solid transparent;
+          background: transparent;
+          color: #7a8492;
+          font: inherit;
+          font-size: 13px;
+          font-weight: 700;
+          white-space: nowrap;
+          cursor: pointer;
+        }
+        body.mobile-product-flow-active .mobile-product-section-tab.is-active {
+          color: var(--text-1);
+          border-bottom-color: var(--blue);
+        }
+        body.mobile-product-flow-active .section-block {
+          scroll-margin-top: 126px;
+        }
         #plAssistantToggle {
           bottom: calc(108px + env(safe-area-inset-bottom)) !important;
         }
@@ -6962,6 +7005,71 @@
               const height = Math.max(242, Math.min(310, viewport * 0.36));
               productGallery.style.height = height + "px";
             };
+
+            // بخش‌های پایین صفحه را داخل همان جریان محصول قرار می‌دهیم تا
+            // گالری تا پایان جزئیات، ثابت بماند و دیگر همراه جزئیات جابه‌جا نشود.
+            const sectionBlocks = Array.from(pageBody.children).filter(
+              (child) => child.classList?.contains("section-block"),
+            );
+            if (sectionBlocks.length) {
+              const sectionNav = document.createElement("nav");
+              sectionNav.className = "mobile-product-section-nav";
+              sectionNav.setAttribute("aria-label", "بخش‌های محصول");
+              const sectionLinks = [
+                { target: "fullSpecsSection", label: "مشخصات" },
+                { target: "productReviewSection", label: "بررسی تخصصی" },
+                { target: "customerReviewsSection", label: "دیدگاه و پرسش" },
+              ].filter(({ target }) => {
+                const section = document.getElementById(target);
+                return section && section.style.display !== "none";
+              });
+              sectionNav.innerHTML = sectionLinks
+                .map(
+                  ({ target, label }, index) =>
+                    '<button type="button" class="mobile-product-section-tab' +
+                    (index === 0 ? " is-active" : "") +
+                    '" data-section-target="' + target + '">' + label + "</button>",
+                )
+                .join("");
+              productInfo.after(sectionNav);
+              sectionBlocks.forEach((section) => productLayout.append(section));
+
+              sectionNav.addEventListener("click", (event) => {
+                const tab = event.target.closest("[data-section-target]");
+                if (!tab) return;
+                const target = document.getElementById(tab.dataset.sectionTarget);
+                if (!target) return;
+                target.scrollIntoView({ behavior: "smooth", block: "start" });
+              });
+
+              const updateActiveSectionTab = () => {
+                const tabs = Array.from(sectionNav.querySelectorAll("[data-section-target]"));
+                let activeTarget = tabs[0]?.dataset.sectionTarget;
+                for (const tab of tabs) {
+                  const section = document.getElementById(tab.dataset.sectionTarget);
+                  if (section && section.getBoundingClientRect().top <= 150) {
+                    activeTarget = tab.dataset.sectionTarget;
+                  }
+                }
+                tabs.forEach((tab) =>
+                  tab.classList.toggle("is-active", tab.dataset.sectionTarget === activeTarget),
+                );
+              };
+              let scrollTick = false;
+              window.addEventListener(
+                "scroll",
+                () => {
+                  if (scrollTick) return;
+                  scrollTick = true;
+                  requestAnimationFrame(() => {
+                    scrollTick = false;
+                    updateActiveSectionTab();
+                  });
+                },
+                { passive: true },
+              );
+              updateActiveSectionTab();
+            }
 
             keepGalleryVisible();
             let resizeFrame = 0;
