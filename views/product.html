@@ -3213,44 +3213,55 @@
         }
       }
 
-      /* ویدیوهای بررسی محصول */
+      /* ویدیوهای بررسی محصول: کارت‌های ثابت و مربعی */
       .product-review-videos-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        grid-template-columns: repeat(auto-fill, 184px);
+        justify-content: start;
         gap: 14px;
       }
       .product-review-video-card {
+        position: relative;
+        width: 184px;
+        aspect-ratio: 1 / 1;
         overflow: hidden;
-        border: 1px solid var(--border);
+        border: 1px solid #dbe5f2;
         border-radius: 14px;
-        background: #fff;
+        background: #f8fafc;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
       }
       .product-review-video-card video {
         display: block;
         width: 100%;
-        aspect-ratio: 16 / 9;
-        background: #0f172a;
-        object-fit: contain;
+        height: 100%;
+        background: #f1f5f9;
+        object-fit: cover;
       }
       .product-review-video-label {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
         display: flex;
         align-items: center;
-        gap: 7px;
-        padding: 10px 12px;
-        color: var(--text);
-        font-size: 0.88rem;
+        gap: 6px;
+        padding: 8px 10px;
+        color: #fff;
+        background: linear-gradient(transparent, rgba(15, 23, 42, 0.76));
+        font-size: 0.78rem;
         font-weight: 700;
+        pointer-events: none;
       }
       @media (max-width: 768px) {
         .product-review-videos-grid {
-          grid-auto-flow: column;
-          grid-auto-columns: minmax(78%, 310px);
-          grid-template-columns: none;
-          overflow-x: auto;
-          padding-bottom: 4px;
-          scroll-snap-type: x proximity;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
         }
-        .product-review-video-card { scroll-snap-align: start; }
+        .product-review-video-card {
+          width: 100%;
+          min-width: 0;
+          border-radius: 12px;
+        }
       }
 
       /* جریان طبیعی صفحه محصول در موبایل؛ گالری چسبان و جزئیات عادی */
