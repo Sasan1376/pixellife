@@ -2,6 +2,10 @@
   const isMobileViewport = window.matchMedia("(max-width: 768px)").matches;
   if (!isMobileViewport) return;
 
+  // صفحهٔ محصول نوار خرید ثابتِ خودش را دارد؛ ناوبری عمومی پایین اینجا ساخته نشود.
+  const isProductPage = /^\/product(?:\/|$)/.test(window.location.pathname);
+  if (isProductPage) return;
+
   let nav = document.querySelector(".mobile-bottom-nav");
   if (!nav) {
     document.body.insertAdjacentHTML(
