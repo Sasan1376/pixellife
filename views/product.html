@@ -3213,60 +3213,67 @@
         }
       }
 
-      /* Bottom Sheet محصول شبیه نسخه موبایل دیجیکالا */
+      /* جریان طبیعی صفحه محصول در موبایل؛ گالری چسبان و جزئیات عادی */
       .mobile-product-sheet {
         display: none;
       }
       @media (max-width: 768px) {
-        body.mobile-product-sheet-active {
-          overflow: hidden;
-          overscroll-behavior: none;
+        body.mobile-product-flow-active {
+          overflow-x: hidden;
+          overflow-y: auto;
+          overscroll-behavior-y: auto;
         }
-        body.mobile-product-sheet-active .page-body {
-          height: calc(100dvh - 116px);
-          min-height: 440px;
-          overflow: hidden;
-          padding-bottom: 104px;
+        body.mobile-product-flow-active .page-body {
+          height: auto;
+          min-height: 0;
+          overflow: visible;
+          padding-bottom: calc(118px + env(safe-area-inset-bottom));
           box-sizing: border-box;
         }
-        body.mobile-product-sheet-active .product-layout {
+        body.mobile-product-flow-active .product-layout {
           display: block;
-          height: 100%;
+          height: auto;
           min-height: 0;
-          overflow: hidden;
+          overflow: visible;
+          isolation: isolate;
         }
-        body.mobile-product-sheet-active .product-gallery {
-          height: var(--mobile-gallery-height, 280px);
+        body.mobile-product-flow-active .product-gallery {
+          position: sticky;
+          top: 72px;
+          z-index: 1;
+          height: clamp(242px, 36dvh, 310px);
           min-height: 0;
           gap: 0;
+          margin: 0;
           overflow: hidden;
           border: 0;
           border-radius: 18px;
           background: #f7f7f8;
-          touch-action: none;
+          touch-action: pan-y pinch-zoom;
+          overscroll-behavior: contain;
         }
-        body.mobile-product-sheet-active .gallery-main {
+        body.mobile-product-flow-active .gallery-main {
           width: 100%;
           height: 100%;
           min-height: 0;
           border-radius: 18px;
           background: #f7f7f8;
-          touch-action: none;
+          touch-action: pan-y pinch-zoom;
         }
-        body.mobile-product-sheet-active #galleryImgHolder,
-        body.mobile-product-sheet-active .gallery-track,
-        body.mobile-product-sheet-active .gallery-slide {
+        body.mobile-product-flow-active #galleryImgHolder,
+        body.mobile-product-flow-active .gallery-track,
+        body.mobile-product-flow-active .gallery-slide {
           height: 100%;
         }
-        body.mobile-product-sheet-active .gallery-slide {
+        body.mobile-product-flow-active .gallery-slide {
           padding: 10px 14px 18px;
           background: #f7f7f8;
           box-sizing: border-box;
         }
-        body.mobile-product-sheet-active .gallery-slide > img,
-        body.mobile-product-sheet-active .gallery-slide > video,
-        body.mobile-product-sheet-active .gallery-slide > div,
-        body.mobile-product-sheet-active .gallery-slide > div > svg {
+        body.mobile-product-flow-active .gallery-slide > img,
+        body.mobile-product-flow-active .gallery-slide > video,
+        body.mobile-product-flow-active .gallery-slide > div,
+        body.mobile-product-flow-active .gallery-slide > div > svg {
           width: 100%;
           height: 100%;
           max-width: 100%;
@@ -3274,16 +3281,16 @@
           object-fit: contain;
           transform: none;
         }
-        body.mobile-product-sheet-active .gallery-main:hover img,
-        body.mobile-product-sheet-active .gallery-main:hover svg {
+        body.mobile-product-flow-active .gallery-main:hover img,
+        body.mobile-product-flow-active .gallery-main:hover svg {
           transform: none;
         }
-        body.mobile-product-sheet-active .gallery-thumbs,
-        body.mobile-product-sheet-active .gallery-nav-btn,
-        body.mobile-product-sheet-active .zoom-hint {
+        body.mobile-product-flow-active .gallery-thumbs,
+        body.mobile-product-flow-active .gallery-nav-btn,
+        body.mobile-product-flow-active .zoom-hint {
           display: none;
         }
-        body.mobile-product-sheet-active .mobile-gallery-counter {
+        body.mobile-product-flow-active .mobile-gallery-counter {
           position: absolute;
           left: 14px;
           bottom: 12px;
@@ -3302,122 +3309,50 @@
           direction: ltr;
           pointer-events: none;
         }
-        .mobile-product-sheet {
-          position: fixed;
-          z-index: 1500;
-          top: max(56px, env(safe-area-inset-top));
-          right: 0;
-          bottom: calc(92px + env(safe-area-inset-bottom));
-          left: 0;
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-          color: var(--text-1);
-          background: #fff;
-          border: 1px solid #e4e9f1;
-          border-bottom: 0;
-          border-radius: 22px 22px 0 0;
-          box-shadow: 0 -2px 10px rgba(15, 35, 64, 0.06);
-          transform: translate3d(0, calc(100% - 180px), 0);
-          transition: transform 360ms cubic-bezier(0.2, 0.72, 0, 1);
-          will-change: transform;
-          touch-action: pan-y;
-          contain: layout paint;
-        }
-        .mobile-product-sheet.is-dragging {
-          transition: none;
-          user-select: none;
-        }
-        .mobile-product-sheet-handle {
+        body.mobile-product-flow-active .product-info-col {
           position: relative;
           z-index: 3;
-          flex: 0 0 34px;
-          width: 100%;
-          height: 34px;
-          padding: 0;
-          border: 0;
-          background: #fff;
-          cursor: grab;
-          touch-action: none;
-          -webkit-tap-highlight-color: transparent;
-        }
-        .mobile-product-sheet-handle::before {
-          content: "";
-          position: absolute;
-          top: 10px;
-          left: 50%;
-          width: 42px;
-          height: 5px;
-          border-radius: 999px;
-          background: #cbd3df;
-          transform: translateX(-50%);
-          transition: width 160ms ease, background-color 160ms ease;
-        }
-        .mobile-product-sheet.is-expanded .mobile-product-sheet-handle::before {
-          width: 50px;
-          background: var(--primary, #2f6fed);
-        }
-        .mobile-product-sheet-content {
-          min-height: 0;
-          flex: 1;
-          overflow-x: hidden;
-          overflow-y: hidden;
-          padding: 0 14px 22px;
-          overscroll-behavior-y: contain;
-          touch-action: none;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: thin;
-          box-sizing: border-box;
-        }
-        .mobile-product-sheet.is-expanded .mobile-product-sheet-content {
-          overflow-y: auto;
-          touch-action: pan-y;
-        }
-        .mobile-product-sheet :is(a, button, input, select, textarea, label) {
-          touch-action: manipulation;
-        }
-        .mobile-product-sheet .product-info-col {
           display: flex;
-          width: 100%;
-          max-width: 100%;
-          padding: 0 2px 10px;
+          width: calc(100% + 2px);
+          max-width: none;
+          margin: 10px -1px 0;
+          padding: 16px 16px 18px;
+          border: 1px solid #edf0f4;
+          border-bottom: 0;
+          border-radius: 22px 22px 0 0;
+          background: #fff;
+          box-shadow: 0 -2px 10px rgba(15, 35, 64, 0.045);
           box-sizing: border-box;
         }
-        .mobile-product-sheet .product-brand-row {
+        body.mobile-product-flow-active .product-brand-row {
           margin-bottom: 4px;
         }
-        .mobile-product-sheet .product-rating-row {
+        body.mobile-product-flow-active .product-title {
+          margin-bottom: 5px;
+          font-size: 16.5px;
+          font-weight: 750;
+          line-height: 1.75;
+        }
+        body.mobile-product-flow-active .product-rating-row {
           gap: 7px;
           margin-bottom: 10px;
         }
-        .mobile-product-sheet .product-desc {
+        body.mobile-product-flow-active .product-desc {
           margin-bottom: 16px;
           padding-bottom: 16px;
           color: #7b8492;
           font-size: 12.5px;
           line-height: 1.8;
         }
-        .mobile-product-sheet .section-block {
-          margin: 12px 0 0;
-          padding: 16px 2px;
-          border: 0;
-          border-top: 8px solid #f4f6f9;
-          border-radius: 0;
-          box-shadow: none;
-        }
-        .mobile-product-sheet .product-price-row {
+        body.mobile-product-flow-active .product-price-row {
           display: none;
         }
-        .mobile-product-sheet .product-title {
-          padding-left: 4px;
-          padding-right: 4px;
-          margin-bottom: 5px;
-          font-size: 16.5px;
-          font-weight: 750;
-          line-height: 1.75;
-        }
-        .mobile-product-sheet-spacer {
-          height: 24px;
+        body.mobile-product-flow-active .section-block {
+          position: relative;
+          z-index: 3;
+          margin-top: 0;
+          border-radius: 0;
+          background: #fff;
         }
         #plAssistantToggle {
           bottom: calc(108px + env(safe-area-inset-bottom)) !important;
@@ -3425,11 +3360,6 @@
         #plAssistant {
           bottom: calc(178px + env(safe-area-inset-bottom)) !important;
           max-height: calc(100dvh - 205px);
-        }
-      }
-      @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
-        .mobile-product-sheet {
-          transition-duration: 1ms;
         }
       }
       </style>
@@ -7002,232 +6932,34 @@
             });
           }
 
-          function initMobileProductSheet() {
+          function initMobileProductFlow() {
             if (!window.matchMedia("(max-width: 768px)").matches) return;
-
             const productPageBody = document.getElementById("pageBody");
             const productLayout = productPageBody?.querySelector(".product-layout");
             const productGallery = productLayout?.querySelector(".product-gallery");
             const productInfo = productLayout?.querySelector(".product-info-col");
-            const purchaseBar = document.getElementById("mobilePurchaseBar");
-            if (!productPageBody || !productLayout || !productGallery || !productInfo || document.getElementById("mobileProductSheet")) return;
+            if (!productPageBody || !productLayout || !productGallery || !productInfo) return;
 
-            const sheet = document.createElement("section");
-            sheet.className = "mobile-product-sheet is-dragging";
-            sheet.id = "mobileProductSheet";
-            sheet.setAttribute("aria-label", "جزئیات محصول");
-            sheet.setAttribute("data-state", "scroll");
+            document.body.classList.remove("mobile-product-sheet-active");
+            document.body.classList.add("mobile-product-flow-active");
 
-            const handle = document.createElement("button");
-            handle.type = "button";
-            handle.className = "mobile-product-sheet-handle";
-            handle.setAttribute("aria-label", "باز و بسته کردن جزئیات محصول");
-            handle.setAttribute("aria-controls", "mobileProductSheetContent");
-            handle.setAttribute("aria-expanded", "false");
+            const keepGalleryVisible = () => {
+              const viewport = window.visualViewport?.height || window.innerHeight;
+              const height = Math.max(242, Math.min(310, viewport * 0.36));
+              productGallery.style.height = height + "px";
+            };
 
-            const content = document.createElement("div");
-            content.className = "mobile-product-sheet-content";
-            content.id = "mobileProductSheetContent";
-
-            const movableSections = Array.from(productPageBody.children).filter(
-              (node) => node.classList && node.classList.contains("section-block"),
-            );
-            content.appendChild(productInfo);
-            movableSections.forEach((section) => content.appendChild(section));
-
-            const spacer = document.createElement("div");
-            spacer.className = "mobile-product-sheet-spacer";
-            spacer.setAttribute("aria-hidden", "true");
-            content.appendChild(spacer);
-
-            sheet.appendChild(handle);
-            sheet.appendChild(content);
-            productLayout.insertAdjacentElement("afterend", sheet);
-            document.body.classList.add("mobile-product-sheet-active");
-
-            let limits = { top: 0, bottom: 0 };
-            let currentY = 0;
-            let gesture = null;
-            let pullGesture = null;
+            keepGalleryVisible();
             let resizeFrame = 0;
-
-            function viewportHeight() {
-              return window.visualViewport?.height || window.innerHeight;
-            }
-
-            function mobilePreviewHeight() {
-              return Math.max(166, Math.min(194, viewportHeight() * 0.255));
-            }
-
-            function syncMobileGalleryLayout() {
-              const barTop = purchaseBar?.getBoundingClientRect().top || viewportHeight() - 92;
-              const galleryTop = productGallery.getBoundingClientRect().top;
-              const previewHeight = mobilePreviewHeight();
-              const targetGalleryBottom = barTop - previewHeight - 8;
-              const availableHeight = targetGalleryBottom - galleryTop;
-              const galleryHeight = Math.max(242, Math.min(330, availableHeight));
-              productGallery.style.setProperty("--mobile-gallery-height", galleryHeight + "px");
-              return previewHeight;
-            }
-
-            function calculateLimits() {
-              const previewHeight = syncMobileGalleryLayout();
-              const computedTop = Number.parseFloat(getComputedStyle(sheet).top) || 56;
-              const barTop = purchaseBar?.getBoundingClientRect().top || viewportHeight() - 92;
-              limits = {
-                top: 0,
-                bottom: Math.max(0, barTop - previewHeight - computedTop),
-              };
-            }
-
-            function updateSheetMode() {
-              const fullyExpanded = currentY <= 1;
-              sheet.classList.toggle("is-expanded", fullyExpanded);
-              sheet.classList.toggle("is-half", !fullyExpanded);
-              sheet.setAttribute("data-state", fullyExpanded ? "expanded" : "scroll");
-              handle.setAttribute("aria-expanded", fullyExpanded ? "true" : "false");
-              if (!fullyExpanded && content.scrollTop !== 0) content.scrollTop = 0;
-            }
-
-            function renderTranslate(value) {
-              currentY = Math.min(limits.bottom, Math.max(limits.top, value));
-              sheet.style.transform = "translate3d(0, " + currentY + "px, 0)";
-              sheet.style.setProperty("--sheet-progress", limits.bottom ? String(1 - currentY / limits.bottom) : "1");
-              updateSheetMode();
-            }
-
-            function animateTo(value) {
-              calculateLimits();
-              sheet.classList.remove("is-dragging");
-              renderTranslate(value);
-            }
-
-            function isInteractiveTarget(target) {
-              return target instanceof Element && Boolean(
-                target.closest("a, button:not(.mobile-product-sheet-handle), input, select, textarea, label, video[controls]"),
-              );
-            }
-
-            function beginGesture(event) {
-              calculateLimits();
-              gesture = {
-                pointerId: event.pointerId,
-                startY: event.clientY,
-                startX: event.clientX,
-                startTranslate: currentY,
-                moved: false,
-                axis: null,
-                cancelled: false,
-                startedInGallery: productGallery.contains(event.target),
-                startedOnHandle: event.target === handle || handle.contains(event.target),
-              };
-            }
-
-            function onPointerDown(event) {
-              if (!event.isPrimary || (event.pointerType === "mouse" && event.button !== 0)) return;
-              if (isInteractiveTarget(event.target)) return;
-
-              if (currentY <= 1 && content.contains(event.target) && event.target !== handle) {
-                return;
-              }
-              beginGesture(event);
-            }
-
-            function onPointerMove(event) {
-              if (!gesture || gesture.pointerId !== event.pointerId) return;
-              const deltaY = event.clientY - gesture.startY;
-              const deltaX = event.clientX - gesture.startX;
-
-              if (gesture.startedInGallery && !gesture.axis && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 2) {
-                gesture.axis = Math.abs(deltaX) > Math.abs(deltaY) * 1.08 ? "horizontal" : "vertical";
-                if (gesture.axis === "horizontal") gesture.cancelled = true;
-              }
-              if (gesture.cancelled) return;
-              if (Math.abs(deltaY) < 0.5) return;
-
-              if (!gesture.moved) {
-                gesture.moved = true;
-                productPageBody.classList.add("is-sheet-dragging");
-                sheet.classList.add("is-dragging");
-                productPageBody.setPointerCapture?.(event.pointerId);
-              }
-              renderTranslate(gesture.startTranslate + deltaY);
-              event.preventDefault();
-            }
-
-            function finishGesture(event) {
-              if (!gesture || gesture.pointerId !== event.pointerId) return;
-              const finished = gesture;
-              gesture = null;
-              productPageBody.releasePointerCapture?.(event.pointerId);
-              productPageBody.classList.remove("is-sheet-dragging");
-              sheet.classList.remove("is-dragging");
-
-              if (finished.cancelled || finished.moved) return;
-              if (finished.startedOnHandle) {
-                animateTo(currentY <= 1 ? limits.bottom : limits.top);
-              }
-            }
-
-            productPageBody.addEventListener("pointerdown", onPointerDown);
-            productPageBody.addEventListener("pointermove", onPointerMove, { passive: false });
-            productPageBody.addEventListener("pointerup", finishGesture);
-            productPageBody.addEventListener("pointercancel", finishGesture);
-
-            content.addEventListener("touchstart", (event) => {
-              if (currentY > 1 || content.scrollTop > 0 || isInteractiveTarget(event.target)) {
-                pullGesture = null;
-                return;
-              }
-              const touch = event.touches[0];
-              pullGesture = touch
-                ? { startY: touch.clientY, startTranslate: currentY, moved: false }
-                : null;
-            }, { passive: true });
-
-            content.addEventListener("touchmove", (event) => {
-              if (!pullGesture || content.scrollTop > 0) return;
-              const touch = event.touches[0];
-              if (!touch) return;
-              const deltaY = touch.clientY - pullGesture.startY;
-              if (deltaY <= 0.5) return;
-
-              pullGesture.moved = true;
-              sheet.classList.add("is-dragging");
-              renderTranslate(pullGesture.startTranslate + deltaY);
-              event.preventDefault();
-            }, { passive: false });
-
-            content.addEventListener("touchend", () => {
-              if (!pullGesture) return;
-              pullGesture = null;
-              sheet.classList.remove("is-dragging");
-            });
-
-            function resizeLayout() {
-              const oldBottom = limits.bottom;
-              const progress = oldBottom > 0 ? currentY / oldBottom : 1;
-              calculateLimits();
-              sheet.classList.add("is-dragging");
-              renderTranslate(limits.bottom * progress);
-              requestAnimationFrame(() => sheet.classList.remove("is-dragging"));
-            }
-
-            window.addEventListener("resize", () => {
+            const queueGalleryResize = () => {
               cancelAnimationFrame(resizeFrame);
-              resizeFrame = requestAnimationFrame(resizeLayout);
-            });
-            window.visualViewport?.addEventListener("resize", () => {
-              cancelAnimationFrame(resizeFrame);
-              resizeFrame = requestAnimationFrame(resizeLayout);
-            });
-
-            calculateLimits();
-            renderTranslate(limits.bottom);
-            requestAnimationFrame(() => sheet.classList.remove("is-dragging"));
+              resizeFrame = requestAnimationFrame(keepGalleryVisible);
+            };
+            window.addEventListener("resize", queueGalleryResize);
+            window.visualViewport?.addEventListener("resize", queueGalleryResize);
           }
 
-          initMobileProductSheet();
+          initMobileProductFlow();
 
           // بارگذاری نظرات ذخیره‌شده پس از آماده‌شدن صفحه
           deferNonCriticalWork(fetchReviews);
