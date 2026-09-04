@@ -3084,14 +3084,18 @@
         display: none;
       }
       @media (max-width: 768px) {
+        /* در صفحهٔ محصول، نوار خرید جای ناوبری پایین را می‌گیرد. */
+        .mobile-bottom-nav {
+          display: none !important;
+        }
         html body {
-          padding-bottom: calc(var(--mobile-bottom-nav-height) + 104px + env(safe-area-inset-bottom));
+          padding-bottom: calc(104px + env(safe-area-inset-bottom));
         }
         .mobile-purchase-bar {
           position: fixed;
           z-index: 1550;
           right: 0;
-          bottom: calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom));
+          bottom: env(safe-area-inset-bottom);
           left: 0;
           display: grid;
           grid-template-columns: minmax(108px, 0.88fr) minmax(164px, 1.32fr);
