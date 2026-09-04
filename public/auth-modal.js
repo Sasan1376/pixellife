@@ -761,7 +761,7 @@
 
 ;(() => {
   const script = document.createElement("script");
-  script.src = "/js/product-ratings.js?v=1";
+  script.src = "/js/product-ratings.js?v=2";
   script.defer = true;
   document.head.appendChild(script);
 })();
