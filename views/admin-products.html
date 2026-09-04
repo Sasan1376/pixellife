@@ -458,6 +458,19 @@
                 </div>
                 <div class="col-12">
                   <div class="review-editor">
+                    <label class="form-label mb-1">ویدیوهای بررسی محصول (حداکثر ۵ ویدیو)</label>
+                    <div class="form-hint mt-0 mb-2">لینک عمومی MP4 هر ویدیوی بررسی را وارد کنید. این ویدیوها در بخش مستقل «ویدیوهای بررسی محصول» بین مزایای خرید و نظرات کاربران نمایش داده می‌شوند و از گالری محصول جدا هستند.</div>
+                    <div class="row g-2" id="reviewVideoUrls">
+                      <div class="col-md-6"><input type="url" class="form-control review-video-url" dir="ltr" placeholder="ویدیوی بررسی ۱ — لینک MP4" /></div>
+                      <div class="col-md-6"><input type="url" class="form-control review-video-url" dir="ltr" placeholder="ویدیوی بررسی ۲ — اختیاری" /></div>
+                      <div class="col-md-6"><input type="url" class="form-control review-video-url" dir="ltr" placeholder="ویدیوی بررسی ۳ — اختیاری" /></div>
+                      <div class="col-md-6"><input type="url" class="form-control review-video-url" dir="ltr" placeholder="ویدیوی بررسی ۴ — اختیاری" /></div>
+                      <div class="col-md-6"><input type="url" class="form-control review-video-url" dir="ltr" placeholder="ویدیوی بررسی ۵ — اختیاری" /></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="review-editor">
                     <label class="form-label mb-1">ویدیوهای محصول (حداکثر ۵ ویدیو)</label>
                     <div class="form-hint mt-0 mb-2">لینک عمومی MP4 آروان‌کلاد را برای هر ویدیو وارد کنید. هر لینک در گالری محصول مانند یک تصویر جدا نمایش داده می‌شود.</div>
                     <div class="row g-2" id="productVideoUrls">
@@ -1040,6 +1053,10 @@
         document.querySelectorAll(".product-video-url").forEach((input, index) => {
           input.value = videoUrls[index] || "";
         });
+        const reviewVideoUrls = Array.isArray(p.reviewVideoUrls) ? p.reviewVideoUrls : [];
+        document.querySelectorAll(".review-video-url").forEach((input, index) => {
+          input.value = reviewVideoUrls[index] || "";
+        });
         document.getElementById("fShowReview").checked = p.showReview === true;
         document.getElementById("fHideColorsWhenOutOfStock").checked = p.hideColorsWhenOutOfStock !== false;
         renderReviewSections(Array.isArray(p.reviewSections) ? p.reviewSections : []);
@@ -1223,6 +1240,13 @@
           fd.append(
             "videoUrls",
             [...document.querySelectorAll(".product-video-url")]
+              .map((input) => input.value.trim())
+              .filter(Boolean)
+              .join("\n"),
+          );
+          fd.append(
+            "reviewVideoUrls",
+            [...document.querySelectorAll(".review-video-url")]
               .map((input) => input.value.trim())
               .filter(Boolean)
               .join("\n"),
