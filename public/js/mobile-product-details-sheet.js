@@ -150,6 +150,18 @@
       event.preventDefault();
       target.scrollIntoView({ behavior: "smooth", block: "start" });
     });
+    // چیپ‌های معرفی/نگاه کلی در نسخهٔ اصلی صفحه و در پنل، فقط اسکرول می‌کنند؛
+    // نباید با تغییر hash برای هر لمس یک ورودی جدید در تاریخچهٔ مرورگر بسازند.
+    document.addEventListener("click", (event) => {
+      const reviewChip = event.target.closest(".review-nav-chip[href^='#']");
+      if (!reviewChip) return;
+      const targetId = reviewChip.getAttribute("href").slice(1);
+      const target = document.getElementById(targetId);
+      if (!target) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, true);
     sheet.querySelector(".mobile-product-details-sheet__close").addEventListener("click", close);
     backdrop.addEventListener("click", close);
     document.addEventListener("keydown", (event) => { if (event.key === "Escape") close(); });
