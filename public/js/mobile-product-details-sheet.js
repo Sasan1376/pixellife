@@ -115,6 +115,19 @@
       event.stopImmediatePropagation();
       open("specs");
     }, true);
+    // «بررسی کامل محصول» نیز ادامهٔ همان بررسی را در پنل کشویی نمایش می‌دهد.
+    document.addEventListener("click", (event) => {
+      const fullReviewButton = event.target.closest(
+        "#reviewArticleToggle, .review-article-toggle, [data-product-details-sheet='review']",
+      );
+      const isReviewAction = /بررسی[^]*?(?:کامل|بیشتر)|(?:نمایش)[^]*?بررسی/.test(
+        fullReviewButton?.textContent || "",
+      );
+      if (!fullReviewButton || !isReviewAction || !review) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      open("review");
+    }, true);
     tabs.addEventListener("click", (event) => {
       const tab = event.target.closest("[data-product-sheet-content]");
       if (tab) render(tab.dataset.productSheetContent);
