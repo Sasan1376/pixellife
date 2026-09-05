@@ -101,11 +101,16 @@
       const tab = event.target.closest("[data-product-sheet-tab]");
       if (tab) open(tab.dataset.productSheetTab);
     });
-    // دکمهٔ موجودِ «نمایش کامل مشخصات» باید به‌جای باز کردن ردیف‌ها در
-    // همان صفحه، پنل کشویی را مستقیماً روی جدول مشخصات باز کند.
+    // هر کنترل «مشخصات بیشتر/نمایش کامل مشخصات» در هر بخش از صفحه باید
+    // به‌جای باز کردن ردیف‌ها در همان صفحه، پنل کشویی را روی جدول کامل باز کند.
     document.addEventListener("click", (event) => {
-      const moreSpecsButton = event.target.closest("#btnMoreSpecs");
-      if (!moreSpecsButton || !specs) return;
+      const moreSpecsButton = event.target.closest(
+        "#btnMoreSpecs, #specsToggleBtn, .btn-more-specs, .specs-toggle-btn, [data-product-details-sheet='specs']",
+      );
+      const isSpecsAction = /(?:مشخصات|ویژگی)[^]*?(?:بیشتر|کامل)|(?:نمایش)[^]*?(?:مشخصات|ویژگی)/.test(
+        moreSpecsButton?.textContent || "",
+      );
+      if (!moreSpecsButton || !isSpecsAction || !specs) return;
       event.preventDefault();
       event.stopImmediatePropagation();
       open("specs");
