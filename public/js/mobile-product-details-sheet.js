@@ -56,7 +56,8 @@
       copy.querySelectorAll(".review-section-img--collapsed").forEach((item) => item.classList.remove("review-section-img--collapsed"));
       copy.querySelectorAll(".review-article-nav--collapsed").forEach((item) => item.classList.remove("review-article-nav--collapsed"));
       copy.querySelectorAll(".review-article-toggle").forEach((item) => item.remove());
-      copy.querySelectorAll('[style*="display:none"], [style*="display: none"]').forEach((item) => item.style.removeProperty("display"));
+      // فقط بخش‌های جمع‌شدهٔ واقعی باز می‌شوند. عناصر محتواییِ مخفیِ قالب
+      // نباید با کپی‌شدن در پنل برای همهٔ محصولات نمایش داده شوند.
       return copy;
     };
 

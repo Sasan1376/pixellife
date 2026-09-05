@@ -23,6 +23,10 @@ const env = {
   openaiApiKey: process.env.OPENAI_API_KEY || "",
   openaiModel: process.env.OPENAI_MODEL || "gpt-4o-mini",
 
+  // درگاه زرین‌پال؛ تا وقتی مرچنت‌کد وارد نشود، مسیر پرداخت فعال نمی‌شود.
+  zarinpalMerchantId: process.env.ZARINPAL_MERCHANT_ID || "",
+  zarinpalSandbox: process.env.ZARINPAL_SANDBOX === "true",
+
   // درگاه پرداخت بله
   baleBotToken: process.env.BALE_BOT_TOKEN || "",
   balePaymentToken: process.env.BALE_PAYMENT_TOKEN || "",

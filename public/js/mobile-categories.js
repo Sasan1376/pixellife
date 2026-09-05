@@ -14,75 +14,7 @@
   };
   const chevron = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
 
-  const categories = [
-    {
-      id: "mobile",
-      name: "موبایل",
-      sections: [
-        {
-          title: "انتخاب موبایل",
-          links: [
-            { label: "خرید آیفون", href: "/iphone" },
-            { label: "گوشی سامسونگ", href: "/samsung" },
-            { label: "گوشی شیائومی", href: "/xiaomi" },
-            { label: "همه محصولات موبایل", href: "/mobiles" }
-          ]
-        },
-        {
-          title: "لوازم جانبی موبایل",
-          links: [
-            {
-              label: "کابل، شارژر و آداپتور",
-              href: "/accessories/chargers",
-              children: [
-                { label: "اپل", href: "/accessories/chargers?brand=%D8%A7%D9%BE%D9%84" },
-                { label: "سامسونگ", href: "/accessories/chargers?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" },
-                { label: "شیائومی", href: "/accessories/chargers?brand=%D8%B4%DB%8C%D8%A7%D8%A6%D9%88%D9%85%DB%8C" }
-              ]
-            },
-            { label: "لوازم جانبی اپل", href: "/accessories/apple" },
-            { label: "لوازم جانبی سامسونگ", href: "/accessories/samsung" },
-            { label: "لوازم جانبی شیائومی", href: "/accessories/xiaomi" },
-            { label: "همه لوازم جانبی موبایل", href: "/accessories" }
-          ]
-        }
-      ]
-    },
-    {
-      id: "tablet",
-      name: "تبلت",
-      links: [
-        { label: "خرید تبلت اپل", href: "/ipad" },
-        { label: "خرید تبلت سامسونگ", href: "/samsungtab" },
-        { label: "خرید تبلت شیائومی", href: "/xiaomitab" }
-      ],
-      allHref: "/ipad"
-    },
-    {
-      id: "headphone",
-      name: "هدفون و هندزفری",
-      links: [
-        { label: "هدفون اپل", href: "/headphones?brand=%D8%A7%D9%BE%D9%84" },
-        { label: "هدفون سامسونگ", href: "/headphones?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" }
-      ],
-      allHref: "/headphones"
-    },
-    {
-      id: "watch",
-      name: "ساعت هوشمند",
-      links: [
-        { label: "ساعت اپل", href: "/smartwatches?brand=%D8%A7%D9%BE%D9%84" },
-        { label: "ساعت سامسونگ", href: "/smartwatches?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" }
-      ],
-      allHref: "/smartwatches"
-    },
-    {
-      id: "console",
-      name: "کنسول بازی",
-      links: [{ label: "خرید کنسول سونی", href: "/console" }],
-      allHref: "/console"
-    }
-  ];
+  const categories = window.PixelLifeStorefront?.mobileCategories || [];
 
   let activeId = categories[0].id;
 

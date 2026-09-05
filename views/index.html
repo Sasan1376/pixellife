@@ -1,3 +1,6 @@
+Warning: truncated output (original token count: 31089)
+Total output lines: 3825
+
 <!doctype html>
 <html lang="fa" dir="rtl">
   <head>
@@ -2119,6 +2122,7 @@
         }
       }
     </style>
+      <script src="/js/storefront-core.js?v=1"></script>
   </head>
   <body>
     <!-- ══════════ AUTH MODAL (Digikala Style) ══════════ -->
@@ -2188,122 +2192,7 @@
                 کد ۵ رقمی به
                 <strong
                   id="otpTarget"
-                  dir="ltr"
-                  style="color: var(--blue)"
-                ></strong>
-                ارسال شد.
-              </p>
-            </div>
-            <div class="form-group" style="margin-top: 20px">
-              <label class="form-label">کد تأیید</label>
-              <input
-                type="text"
-                class="form-input input-otp"
-                id="otpInput"
-                placeholder="• • • • •"
-                maxlength="5"
-                autocomplete="one-time-code"
-                inputmode="numeric"
-                dir="ltr"
-              />
-              <div class="form-error" id="otpError">کد وارد شده صحیح نیست</div>
-            </div>
-            <button class="btn-auth" id="verifyOtpBtn">
-              <i class="ti ti-login"></i> تأیید و ورود
-            </button>
-            <div class="otp-timer-row">
-              <span id="otpTimerTxt"
-                >ارسال مجدد تا
-                <b class="timer-val" id="timerCount">02:00</b></span
-              >
-              <button class="resend-link" id="resendBtn" style="display: none">
-                <i class="ti ti-refresh"></i> ارسال مجدد کد
-              </button>
-            </div>
-            <button class="back-link" id="backFromOtp">
-              <i class="ti ti-arrow-right"></i> بازگشت
-            </button>
-          </div>
-
-          <!-- ═══ STEP 3B: ورود با رمز عبور ═══ -->
-          <div class="auth-step" id="stepPassword">
-            <p class="modal-desc" style="text-align: center">
-              رمز عبور خود را وارد کنید.
-            </p>
-            <div class="form-group">
-              <label class="form-label">رمز عبور</label>
-              <div class="password-wrap">
-                <input
-                  type="password"
-                  class="form-input"
-                  id="passwordInput"
-                  placeholder="••••••"
-                  autocomplete="current-password"
-                  dir="ltr"
-                  style="text-align: left"
-                />
-                <button
-                  type="button"
-                  class="password-toggle"
-                  id="togglePassword"
-                >
-                  <i class="ti ti-eye"></i>
-                </button>
-              </div>
-              <div class="form-error" id="passwordError">
-                رمز عبور اشتباه است
-              </div>
-            </div>
-            <button class="btn-auth" id="passwordLoginBtn">
-              <i class="ti ti-login"></i> ورود
-            </button>
-            <span class="forgot-link" id="forgotPasswordLink"
-              >فراموشی رمز عبور؟</span
-            >
-            <button class="back-link" id="backFromPassword">
-              <i class="ti ti-arrow-right"></i> بازگشت
-            </button>
-          </div>
-
-          <!-- ═══ STEP 4: موفقیت ═══ -->
-          <div class="auth-step" id="stepSuccess">
-            <div class="success-icon">
-              <i class="ti ti-check"></i>
-            </div>
-            <div class="success-title">خوش آمدید!</div>
-            <div class="success-desc" id="successDesc">
-              ورود شما با موفقیت انجام شد.
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TOAST -->
-    <div class="toast" id="toast">
-      <i class="ti ti-check"></i><span id="toastText"></span>
-    </div>
-
-    <!-- MEGA MENU BACKDROP -->
-    <div class="megamenu-backdrop" id="megamenuBackdrop"></div>
-
-    <!-- HEADER -->
-    <header class="header">
-      <div class="header-inner">
-        <a href="/" class="logo">
-          <div class="logo-mark"><i class="ti ti-shopping-bag"></i></div>
-          <div class="logo-text">پیکسل<span>لایف</span></div>
-        </a>
-        <div class="search-bar">
-          <input
-            type="text"
-            placeholder="جستجو در بیش از ۱ میلیون کالا..."
-            id="searchInput"
-          />
-          <button class="search-btn"><i class="ti ti-search"></i> جستجو</button>
-        </div>
-
-        <!-- ═══ HEADER ACTIONS: bell → auth pill / profile → cart (matches reference order) ═══ -->
+                  …1089 tokens truncated… -->
         <div class="header-actions">
           <button
             class="h-btn theme-toggle"
@@ -3224,68 +3113,7 @@
       });
 
       /* ══ MEGA MENU (digikala style) ══ */
-      const categoriesData = [
-        {
-          id: "mobile",
-          name: "موبایل",
-          icon: "ti-device-mobile",
-          links: [
-            { label: "خرید آیفون", href: "/iphone" },
-            { label: "خرید گوشی سامسونگ", href: "/samsung" },
-            { label: "خرید گوشی شیائومی", href: "/xiaomi" },
-          ],
-          seeAllHref: "/mobiles",
-        },
-        {
-          id: "mobile-accessories",
-          name: "لوازم جانبی موبایل",
-          icon: "ti-headphones",
-          links: [
-            { label: "لوازم جانبی اپل", href: "/accessories/apple" },
-            { label: "لوازم جانبی سامسونگ", href: "/accessories/samsung" },
-            { label: "لوازم جانبی شیائومی", href: "/accessories/xiaomi" },
-          ],
-          seeAllHref: "/mobiles?category=%D9%84%D9%88%D8%A7%D8%B2%D9%85%20%D8%AC%D8%A7%D9%86%D8%A8%DB%8C%20%D9%85%D9%88%D8%A8%D8%A7%DB%8C%D9%84",
-        },
-        {
-          id: "tablet",
-          name: "تبلت",
-          icon: "ti-device-tablet",
-          links: [
-            { label: "خرید تبلت اپل", href: "/ipad" },
-            { label: "خرید تبلت سامسونگ", href: "/samsungtab" },
-            { label: "خرید تبلت شیائومی", href: "/xiaomitab" },
-          ],
-          seeAllHref: "/ipad",
-        },
-        {
-          id: "headphone",
-          name: "هدفون و هندزفری",
-          icon: "ti-headphones",
-          links: [
-            { label: "خرید هدفون اپل", href: "/headphones?brand=%D8%A7%D9%BE%D9%84" },
-            { label: "خرید هدفون سامسونگ", href: "/headphones?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" },
-          ],
-          seeAllHref: "/headphones",
-        },
-        {
-          id: "watch",
-          name: "ساعت هوشمند",
-          icon: "ti-device-watch",
-          links: [
-            { label: "خرید ساعت اپل", href: "/smartwatches?brand=%D8%A7%D9%BE%D9%84" },
-            { label: "خرید ساعت سامسونگ", href: "/smartwatches?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF" },
-          ],
-          seeAllHref: "/smartwatches",
-        },
-        {
-          id: "console",
-          name: "کنسول بازی",
-          icon: "ti-device-gamepad-2",
-          links: [{ label: "خرید کنسول سونی", href: "/console" }],
-          seeAllHref: "/console",
-        },
-      ];
+      const categoriesData = window.PixelLifeStorefront?.mobileCategories || [];
 
       const megamenuCats = document.getElementById("megamenuCats");
       const megamenuContent = document.getElementById("megamenuContent");
