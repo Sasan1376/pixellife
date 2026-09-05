@@ -40,6 +40,9 @@
     const cleanClone = (node) => {
       const copy = node.cloneNode(true);
       copy.removeAttribute("id");
+      // این دکمه فقط برای بازکردن پنل از صفحهٔ محصول است. پس از بازشدن
+      // پنل، جدول کامل همین‌جا نمایش داده می‌شود و تکرار دکمه لازم نیست.
+      copy.querySelectorAll("#btnMoreSpecs, #specsToggleBtn, .btn-more-specs, .specs-toggle-btn, [data-product-details-sheet='specs']").forEach((item) => item.remove());
       const sectionIds = new Map();
       copy.querySelectorAll("[id]").forEach((item) => {
         const oldId = item.id;
