@@ -7,6 +7,7 @@ router.use((req, res, next) => {
 });
 
 const Product = require("../models/Product");
+const { withApprovedReviewStats } = require("../services/reviewStats");
 const { streamProductImage } = require("../utils/productImages");
 
 // پیشنهاد شگفت‌انگیز پس از زمان پایان، در خود دیتابیس هم غیرفعال شود.
@@ -130,7 +131,7 @@ router.get("/", async (req, res) => {
     const order = sort === "price-asc" ? { price: 1 } : sort === "price-desc" ? { price: -1 } : { amazingOffer: -1, featured: -1, createdAt: -1 };
     const products = await Product.find(filter).select(PRODUCT_CARD_FIELDS).sort(order).limit(safeLimit(limit)).lean();
 
-    res.json({ success: true, products: products.map(serializeProduct) });
+    res.json({ success: true, products: await withApprovedReviewStats(products.map(serializeProduct)) });
   } catch (error) {
     console.error("Products catalog error:", error);
     res.status(500).json({ success: false, message: error.message });
@@ -141,7 +142,7 @@ router.get("/id/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).lean();
     if (!product) return res.status(404).json({ success: false, message: "محصول پیدا نشد" });
-    res.json({ success: true, product: serializeProduct(product) });
+    res.json({ success: true, product: (await withApprovedReviewStats([serializeProduct(product)]))[0] });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -155,7 +156,7 @@ router.get("/:slug", async (req, res) => {
 
     const product = await Product.findOne({ $or: alternatives }).sort({ updatedAt: -1 }).lean();
     if (!product) return res.status(404).json({ success: false, message: "محصول پیدا نشد" });
-    res.json({ success: true, product: serializeProduct(product) });
+    res.json({ success: true, product: (await withApprovedReviewStats([serializeProduct(product)]))[0] });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
