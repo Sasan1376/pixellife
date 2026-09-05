@@ -967,14 +967,24 @@
         cursor: zoom-in;
       }
       .gallery-main svg,
-      .gallery-main img,
-      .gallery-main video {
+      .gallery-main img {
         max-height: 500px;
         max-width: 100%;
         width: auto;
         object-fit: contain;
         mix-blend-mode: multiply;
         transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      /* ویدیو نباید افکت ترکیب‌رنگِ تصویر محصول را بگیرد. */
+      .gallery-main video {
+        display: block;
+        max-height: 500px;
+        max-width: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        mix-blend-mode: normal;
+        background: #0b0f19;
       }
       .gallery-main:hover svg,
       .gallery-main:hover img {
