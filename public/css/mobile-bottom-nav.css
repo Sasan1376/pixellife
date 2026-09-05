@@ -527,4 +527,24 @@
     transform: translateY(-1px) scale(1.06);
     stroke-width: 2.2;
   }
+  /* صفحه‌های فهرست برای کارت‌ها transition عمومی را خاموش می‌کنند. این
+     استثنا باعث می‌شود پنل دسته‌بندی همیشه با حرکت کشویی طبیعی باز شود. */
+  .mobile-category-backdrop {
+    transition: opacity 240ms ease !important;
+  }
+
+  .mobile-category-sheet {
+    transition:
+      transform 380ms cubic-bezier(0.22, 1, 0.36, 1) !important,
+      opacity 220ms ease !important;
+  }
+
+  .mobile-category-sheet.is-dragging {
+    transition: none !important;
+  }
+
+  .mobile-category-sheet__content.is-changing > * {
+    animation: mobile-category-content-in 180ms ease both !important;
+  }
+
 }
