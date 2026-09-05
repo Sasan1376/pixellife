@@ -34,7 +34,7 @@ function sendCachedHtml(res, cacheKey, render) {
   if (IS_PRODUCTION && viewCache.has(cacheKey)) {
     return res.type("html").send(viewCache.get(cacheKey));
   }
-  const html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectShoppingAssistant(render()))));
+  const html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectShoppingAssistant(injectHideSeeAll(render())))));
   if (IS_PRODUCTION) viewCache.set(cacheKey, html);
   return res.type("html").send(html);
 }
@@ -188,11 +188,28 @@ const BEHAVIOR_TRACKER_SCRIPT = `
 <script src="/js/behavior-tracker.js?v=1" defer></script>`;
 const CATALOG_NO_FLASH_HEAD = `
 <style id="database-catalog-no-flash">.grid,.iphone-grid,.samsung-grid,.xiaomi-grid,.prod-grid,.xiaomitab-grid,.console-grid{visibility:hidden}</style>`;
+const HIDE_SEE_ALL_HEAD = `
+<style id="hide-see-all-links">
+  a.see-all-btn,
+  a.megamenu-link.see-all,
+  a.mobile-category-all,
+  a.brand-list-link.see-all,
+  a.flyout-see-all {
+    display: none !important;
+  }
+</style>`;
 const LOCAL_FONT_HEAD = `\n<link rel="stylesheet" href="/css/local-fonts.css?v=1" />`;
 const LOCAL_ICON_HEAD = `<link rel="stylesheet" href="/css/tabler-icons.min.css?v=perf-1" />`;
 const PIXEL_LOADER_HEAD = "<style id=\"pixel-page-loader-style\">\n#pixel-page-loader{position:fixed;inset:0;z-index:20000;display:grid;place-items:center;background:#f8fafc;opacity:1;visibility:visible;transition:opacity .22s ease,visibility .22s ease}\n#pixel-page-loader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}\n#pixel-page-loader .pixel-loader-dots{display:flex;align-items:center;justify-content:center;gap:7px;direction:ltr}\n#pixel-page-loader .pixel-loader-dot{width:9px;height:9px;border-radius:2px;background:#3b82f6;animation:pixel-loader-bounce 1s ease-in-out infinite;will-change:transform,opacity}\n#pixel-page-loader .pixel-loader-dot:nth-child(2){animation-delay:.12s}\n#pixel-page-loader .pixel-loader-dot:nth-child(3){animation-delay:.24s}\n#pixel-page-loader .pixel-loader-dot:nth-child(4){animation-delay:.36s}\n#pixel-page-loader .pixel-loader-dot:nth-child(5){animation-delay:.48s}\n@keyframes pixel-loader-bounce{0%,100%{transform:translateY(0) scale(.78);opacity:.42}50%{transform:translateY(-9px) scale(1);opacity:1}}\n@media(prefers-reduced-motion:reduce){#pixel-page-loader .pixel-loader-dot{animation:none;opacity:1}}\n</style>";
 const PIXEL_LOADER_HTML = "<div id=\"pixel-page-loader\" role=\"status\" aria-label=\"در حال بارگذاری\"><div class=\"pixel-loader-dots\" aria-hidden=\"true\"><span class=\"pixel-loader-dot\"></span><span class=\"pixel-loader-dot\"></span><span class=\"pixel-loader-dot\"></span><span class=\"pixel-loader-dot\"></span><span class=\"pixel-loader-dot\"></span></div></div>";
 const PIXEL_LOADER_SCRIPT = "<script id=\"pixel-page-loader-script\">(function(){var loader=document.getElementById(\"pixel-page-loader\");if(!loader)return;var hidden=false;function hide(){if(hidden)return;hidden=true;loader.classList.add(\"is-hidden\");window.setTimeout(function(){if(loader.parentNode)loader.parentNode.removeChild(loader)},260)}function show(){hidden=false;loader.classList.remove(\"is-hidden\")}window.addEventListener(\"load\",function(){window.setTimeout(hide,80)},{once:true});window.addEventListener(\"pageshow\",hide);window.addEventListener(\"beforeunload\",show);document.addEventListener(\"click\",function(event){var link=event.target.closest&&event.target.closest(\"a\");if(!link||event.defaultPrevented||link.target===\"_blank\"||link.hasAttribute(\"download\"))return;var href=link.getAttribute(\"href\")||\"\";if(!href||href.charAt(0)===\"#\"||href.indexOf(\"javascript:\")===0)return;try{if(new URL(link.href,location.href).origin===location.origin)show()}catch(_){}} ,true);window.setTimeout(hide,5000)})();</script>";
+
+function injectHideSeeAll(html) {
+  if (!html || html.includes("hide-see-all-links")) return html;
+  return html.includes("</head>")
+    ? html.replace("</head>", `${HIDE_SEE_ALL_HEAD}\n</head>`)
+    : html;
+}
 
 function injectLocalFonts(html) {
   if (!html) return html;
@@ -383,7 +400,7 @@ function sendSpecialCatalogView(res, options) {
     html = injectEnamad(html);
     html = injectSharedCategoryNav(html);
     html = injectMobileBottomNav(html);
-    html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectShoppingAssistant(injectDatabaseCatalog(html)))));
+    html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectShoppingAssistant(injectHideSeeAll(injectDatabaseCatalog(html))))));
     if (IS_PRODUCTION) viewCache.set(key, html);
     res.type("html").send(html);
   } catch (error) {
@@ -438,7 +455,7 @@ function sendAccessoryBrandView(res, brand) {
     html = injectEnamad(html);
     html = injectSharedCategoryNav(html);
     html = injectMobileBottomNav(html);
-    html = injectAssetRevision(injectPageLoader(injectShoppingAssistant(injectDatabaseCatalog(html))));
+    html = injectAssetRevision(injectPageLoader(injectShoppingAssistant(injectHideSeeAll(injectDatabaseCatalog(html)))));
     if (IS_PRODUCTION) viewCache.set(`accessory:${brandName}`, html);
     res.type("html").send(html);
   } catch (error) {
@@ -469,7 +486,7 @@ const homeController = {
         html = html.replace("</body>", `${SHARED_CATEGORY_SCRIPT}\n</body>`);
       }
 
-      html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectShoppingAssistant(injectMobileBottomNav(html)))));
+      html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectShoppingAssistant(injectHideSeeAll(injectMobileBottomNav(html))))));
       if (IS_PRODUCTION) viewCache.set("rendered:index", html);
       res.type("html").send(html);
     } catch (error) {
