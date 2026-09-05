@@ -38,7 +38,7 @@
   if (!nav) return;
 
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
-  const isCategoryPath = ["/categories", "/mobiles", "/iphone", "/samsung", "/xiaomi", "/accessories", "/accessories/chargers", "/accessories/apple", "/accessories/samsung", "/accessories/xiaomi", "/ipad", "/samsungtab", "/xiaomitab", "/console", "/headphones", "/smartwatches"].includes(path);
+  const isCategoryPath = ["/categories", "/mobiles", "/iphone", "/samsung", "/xiaomi", "/accessories", "/accessories/chargers", "/accessories/apple", "/accessories/samsung", "/accessories/xiaomi", "/ipad", "/tablets", "/samsungtab", "/xiaomitab", "/console", "/headphones", "/smartwatches"].includes(path);
 
   nav.querySelectorAll(".mobile-bottom-nav__item").forEach((item) => {
     const key = item.dataset.nav;
@@ -236,13 +236,32 @@
     categorySheet = sheet;
     categoryBackdrop = backdrop;
 
-    categoryItem.addEventListener("click", (event) => {
+    const toggleCategorySheet = (event) => {
       if (!window.matchMedia("(max-width: 768px)").matches) return;
       event.preventDefault();
+      event.stopPropagation();
       categorySheet.classList.contains("is-open")
         ? closeCategorySheet()
         : openCategorySheet();
-    });
+    };
+
+    // بعضی صفحه‌ها هندلر کلیک یا لینک‌های قدیمی دارند. بازکردن با نخستین
+    // لمس، قبل از پیمایش لینک اجرا می‌شود؛ click فقط برای کیبورد می‌ماند.
+    let lastCategoryPointerToggle = 0;
+    categoryItem.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0) return;
+      lastCategoryPointerToggle = Date.now();
+      toggleCategorySheet(event);
+    }, { capture: true });
+
+    categoryItem.addEventListener("click", (event) => {
+      if (Date.now() - lastCategoryPointerToggle < 700) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      toggleCategorySheet(event);
+    }, { capture: true });
 
     let dragStartY = null;
     let dragDistance = 0;
