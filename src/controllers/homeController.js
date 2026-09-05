@@ -7,7 +7,7 @@ const viewCache = new Map();
 
 // با هر انتشار، URL فایل‌های CSS و JS عوض می‌شود تا مرورگری که نسخهٔ
 // قدیمی را با قانون کش قبلی نگه داشته نیز ناچار به دریافت نسخهٔ تازه باشد.
-const ASSET_REVISION = "20260905-history-safe-anchors-1";
+const ASSET_REVISION = "20260905-history-safe-anchors-2";
 
 function injectAssetRevision(html) {
   return html.replace(
@@ -367,7 +367,8 @@ function sendViewWithEnamad(res, fileName) {
       let html = readView(filePath);
       html = injectEnamad(html);
       html = injectSharedCategoryNav(html);
-      html = injectMobileBottomNav(html);\n    html = injectHistorySafeAnchors(html);
+      html = injectMobileBottomNav(html);
+    html = injectHistorySafeAnchors(html);
       if (fileName === "product.html") html = injectMobileProductDetailsSheet(html);
       return injectAssetRevision(injectDatabaseCatalog(html));
     });
@@ -421,7 +422,8 @@ function sendSpecialCatalogView(res, options) {
 
     html = injectEnamad(html);
     html = injectSharedCategoryNav(html);
-    html = injectMobileBottomNav(html);\n    html = injectHistorySafeAnchors(html);
+    html = injectMobileBottomNav(html);
+    html = injectHistorySafeAnchors(html);
     html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectShoppingAssistant(injectHideSeeAll(injectDatabaseCatalog(html))))));
     if (IS_PRODUCTION) viewCache.set(key, html);
     res.type("html").send(html);
@@ -476,7 +478,8 @@ function sendAccessoryBrandView(res, brand) {
       );
     html = injectEnamad(html);
     html = injectSharedCategoryNav(html);
-    html = injectMobileBottomNav(html);\n    html = injectHistorySafeAnchors(html);
+    html = injectMobileBottomNav(html);
+    html = injectHistorySafeAnchors(html);
     html = injectAssetRevision(injectPageLoader(injectShoppingAssistant(injectHideSeeAll(injectDatabaseCatalog(html)))));
     if (IS_PRODUCTION) viewCache.set(`accessory:${brandName}`, html);
     res.type("html").send(html);
