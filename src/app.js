@@ -193,6 +193,7 @@ const productPageRoutes = require("./routes/productPage");
 const testEmailRoutes = require("./routes/testEmail");
 const aiAssistantRoutes = require("./routes/aiAssistant");
 const { router: balePaymentRoutes, configureWebhook: configureBaleWebhook } = require("./routes/balePayments");
+const zarinpalPaymentRoutes = require("./routes/zarinpalPayments");
 
 // Home Page
 app.use("/", homeRoutes);
@@ -213,6 +214,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payments", balePaymentRoutes);
+app.use("/api/payments", zarinpalPaymentRoutes);
 
 // Admin Panel
 app.use("/admin/api", adminApiRoutes);
