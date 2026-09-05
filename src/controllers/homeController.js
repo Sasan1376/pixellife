@@ -556,6 +556,14 @@ const homeController = {
   accessoriesXiaomi: (req, res) => sendAccessoryBrandView(res, "شیائومی"),
   samsungtab: (req, res) => sendViewWithEnamad(res, "samsungtab.html"),
   ipad: (req, res) => sendViewWithEnamad(res, "ipad.html"),
+  tablets: (req, res) =>
+    sendSpecialCatalogView(res, {
+      slug: "tablets",
+      title: "همه تبلت‌ها",
+      heading: "همه محصولات تبلت",
+      description: "تبلت‌های تمام برندها را یک‌جا بررسی و مقایسه کنید.",
+      icon: "ti-device-tablet",
+    }),
   xiaomitab: (req, res) => sendViewWithEnamad(res, "xiaomitab.html"),
   // این دو دسته از قالب فهرست مشترک استفاده می‌کنند، اما عنوان، فیلترها و
   // تصویر کارت مخصوص خودشان را دارند.
@@ -579,7 +587,14 @@ const homeController = {
       filters:
         '<div class="filters"><a class="filter active" href="/smartwatches">همه ساعت‌ها</a><a class="filter" href="/smartwatches?brand=%D8%A7%D9%BE%D9%84">اپل</a><a class="filter" href="/smartwatches?brand=%D8%B3%D8%A7%D9%85%D8%B3%D9%88%D9%86%DA%AF">سامسونگ</a></div>',
     }),
-  console: (req, res) => sendViewWithEnamad(res, "console.html"),
+  console: (req, res) =>
+    sendSpecialCatalogView(res, {
+      slug: "console",
+      title: "همه کنسول‌های بازی",
+      heading: "همه محصولات کنسول بازی",
+      description: "کنسول‌های بازی تمام برندها را یک‌جا بررسی و مقایسه کنید.",
+      icon: "ti-device-gamepad-2",
+    }),
   amazing: (req, res) => sendViewWithEnamad(res, "amazing.html"),
   profile: (req, res) => sendViewWithEnamad(res, "profile.html"),
 };
