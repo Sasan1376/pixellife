@@ -50,8 +50,8 @@ module.exports = [
       "گارانتی ۱۸ ماهه شرکتی",
       "گارانتی ۱۲ ماهه فروشگاهی"
     ],
-    "rating": 4.5,
-    "reviewCount": 12,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": false
   },
   {
@@ -115,8 +115,8 @@ module.exports = [
       "گارانتی ۱۸ ماهه شرکتی",
       "گارانتی ۱۲ ماهه فروشگاهی"
     ],
-    "rating": 4.6,
-    "reviewCount": 10,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -159,8 +159,8 @@ module.exports = [
       "گارانتی ۱۸ ماهه شرکتی",
       "گارانتی ۱۲ ماهه فروشگاهی"
     ],
-    "rating": 4.7,
-    "reviewCount": 8,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -201,8 +201,8 @@ module.exports = [
     "warranties": [
       "گارانتی ۱۸ ماهه سامسونگ"
     ],
-    "rating": 4.6,
-    "reviewCount": 9,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -238,8 +238,8 @@ module.exports = [
     "warranties": [
       "گارانتی ۱۸ ماهه سامسونگ"
     ],
-    "rating": 4,
-    "reviewCount": 4,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -276,8 +276,8 @@ module.exports = [
     "warranties": [
       "گارانتی ۱۸ ماهه سامسونگ"
     ],
-    "rating": 4.2,
-    "reviewCount": 5,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -314,8 +314,8 @@ module.exports = [
     "warranties": [
       "گارانتی ۱۸ ماهه سامسونگ"
     ],
-    "rating": 4.3,
-    "reviewCount": 6,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -357,8 +357,8 @@ module.exports = [
     "warranties": [
       "گارانتی ۱۸ ماهه سامسونگ"
     ],
-    "rating": 4.4,
-    "reviewCount": 7,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -399,8 +399,8 @@ module.exports = [
     "warranties": [
       "گارانتی ۱۸ ماهه سامسونگ"
     ],
-    "rating": 4.3,
-    "reviewCount": 5,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -441,8 +441,8 @@ module.exports = [
     "warranties": [
       "گارانتی ۱۸ ماهه سامسونگ"
     ],
-    "rating": 4.2,
-    "reviewCount": 4,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -476,8 +476,8 @@ module.exports = [
     "warranties": [
       "گارانتی ۱۸ ماهه سامسونگ"
     ],
-    "rating": 4.1,
-    "reviewCount": 3,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -521,8 +521,8 @@ module.exports = [
     "warranties": [
       "گارانتی ۱۸ ماهه شرکتی"
     ],
-    "rating": 4.4,
-    "reviewCount": 6,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -561,8 +561,8 @@ module.exports = [
     "warranties": [
       "گارانتی ۱۲ ماهه شرکتی"
     ],
-    "rating": 4.2,
-    "reviewCount": 7,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -597,8 +597,8 @@ module.exports = [
     "warranties": [
       "گارانتی ۱۸ ماهه شرکتی"
     ],
-    "rating": 4.5,
-    "reviewCount": 4,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -637,8 +637,8 @@ module.exports = [
     "warranties": [
       "گارانتی ۱۸ ماهه شرکتی"
     ],
-    "rating": 4.3,
-    "reviewCount": 3,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -679,8 +679,8 @@ module.exports = [
     "warranties": [
       "گارانتی ۱۲ ماهه شرکتی"
     ],
-    "rating": 4.1,
-    "reviewCount": 3,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   },
   {
@@ -721,8 +721,8 @@ module.exports = [
     "warranties": [
       "گارانتی ۱۸ ماهه شرکتی"
     ],
-    "rating": 4.4,
-    "reviewCount": 7,
+    "rating": 0,
+    "reviewCount": 0,
     "comingSoon": true
   }
 ];
