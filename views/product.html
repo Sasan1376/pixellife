@@ -3279,6 +3279,43 @@
       .mobile-product-sheet {
         display: none;
       }
+      .mobile-amazing-ribbon {
+        display: none;
+      }
+      @media (max-width: 768px) {
+        body.mobile-product-flow-active .product-info-col.is-amazing-offer {
+          margin-top: 42px;
+          border: 3px solid #ef233c;
+          border-radius: 22px 22px 0 0;
+          background: #fff;
+          overflow: visible;
+        }
+        body.mobile-product-flow-active .mobile-amazing-ribbon {
+          position: absolute;
+          right: -3px;
+          top: -39px;
+          left: -3px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          height: 38px;
+          padding: 0 18px;
+          border: 3px solid #ef233c;
+          border-bottom: 0;
+          border-radius: 22px 22px 0 0;
+          background: #fff1f3;
+          color: #d90429;
+          font-size: 15px;
+          font-weight: 800;
+          line-height: 1;
+          box-sizing: border-box;
+        }
+        body.mobile-product-flow-active .mobile-amazing-ribbon i {
+          margin-left: 6px;
+          font-size: 17px;
+        }
+      }
+
       @media (max-width: 768px) {
         body.mobile-product-flow-active {
           overflow-x: hidden;
@@ -5914,7 +5951,8 @@
                   .join("")}
               </div>
             </div>
-            <div class="product-info-col">
+            <div class="product-info-col${product.amazingOffer ? " is-amazing-offer" : ""}>
+              ${product.amazingOffer ? '<div class="mobile-amazing-ribbon"><i class="ti ti-discount-2"></i>فروش ویژه</div>' : ""}
               <div class="product-brand-row">
                 <div class="product-brand-badge">${product.brandLogo === "SAMSUNG_LOGO_SVG" ? SAMSUNG_LOGO_SVG : product.brandLogo === "XIAOMI_LOGO_SVG" ? XIAOMI_LOGO_SVG : product.brandLogo === "REDMI_LOGO_SVG" ? REDMI_LOGO_SVG : product.brandLogo === "APPLE_LOGO_SVG" ? APPLE_LOGO_SVG : ""}<span>${product.brand || ""}</span></div>
                 <div class="action-icons-row">
