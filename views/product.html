@@ -5951,7 +5951,7 @@
                   .join("")}
               </div>
             </div>
-            <div class="product-info-col${product.amazingOffer ? " is-amazing-offer" : ""}>
+            <div class="product-info-col${product.amazingOffer ? " is-amazing-offer" : ""}">
               ${product.amazingOffer ? '<div class="mobile-amazing-ribbon"><i class="ti ti-discount-2"></i>فروش ویژه</div>' : ""}
               <div class="product-brand-row">
                 <div class="product-brand-badge">${product.brandLogo === "SAMSUNG_LOGO_SVG" ? SAMSUNG_LOGO_SVG : product.brandLogo === "XIAOMI_LOGO_SVG" ? XIAOMI_LOGO_SVG : product.brandLogo === "REDMI_LOGO_SVG" ? REDMI_LOGO_SVG : product.brandLogo === "APPLE_LOGO_SVG" ? APPLE_LOGO_SVG : ""}<span>${product.brand || ""}</span></div>
