@@ -104,6 +104,10 @@
     min-height: 56px;
     padding: 3px 0;
     cursor: pointer;
+    border: 0;
+    background: transparent;
+    appearance: none;
+    -webkit-appearance: none;
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
@@ -165,7 +169,6 @@
 
   body.mobile-category-sheet-open {
     overflow: hidden;
-    touch-action: none;
   }
 
   .mobile-category-backdrop {
