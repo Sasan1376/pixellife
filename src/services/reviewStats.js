@@ -39,4 +39,26 @@ async function refreshAllProductReviewStats() {
   return productIds.length;
 }
 
-module.exports = { refreshProductReviewStats, refreshAllProductReviewStats };
+
+function productReviewKeys(product) {
+  return [...new Set([product._id, product.slug, product.legacyId].filter(Boolean).map(String))];
+}
+async function withApprovedReviewStats(products) {
+  const keys = [...new Set(products.flatMap(productReviewKeys))];
+  if (!keys.length) return products;
+  const rows = await Review.aggregate([
+    { $match: { productId: { $in: keys }, status: "approved" } },
+    { $group: { _id: "$productId", count: { $sum: 1 }, sum: { $sum: "$rating" } } },
+  ]);
+  const byKey = new Map(rows.map(row => [String(row._id), row]));
+  return products.map(product => {
+    let count = 0, sum = 0;
+    for (const key of productReviewKeys(product)) {
+      const row = byKey.get(key);
+      if (row) { count += row.count; sum += row.sum; }
+    }
+    return { ...product, reviewCount: count, rating: count ? Number((sum / count).toFixed(1)) : 0 };
+  });
+}
+
+module.exports = { refreshProductReviewStats, refreshAllProductReviewStats, productReviewKeys, withApprovedReviewStats };
