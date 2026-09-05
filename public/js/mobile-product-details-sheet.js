@@ -40,7 +40,17 @@
     const cleanClone = (node) => {
       const copy = node.cloneNode(true);
       copy.removeAttribute("id");
-      copy.querySelectorAll("[id]").forEach((item) => item.removeAttribute("id"));
+      const sectionIds = new Map();
+      copy.querySelectorAll("[id]").forEach((item) => {
+        const oldId = item.id;
+        const newId = "mobile-sheet-" + oldId;
+        sectionIds.set(oldId, newId);
+        item.id = newId;
+      });
+      copy.querySelectorAll('a[href^="#"]').forEach((link) => {
+        const oldId = link.getAttribute("href").slice(1);
+        if (sectionIds.has(oldId)) link.setAttribute("href", "#" + sectionIds.get(oldId));
+      });
       copy.querySelectorAll(".hidden-spec").forEach((item) => item.classList.remove("hidden-spec"));
       copy.querySelectorAll(".review-section--more").forEach((item) => item.classList.remove("review-section--more"));
       copy.querySelectorAll(".review-section-img--collapsed").forEach((item) => item.classList.remove("review-section-img--collapsed"));
@@ -131,6 +141,14 @@
     tabs.addEventListener("click", (event) => {
       const tab = event.target.closest("[data-product-sheet-content]");
       if (tab) render(tab.dataset.productSheetContent);
+    });
+    body.addEventListener("click", (event) => {
+      const reviewLink = event.target.closest('a[href^="#mobile-sheet-"]');
+      if (!reviewLink) return;
+      const target = body.querySelector(reviewLink.getAttribute("href"));
+      if (!target) return;
+      event.preventDefault();
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
     });
     sheet.querySelector(".mobile-product-details-sheet__close").addEventListener("click", close);
     backdrop.addEventListener("click", close);
