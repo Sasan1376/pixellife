@@ -16,10 +16,10 @@
             <svg class="mobile-bottom-nav__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-6h6v6"/></svg>
             <span>خانه</span>
           </a>
-          <a class="mobile-bottom-nav__item" data-nav="categories" href="/categories" aria-label="دسته‌بندی‌ها">
+          <button class="mobile-bottom-nav__item" data-nav="categories" type="button" aria-label="دسته‌بندی‌ها" aria-expanded="false">
             <svg class="mobile-bottom-nav__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>
             <span>دسته‌بندی‌ها</span>
-          </a>
+          </button>
           <a class="mobile-bottom-nav__item" data-nav="cart" href="/cart" aria-label="سبد خرید">
             <svg class="mobile-bottom-nav__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H7"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
             <span class="mobile-bottom-nav__badge" data-mobile-cart-count>0</span>
@@ -245,23 +245,9 @@
         : openCategorySheet();
     };
 
-    // بعضی صفحه‌ها هندلر کلیک یا لینک‌های قدیمی دارند. بازکردن با نخستین
-    // لمس، قبل از پیمایش لینک اجرا می‌شود؛ click فقط برای کیبورد می‌ماند.
-    let lastCategoryPointerToggle = 0;
-    categoryItem.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0) return;
-      lastCategoryPointerToggle = Date.now();
-      toggleCategorySheet(event);
-    }, { capture: true });
-
-    categoryItem.addEventListener("click", (event) => {
-      if (Date.now() - lastCategoryPointerToggle < 700) {
-        event.preventDefault();
-        event.stopPropagation();
-        return;
-      }
-      toggleCategorySheet(event);
-    }, { capture: true });
+    // دکمه است، نه لینک: نخستین لمس همیشه پنل را باز می‌کند و هیچ صفحه‌ای
+    // جایگزین نمی‌شود. click برای لمس و کیبورد یک رفتار واحد دارد.
+    categoryItem.addEventListener("click", toggleCategorySheet);
 
     let dragStartY = null;
     let dragDistance = 0;
