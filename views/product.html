@@ -4019,10 +4019,14 @@
       function productImageHtml(p, idx, mode = "main") {
         if (isVideoGalleryItem(p, idx)) {
           const videoUrl = p.videoUrls[idx - (Array.isArray(p.images) ? p.images.length : 0)];
+          // قبل از رسیدن نخستین فریم ویدیو، تصویر اصلی محصول به‌عنوان جلد فوری نشان داده می‌شود.
+          const videoPoster = (Array.isArray(p.images) && p.images[0])
+            ? p.images[0]
+            : "/images/product-placeholder.svg";
           if (mode === "thumb") {
-            return '<span class="video-gallery-thumb" aria-label="پیش‌نمایش ثابت ویدیوی محصول"><video muted playsinline preload="auto" aria-hidden="true"><source src="' + videoUrl + '" type="video/mp4"></video><span class="video-gallery-thumb__label">ویدیو</span></span>';
+            return '<span class="video-gallery-thumb" aria-label="پیش‌نمایش ثابت ویدیوی محصول"><video muted playsinline preload="metadata" poster="' + videoPoster + '" aria-hidden="true"><source src="' + videoUrl + '" type="video/mp4"></video><span class="video-gallery-thumb__label">ویدیو</span></span>';
           }
-          return '<video controls playsinline preload="metadata" aria-label="ویدیوی معرفی ' + p.name + '"><source src="' + videoUrl + '" type="video/mp4">مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.</video>';
+          return '<video controls playsinline preload="metadata" poster="' + videoPoster + '" aria-label="ویدیوی معرفی ' + p.name + '"><source src="' + videoUrl + '" type="video/mp4">مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.</video>';
         }
         if (p.images && p.images.length) {
           const src =
