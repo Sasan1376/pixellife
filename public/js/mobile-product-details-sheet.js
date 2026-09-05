@@ -1,18 +1,18 @@
 (() => {
   const run = () => {
-    if (!window.matchMedia("(max-width: 768px)").matches || document.getElementById("mobileProductDetailsSheet")) return;
+    if (!window.matchMedia("(max-width: 768px)").matches || document.getElementById("mobileProductDetailsSheet")) return true;
     const page = document.getElementById("pageBody");
     const productInfo = page?.querySelector(".product-info-col");
     const specs = document.getElementById("fullSpecsSection");
     const review = document.getElementById("productReviewSection");
-    if (!page || !productInfo) return;
+    if (!page || !productInfo) return false;
 
     const sources = [
       { id: "intro", label: "معرفی کالا" },
       ...(review && review.style.display !== "none" ? [{ id: "review", label: "بررسی تخصصی" }] : []),
       ...(specs ? [{ id: "specs", label: "جدول مشخصات" }] : [])
     ];
-    if (!sources.length) return;
+    if (!sources.length) return false;
 
     const oldNav = page.querySelector(".mobile-product-section-nav");
     const triggerNav = document.createElement("nav");
@@ -153,7 +153,16 @@
     sheet.querySelector(".mobile-product-details-sheet__close").addEventListener("click", close);
     backdrop.addEventListener("click", close);
     document.addEventListener("keydown", (event) => { if (event.key === "Escape") close(); });
+    return true;
   };
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run, { once: true });
-  else run();
+  const start = () => {
+    if (run()) return;
+    let attempts = 0;
+    const waitForProduct = window.setInterval(() => {
+      attempts += 1;
+      if (run() || attempts >= 80) window.clearInterval(waitForProduct);
+    }, 125);
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });
+  else start();
 })();
