@@ -101,6 +101,15 @@
       const tab = event.target.closest("[data-product-sheet-tab]");
       if (tab) open(tab.dataset.productSheetTab);
     });
+    // دکمهٔ موجودِ «نمایش کامل مشخصات» باید به‌جای باز کردن ردیف‌ها در
+    // همان صفحه، پنل کشویی را مستقیماً روی جدول مشخصات باز کند.
+    document.addEventListener("click", (event) => {
+      const moreSpecsButton = event.target.closest("#btnMoreSpecs");
+      if (!moreSpecsButton || !specs) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      open("specs");
+    }, true);
     tabs.addEventListener("click", (event) => {
       const tab = event.target.closest("[data-product-sheet-content]");
       if (tab) render(tab.dataset.productSheetContent);
