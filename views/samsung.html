@@ -1080,13 +1080,13 @@
         }
         .megamenu-panel {
           position: fixed;
-          top: 69px;
+          top: var(--header-height, 69px);
           right: 0;
           left: 0;
           width: 100%;
           max-width: 100%;
           flex-direction: column;
-          max-height: calc(100vh - 69px);
+          max-height: calc(100vh - var(--header-height, 69px));
           border-radius: 0;
         }
         .megamenu-cats {
@@ -1564,6 +1564,8 @@
       const megamenuContent = document.getElementById("megamenuContent");
       const megamenuBackdrop = document.getElementById("megamenuBackdrop");
       const navCatsWrap = document.querySelector(".nav-cats-wrap");
+      const hoverMedia = window.matchMedia("(hover: hover) and (pointer: fine)");
+      document.documentElement.classList.toggle("desktop-hover", hoverMedia.matches);
       let megamenuOpen = false;
       let megamenuCloseTimer = null;
 
@@ -1578,7 +1580,16 @@
             cat.label +
             '</span><i class="ti ti-chevron-left cat-arrow"></i>';
           btn.addEventListener("click", () => switchCat(idx));
-          btn.addEventListener("mouseenter", () => switchCat(idx));
+          btn.addEventListener("pointerup", (event) => {
+            if (event.pointerType === "touch") {
+              event.preventDefault();
+              event.stopPropagation();
+              switchCat(idx);
+            }
+          });
+          if (hoverMedia.matches) {
+            btn.addEventListener("mouseenter", () => switchCat(idx));
+          }
           megamenuCats.appendChild(btn);
 
           const panel = document.createElement("div");
@@ -1629,17 +1640,17 @@
 
       function openMegamenu() {
         clearTimeout(megamenuCloseTimer);
+        megamenuOpen = true;
         megamenuPanel.classList.add("open");
         megamenuBackdrop.classList.add("open");
         catsToggle.classList.add("active");
-        megamenuOpen = true;
       }
 
       function closeMegamenu() {
+        megamenuOpen = false;
         megamenuPanel.classList.remove("open");
         megamenuBackdrop.classList.remove("open");
         catsToggle.classList.remove("active");
-        megamenuOpen = false;
       }
 
       function scheduleClose() {
@@ -1647,15 +1658,54 @@
         megamenuCloseTimer = setTimeout(closeMegamenu, 200);
       }
 
-      navCatsWrap.addEventListener("mouseenter", openMegamenu);
-      navCatsWrap.addEventListener("mouseleave", scheduleClose);
+      if (hoverMedia.matches) {
+        navCatsWrap.addEventListener("mouseenter", openMegamenu);
+        navCatsWrap.addEventListener("mouseleave", scheduleClose);
+      }
+
+      let lastHeaderHeight = "";
+      function updateHeaderHeight() {
+        const header = document.querySelector(".header");
+        if (!header) return;
+        const height = `${Math.ceil(header.getBoundingClientRect().height)}px`;
+        if (height !== lastHeaderHeight) {
+          lastHeaderHeight = height;
+          document.documentElement.style.setProperty("--header-height", height);
+        }
+      }
+      updateHeaderHeight();
+      window.addEventListener("resize", updateHeaderHeight);
+      window.addEventListener("orientationchange", updateHeaderHeight);
 
       catsToggle.addEventListener("click", (e) => {
         e.stopPropagation();
+        if (catsToggle.dataset.touchHandled === "1") {
+          delete catsToggle.dataset.touchHandled;
+          return;
+        }
         megamenuOpen ? closeMegamenu() : openMegamenu();
       });
 
+      catsToggle.addEventListener("pointerup", (e) => {
+        if (e.pointerType === "touch") {
+          e.preventDefault();
+          e.stopPropagation();
+          catsToggle.dataset.touchHandled = "1";
+          megamenuOpen ? closeMegamenu() : openMegamenu();
+        }
+      });
+
       megamenuBackdrop.addEventListener("click", closeMegamenu);
+
+      document.addEventListener("click", (e) => {
+        if (
+          megamenuOpen &&
+          !megamenuPanel.contains(e.target) &&
+          !catsToggle.contains(e.target)
+        ) {
+          closeMegamenu();
+        }
+      });
 
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && megamenuOpen) closeMegamenu();
