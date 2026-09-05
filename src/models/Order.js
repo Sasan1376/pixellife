@@ -17,10 +17,16 @@ const orderSchema = new mongoose.Schema(
     },
     subtotal: { type: Number, required: true, min: 0 }, deliveryFee: { type: Number, default: 0, min: 0 },
     discount: { type: Number, default: 0, min: 0 }, total: { type: Number, required: true, min: 0 },
-    paymentMethod: { type: String, enum: ["online", "bale"], default: "online" },
+    paymentMethod: { type: String, enum: ["online", "bale", "zarinpal"], default: "online" },
     paymentStatus: { type: String, enum: ["unpaid", "paid", "failed"], default: "unpaid" },
     status: { type: String, enum: ["awaiting_payment", "processing", "shipped", "delivered", "cancelled"], default: "awaiting_payment", index: true },
     statusHistory: [{ _id: false, status: String, note: String, changedAt: { type: Date, default: Date.now } }],
+    zarinpalPayment: {
+      authority: { type: String, default: "", index: true },
+      status: { type: String, enum: ["created", "redirected", "paid", "failed"], default: "created" },
+      refId: { type: String, default: "" },
+      paidAt: { type: Date, default: null },
+    },
     balePayment: {
       payload: { type: String, default: "", index: true },
       chatId: { type: String, default: "" },

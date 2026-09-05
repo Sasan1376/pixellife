@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640" role="img" aria-labelledby="title desc">
-  <title id="title">تصویر محصول پیکسل‌لایف</title>
-  <desc id="desc">تصویر پیش‌فرض برای محصول بدون عکس</desc>
-  <rect width="640" height="640" rx="48" fill="#f1f5f9"/>
-  <rect x="112" y="112" width="416" height="416" rx="34" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="8"/>
-  <path d="M184 438l92-102 68 70 48-52 64 84H184z" fill="#94a3b8"/>
-  <circle cx="250" cy="252" r="34" fill="#60a5fa"/>
-  <text x="320" y="582" text-anchor="middle" fill="#64748b" font-family="Tahoma, Arial, sans-serif" font-size="28">PixelLife</text>
-</svg>

@@ -4,8 +4,7 @@ const axios = require("axios");
 const router = express.Router();
 const { protect } = require("../middleware/authMiddleware");
 const Order = require("../models/Order");
-const Product = require("../models/Product");
-const Address = require("../models/Address");
+const { createOrderFromCart } = require("../services/orderService");
 
 const BOT_USERNAME = (process.env.BALE_BOT_USERNAME || "pixellifepaybot").replace(/^@/, "");
 const BALE_API_BASE = "https://tapi.bale.ai/bot";
@@ -36,52 +35,6 @@ async function baleCall(method, payload) {
 function newLinkCode() {
   return crypto.randomBytes(15).toString("hex").toUpperCase();
 }
-function cleanItemId(id) {
-  return String(id || "").trim();
-}
-async function buildOrder(user, body) {
-  const requestedItems = Array.isArray(body.items) ? body.items : [];
-  if (!requestedItems.length) throw new Error("سبد خرید خالی است");
-  const address = await Address.findOne({ _id: body.addressId, user: user._id }).lean();
-  if (!address) throw new Error("برای ثبت سفارش یک آدرس معتبر انتخاب کنید");
-
-  const productIds = requestedItems.map((item) => cleanItemId(item.productId));
-  if (new Set(productIds).size !== productIds.length) throw new Error("یک کالا بیش از یک‌بار در سفارش ارسال شده است");
-
-  const products = await Promise.all(productIds.map((id) => {
-    if (/^[a-f\\d]{24}$/i.test(id)) return Product.findById(id).lean();
-    return Product.findOne({ $or: [{ slug: id }, { legacyId: id }] }).lean();
-  }));
-
-  const items = requestedItems.map((item, index) => {
-    const product = products[index];
-    const quantity = Math.max(1, Math.floor(Number(item.quantity) || 0));
-    if (!product || product.availability === "out" || Number(product.stock) < quantity) {
-      throw new Error(`محصول «${product?.name || "انتخاب‌شده"}» موجود نیست`);
-    }
-    const price = Math.round(Number(product.price) * (1 - Math.max(0, Number(product.discount) || 0) / 100));
-    return {
-      product: product._id, name: product.name, brand: product.brand || "",
-      image: product.mainImage || product.images?.[0] || "", price, quantity,
-      color: String(item.color || ""), storage: String(item.storage || ""), warranty: String(item.warranty || ""),
-    };
-  });
-
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const deliveryFee = subtotal >= 5000000 ? 0 : 150000;
-  const total = subtotal + deliveryFee;
-  const order = await Order.create({
-    user: user._id, items,
-    shippingAddress: {
-      receiverName: address.receiverName || `${user.firstName || ""} ${user.lastName || ""}`.trim() || "گیرنده",
-      receiverMobile: address.receiverMobile || user.mobile,
-      province: address.province, city: address.city, fullAddress: address.fullAddress, postalCode: address.postalCode || "",
-    },
-    subtotal, deliveryFee, total, paymentMethod: "bale",
-  });
-  return order;
-}
-
 router.get("/bale/status", protect, (req, res) => {
   res.json({
     success: true,
@@ -114,7 +67,7 @@ router.post("/bale/checkout", protect, async (req, res, next) => {
       return res.status(409).json({ success: false, code: "BALE_NOT_CONNECTED", message: "ابتدا حساب بله خود را به سایت متصل کنید." });
     }
 
-    const order = await buildOrder(req.user, req.body);
+    const { order } = await createOrderFromCart(req.user, req.body, { paymentMethod: "bale" });
     const payload = `PL${String(order._id).replace(/[^a-f0-9]/gi, "")}`;
     const amountRial = Math.round(order.total * 10);
     order.balePayment = {
