@@ -7,7 +7,7 @@ const viewCache = new Map();
 
 // با هر انتشار، URL فایل‌های CSS و JS عوض می‌شود تا مرورگری که نسخهٔ
 // قدیمی را با قانون کش قبلی نگه داشته نیز ناچار به دریافت نسخهٔ تازه باشد.
-const ASSET_REVISION = "20260905-mobile-category-sheet-1";
+const ASSET_REVISION = "20260905-mobile-category-sheet-2";
 
 function injectAssetRevision(html) {
   return html.replace(
@@ -181,9 +181,9 @@ const SHARED_CATEGORY_SCRIPT = `
 <script src="/js/shared-category-nav.js?v=2"></script>`;
 
 const MOBILE_BOTTOM_NAV_HEAD = `
-<link rel="stylesheet" href="/css/mobile-bottom-nav.css?v=11" />`;
+<link rel="stylesheet" href="/css/mobile-bottom-nav.css?v=12" />`;
 const MOBILE_BOTTOM_NAV_SCRIPT = `
-<script src="/js/mobile-bottom-nav.js?v=13"></script>`;
+<script src="/js/mobile-bottom-nav.js?v=14"></script>`;
 const BEHAVIOR_TRACKER_SCRIPT = `
 <script src="/js/behavior-tracker.js?v=1" defer></script>`;
 const CATALOG_NO_FLASH_HEAD = `
