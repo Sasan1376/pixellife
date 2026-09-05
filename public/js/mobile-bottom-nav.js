@@ -94,8 +94,19 @@
   const categoryItem = nav.querySelector('[data-nav="categories"]');
   let categorySheet;
   let categoryBackdrop;
+  let categorySheetOpenedAt = 0;
 
-  const closeCategorySheet = () => {
+  const closeCategorySheet = (event) => {
+    // در برخی مرورگرهای اندروید، click مصنوعیِ همان لمس بعد از بازشدن روی
+    // backdrop تازه‌ظاهرشده فرود می‌آید. این click نباید کشو را فوراً ببندد.
+    if (
+      event?.currentTarget === categoryBackdrop &&
+      Date.now() - categorySheetOpenedAt < 900
+    ) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return;
+    }
     categorySheet?.classList.remove("is-open", "is-dragging");
     categorySheet?.style.removeProperty("transform");
     categoryBackdrop?.classList.remove("is-open");
@@ -106,6 +117,7 @@
 
   const openCategorySheet = () => {
     if (!categorySheet || !categoryBackdrop) return;
+    categorySheetOpenedAt = Date.now();
     categorySheet.classList.add("is-open");
     categoryBackdrop.classList.add("is-open");
     categoryItem?.classList.add("is-expanded");
@@ -245,22 +257,18 @@
         : openCategorySheet();
     };
 
-    // کشو پس از برداشتن انگشت باز می‌شود تا بازشدن پنل، مقصد click مصنوعی
-    // همان لمس را تغییر ندهد. پرچم زیر click بعدی را بدون وابستگی به زمان
-    // کاملاً خنثی می‌کند و جلوی باز و بسته‌شدن لحظه‌ای را می‌گیرد.
-    let suppressNextCategoryClick = false;
-    categoryItem.addEventListener("pointerup", (event) => {
-      if (event.pointerType === "mouse") return;
-      suppressNextCategoryClick = true;
+    // touchend غیرمنفعل، click مصنوعی بعد از لمس را در مرورگرهای موبایل
+    // متوقف می‌کند. click فقط برای کیبورد، ماوس و مرورگرهای فاقد touch است.
+    let lastCategoryTouchToggle = 0;
+    categoryItem.addEventListener("touchend", (event) => {
+      lastCategoryTouchToggle = Date.now();
+      event.preventDefault();
+      event.stopImmediatePropagation();
       toggleCategorySheet(event);
-      window.setTimeout(() => {
-        suppressNextCategoryClick = false;
-      }, 900);
-    }, { capture: true });
+    }, { capture: true, passive: false });
 
     categoryItem.addEventListener("click", (event) => {
-      if (suppressNextCategoryClick) {
-        suppressNextCategoryClick = false;
+      if (Date.now() - lastCategoryTouchToggle < 1200) {
         event.preventDefault();
         event.stopImmediatePropagation();
         return;
