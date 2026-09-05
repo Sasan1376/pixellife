@@ -7,7 +7,7 @@ const viewCache = new Map();
 
 // با هر انتشار، URL فایل‌های CSS و JS عوض می‌شود تا مرورگری که نسخهٔ
 // قدیمی را با قانون کش قبلی نگه داشته نیز ناچار به دریافت نسخهٔ تازه باشد.
-const ASSET_REVISION = "20260905-mobile-category-sheet-9";
+const ASSET_REVISION = "20260905-mobile-product-details-sheet-1";
 
 function injectAssetRevision(html) {
   return html.replace(
@@ -184,6 +184,10 @@ const MOBILE_BOTTOM_NAV_HEAD = `
 <link rel="stylesheet" href="/css/mobile-bottom-nav.css?v=12" />`;
 const MOBILE_BOTTOM_NAV_SCRIPT = `
 <script src="/js/mobile-bottom-nav.js?v=14"></script>`;
+const MOBILE_PRODUCT_DETAILS_HEAD = `
+<link rel="stylesheet" href="/css/mobile-product-details-sheet.css?v=1" />`;
+const MOBILE_PRODUCT_DETAILS_SCRIPT = `
+<script src="/js/mobile-product-details-sheet.js?v=1"></script>`;
 const BEHAVIOR_TRACKER_SCRIPT = `
 <script src="/js/behavior-tracker.js?v=1" defer></script>`;
 const CATALOG_NO_FLASH_HEAD = `
@@ -271,6 +275,14 @@ function injectMobileBottomNav(html) {
   return html;
 }
 
+function injectMobileProductDetailsSheet(html) {
+  if (!html || html.includes("/js/mobile-product-details-sheet.js")) return html;
+  if (html.includes("</head>")) html = html.replace("</head>", `${MOBILE_PRODUCT_DETAILS_HEAD}\n</head>`);
+  return html.includes("</body>")
+    ? html.replace("</body>", `${MOBILE_PRODUCT_DETAILS_SCRIPT}\n</body>`)
+    : html;
+}
+
 function injectEnamad(html) {
   if (!html || html.includes("trustseal.enamad.ir")) return html;
 
@@ -347,6 +359,7 @@ function sendViewWithEnamad(res, fileName) {
       html = injectEnamad(html);
       html = injectSharedCategoryNav(html);
       html = injectMobileBottomNav(html);
+      if (fileName === "product.html") html = injectMobileProductDetailsSheet(html);
       return injectAssetRevision(injectDatabaseCatalog(html));
     });
   } catch (error) {
