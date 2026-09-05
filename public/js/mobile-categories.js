@@ -114,8 +114,7 @@
 
     content.innerHTML =
       '<div class="mobile-category-content-head">' + icons[category.id] + '<span>' + category.name + '</span></div>' +
-      '<div class="mobile-category-groups">' + sectionMarkup + '</div>' +
-      (category.allHref ? '<a class="mobile-category-all" href="' + category.allHref + '">مشاهده همه ' + category.name + chevron + '</a>' : "");
+      '<div class="mobile-category-groups">' + sectionMarkup + '</div>';
   }
 
   function activate(id) {
