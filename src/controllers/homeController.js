@@ -7,7 +7,7 @@ const viewCache = new Map();
 
 // با هر انتشار، URL فایل‌های CSS و JS عوض می‌شود تا مرورگری که نسخهٔ
 // قدیمی را با قانون کش قبلی نگه داشته نیز ناچار به دریافت نسخهٔ تازه باشد.
-const ASSET_REVISION = "20260905-mobile-category-sheet-2";
+const ASSET_REVISION = "20260905-mobile-category-sheet-3";
 
 function injectAssetRevision(html) {
   return html.replace(
@@ -347,7 +347,7 @@ function sendViewWithEnamad(res, fileName) {
       html = injectEnamad(html);
       html = injectSharedCategoryNav(html);
       html = injectMobileBottomNav(html);
-      return injectDatabaseCatalog(html);
+      return injectAssetRevision(injectDatabaseCatalog(html));
     });
   } catch (error) {
     console.error(`View render error (${fileName}):`, error);
