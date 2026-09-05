@@ -1088,6 +1088,25 @@
           flex-direction: column;
           max-height: calc(100vh - var(--header-height, 69px));
           border-radius: 0;
+          opacity: 0;
+          visibility: hidden;
+          transform: translate3d(0, -28px, 0);
+          pointer-events: none;
+          will-change: transform, opacity;
+          transition:
+            transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+            opacity 0.22s ease,
+            visibility 0s linear 0.34s;
+        }
+        .megamenu-panel.open {
+          opacity: 1;
+          visibility: visible;
+          transform: translate3d(0, 0, 0);
+          pointer-events: auto;
+          transition:
+            transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+            opacity 0.22s ease,
+            visibility 0s linear 0s;
         }
         .megamenu-cats {
           width: 100%;
