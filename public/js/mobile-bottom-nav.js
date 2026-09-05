@@ -245,9 +245,24 @@
         : openCategorySheet();
     };
 
-    // دکمه است، نه لینک: نخستین لمس همیشه پنل را باز می‌کند و هیچ صفحه‌ای
-    // جایگزین نمی‌شود. click برای لمس و کیبورد یک رفتار واحد دارد.
-    categoryItem.addEventListener("click", toggleCategorySheet);
+    // روی صفحات فهرست محصول، بعضی مرورگرهای موبایل click را با تأخیر یا
+    // همراه با handlerهای صفحه اجرا می‌کنند. pointerdown در فاز capture کشو
+    // را با نخستین لمس باز می‌کند؛ click فقط نقش fallback/کیبورد را دارد.
+    let lastCategoryPointerToggle = 0;
+    categoryItem.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      lastCategoryPointerToggle = Date.now();
+      toggleCategorySheet(event);
+    }, { capture: true });
+
+    categoryItem.addEventListener("click", (event) => {
+      if (Date.now() - lastCategoryPointerToggle < 700) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      toggleCategorySheet(event);
+    }, { capture: true });
 
     let dragStartY = null;
     let dragDistance = 0;
