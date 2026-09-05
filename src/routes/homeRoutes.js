@@ -23,6 +23,7 @@ router.get("/accessories/apple", homeController.accessoriesApple);
 router.get("/accessories/samsung", homeController.accessoriesSamsung);
 router.get("/accessories/xiaomi", homeController.accessoriesXiaomi);
 router.get("/ipad", homeController.ipad);
+router.get("/tablets", homeController.tablets);
 router.get("/samsungtab", homeController.samsungtab);
 router.get("/xiaomitab", homeController.xiaomitab);
 router.get("/headphones", homeController.headphones);
