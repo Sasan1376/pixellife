@@ -7,7 +7,7 @@ const viewCache = new Map();
 
 // با هر انتشار، URL فایل‌های CSS و JS عوض می‌شود تا مرورگری که نسخهٔ
 // قدیمی را با قانون کش قبلی نگه داشته نیز ناچار به دریافت نسخهٔ تازه باشد.
-const ASSET_REVISION = "20260905-mobile-product-details-sheet-7";
+const ASSET_REVISION = "20260905-history-safe-anchors-1";
 
 function injectAssetRevision(html) {
   return html.replace(
@@ -188,6 +188,8 @@ const MOBILE_PRODUCT_DETAILS_HEAD = `
 <link rel="stylesheet" href="/css/mobile-product-details-sheet.css?v=1" />`;
 const MOBILE_PRODUCT_DETAILS_SCRIPT = `
 <script src="/js/mobile-product-details-sheet.js?v=1"></script>`;
+const HISTORY_SAFE_ANCHORS_SCRIPT = `
+<script src="/js/history-safe-anchors.js?v=1"></script>`;
 const BEHAVIOR_TRACKER_SCRIPT = `
 <script src="/js/behavior-tracker.js?v=1" defer></script>`;
 const CATALOG_NO_FLASH_HEAD = `
@@ -283,6 +285,13 @@ function injectMobileProductDetailsSheet(html) {
     : html;
 }
 
+function injectHistorySafeAnchors(html) {
+  if (!html || html.includes("/js/history-safe-anchors.js")) return html;
+  return html.includes("</body>")
+    ? html.replace("</body>", `${HISTORY_SAFE_ANCHORS_SCRIPT}\n</body>`)
+    : html;
+}
+
 function injectEnamad(html) {
   if (!html || html.includes("trustseal.enamad.ir")) return html;
 
@@ -358,7 +367,7 @@ function sendViewWithEnamad(res, fileName) {
       let html = readView(filePath);
       html = injectEnamad(html);
       html = injectSharedCategoryNav(html);
-      html = injectMobileBottomNav(html);
+      html = injectMobileBottomNav(html);\n    html = injectHistorySafeAnchors(html);
       if (fileName === "product.html") html = injectMobileProductDetailsSheet(html);
       return injectAssetRevision(injectDatabaseCatalog(html));
     });
@@ -412,7 +421,7 @@ function sendSpecialCatalogView(res, options) {
 
     html = injectEnamad(html);
     html = injectSharedCategoryNav(html);
-    html = injectMobileBottomNav(html);
+    html = injectMobileBottomNav(html);\n    html = injectHistorySafeAnchors(html);
     html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectShoppingAssistant(injectHideSeeAll(injectDatabaseCatalog(html))))));
     if (IS_PRODUCTION) viewCache.set(key, html);
     res.type("html").send(html);
@@ -467,7 +476,7 @@ function sendAccessoryBrandView(res, brand) {
       );
     html = injectEnamad(html);
     html = injectSharedCategoryNav(html);
-    html = injectMobileBottomNav(html);
+    html = injectMobileBottomNav(html);\n    html = injectHistorySafeAnchors(html);
     html = injectAssetRevision(injectPageLoader(injectShoppingAssistant(injectHideSeeAll(injectDatabaseCatalog(html)))));
     if (IS_PRODUCTION) viewCache.set(`accessory:${brandName}`, html);
     res.type("html").send(html);
@@ -499,7 +508,7 @@ const homeController = {
         html = html.replace("</body>", `${SHARED_CATEGORY_SCRIPT}\n</body>`);
       }
 
-      html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectShoppingAssistant(injectHideSeeAll(injectMobileBottomNav(html))))));
+      html = injectAssetRevision(injectPageLoader(injectBehaviorTracker(injectShoppingAssistant(injectHideSeeAll(injectHistorySafeAnchors(injectMobileBottomNav(html)))))));
       if (IS_PRODUCTION) viewCache.set("rendered:index", html);
       res.type("html").send(html);
     } catch (error) {
