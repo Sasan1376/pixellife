@@ -95,6 +95,14 @@
   let categorySheet;
   let categoryBackdrop;
   let categorySheetOpenedAt = 0;
+  let categorySheetCloseTimer = null;
+
+  const finishCategorySheetClose = () => {
+    if (categorySheet?.classList.contains("is-open")) return;
+    categorySheet?.classList.remove("is-mounted", "is-dragging");
+    categorySheet?.style.removeProperty("transform");
+    categoryBackdrop?.classList.remove("is-mounted");
+  };
 
   const closeCategorySheet = (event) => {
     // در برخی مرورگرهای اندروید، click مصنوعیِ همان لمس بعد از بازشدن روی
@@ -107,17 +115,26 @@
       event.stopImmediatePropagation();
       return;
     }
+    window.clearTimeout(categorySheetCloseTimer);
     categorySheet?.classList.remove("is-open", "is-dragging");
     categorySheet?.style.removeProperty("transform");
     categoryBackdrop?.classList.remove("is-open");
     categoryItem?.classList.remove("is-expanded");
     categoryItem?.setAttribute("aria-expanded", "false");
     document.body.classList.remove("mobile-category-sheet-open");
+    categorySheetCloseTimer = window.setTimeout(finishCategorySheetClose, 430);
   };
 
   const openCategorySheet = () => {
     if (!categorySheet || !categoryBackdrop) return;
+    window.clearTimeout(categorySheetCloseTimer);
     categorySheetOpenedAt = Date.now();
+    categorySheet.classList.remove("is-dragging");
+    categorySheet.style.removeProperty("transform");
+    categorySheet.classList.add("is-mounted");
+    categoryBackdrop.classList.add("is-mounted");
+    // حالت بسته را یک‌بار رندر می‌کنیم تا مرورگر حتماً حرکت کشویی را اجرا کند.
+    void categorySheet.offsetHeight;
     categorySheet.classList.add("is-open");
     categoryBackdrop.classList.add("is-open");
     categoryItem?.classList.add("is-expanded");
