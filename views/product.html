@@ -3408,6 +3408,14 @@
         body.mobile-product-flow-active .zoom-hint {
           display: none;
         }
+        /* هنگام نمایش ویدیو، ناوبری گالری روی موبایل همیشه در دسترس است. */
+        body.mobile-product-flow-active .gallery-main.has-active-video .gallery-nav-btn {
+          display: flex;
+          z-index: 6;
+          width: 40px;
+          height: 40px;
+          background: rgba(255, 255, 255, 0.96);
+        }
         body.mobile-product-flow-active .mobile-gallery-counter {
           position: absolute;
           left: 14px;
@@ -4019,14 +4027,11 @@
       function productImageHtml(p, idx, mode = "main") {
         if (isVideoGalleryItem(p, idx)) {
           const videoUrl = p.videoUrls[idx - (Array.isArray(p.images) ? p.images.length : 0)];
-          // قبل از رسیدن نخستین فریم ویدیو، تصویر اصلی محصول به‌عنوان جلد فوری نشان داده می‌شود.
-          const videoPoster = (Array.isArray(p.images) && p.images[0])
-            ? p.images[0]
-            : "/images/product-placeholder.svg";
           if (mode === "thumb") {
-            return '<span class="video-gallery-thumb" aria-label="پیش‌نمایش ثابت ویدیوی محصول"><video muted playsinline preload="metadata" poster="' + videoPoster + '" aria-hidden="true"><source src="' + videoUrl + '" type="video/mp4"></video><span class="video-gallery-thumb__label">ویدیو</span></span>';
+            return '<span class="video-gallery-thumb" aria-label="پیش‌نمایش ویدیوی محصول"><video muted playsinline preload="metadata" aria-hidden="true"><source src="' + videoUrl + '" type="video/mp4"></video><span class="video-gallery-thumb__label">ویدیو</span></span>';
           }
-          return '<video controls playsinline preload="metadata" poster="' + videoPoster + '" aria-label="ویدیوی معرفی ' + p.name + '"><source src="' + videoUrl + '" type="video/mp4">مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.</video>';
+          // ویدیو از همان ابتدا پیش‌بارگذاری می‌شود؛ تصویر قبلی به‌عنوان جلد روی آن قرار نمی‌گیرد.
+          return '<video controls playsinline preload="auto" aria-label="ویدیوی معرفی ' + p.name + '"><source src="' + videoUrl + '" type="video/mp4">مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.</video>';
         }
         if (p.images && p.images.length) {
           const src =
@@ -6336,6 +6341,11 @@
               if (!animate) {
                 requestAnimationFrame(() => galleryTrack.classList.remove("is-dragging"));
               }
+            }
+            // روی ویدیو، دکمه‌های قبلی/بعدی موبایل فعال‌اند تا کنترل native ویدیو مسیر گالری را مسدود نکند.
+            const galleryViewport = document.getElementById("galleryMain");
+            if (galleryViewport) {
+              galleryViewport.classList.toggle("has-active-video", isVideoGalleryItem(product, galleryIndex));
             }
             if (mobileGalleryCounter) {
               mobileGalleryCounter.textContent = (galleryIndex + 1) + " / " + galleryTotal;
