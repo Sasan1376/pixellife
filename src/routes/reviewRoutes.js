@@ -5,7 +5,7 @@ const Product = require("../models/Product");
 const { protect } = require("../middleware/authMiddleware");
 const upload = require("../utils/upload");
 const { saveProductImage } = require("../utils/productImages");
-const { refreshProductReviewStats } = require("../services/reviewStats");
+const { refreshProductReviewStats, productReviewKeys } = require("../services/reviewStats");
 
 const router = express.Router();
 
@@ -27,7 +27,12 @@ function publicReview(review) {
 
 router.get("/:productId", async (req, res) => {
   try {
-    const reviews = await Review.find({ productId: String(req.params.productId), status: "approved" })
+    const id = String(req.params.productId).trim();
+    const alternatives = [{ slug: id }, { legacyId: id }];
+    if (mongoose.isValidObjectId(id)) alternatives.push({ _id: id });
+    const product = await Product.findOne({ $or: alternatives }).select("_id slug legacyId").lean();
+    const keys = product ? productReviewKeys(product) : [id];
+    const reviews = await Review.find({ productId: { $in: keys }, status: "approved" })
       .sort({ date: -1 })
       .lean();
     res.json({ success: true, reviews: reviews.map(publicReview) });
