@@ -245,20 +245,24 @@
         : openCategorySheet();
     };
 
-    // روی صفحات فهرست محصول، بعضی مرورگرهای موبایل click را با تأخیر یا
-    // همراه با handlerهای صفحه اجرا می‌کنند. pointerdown در فاز capture کشو
-    // را با نخستین لمس باز می‌کند؛ click فقط نقش fallback/کیبورد را دارد.
-    let lastCategoryPointerToggle = 0;
-    categoryItem.addEventListener("pointerdown", (event) => {
-      if (event.pointerType === "mouse" && event.button !== 0) return;
-      lastCategoryPointerToggle = Date.now();
+    // کشو پس از برداشتن انگشت باز می‌شود تا بازشدن پنل، مقصد click مصنوعی
+    // همان لمس را تغییر ندهد. پرچم زیر click بعدی را بدون وابستگی به زمان
+    // کاملاً خنثی می‌کند و جلوی باز و بسته‌شدن لحظه‌ای را می‌گیرد.
+    let suppressNextCategoryClick = false;
+    categoryItem.addEventListener("pointerup", (event) => {
+      if (event.pointerType === "mouse") return;
+      suppressNextCategoryClick = true;
       toggleCategorySheet(event);
+      window.setTimeout(() => {
+        suppressNextCategoryClick = false;
+      }, 900);
     }, { capture: true });
 
     categoryItem.addEventListener("click", (event) => {
-      if (Date.now() - lastCategoryPointerToggle < 700) {
+      if (suppressNextCategoryClick) {
+        suppressNextCategoryClick = false;
         event.preventDefault();
-        event.stopPropagation();
+        event.stopImmediatePropagation();
         return;
       }
       toggleCategorySheet(event);
