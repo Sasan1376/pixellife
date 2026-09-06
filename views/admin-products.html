@@ -721,6 +721,7 @@
       function readTechnicalSpecsEditor() {
         return [...document.querySelectorAll("[data-technical-spec-group]")].map((group) => ({
           title: group.querySelector("[data-technical-spec-title]").value.trim(),
+          description: group.querySelector("[data-technical-spec-description]").value.trim(),
           items: [...group.querySelectorAll("[data-technical-spec-item]")].map((item) => ({
             label: item.querySelector("[data-technical-spec-label]").value.trim(),
             value: item.querySelector("[data-technical-spec-value]").value.trim(),
@@ -736,6 +737,7 @@
               <input type="text" class="form-control fw-semibold" data-technical-spec-title value="${escapeText(group.title || "")}" placeholder="عنوان بخش، مانند نمایشگر" maxlength="80" />
               <button type="button" class="btn btn-outline-danger btn-sm" data-remove-technical-spec-group="${groupIndex}" title="حذف بخش"><i class="ti ti-trash"></i></button>
             </div>
+            <textarea class="form-control mb-3" rows="2" data-technical-spec-description placeholder="توضیح این بخش برای نمایش در صفحهٔ محصول — اختیاری" maxlength="1200">${escapeText(group.description || "")}</textarea>
             <div class="vstack gap-2" data-technical-spec-items>
               ${(group.items || []).map((item, itemIndex) => `<div class="row g-2 align-items-center" data-technical-spec-item>
                 <div class="col-md-4"><input type="text" class="form-control" data-technical-spec-label value="${escapeText(item.label || "")}" placeholder="ویژگی، مانند نوع پنل" maxlength="100" /></div>
@@ -1188,7 +1190,7 @@
       document.getElementById("fShowSpecs").addEventListener("change", syncSpecsField);
       document.getElementById("addTechnicalSpecGroupBtn").addEventListener("click", () => {
         const groups = readTechnicalSpecsEditor();
-        groups.push({ title: "", items: [{ label: "", value: "" }] });
+        groups.push({ title: "", description: "", items: [{ label: "", value: "" }] });
         renderTechnicalSpecsEditor(groups);
       });
       document.getElementById("technicalSpecsEditor").addEventListener("click", (event) => {

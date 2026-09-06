@@ -48,6 +48,7 @@ function parseTechnicalSpecs(value) {
   }
   return raw.map((group, groupIndex) => {
     const title = String(group?.title || "").trim().slice(0, 80);
+    const description = String(group?.description || "").trim().slice(0, 1200);
     const items = Array.isArray(group?.items) ? group.items : [];
     if (!title || !items.length || items.length > 35) {
       const error = new Error(`بخش مشخصات شماره ${groupIndex + 1} کامل نیست`);
@@ -64,7 +65,7 @@ function parseTechnicalSpecs(value) {
       }
       return { label, value: itemValue };
     });
-    return { title, items: normalizedItems };
+    return { title, description, items: normalizedItems };
   });
 }
 

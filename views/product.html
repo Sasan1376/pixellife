@@ -1942,6 +1942,13 @@
         font-size: 16px;
         font-weight: 800;
       }
+      .specs-group-description {
+        margin: -2px 0 14px;
+        color: var(--text-2);
+        font-size: 14px;
+        line-height: 2;
+        white-space: pre-line;
+      }
       .specs-row {
         display: grid;
         grid-template-columns: 220px 1fr;
@@ -5064,6 +5071,7 @@
         if (!Array.isArray(rawSpecs)) return [];
         return rawSpecs.map((group) => ({
           title: String(group?.title || "").trim(),
+          description: String(group?.description || "").trim(),
           items: (Array.isArray(group?.items) ? group.items : []).map((item) => ({
             label: String(item?.label || "").trim(),
             value: String(item?.value || "").trim(),
@@ -6246,6 +6254,7 @@
               let rowIndex = 0;
               return technicalSpecGroups.map((group) => `<section class="specs-group">
                 <h3 class="specs-group-title">${escapeSpecHtml(group.title)}</h3>
+                ${group.description ? `<p class="specs-group-description">${escapeSpecHtml(group.description)}</p>` : ""}
                 <div class="specs-table-wrap">
                   ${group.items.map((item) => {
                     const hidden = rowIndex++ >= 8;
