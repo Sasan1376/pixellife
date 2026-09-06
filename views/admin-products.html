@@ -488,13 +488,14 @@
                     <input class="form-check-input" type="checkbox" role="switch" id="fShowSpecs" checked />
                     <label class="form-check-label" for="fShowSpecs">نمایش مشخصات فنی در صفحه محصول</label>
                   </div>
-                  <textarea
-                    class="form-control"
-                    id="fSpecs"
-                    rows="4"
-                    placeholder="نمایش: ۶.۹ اینچ&#10;پردازنده: A19 Pro&#10;حافظه: ۲۵۶ گیگابایت"
-                  ></textarea>
-                  <div class="form-hint">هر مشخصه را در یک خط و با قالب «عنوان: مقدار» وارد کنید.</div>
+                  <div id="technicalSpecsEditor" class="vstack gap-3"></div>
+                  <button type="button" class="btn btn-outline-primary btn-sm mt-3" id="addTechnicalSpecGroupBtn"><i class="ti ti-plus"></i> افزودن بخش مشخصات</button>
+                  <div class="form-hint mt-2">برای نمونه، یک بخش «نمایشگر» بسازید و روبه‌روی هر ویژگی مقدار آن را وارد کنید.</div>
+                  <details class="mt-3">
+                    <summary class="small text-secondary">مشخصات سادهٔ قبلی</summary>
+                    <textarea class="form-control mt-2" id="fSpecs" rows="4" placeholder="نمایش: ۶.۹ اینچ&#10;پردازنده: A19 Pro&#10;حافظه: ۲۵۶ گیگابایت"></textarea>
+                    <div class="form-hint">محصولات قبلی با این قالب همچنان نمایش داده می‌شوند. برای محصول جدید از بخش‌های بالا استفاده کنید.</div>
+                  </details>
                 </div>
                 <div class="col-12">
                   <div class="review-editor" id="reviewEditor">
@@ -704,7 +705,47 @@
         const enabled = document.getElementById("fShowSpecs").checked;
         const input = document.getElementById("fSpecs");
         input.disabled = !enabled;
-        input.closest(".col-12").classList.toggle("opacity-50", !enabled);
+        document.getElementById("technicalSpecsEditor").closest(".col-12").classList.toggle("opacity-50", !enabled);
+        document.getElementById("addTechnicalSpecGroupBtn").disabled = !enabled;
+        document.querySelectorAll("#technicalSpecsEditor input, #technicalSpecsEditor button").forEach((element) => { element.disabled = !enabled; });
+      }
+
+      function legacySpecsToGroups(specs) {
+        const items = String(specs || "").split(/\r?\n/).map((line) => line.trim()).filter(Boolean).map((line) => {
+          const index = line.indexOf(":");
+          return index > -1 ? { label: line.slice(0, index).trim(), value: line.slice(index + 1).trim() } : null;
+        }).filter((item) => item?.label && item?.value);
+        return items.length ? [{ title: "مشخصات فنی", items }] : [];
+      }
+
+      function readTechnicalSpecsEditor() {
+        return [...document.querySelectorAll("[data-technical-spec-group]")].map((group) => ({
+          title: group.querySelector("[data-technical-spec-title]").value.trim(),
+          items: [...group.querySelectorAll("[data-technical-spec-item]")].map((item) => ({
+            label: item.querySelector("[data-technical-spec-label]").value.trim(),
+            value: item.querySelector("[data-technical-spec-value]").value.trim(),
+          })),
+        }));
+      }
+
+      function renderTechnicalSpecsEditor(groups) {
+        const editor = document.getElementById("technicalSpecsEditor");
+        editor.innerHTML = (groups || []).map((group, groupIndex) => `
+          <section class="border rounded-3 p-3 bg-light" data-technical-spec-group>
+            <div class="d-flex gap-2 align-items-center mb-3">
+              <input type="text" class="form-control fw-semibold" data-technical-spec-title value="${escapeText(group.title || "")}" placeholder="عنوان بخش، مانند نمایشگر" maxlength="80" />
+              <button type="button" class="btn btn-outline-danger btn-sm" data-remove-technical-spec-group="${groupIndex}" title="حذف بخش"><i class="ti ti-trash"></i></button>
+            </div>
+            <div class="vstack gap-2" data-technical-spec-items>
+              ${(group.items || []).map((item, itemIndex) => `<div class="row g-2 align-items-center" data-technical-spec-item>
+                <div class="col-md-4"><input type="text" class="form-control" data-technical-spec-label value="${escapeText(item.label || "")}" placeholder="ویژگی، مانند نوع پنل" maxlength="100" /></div>
+                <div class="col-md-7"><input type="text" class="form-control" data-technical-spec-value value="${escapeText(item.value || "")}" placeholder="مقدار، مانند OLED" maxlength="500" /></div>
+                <div class="col-md-1 d-grid"><button type="button" class="btn btn-outline-danger" data-remove-technical-spec-item="${itemIndex}" title="حذف ویژگی"><i class="ti ti-x"></i></button></div>
+              </div>`).join("")}
+            </div>
+            <button type="button" class="btn btn-link btn-sm px-0 mt-2" data-add-technical-spec-item="${groupIndex}"><i class="ti ti-plus"></i> افزودن ویژگی</button>
+          </section>`).join("");
+        syncSpecsField();
       }
 
       function syncVariantInventoryInputs(showError = false) {
@@ -1018,6 +1059,7 @@
         document.getElementById("fShowSpecs").checked = true;
         document.getElementById("fHasWarranty").checked = true;
         renderReviewSections(DEFAULT_REVIEW_SECTIONS);
+        renderTechnicalSpecsEditor([]);
         renderColorPalette();
         syncStorageFields();
         syncWarrantyField();
@@ -1061,6 +1103,7 @@
         document.getElementById("fHideColorsWhenOutOfStock").checked = p.hideColorsWhenOutOfStock !== false;
         renderReviewSections(Array.isArray(p.reviewSections) ? p.reviewSections : []);
         document.getElementById("fSpecs").value = p.specs || "";
+        renderTechnicalSpecsEditor(Array.isArray(p.technicalSpecs) && p.technicalSpecs.length ? p.technicalSpecs : legacySpecsToGroups(p.specs));
         document.getElementById("fColors").value = formatColors(p.colors);
         document.getElementById("fStorages").value = formatList(p.storages);
         document.getElementById("fWarranties").value = formatList(p.warranties);
@@ -1143,6 +1186,25 @@
       });
       document.getElementById("fHasWarranty").addEventListener("change", syncWarrantyField);
       document.getElementById("fShowSpecs").addEventListener("change", syncSpecsField);
+      document.getElementById("addTechnicalSpecGroupBtn").addEventListener("click", () => {
+        const groups = readTechnicalSpecsEditor();
+        groups.push({ title: "", items: [{ label: "", value: "" }] });
+        renderTechnicalSpecsEditor(groups);
+      });
+      document.getElementById("technicalSpecsEditor").addEventListener("click", (event) => {
+        const removeGroup = event.target.closest("[data-remove-technical-spec-group]");
+        const addItem = event.target.closest("[data-add-technical-spec-item]");
+        const removeItem = event.target.closest("[data-remove-technical-spec-item]");
+        if (!removeGroup && !addItem && !removeItem) return;
+        const groups = readTechnicalSpecsEditor();
+        if (removeGroup) groups.splice(Number(removeGroup.dataset.removeTechnicalSpecGroup), 1);
+        if (addItem) groups[Number(addItem.dataset.addTechnicalSpecItem)].items.push({ label: "", value: "" });
+        if (removeItem) {
+          const groupIndex = [...document.querySelectorAll("[data-technical-spec-group]")].indexOf(removeItem.closest("[data-technical-spec-group]"));
+          groups[groupIndex].items.splice(Number(removeItem.dataset.removeTechnicalSpecItem), 1);
+        }
+        renderTechnicalSpecsEditor(groups);
+      });
       document.getElementById("fVariants").addEventListener("change", () => {
         syncVariantInventoryInputs();
         renderVariantInventoryEditor();
@@ -1207,6 +1269,11 @@
           const hasStorage = document.getElementById("fHasStorage").checked;
           const hasWarranty = document.getElementById("fHasWarranty").checked;
           const showSpecs = document.getElementById("fShowSpecs").checked;
+          const technicalSpecs = readTechnicalSpecsEditor();
+          if (showSpecs && technicalSpecs.some((group) => !group.title || !group.items.length || group.items.some((item) => !item.label || !item.value))) {
+            showToast("عنوان بخش و همهٔ ویژگی‌ها و مقدارهای مشخصات فنی را کامل کنید");
+            return;
+          }
           if (hasStorage && !applyTotalStockToVariants(true)) return;
           if (hasStorage && !syncVariantInventoryInputs(true)) return;
           const id = document.getElementById("productId").value;
@@ -1252,6 +1319,7 @@
               .join("\n"),
           );
           fd.append("specs", showSpecs ? document.getElementById("fSpecs").value : "");
+          fd.append("technicalSpecs", showSpecs ? JSON.stringify(technicalSpecs) : "[]");
           fd.append("colors", document.getElementById("fColors").value);
           fd.append("hideColorsWhenOutOfStock", document.getElementById("fHideColorsWhenOutOfStock").checked);
           fd.append("storages", hasStorage ? document.getElementById("fStorages").value : "");

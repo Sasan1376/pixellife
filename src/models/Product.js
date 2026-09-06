@@ -44,6 +44,15 @@ const productSchema = new mongoose.Schema(
     specs: {
       type: String,
     },
+    // مشخصات گروه‌بندی‌شده برای نمایش حرفه‌ای در صفحهٔ محصول.
+    // specs قدیمی برای سازگاری با محصولاتی که قبلاً ثبت شده‌اند نگه داشته می‌شود.
+    technicalSpecs: [{
+      title: { type: String, trim: true, maxlength: 80 },
+      items: [{
+        label: { type: String, trim: true, maxlength: 100 },
+        value: { type: String, trim: true, maxlength: 500 },
+      }],
+    }],
     // مشخصات فنی برای کالاهایی که جدول مشخصات ندارند، قابل غیرفعال‌کردن است.
     showSpecs: { type: Boolean, default: true },
     featured: {

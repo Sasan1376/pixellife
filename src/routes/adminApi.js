@@ -25,6 +25,49 @@ function parseList(value) {
     .filter(Boolean);
 }
 
+function parseTechnicalSpecs(value) {
+  if (value === undefined) return undefined;
+  if (!String(value || "").trim()) return [];
+  let raw;
+  try {
+    raw = JSON.parse(value);
+  } catch (_) {
+    const error = new Error("ساختار مشخصات فنی معتبر نیست");
+    error.statusCode = 400;
+    throw error;
+  }
+  if (!Array.isArray(raw)) {
+    const error = new Error("بخش‌های مشخصات فنی باید به‌صورت فهرست ارسال شوند");
+    error.statusCode = 400;
+    throw error;
+  }
+  if (raw.length > 12) {
+    const error = new Error("حداکثر ۱۲ بخش مشخصات فنی مجاز است");
+    error.statusCode = 400;
+    throw error;
+  }
+  return raw.map((group, groupIndex) => {
+    const title = String(group?.title || "").trim().slice(0, 80);
+    const items = Array.isArray(group?.items) ? group.items : [];
+    if (!title || !items.length || items.length > 35) {
+      const error = new Error(`بخش مشخصات شماره ${groupIndex + 1} کامل نیست`);
+      error.statusCode = 400;
+      throw error;
+    }
+    const normalizedItems = items.map((item, itemIndex) => {
+      const label = String(item?.label || "").trim().slice(0, 100);
+      const itemValue = String(item?.value || "").trim().slice(0, 500);
+      if (!label || !itemValue) {
+        const error = new Error(`ویژگی شماره ${itemIndex + 1} در بخش «${title}» کامل نیست`);
+        error.statusCode = 400;
+        throw error;
+      }
+      return { label, value: itemValue };
+    });
+    return { title, items: normalizedItems };
+  });
+}
+
 function parseColors(value) {
   if (value === undefined) return undefined;
   if (!value || !String(value).trim()) return [];
@@ -553,6 +596,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       videoUrls,
       reviewVideoUrls,
       specs,
+      technicalSpecs,
       showSpecs,
       featured,
       comingSoon,
@@ -585,6 +629,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
     const storageEnabled = parseEnabled(hasStorage);
     const warrantyEnabled = parseEnabled(hasWarranty);
     const specsEnabled = parseEnabled(showSpecs);
+    const parsedTechnicalSpecs = specsEnabled ? parseTechnicalSpecs(technicalSpecs) : [];
     const uploadedReviewImages = await Promise.all(uploadedFiles(req, "reviewImages").map(saveProductImage));
     const variantInventory = storageEnabled ? parseVariants(variants) : [];
     const rootStock = parseStock(stock);
@@ -601,6 +646,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       videoUrls: normalizedVideoUrls,
       reviewVideoUrls: parseVideoUrls(reviewVideoUrls),
       specs: specsEnabled ? specs : "",
+      technicalSpecs: parsedTechnicalSpecs,
       showSpecs: specsEnabled,
       featured: featured === "true" || featured === "on" || featured === true,
       comingSoon: parseEnabled(comingSoon, false),
@@ -641,6 +687,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       videoUrls,
       reviewVideoUrls,
       specs,
+      technicalSpecs,
       showSpecs,
       featured,
       comingSoon,
@@ -685,6 +732,7 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
     }
     if (showSpecs !== undefined) product.showSpecs = parseEnabled(showSpecs);
     if (specs !== undefined && product.showSpecs !== false) product.specs = specs;
+    if (technicalSpecs !== undefined && product.showSpecs !== false) product.technicalSpecs = parseTechnicalSpecs(technicalSpecs);
     if (showReview !== undefined) product.showReview = parseEnabled(showReview, false);
     if (stock !== undefined) product.stock = parseStock(stock);
     if (stock !== undefined || availability !== undefined) {
@@ -721,7 +769,10 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       product.variants = [];
     }
     if (product.hasWarranty === false) product.warranties = [];
-    if (product.showSpecs === false) product.specs = "";
+    if (product.showSpecs === false) {
+      product.specs = "";
+      product.technicalSpecs = [];
+    }
     product.featured =
       featured === "true" || featured === "on" || featured === true;
     if (comingSoon !== undefined) {

@@ -1933,6 +1933,15 @@
         border-radius: var(--radius);
         border: 1px solid var(--border);
       }
+      .specs-group + .specs-group {
+        margin-top: 24px;
+      }
+      .specs-group-title {
+        margin: 0 0 10px;
+        color: var(--text-1);
+        font-size: 16px;
+        font-weight: 800;
+      }
       .specs-row {
         display: grid;
         grid-template-columns: 220px 1fr;
@@ -5051,6 +5060,28 @@
         return result;
       }
 
+      function normalizeTechnicalSpecs(rawSpecs) {
+        if (!Array.isArray(rawSpecs)) return [];
+        return rawSpecs.map((group) => ({
+          title: String(group?.title || "").trim(),
+          items: (Array.isArray(group?.items) ? group.items : []).map((item) => ({
+            label: String(item?.label || "").trim(),
+            value: String(item?.value || "").trim(),
+          })).filter((item) => item.label && item.value),
+        })).filter((group) => group.title && group.items.length);
+      }
+
+      function flattenTechnicalSpecs(groups) {
+        return groups.reduce((result, group) => {
+          group.items.forEach((item) => { result[item.label] = item.value; });
+          return result;
+        }, {});
+      }
+
+      function escapeSpecHtml(value) {
+        return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;");
+      }
+
       function brandToTabletFlag(category) {
         return /تبلت|tablet|ipad/i.test(category || "");
       }
@@ -5061,6 +5092,8 @@
 
       function mapDbProductToView(doc) {
         const isTablet = brandToTabletFlag(doc.category);
+        const technicalSpecs = doc.showSpecs === false ? [] : normalizeTechnicalSpecs(doc.technicalSpecs);
+        const specs = technicalSpecs.length ? flattenTechnicalSpecs(technicalSpecs) : parseSpecsString(doc.specs);
         const oldPriceFromDiscount =
           doc.discount && doc.discount > 0
             ? Math.round(doc.price / (1 - doc.discount / 100))
@@ -5176,7 +5209,8 @@
           reviewSections: Array.isArray(doc.reviewSections) ? doc.reviewSections : [],
           isTablet: isTablet,
           showSpecs: doc.showSpecs !== false,
-          specs: doc.showSpecs === false ? {} : parseSpecsString(doc.specs),
+          specs: doc.showSpecs === false ? {} : specs,
+          technicalSpecs,
           _fromDb: true,
           _dbId: doc._id,
         };
@@ -5899,6 +5933,14 @@
           qty = 1;
         let galleryIndex = 0;
         let isWished = false;
+        const technicalSpecGroups = product?.showSpecs
+          ? (normalizeTechnicalSpecs(product.technicalSpecs).length
+            ? normalizeTechnicalSpecs(product.technicalSpecs)
+            : Object.keys(product.specs || {}).length
+              ? [{ title: "مشخصات فنی", items: Object.entries(product.specs).map(([label, value]) => ({ label, value })) }]
+              : [])
+          : [];
+        const technicalSpecItemCount = technicalSpecGroups.reduce((total, group) => total + group.items.length, 0);
 
         // کارهای غیرضروری زیرِ صفحه پس از نمایش محصول اجرا می‌شوند تا تعامل
         // اولیه در موبایل بدون مکث باقی بماند.
@@ -6198,21 +6240,25 @@
             }
           </div>
 
-                    ${product.showSpecs && Object.keys(product.specs || {}).length ? `<div class="section-block" id="fullSpecsSection">
+                    ${technicalSpecGroups.length ? `<div class="section-block" id="fullSpecsSection">
             <div class="section-heading"><i class="ti ti-list-details"></i> مشخصات فنی</div>
-            <div class="specs-table-wrap" id="specsTableWrap">
-              ${Object.entries(product.specs || {})
-                .map(
-                  ([k, v], i) =>
-                    `<div class="specs-row${i >= 8 ? " hidden-spec" : ""}">
-                      <div class="specs-label"><i class="ti ${specIcon(k)}"></i>${k}</div>
-                      <div class="specs-value">${v}</div>
-                    </div>`,
-                )
-                .join("")}
-            </div>
+            ${(() => {
+              let rowIndex = 0;
+              return technicalSpecGroups.map((group) => `<section class="specs-group">
+                <h3 class="specs-group-title">${escapeSpecHtml(group.title)}</h3>
+                <div class="specs-table-wrap">
+                  ${group.items.map((item) => {
+                    const hidden = rowIndex++ >= 8;
+                    return `<div class="specs-row${hidden ? " hidden-spec" : ""}">
+                      <div class="specs-label"><i class="ti ${specIcon(item.label)}"></i>${escapeSpecHtml(item.label)}</div>
+                      <div class="specs-value">${escapeSpecHtml(item.value)}</div>
+                    </div>`;
+                  }).join("")}
+                </div>
+              </section>`).join("");
+            })()}
             ${
-              Object.keys(product.specs || {}).length > 8
+              technicalSpecItemCount > 8
                 ? `<button class="specs-toggle-btn" id="specsToggleBtn"><i class="ti ti-chevron-down"></i> نمایش کامل مشخصات</button>`
                 : ""
             }
