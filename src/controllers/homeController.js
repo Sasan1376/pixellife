@@ -7,9 +7,12 @@ const viewCache = new Map();
 
 // با هر انتشار، URL فایل‌های CSS و JS عوض می‌شود تا مرورگری که نسخهٔ
 // قدیمی را با قانون کش قبلی نگه داشته نیز ناچار به دریافت نسخهٔ تازه باشد.
-const ASSET_REVISION = "20260905-history-safe-anchors-2";
+const ASSET_REVISION = "20260906-payment-integrity-1";
 
 function injectAssetRevision(html) {
+  // Load shared state and checkout once, before page-specific scripts.
+  html = html.replace(/<script[^>]+src=["']\/js\/(?:storefront-core|checkout)\.js[^"']*["'][^>]*><\/script>\s*/gi, "");
+  html = html.replace("</head>", '<script src="/js/storefront-core.js"></script><script src="/js/checkout.js"></script></head>');
   return html.replace(
     /((?:src|href)=["']\/(?:css|js)\/[^"']+)(["'])/gi,
     (match, url, quote) => {
@@ -178,12 +181,14 @@ const PROFILE_DROPDOWN_LAYER_FIX = `
 const SHARED_CATEGORY_HEAD = `
 <link rel="stylesheet" href="/css/shared-category-nav.css?v=1" />`;
 const SHARED_CATEGORY_SCRIPT = `
-<script src="/js/shared-category-nav.js?v=2"></script>`;
+<script src="/js/storefront-core.js?v=1"></script>
+<script src="/js/shared-category-nav.js?v=3"></script>`;
 
 const MOBILE_BOTTOM_NAV_HEAD = `
 <link rel="stylesheet" href="/css/mobile-bottom-nav.css?v=12" />`;
 const MOBILE_BOTTOM_NAV_SCRIPT = `
-<script src="/js/mobile-bottom-nav.js?v=14"></script>`;
+<script src="/js/storefront-core.js?v=1"></script>
+<script src="/js/mobile-bottom-nav.js?v=15"></script>`;
 const MOBILE_PRODUCT_DETAILS_HEAD = `
 <link rel="stylesheet" href="/css/mobile-product-details-sheet.css?v=1" />`;
 const MOBILE_PRODUCT_DETAILS_SCRIPT = `
