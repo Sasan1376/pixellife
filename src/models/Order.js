@@ -21,9 +21,14 @@ const orderSchema = new mongoose.Schema(
     paymentStatus: { type: String, enum: ["unpaid", "paid", "failed"], default: "unpaid" },
     status: { type: String, enum: ["awaiting_payment", "processing", "shipped", "delivered", "cancelled"], default: "awaiting_payment", index: true },
     statusHistory: [{ _id: false, status: String, note: String, changedAt: { type: Date, default: Date.now } }],
+    checkoutKey: { type: String },
+    checkoutFingerprint: { type: String },
+    fulfillmentStatus: { type: String, enum: ['pending', 'allocated', 'stock_review'], default: 'pending' },
     zarinpalPayment: {
+      amountRial: { type: Number },
+      verificationCode: { type: Number },
       authority: { type: String, default: "", index: true },
-      status: { type: String, enum: ["created", "redirected", "paid", "failed"], default: "created" },
+      status: { type: String, enum: ["created", "requesting", "uncertain", "redirected", "paid", "failed"], default: "created" },
       refId: { type: String, default: "" },
       paidAt: { type: Date, default: null },
     },
@@ -39,6 +44,7 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+orderSchema.index({ user: 1, checkoutKey: 1 }, { unique: true, partialFilterExpression: { checkoutKey: { $type: 'string' } } });
 orderSchema.index({ user: 1, createdAt: -1 });
 orderSchema.index({ status: 1, createdAt: -1 });
 

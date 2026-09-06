@@ -36,12 +36,6 @@
     return readCart();
   };
   const cartCount = () => readCart().reduce((sum, item) => sum + item.quantity, 0);
-  // پس از بازگشت موفق از درگاه، فقط در همان مرورگر سبدی که پرداخت شده پاک می‌شود.
-  if (new URLSearchParams(window.location.search).get("payment") === "success" && sessionStorage.getItem("pixellife_paid_cart_order")) {
-    sessionStorage.removeItem("pixellife_paid_cart_order");
-    writeCart([]);
-  }
-
   const categories = [
     { id: "mobile", name: "موبایل", icon: "ti-device-mobile", seeAllHref: "/mobiles", groups: [
       { title: "انتخاب موبایل", links: [{ label: "خرید آیفون", href: "/iphone" }, { label: "خرید گوشی سامسونگ", href: "/samsung" }, { label: "خرید گوشی شیائومی", href: "/xiaomi" }, { label: "همه محصولات موبایل", href: "/mobiles" }] },
@@ -54,40 +48,5 @@
   ];
   const mobileCategories = categories.map((category) => ({ ...category, sections: category.groups || undefined, links: category.links || category.groups.flatMap((group) => group.links) }));
   window.PixelLifeStorefront = { CART_KEY, categories, mobileCategories, readCart, writeCart, cartCount, normalizeCart, emitCartChange };
-
-// پرداخت یک‌بار در نقطهٔ مشترک رهگیری می‌شود تا با فعال‌شدن زرین‌پال،
-// صفحهٔ سبد بدون نسخهٔ دومِ منطق سفارش به درگاه هدایت شود.
-document.addEventListener("click", async (event) => {
-  const button = event.target.closest("#checkoutBtn");
-  if (!button) return;
-  const statusResponse = await fetch("/api/payments/zarinpal/status", { cache: "no-store" }).catch(() => null);
-  if (!statusResponse?.ok) return;
-  const status = await statusResponse.json().catch(() => ({ configured: false }));
-  if (!status.configured) return;
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  const cart = readCart().filter((item) => item.available !== false);
-  if (!cart.length) return;
-  button.disabled = true;
-  try {
-    const addressResponse = await fetch("/api/addresses", { cache: "no-store" });
-    const addressResult = await addressResponse.json();
-    const address = (addressResult.data || []).find((item) => item.isDefault) || addressResult.data?.[0];
-    if (!address) { window.location.assign("/profile/addresses"); return; }
-    const response = await fetch("/api/payments/zarinpal/checkout", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ addressId: address._id, items: cart.map((item) => ({
-        productId: item.id, quantity: item.quantity, color: item.color, storage: item.variant, warranty: item.warranty,
-      })) }),
-    });
-    const result = await response.json();
-    if (!response.ok || !result.success || !result.paymentUrl) throw new Error(result.message || "اتصال به زرین‌پال ناموفق بود");
-    sessionStorage.setItem("pixellife_paid_cart_order", result.order.id);
-    window.location.assign(result.paymentUrl);
-  } catch (error) {
-    window.alert(error.message || "اتصال به زرین‌پال ناموفق بود");
-    button.disabled = false;
-  }
-}, true);
 
 })();

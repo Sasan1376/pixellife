@@ -7,6 +7,7 @@ const { recordBehaviorEvent } = require("../services/behaviorAnalytics");
 
 router.post("/", protect, async (req, res, next) => {
   try {
+    if (require('../services/zarinpalGateway').configured()) return res.status(409).json({ success: false, message: 'برای پرداخت از مسیر زرین‌پال استفاده کنید' });
     const { order, products } = await createOrderFromCart(req.user, req.body);
     await Promise.all(order.items.map((item, index) => recordBehaviorEvent(req, res, {
       type: "order_created", page: "/checkout", productId: String(item.product),

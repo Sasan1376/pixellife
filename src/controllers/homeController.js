@@ -7,9 +7,12 @@ const viewCache = new Map();
 
 // با هر انتشار، URL فایل‌های CSS و JS عوض می‌شود تا مرورگری که نسخهٔ
 // قدیمی را با قانون کش قبلی نگه داشته نیز ناچار به دریافت نسخهٔ تازه باشد.
-const ASSET_REVISION = "20260906-storefront-core-1";
+const ASSET_REVISION = "20260906-payment-integrity-1";
 
 function injectAssetRevision(html) {
+  // Load shared state and checkout once, before page-specific scripts.
+  html = html.replace(/<script[^>]+src=["']\/js\/(?:storefront-core|checkout)\.js[^"']*["'][^>]*><\/script>\s*/gi, "");
+  html = html.replace("</head>", '<script src="/js/storefront-core.js"></script><script src="/js/checkout.js"></script></head>');
   return html.replace(
     /((?:src|href)=["']\/(?:css|js)\/[^"']+)(["'])/gi,
     (match, url, quote) => {
