@@ -1983,6 +1983,32 @@
         border-color: var(--blue);
         color: var(--blue);
       }
+      /* در دسکتاپ، نمایش مشخصات کامل به‌صورت لینک متنی است. */
+      @media (min-width: 769px) {
+        .specs-toggle-btn {
+          width: auto;
+          height: auto;
+          margin-top: 12px;
+          padding: 0;
+          border: 0;
+          border-radius: 0;
+          background: transparent;
+          color: var(--blue);
+          font: inherit;
+          font-size: 14px;
+          font-weight: 800;
+          display: inline-flex;
+          justify-content: flex-start;
+          gap: 6px;
+          cursor: pointer;
+        }
+        .specs-toggle-btn:hover {
+          border-color: transparent;
+          color: #174ec2;
+          text-decoration: underline;
+          text-underline-offset: 4px;
+        }
+      }
 
       /* Professional review article */
       .review-article-nav {
