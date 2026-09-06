@@ -40,6 +40,9 @@
     const cleanClone = (node) => {
       const copy = node.cloneNode(true);
       copy.removeAttribute("id");
+      // Keep page-only expansion controls out of the full-details panel.
+      // Remove them before IDs are renamed for the cloned content.
+      copy.querySelectorAll("#btnMoreSpecs, #specsToggleBtn, .btn-more-specs, .specs-toggle-btn, [data-product-details-sheet='specs']").forEach((item) => item.remove());
       const sectionIds = new Map();
       copy.querySelectorAll("[id]").forEach((item) => {
         const oldId = item.id;
