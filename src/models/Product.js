@@ -48,6 +48,7 @@ const productSchema = new mongoose.Schema(
     // specs قدیمی برای سازگاری با محصولاتی که قبلاً ثبت شده‌اند نگه داشته می‌شود.
     technicalSpecs: [{
       title: { type: String, trim: true, maxlength: 80 },
+      subtitle: { type: String, trim: true, maxlength: 120, default: "" },
       description: { type: String, trim: true, maxlength: 1200, default: "" },
       items: [{
         label: { type: String, trim: true, maxlength: 100 },
