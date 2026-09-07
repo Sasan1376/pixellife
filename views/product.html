@@ -2126,6 +2126,38 @@
           margin-inline: auto;
           font-size: 14px;
         }
+        .desktop-purchase-unavailable-note {
+          margin: 16px 0 14px;
+          color: #30355f;
+          font-size: 13px;
+          font-weight: 650;
+          line-height: 2;
+          text-align: right;
+        }
+        .desktop-purchase-card.is-out-of-stock .desktop-purchase-price {
+          display: none;
+        }
+        .desktop-purchase-card.is-out-of-stock .btn-notify {
+          width: 100%;
+          height: 48px;
+          min-height: 48px;
+          margin: 0;
+          border: 0;
+          border-radius: 10px;
+          background: #d94e5a;
+          color: #fff;
+          box-shadow: none;
+          font-size: 13.5px;
+          font-weight: 800;
+        }
+        .desktop-purchase-card.is-out-of-stock .btn-notify:hover {
+          border-color: transparent;
+          background: #c94350;
+          color: #fff;
+        }
+        .desktop-purchase-card.is-out-of-stock .btn-notify i {
+          font-size: 22px;
+        }
         .desktop-purchase-trust {
           display: grid;
           gap: 7px;
@@ -6463,7 +6495,7 @@
                 </div>
               </div>
             </div>
-            <aside class="desktop-purchase-card" aria-label="خرید محصول">
+            <aside class="desktop-purchase-card${product.outOfStock ? " is-out-of-stock" : ""}" aria-label="خرید محصول">
               <div class="desktop-purchase-product">
                 <div class="desktop-purchase-image">${productImageHtml(product, 0, "thumb")}</div>
                 <div>
@@ -6477,8 +6509,9 @@
                 <div class="desktop-purchase-feature"><i class="ti ti-package"></i><span id="desktopPurchaseAvailability">${product.outOfStock ? 'این کالا در حال حاضر ناموجود است' : 'موجود در انبار پیکسل لایف'}</span></div>
               </div>
               <div class="desktop-purchase-price"><span>${product.price > 0 ? product.price.toLocaleString("fa-IR") : "—"}</span><small>تومان</small></div>
+              ${product.outOfStock ? '<div class="desktop-purchase-unavailable-note">این کالا فعلاً موجود نیست، اما می‌توانید زنگوله را بزنید تا به محض موجود شدن، به شما خبر دهیم.</div>' : ''}
               ${product.outOfStock
-                ? '<button class="btn-notify" id="desktopNotifyBtn"><i class="ti ti-bell"></i> اطلاع‌رسانی هنگام موجود شدن</button>'
+                ? '<button class="btn-notify" id="desktopNotifyBtn"><i class="ti ti-bell"></i> موجود شد خبرم کنید</button>'
                 : '<button class="btn-add-cart" id="desktopAddCartBtn"><i class="ti ti-shopping-cart-plus"></i> افزودن به سبد خرید</button>'}
               <div class="desktop-purchase-trust">
                 <span><i class="ti ti-truck-delivery"></i> ارسال ۱ تا ۳ روزه</span>
