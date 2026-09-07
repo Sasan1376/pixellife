@@ -20,7 +20,6 @@
       </div>
       <a href="/amazing" class="nav-link"><i class="ti ti-bolt"></i> شگفت‌انگیز</a>
       <a href="/" class="nav-link"><i class="ti ti-home"></i> خانه</a>
-      <a href="/offers" class="nav-link"><i class="ti ti-flame"></i> پیشنهاد ویژه</a>
       <a href="/new" class="nav-link"><i class="ti ti-sparkles"></i> تازه‌ها</a>
       <a href="/bestsellers" class="nav-link"><i class="ti ti-trending-up"></i> پرفروش‌ترین</a>
       <a href="/brands" class="nav-link"><i class="ti ti-building-store"></i> برندها</a>
