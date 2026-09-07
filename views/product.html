@@ -1049,45 +1049,6 @@
       .gallery-main:hover img {
         transform: scale(1.06);
       }
-      @media (min-width: 769px) {
-        /* گالری فشرده: عکس اصلی و بندانگشتی‌ها مانند گالری فروشگاه‌ها پشت سر هم‌اند. */
-        .gallery-main {
-          align-items: flex-start;
-          min-height: 0;
-          height: auto;
-          padding-top: 0;
-        }
-        #galleryImgHolder { line-height: 0; }
-        .gallery-track,
-        .gallery-slide { height: auto; }
-        .gallery-main svg,
-        .gallery-main img {
-          max-height: 550px;
-          transform: none;
-          display: block;
-        }
-        .gallery-main:hover svg,
-        .gallery-main:hover img {
-          transform: scale(1.03);
-          transform-origin: top center;
-        }
-        .product-gallery { gap: 8px; }
-        .gallery-thumbs {
-          height: 96px;
-          margin-top: 0;
-          padding: 0 3px 6px;
-          justify-content: center;
-        }
-        .gallery-thumb {
-          width: 86px;
-          height: 86px;
-          min-width: 86px;
-          max-width: 86px;
-        }
-        .gallery-thumb svg,
-        .gallery-thumb img,
-        .gallery-thumb video { max-height: 68px; }
-      }
       .gallery-main .zoom-hint {
         position: absolute;
         bottom: 12px;
@@ -1180,6 +1141,60 @@
       .gallery-thumb.active {
         border-color: var(--blue);
         box-shadow: 0 0 0 3px var(--blue-light);
+      }
+      @media (min-width: 769px) {
+        /* گالری دسکتاپ: بندانگشتی‌ها دقیقاً بعد از ارتفاع واقعی عکس فعال قرار می‌گیرند. */
+        .product-gallery {
+          gap: 8px;
+        }
+        .gallery-main {
+          align-items: flex-start;
+          min-height: 0;
+          height: auto;
+          padding-top: 0;
+        }
+        #galleryImgHolder {
+          line-height: 0;
+          transition: height 220ms cubic-bezier(0.22, 0.72, 0, 1);
+        }
+        .gallery-track {
+          align-items: flex-start;
+          transition:
+            transform 260ms cubic-bezier(0.22, 0.72, 0, 1),
+            height 220ms cubic-bezier(0.22, 0.72, 0, 1);
+        }
+        .gallery-slide {
+          align-items: flex-start;
+          height: 100%;
+        }
+        .gallery-main svg,
+        .gallery-main img {
+          display: block;
+          max-height: 550px;
+          transform: none;
+        }
+        .gallery-main:hover svg,
+        .gallery-main:hover img {
+          transform: scale(1.03);
+          transform-origin: top center;
+        }
+        .gallery-thumbs {
+          justify-content: center;
+          height: 96px;
+          margin-top: 0;
+          padding: 0 3px 6px;
+        }
+        .gallery-thumb {
+          width: 86px;
+          height: 86px;
+          min-width: 86px;
+          max-width: 86px;
+        }
+        .gallery-thumb svg,
+        .gallery-thumb img,
+        .gallery-thumb video {
+          max-height: 68px;
+        }
       }
       .gallery-variant-1 {
         transform: scaleX(-1);
@@ -6729,6 +6744,26 @@
             else preview.addEventListener("loadedmetadata", captureFirstFrame, { once: true });
             preview.addEventListener("seeked", () => preview.pause());
           });
+          function syncDesktopGalleryHeight() {
+            if (!galleryImgHolder || !galleryTrack) return;
+            if (!window.matchMedia("(min-width: 769px)").matches) {
+              galleryImgHolder.style.height = "";
+              galleryTrack.style.height = "";
+              return;
+            }
+            requestAnimationFrame(() => {
+              const activeSlide = galleryTrack.querySelector(
+                '.gallery-slide[data-idx="' + galleryIndex + '"]',
+              );
+              const activeMedia = activeSlide?.firstElementChild;
+              const mediaHeight = Math.ceil(
+                activeMedia?.getBoundingClientRect().height || 0,
+              );
+              if (!mediaHeight) return;
+              galleryImgHolder.style.height = mediaHeight + "px";
+              galleryTrack.style.height = mediaHeight + "px";
+            });
+          }
           function setGalleryIndex(idx, animate = true) {
             // هر تغییر اسلاید، حتی روی دسکتاپ، صدای ویدیوی قبلی را قطع می‌کند.
             pauseProductVideos();
@@ -6751,7 +6786,16 @@
             galleryThumbs.forEach((t, i) =>
               t.classList.toggle("active", i === galleryIndex),
             );
+            syncDesktopGalleryHeight();
           }
+          galleryTrack
+            ?.querySelectorAll("img, video")
+            .forEach((media) => {
+              media.addEventListener("load", syncDesktopGalleryHeight);
+              media.addEventListener("loadedmetadata", syncDesktopGalleryHeight);
+            });
+          window.addEventListener("resize", syncDesktopGalleryHeight);
+          syncDesktopGalleryHeight();
           document
             .getElementById("galPrevBtn")
             .addEventListener("click", () => setGalleryIndex(galleryIndex - 1));
