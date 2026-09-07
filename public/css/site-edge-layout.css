@@ -15,6 +15,11 @@
   padding-inline: 0 !important;
 }
 
+/* Keep the first and last desktop navigation items aligned to the page edges. */
+.navbar-inner {
+  justify-content: space-between !important;
+}
+
 .navbar {
   padding-inline: 0 !important;
 }
