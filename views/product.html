@@ -1914,6 +1914,22 @@
           grid-template-columns: minmax(280px, 1fr) minmax(340px, 1.28fr) minmax(250px, 0.82fr);
           gap: 28px;
         }
+        .desktop-product-shell {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(250px, 0.82fr);
+          gap: 28px;
+          align-items: start;
+        }
+        .desktop-product-content { min-width: 0; }
+        .desktop-product-shell .product-layout {
+          grid-template-columns: minmax(280px, 1fr) minmax(340px, 1.28fr);
+          gap: 32px;
+        }
+        .desktop-product-shell .section-block {
+          margin-top: 16px;
+          padding: 24px;
+          border-radius: 12px;
+        }
         .desktop-purchase-card {
           display: block;
           position: sticky;
@@ -6560,6 +6576,26 @@
             </div>
           </div>
         `;
+
+          // در دسکتاپ، کارت خرید باید در ستون کناری تمام محتوای محصول بماند؛
+          // نه فقط کنار گالری. بنابراین آن را از product-layout خارج می‌کنیم تا
+          // تا پایان مشخصات، بررسی و دیدگاه‌ها محدودهٔ sticky داشته باشد.
+          function arrangeDesktopPurchaseRail() {
+            if (!window.matchMedia("(min-width: 769px)").matches) return;
+            const purchaseCard = pageBody.querySelector(".desktop-purchase-card");
+            const productLayout = pageBody.querySelector(".product-layout");
+            if (!purchaseCard || !productLayout) return;
+            const shell = document.createElement("div");
+            shell.className = "desktop-product-shell";
+            const content = document.createElement("div");
+            content.className = "desktop-product-content";
+            pageBody.insertBefore(shell, productLayout);
+            shell.append(content, purchaseCard);
+            Array.from(pageBody.children)
+              .filter((child) => child !== shell && child.id !== "mobilePurchaseBar")
+              .forEach((child) => content.append(child));
+          }
+          arrangeDesktopPurchaseRail();
 
           function specIcon(label) {
             const rules = [
