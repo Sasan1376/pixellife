@@ -1914,6 +1914,27 @@
           grid-template-columns: minmax(280px, 1fr) minmax(340px, 1.28fr) minmax(250px, 0.82fr);
           gap: 28px;
         }
+        /* ستون واقعی کنار محتوا: کارت هرگز روی مشخصات و بررسی‌ها قرار نمی‌گیرد. */
+        .desktop-product-shell {
+          display: flex !important;
+          align-items: flex-start;
+          gap: 24px;
+          direction: rtl;
+        }
+        .desktop-product-content {
+          flex: 1 1 auto;
+          min-width: 0;
+        }
+        .desktop-product-content .product-layout {
+          grid-template-columns: minmax(280px, 1fr) minmax(340px, 1.28fr);
+          gap: 32px;
+        }
+        .desktop-product-shell > .desktop-purchase-card {
+          flex: 0 0 270px;
+          width: 270px !important;
+          max-width: 270px;
+          min-width: 270px;
+        }
         .desktop-purchase-card {
           display: block;
           position: sticky;
@@ -6561,57 +6582,24 @@
           </div>
         `;
 
-          // کارت با همان اندازهٔ اولیهٔ خود می‌ماند و فقط پس از عبور از جای
-          // اولیه‌اش، تا پایان محتوای محصول به‌صورت ثابت کنار صفحه همراه اسکرول می‌شود.
-          // placeholder اجازه نمی‌دهد چیدمان بالای محصول هنگام fixed شدن تغییر کند.
-          function enableDesktopPurchaseFollow() {
+          // کارت در ستون واقعی کنار کل محتوای محصول قرار می‌گیرد. به این ترتیب
+          // فقط در فضای کنار مشخصات/بررسی‌ها sticky است و هرگز روی آن‌ها نمی‌افتد.
+          function arrangeDesktopPurchaseRail() {
             if (!window.matchMedia("(min-width: 769px)").matches) return;
             const purchaseCard = pageBody.querySelector(".desktop-purchase-card");
-            if (!purchaseCard) return;
-            const topOffset = 132;
-            let placeholder = null;
-            let followStart = 0;
-            let fixed = false;
-
-            const releaseCard = () => {
-              if (!fixed) return;
-              purchaseCard.removeAttribute("style");
-              placeholder?.remove();
-              placeholder = null;
-              fixed = false;
-            };
-            const measure = () => {
-              if (fixed) return;
-              followStart = purchaseCard.getBoundingClientRect().top + window.scrollY - topOffset;
-            };
-            const update = () => {
-              if (window.scrollY <= followStart) {
-                releaseCard();
-                measure();
-                return;
-              }
-              if (fixed) return;
-              const rect = purchaseCard.getBoundingClientRect();
-              placeholder = document.createElement("div");
-              placeholder.style.width = rect.width + "px";
-              placeholder.style.height = rect.height + "px";
-              purchaseCard.after(placeholder);
-              purchaseCard.style.position = "fixed";
-              purchaseCard.style.top = topOffset + "px";
-              purchaseCard.style.left = rect.left + "px";
-              purchaseCard.style.width = rect.width + "px";
-              purchaseCard.style.zIndex = "450";
-              fixed = true;
-            };
-            measure();
-            window.addEventListener("scroll", update, { passive: true });
-            window.addEventListener("resize", () => {
-              releaseCard();
-              measure();
-              update();
-            });
+            const productLayout = pageBody.querySelector(".product-layout");
+            if (!purchaseCard || !productLayout) return;
+            const shell = document.createElement("div");
+            shell.className = "desktop-product-shell";
+            const content = document.createElement("div");
+            content.className = "desktop-product-content";
+            pageBody.insertBefore(shell, productLayout);
+            shell.append(content, purchaseCard);
+            Array.from(pageBody.children)
+              .filter((child) => child !== shell && child.id !== "mobilePurchaseBar")
+              .forEach((child) => content.append(child));
           }
-          enableDesktopPurchaseFollow();
+          arrangeDesktopPurchaseRail();
 
           function specIcon(label) {
             const rules = [
