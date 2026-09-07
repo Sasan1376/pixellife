@@ -1979,6 +1979,20 @@
         transform: translateY(12px);
         transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
         cursor: pointer;
+        padding: 0;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      .product-scroll-top svg {
+        width: 24px;
+        height: 24px;
+        display: block;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        pointer-events: none;
       }
       .product-scroll-top.is-visible {
         opacity: 1;
@@ -7766,7 +7780,10 @@
       })();
     </script>
     <button type="button" class="product-scroll-top" id="productScrollTop" aria-label="بازگشت به ابتدای صفحه" title="بازگشت به بالا">
-      <i class="ti ti-arrow-up"></i>
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 19V5"></path>
+        <path d="M6 11l6-6 6 6"></path>
+      </svg>
     </button>
     <script>
       (() => {
