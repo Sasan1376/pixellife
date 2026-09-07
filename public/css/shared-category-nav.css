@@ -343,3 +343,14 @@
     padding: 24px !important;
   }
 }
+
+/* Keep the shared desktop menu aligned with the header edges. */
+.navbar {
+  padding-inline: 16px !important;
+}
+.navbar-inner {
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
+  justify-content: space-between !important;
+}
