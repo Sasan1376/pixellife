@@ -1053,7 +1053,8 @@
         /* خودِ گالری از بالا تراز می‌شود؛ جابه‌جایی transform باعث بریده‌شدن عکس می‌شد. */
         .gallery-main {
           align-items: flex-start;
-          min-height: 590px;
+          /* ۴۸px فاصلهٔ بالایی + ۵۳۰px ارتفاع عکس؛ دیگر فضای خالی زیر عکس نمی‌ماند. */
+          min-height: 582px;
           padding-top: 48px;
         }
         .gallery-main svg,
@@ -1066,7 +1067,7 @@
           transform: scale(1.03);
           transform-origin: top center;
         }
-        .product-gallery { gap: 8px; }
+        .product-gallery { gap: 4px; }
         .gallery-thumbs {
           height: 88px;
           padding: 4px 3px 6px;
