@@ -1914,22 +1914,6 @@
           grid-template-columns: minmax(280px, 1fr) minmax(340px, 1.28fr) minmax(250px, 0.82fr);
           gap: 28px;
         }
-        .desktop-product-shell {
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) minmax(250px, 0.82fr);
-          gap: 28px;
-          align-items: start;
-        }
-        .desktop-product-content { min-width: 0; }
-        .desktop-product-shell .product-layout {
-          grid-template-columns: minmax(280px, 1fr) minmax(340px, 1.28fr);
-          gap: 32px;
-        }
-        .desktop-product-shell .section-block {
-          margin-top: 16px;
-          padding: 24px;
-          border-radius: 12px;
-        }
         .desktop-purchase-card {
           display: block;
           position: sticky;
@@ -6577,25 +6561,57 @@
           </div>
         `;
 
-          // در دسکتاپ، کارت خرید باید در ستون کناری تمام محتوای محصول بماند؛
-          // نه فقط کنار گالری. بنابراین آن را از product-layout خارج می‌کنیم تا
-          // تا پایان مشخصات، بررسی و دیدگاه‌ها محدودهٔ sticky داشته باشد.
-          function arrangeDesktopPurchaseRail() {
+          // کارت با همان اندازهٔ اولیهٔ خود می‌ماند و فقط پس از عبور از جای
+          // اولیه‌اش، تا پایان محتوای محصول به‌صورت ثابت کنار صفحه همراه اسکرول می‌شود.
+          // placeholder اجازه نمی‌دهد چیدمان بالای محصول هنگام fixed شدن تغییر کند.
+          function enableDesktopPurchaseFollow() {
             if (!window.matchMedia("(min-width: 769px)").matches) return;
             const purchaseCard = pageBody.querySelector(".desktop-purchase-card");
-            const productLayout = pageBody.querySelector(".product-layout");
-            if (!purchaseCard || !productLayout) return;
-            const shell = document.createElement("div");
-            shell.className = "desktop-product-shell";
-            const content = document.createElement("div");
-            content.className = "desktop-product-content";
-            pageBody.insertBefore(shell, productLayout);
-            shell.append(content, purchaseCard);
-            Array.from(pageBody.children)
-              .filter((child) => child !== shell && child.id !== "mobilePurchaseBar")
-              .forEach((child) => content.append(child));
+            if (!purchaseCard) return;
+            const topOffset = 132;
+            let placeholder = null;
+            let followStart = 0;
+            let fixed = false;
+
+            const releaseCard = () => {
+              if (!fixed) return;
+              purchaseCard.removeAttribute("style");
+              placeholder?.remove();
+              placeholder = null;
+              fixed = false;
+            };
+            const measure = () => {
+              if (fixed) return;
+              followStart = purchaseCard.getBoundingClientRect().top + window.scrollY - topOffset;
+            };
+            const update = () => {
+              if (window.scrollY <= followStart) {
+                releaseCard();
+                measure();
+                return;
+              }
+              if (fixed) return;
+              const rect = purchaseCard.getBoundingClientRect();
+              placeholder = document.createElement("div");
+              placeholder.style.width = rect.width + "px";
+              placeholder.style.height = rect.height + "px";
+              purchaseCard.after(placeholder);
+              purchaseCard.style.position = "fixed";
+              purchaseCard.style.top = topOffset + "px";
+              purchaseCard.style.left = rect.left + "px";
+              purchaseCard.style.width = rect.width + "px";
+              purchaseCard.style.zIndex = "450";
+              fixed = true;
+            };
+            measure();
+            window.addEventListener("scroll", update, { passive: true });
+            window.addEventListener("resize", () => {
+              releaseCard();
+              measure();
+              update();
+            });
           }
-          arrangeDesktopPurchaseRail();
+          enableDesktopPurchaseFollow();
 
           function specIcon(label) {
             const rules = [
