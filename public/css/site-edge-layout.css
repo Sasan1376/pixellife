@@ -1,0 +1,67 @@
+/*
+ * Shared full-width storefront chrome.
+ * Keeps the header, category navigation and breadcrumb aligned with page edges
+ * across every storefront template while preserving a small safe inset.
+ */
+.header {
+  padding-inline: 16px !important;
+}
+
+.header-inner,
+.navbar-inner {
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
+  padding-inline: 0 !important;
+}
+
+.navbar {
+  padding-inline: 0 !important;
+}
+
+.nav-cats {
+  padding-inline-start: 0 !important;
+}
+
+.breadcrumb {
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
+  padding-inline: 16px !important;
+}
+
+/* Lightweight category templates use topbar/nav names instead. */
+.topbar-inner {
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
+  padding-inline: 16px !important;
+}
+
+.nav-inner {
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
+  padding-inline: 0 !important;
+}
+
+.nav-category {
+  margin-inline-start: 0 !important;
+  padding-inline-start: 0 !important;
+}
+
+@media (max-width: 860px) {
+  .header {
+    padding-inline: 16px !important;
+  }
+
+  .topbar-inner {
+    padding-inline: 12px !important;
+  }
+
+  .nav-inner {
+    width: max-content !important;
+    min-width: 100% !important;
+    padding-inline: 12px !important;
+  }
+}
