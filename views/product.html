@@ -1054,23 +1054,28 @@
         .gallery-main {
           align-items: flex-start;
           min-height: 0;
-          height: 550px;
+          height: auto;
           padding-top: 0;
         }
+        #galleryImgHolder { line-height: 0; }
+        .gallery-track,
+        .gallery-slide { height: auto; }
         .gallery-main svg,
         .gallery-main img {
           max-height: 550px;
           transform: none;
+          display: block;
         }
         .gallery-main:hover svg,
         .gallery-main:hover img {
           transform: scale(1.03);
           transform-origin: top center;
         }
-        .product-gallery { gap: 6px; }
+        .product-gallery { gap: 8px; }
         .gallery-thumbs {
           height: 96px;
-          padding: 4px 3px 6px;
+          margin-top: 0;
+          padding: 0 3px 6px;
           justify-content: center;
         }
         .gallery-thumb {
