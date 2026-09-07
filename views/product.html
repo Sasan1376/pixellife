@@ -1443,6 +1443,52 @@
         font-weight: 700;
       }
 
+      /* ابزارهای گالری مانند دیجی‌کالا، کنار تصویر اصلی قرار می‌گیرند. */
+      .gallery-actions {
+        position: absolute;
+        z-index: 5;
+        display: flex;
+        gap: 8px;
+      }
+      .gallery-actions .icon-action-btn {
+        width: 40px;
+        height: 40px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: #4b5563;
+        font-size: 23px;
+      }
+      .gallery-actions .icon-action-btn:hover {
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      @media (min-width: 769px) {
+        .product-gallery {
+          padding-right: 48px;
+        }
+        .gallery-actions {
+          top: 10px;
+          right: 0;
+          flex-direction: column;
+        }
+      }
+      @media (max-width: 768px) {
+        .gallery-actions {
+          top: 12px;
+          left: 12px;
+          flex-direction: row;
+        }
+        .gallery-actions .icon-action-btn {
+          width: 38px;
+          height: 38px;
+          background: rgba(255, 255, 255, 0.9);
+        }
+        .amazing-countdown {
+          top: 58px;
+        }
+      }
+
       /* قلب علاقه‌مندی بدون وابستگی به فونت آیکون نمایش داده می‌شود */
       #wishBtn i {
         display: none;
@@ -6352,6 +6398,10 @@
           pageBody.innerHTML = `
           <div class="product-layout">
             <div class="product-gallery">
+              <div class="gallery-actions" aria-label="ابزارهای محصول">
+                <button type="button" class="icon-action-btn${isWished ? " active" : ""}" id="wishBtn" title="علاقه‌مندی" aria-label="افزودن به علاقه‌مندی‌ها" aria-pressed="${isWished ? "true" : "false"}"><i class="ti ${isWished ? "ti-heart-filled" : "ti-heart"}"></i></button>
+                <button type="button" class="icon-action-btn" id="shareBtn" title="اشتراک‌گذاری" aria-label="اشتراک‌گذاری محصول"><i class="ti ti-share-2"></i></button>
+              </div>
               <div class="gallery-main" id="galleryMain">
                 <div class="product-badges">
                   ${product.amazingOffer && (!product.amazingOfferEndsAt || new Date(product.amazingOfferEndsAt) > new Date()) ? '<span class="badge-amazing"><i class="ti ti-bolt"></i> شگفت‌انگیز</span>' : ""}
@@ -6388,11 +6438,6 @@
               ${product.amazingOffer ? '<div class="mobile-amazing-ribbon"><i class="ti ti-discount-2"></i>فروش ویژه</div>' : ""}
               <div class="product-brand-row">
                 <div class="product-brand-badge">${product.brandLogo === "SAMSUNG_LOGO_SVG" ? SAMSUNG_LOGO_SVG : product.brandLogo === "XIAOMI_LOGO_SVG" ? XIAOMI_LOGO_SVG : product.brandLogo === "REDMI_LOGO_SVG" ? REDMI_LOGO_SVG : product.brandLogo === "APPLE_LOGO_SVG" ? APPLE_LOGO_SVG : ""}<span>${product.brand || ""}</span></div>
-                <div class="action-icons-row">
-                  <button type="button" class="icon-action-btn${isWished ? " active" : ""}" id="wishBtn" title="علاقه‌مندی" aria-label="افزودن به علاقه‌مندی‌ها" aria-pressed="${isWished ? "true" : "false"}"><i class="ti ${isWished ? "ti-heart-filled" : "ti-heart"}"></i></button>
-                  <button class="icon-action-btn" id="compareBtn" title="مقایسه"><i class="ti ti-arrows-exchange"></i></button>
-                  <button class="icon-action-btn" id="shareBtn" title="اشتراک‌گذاری"><i class="ti ti-share-2"></i></button>
-                </div>
               </div>
               <div class="product-title">${product.name}</div>
               <div class="product-rating-row">
@@ -7198,11 +7243,6 @@
             );
             saveWishlist(list);
           });
-          document
-            .getElementById("compareBtn")
-            .addEventListener("click", () => {
-              showToast("محصول به لیست مقایسه اضافه شد");
-            });
           document.getElementById("shareBtn").addEventListener("click", () => {
             if (navigator.share) {
               navigator
