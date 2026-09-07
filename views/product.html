@@ -1152,6 +1152,7 @@
           min-height: 0;
           height: auto;
           padding-top: 0;
+          overflow: visible;
         }
         #galleryImgHolder {
           line-height: 0;
@@ -1171,7 +1172,7 @@
         .gallery-main img {
           display: block;
           max-height: 630px;
-          max-width: calc(100% - 96px);
+          max-width: 100%;
           transform: scale(1.06);
           transform-origin: top center;
         }
@@ -1181,10 +1182,10 @@
           transform-origin: top center;
         }
         .gallery-nav-prev {
-          right: 0;
+          right: -28px;
         }
         .gallery-nav-next {
-          left: 0;
+          left: -28px;
         }
         .gallery-thumbs {
           justify-content: center;
