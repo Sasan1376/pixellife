@@ -3,7 +3,7 @@
   const configs = {
     "/headphones": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", category: "هدفون و هندزفری", title: "هدفون و هندزفری", noFallback: true },
     "/smartwatches": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", category: "ساعت هوشمند", title: "ساعت هوشمند", noFallback: true },
-    "/mobiles": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", category: "موبایل", title: "همه محصولات موبایل", noFallback: true },
+    "/mobiles": { grid: ".grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", category: "موبایل", title: "همه محصولات موبایل", noFallback: true },
     "/iphone": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", brand: "اپل", category: "موبایل", noFallback: true },
     "/samsung": { grid: ".samsung-grid", card: "samsung-card", name: "samsung-card-name", image: "samsung-card-image", body: "samsung-card-body", desc: "samsung-card-desc", brand: "سامسونگ", category: "موبایل", noFallback: true },
     "/xiaomi": { grid: ".xiaomi-grid", card: "xiaomi-card", name: "xiaomi-card-name", image: "xiaomi-card-image", body: "xiaomi-card-body", desc: "xiaomi-card-desc", brand: "شیائومی", category: "موبایل", noFallback: true },
@@ -54,6 +54,22 @@
     const style = document.createElement("style");
     style.id = "accessory-catalog-card-style";
     style.textContent = "body.accessory-catalog-page .iphone-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))!important;gap:0!important;border:0!important;background:#fff!important}body.accessory-catalog-page .pl-catalog-card{height:auto!important;border:0!important;border-inline-end:1px solid #e5e7eb!important;border-block-end:1px solid #e5e7eb!important;border-radius:0!important}body.accessory-catalog-page .pl-catalog-card .iphone-card-image{height:250px!important;min-height:250px!important;flex-basis:250px!important}@media(max-width:640px){body.accessory-catalog-page .iphone-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0!important}body.accessory-catalog-page .pl-catalog-card{height:auto!important}body.accessory-catalog-page .pl-catalog-card .iphone-card-image{height:205px!important;min-height:205px!important;flex-basis:205px!important}}";
+    document.head.appendChild(style);
+  }
+
+  // فیلتر مشترک همهٔ فهرست‌های محصول. داده‌ها پس از دریافت از API فیلتر می‌شوند
+  // تا انتخاب کاربر بدون بارگذاری دوبارهٔ صفحه اعمال شود.
+  if (!document.getElementById("pixel-catalog-filter-style")) {
+    const style = document.createElement("style");
+    style.id = "pixel-catalog-filter-style";
+    style.textContent = `
+      .pl-catalog-layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px;align-items:start;margin-top:18px;direction:rtl}
+      .pl-catalog-results{min-width:0}.pl-filter-panel{position:sticky;top:112px;background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;color:#172033}
+      .pl-filter-head{display:flex;align-items:center;justify-content:space-between;padding:17px 16px;border-bottom:1px solid #e2e8f0;font-size:18px;font-weight:800}.pl-filter-reset{border:0;background:none;padding:4px;color:#2563eb;font:700 12px Vazirmatn,Tahoma,sans-serif;cursor:pointer}
+      .pl-filter-stock{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 16px;border-bottom:1px solid #e2e8f0;font-weight:750;font-size:14px;cursor:pointer}.pl-filter-stock input{appearance:none;width:38px;height:22px;border-radius:20px;background:#cbd5e1;position:relative;cursor:pointer;transition:.18s}.pl-filter-stock input:after{content:'';position:absolute;width:16px;height:16px;right:3px;top:3px;background:#fff;border-radius:50%;transition:.18s;box-shadow:0 1px 3px #64748b}.pl-filter-stock input:checked{background:#2563eb}.pl-filter-stock input:checked:after{right:19px}
+      .pl-filter-section{border-bottom:1px solid #e2e8f0}.pl-filter-section:last-child{border-bottom:0}.pl-filter-section summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:15px 16px;font-size:15px;font-weight:800}.pl-filter-section summary::-webkit-details-marker{display:none}.pl-filter-section summary:after{content:'⌄';font-size:20px;color:#64748b;line-height:1;transform:rotate(0);transition:.18s}.pl-filter-section[open] summary:after{transform:rotate(180deg)}.pl-filter-options{padding:0 16px 14px;max-height:220px;overflow:auto}.pl-filter-option{display:flex;align-items:center;gap:8px;min-height:31px;color:#475569;font-size:13px;cursor:pointer}.pl-filter-option input{accent-color:#2563eb;width:16px;height:16px;flex:0 0 auto}.pl-filter-color{width:12px;height:12px;border-radius:50%;border:1px solid #cbd5e1;flex:0 0 12px}.pl-price-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 15px}.pl-price-field{min-width:0;border:1px solid #cbd5e1;border-radius:9px;padding:8px;font:600 12px Vazirmatn,Tahoma,sans-serif;outline:0;color:#172033;direction:ltr}.pl-price-field:focus{border-color:#2563eb;box-shadow:0 0 0 3px #dbeafe}.pl-catalog-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px}.pl-catalog-count{color:#64748b;font-size:13px;font-weight:650}.pl-catalog-sort{border:1px solid #e2e8f0;border-radius:9px;background:#fff;padding:8px 10px;color:#334155;font:650 12px Vazirmatn,Tahoma,sans-serif;outline:0}.pl-mobile-filter-btn{display:none;align-items:center;justify-content:center;gap:7px;border:1px solid #2563eb;background:#fff;color:#2563eb;border-radius:9px;padding:8px 12px;font:750 13px Vazirmatn,Tahoma,sans-serif;cursor:pointer}.pl-filter-backdrop{display:none}
+      @media(max-width:800px){.pl-catalog-layout{display:block;margin-top:12px}.pl-catalog-toolbar{margin:0 0 10px}.pl-mobile-filter-btn{display:inline-flex}.pl-filter-panel{position:fixed;z-index:2000;right:0;top:0;bottom:0;width:min(360px,92vw);border-radius:20px 0 0 20px;transform:translateX(105%);transition:transform .25s ease;overflow:auto}.pl-filter-panel.is-open{transform:translateX(0)}.pl-filter-backdrop{position:fixed;z-index:1999;inset:0;background:rgba(15,23,42,.42)}.pl-filter-backdrop.is-open{display:block}.pl-filter-panel .pl-filter-head{position:sticky;top:0;background:#fff;z-index:1}.pl-catalog-sort{max-width:175px}.pl-catalog-count{font-size:12px}.pl-catalog-layout .iphone-grid,.pl-catalog-layout .samsung-grid,.pl-catalog-layout .xiaomi-grid,.pl-catalog-layout .prod-grid,.pl-catalog-layout .xiaomitab-grid,.pl-catalog-layout .console-grid,.pl-catalog-layout .grid{width:100%}}
+    `;
     document.head.appendChild(style);
   }
 
@@ -133,6 +149,105 @@
     return `<a href="${href}" class="${config.card} pl-catalog-card" data-stock="${stock}" style="color:inherit;text-decoration:none;position:relative">${amazingRibbon}${discountBadge}${comingSoonBadge}<div class="${imageClass}">${colorDots(product, outOfStock)}${imageMarkup(product, name)}</div><div class="${bodyClass}"><div class="pl-catalog-brand">${escapeHtml(product.brand || "")}</div><div class="${config.name}">${name}</div>${amazingTimer ? '<div class="pl-amazing-timer-slot">' + amazingTimer + '</div>' : ''}<div class="pl-catalog-footer"><div class="pl-catalog-stock">${status}</div>${priceHtml}</div></div></a>`;
   }
 
+  function uniqueValues(products, valueFor) {
+    return [...new Set(products.map(valueFor).flat().map((value) => String(value || "").trim()).filter(Boolean))];
+  }
+
+  function mountCatalogFilters() {
+    const originalParent = grid.parentNode;
+    const layout = document.createElement("div");
+    layout.className = "pl-catalog-layout";
+    const panel = document.createElement("aside");
+    panel.className = "pl-filter-panel";
+    panel.setAttribute("aria-label", "فیلتر محصولات");
+    const results = document.createElement("div");
+    results.className = "pl-catalog-results";
+    const backdrop = document.createElement("div");
+    backdrop.className = "pl-filter-backdrop";
+    originalParent.insertBefore(layout, grid);
+    layout.append(panel, results);
+    results.append(grid);
+    document.body.append(backdrop);
+
+    const setPanelOpen = (open) => {
+      panel.classList.toggle("is-open", open);
+      backdrop.classList.toggle("is-open", open);
+      document.body.style.overflow = open ? "hidden" : "";
+    };
+    backdrop.addEventListener("click", () => setPanelOpen(false));
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape") setPanelOpen(false); });
+
+    let allProducts = [];
+    const selected = { brands: new Set(), colors: new Set(), storages: new Set(), inStock: false, min: "", max: "", sort: "newest" };
+    const option = (kind, value, extra = "") => `<label class="pl-filter-option">${extra}<input type="checkbox" data-filter-kind="${kind}" value="${escapeHtml(value)}"><span>${escapeHtml(value)}</span></label>`;
+    const detail = (title, content, open = false) => `<details class="pl-filter-section"${open ? " open" : ""}><summary>${title}</summary><div class="pl-filter-options">${content}</div></details>`;
+
+    panel.innerHTML = `<div class="pl-filter-head"><span>فیلترها</span><button type="button" class="pl-filter-reset">حذف فیلترها</button></div>
+      <label class="pl-filter-stock"><span>فقط کالاهای موجود</span><input type="checkbox" data-filter-stock></label>
+      ${detail("بازه قیمت", `<div class="pl-price-fields"><input class="pl-price-field" inputmode="numeric" data-filter-min placeholder="حداقل (تومان)"><input class="pl-price-field" inputmode="numeric" data-filter-max placeholder="حداکثر (تومان)"></div>`, true)}
+      <div data-filter-dynamic></div>`;
+    results.insertAdjacentHTML("afterbegin", `<div class="pl-catalog-toolbar"><button type="button" class="pl-mobile-filter-btn"><i class="ti ti-adjustments-horizontal"></i> فیلترها</button><span class="pl-catalog-count"></span><select class="pl-catalog-sort" aria-label="مرتب‌سازی"><option value="newest">جدیدترین</option><option value="price-asc">ارزان‌ترین</option><option value="price-desc">گران‌ترین</option><option value="rating">بیشترین امتیاز</option></select></div>`);
+    results.querySelector(".pl-mobile-filter-btn").addEventListener("click", () => setPanelOpen(true));
+
+    function normalizeNumber(value) {
+      return Number(String(value || "").replace(/[٬,]/g, "").replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit))) || 0;
+    }
+    function renderOptions() {
+      const brands = uniqueValues(allProducts, (p) => p.brand).sort();
+      const colors = uniqueValues(allProducts, (p) => (p.colors || []).map((c) => typeof c === "string" ? c : c?.name)).sort();
+      const colorHex = new Map();
+      allProducts.forEach((p) => (p.colors || []).forEach((c) => { if (c?.name && c?.hex) colorHex.set(c.name, c.hex); }));
+      const storages = uniqueValues(allProducts, (p) => [...(p.storages || []), ...(p.variants || []).map((v) => v?.storage)]).sort();
+      const dynamic = panel.querySelector("[data-filter-dynamic]");
+      dynamic.innerHTML = (brands.length > 1 ? detail("برند", brands.map((v) => option("brands", v)).join(""), true) : "") +
+        (colors.length ? detail("رنگ", colors.map((v) => option("colors", v, `<span class="pl-filter-color" style="background:${escapeHtml(colorHex.get(v) || "#e2e8f0")}"></span>`)).join("")) : "") +
+        (storages.length ? detail("حافظه", storages.map((v) => option("storages", v)).join("")) : "");
+    }
+    function matches(product) {
+      const productColors = (product.colors || []).map((c) => String(typeof c === "string" ? c : c?.name || "").trim());
+      const productStorages = [...(product.storages || []), ...(product.variants || []).map((v) => v?.storage)].map((v) => String(v || "").trim());
+      const stock = Math.max(0, Number(product.stock) || 0);
+      const productPrice = Number(product.price) || 0;
+      return (!selected.inStock || (!isOutOfStock(product) && stock > 0)) &&
+        (!selected.min || productPrice >= normalizeNumber(selected.min)) &&
+        (!selected.max || productPrice <= normalizeNumber(selected.max)) &&
+        (!selected.brands.size || selected.brands.has(String(product.brand || "").trim())) &&
+        (!selected.colors.size || productColors.some((v) => selected.colors.has(v))) &&
+        (!selected.storages.size || productStorages.some((v) => selected.storages.has(v)));
+    }
+    function render() {
+      const products = allProducts.filter(matches).sort((a, b) => {
+        if (selected.sort === "price-asc") return Number(a.price || 0) - Number(b.price || 0);
+        if (selected.sort === "price-desc") return Number(b.price || 0) - Number(a.price || 0);
+        if (selected.sort === "rating") return Number(b.rating || 0) - Number(a.rating || 0);
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      });
+      grid.innerHTML = products.length ? products.map(card).join("") : '<div class="pl-catalog-loading">کالایی با این فیلترها پیدا نشد.</div>';
+      const count = results.querySelector(".pl-catalog-count");
+      if (count) count.textContent = products.length.toLocaleString("fa-IR") + " کالا";
+    }
+    panel.addEventListener("change", (event) => {
+      const input = event.target;
+      if (input.matches("[data-filter-stock]")) selected.inStock = input.checked;
+      if (input.matches("[data-filter-kind]")) selected[input.dataset.filterKind][input.checked ? "add" : "delete"](input.value);
+      render();
+    });
+    panel.addEventListener("input", (event) => {
+      if (event.target.matches("[data-filter-min]")) selected.min = event.target.value;
+      if (event.target.matches("[data-filter-max]")) selected.max = event.target.value;
+      render();
+    });
+    results.querySelector(".pl-catalog-sort").addEventListener("change", (event) => { selected.sort = event.target.value; render(); });
+    panel.querySelector(".pl-filter-reset").addEventListener("click", () => {
+      selected.brands.clear(); selected.colors.clear(); selected.storages.clear(); selected.inStock = false; selected.min = ""; selected.max = "";
+      panel.querySelectorAll("input").forEach((input) => { input.checked = false; if (input.type !== "checkbox") input.value = ""; });
+      render();
+    });
+    return { setProducts(products) { allProducts = products; renderOptions(); render(); } };
+  }
+
+  const catalogFilters = mountCatalogFilters();
+
   const requestedParams = new URLSearchParams(window.location.search);
   const requestedCategory = requestedParams.get("category");
   const requestedBrand = requestedParams.get("brand");
@@ -179,7 +294,7 @@
 
       // فقط همین مسیر اجازهٔ بازنویسی گرید را دارد؛ هیچ observer یا اسکریپت
       // موازی نباید دادهٔ قدیمی را دوباره برگرداند.
-      grid.innerHTML = data.products.map(card).join("");
+      catalogFilters.setProducts(data.products);
       grid.dataset.databaseCatalog = "ready";
       const updateAmazingTimers = () => {
         let expired = false;
