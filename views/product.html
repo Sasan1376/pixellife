@@ -1905,6 +1905,37 @@
         height: 44px;
       }
 
+      .product-scroll-top {
+        position: fixed;
+        left: 24px;
+        bottom: 24px;
+        z-index: 650;
+        width: 46px;
+        height: 46px;
+        border: 1px solid var(--blue-mid);
+        border-radius: 50%;
+        background: #fff;
+        color: var(--blue);
+        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.18);
+        display: grid;
+        place-items: center;
+        font-size: 22px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(12px);
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+        cursor: pointer;
+      }
+      .product-scroll-top.is-visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+      .product-scroll-top:hover { background: var(--blue); color: #fff; }
+      @media (max-width: 768px) {
+        .product-scroll-top { left: 16px; bottom: calc(116px + env(safe-area-inset-bottom)); }
+      }
+
       /* کارت خرید دسکتاپ: کنترل خرید فقط یک‌بار و در ستون چسبان نمایش داده می‌شود. */
       .desktop-purchase-card {
         display: none;
@@ -7649,6 +7680,19 @@
           // بارگذاری نظرات ذخیره‌شده پس از آماده‌شدن صفحه
           deferNonCriticalWork(fetchReviews);
         }
+      })();
+    </script>
+    <button type="button" class="product-scroll-top" id="productScrollTop" aria-label="بازگشت به ابتدای صفحه" title="بازگشت به بالا">
+      <i class="ti ti-arrow-up"></i>
+    </button>
+    <script>
+      (() => {
+        const button = document.getElementById("productScrollTop");
+        if (!button) return;
+        const updateVisibility = () => button.classList.toggle("is-visible", window.scrollY > 420);
+        window.addEventListener("scroll", updateVisibility, { passive: true });
+        button.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+        updateVisibility();
       })();
     </script>
       <script src="/js/shopping-assistant.js?v=13" defer></script>
