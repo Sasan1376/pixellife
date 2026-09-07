@@ -1049,6 +1049,18 @@
       .gallery-main:hover img {
         transform: scale(1.06);
       }
+      @media (min-width: 769px) {
+        /* تصویر محصول در دسکتاپ کمی بالاتر و درشت‌تر است تا با هویت برند هم‌ردیف شود. */
+        .gallery-main svg,
+        .gallery-main img {
+          max-height: 550px;
+          transform: translateY(-42px) scale(1.08);
+        }
+        .gallery-main:hover svg,
+        .gallery-main:hover img {
+          transform: translateY(-42px) scale(1.11);
+        }
+      }
       .gallery-main .zoom-hint {
         position: absolute;
         bottom: 12px;
