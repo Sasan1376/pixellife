@@ -6485,7 +6485,7 @@
             </div>
           </div>
 
-          <div class="section-block">
+          <div class="section-block" id="storeAdvantagesSection">
             <div class="section-heading"><i class="ti ti-shield-star"></i> مزایای خرید از پیکسل لایف</div>
             <div class="advantages-grid">
               ${STORE_ADVANTAGES.map(
@@ -6563,7 +6563,7 @@
             </div>
           </div>
 
-          <div class="section-block">
+          <div class="section-block" id="relatedProductsSection">
             <div class="section-heading"><i class="ti ti-apps"></i> محصولات مشابه</div>
             <div class="slider-wrap">
               <button class="slider-nav-btn slider-nav-prev" data-slider="relatedSlider"><i class="ti ti-chevron-right"></i></button>
@@ -6595,9 +6595,13 @@
             content.className = "desktop-product-content";
             pageBody.insertBefore(shell, productLayout);
             shell.append(content, purchaseCard);
-            Array.from(pageBody.children)
-              .filter((child) => child !== shell && child.id !== "mobilePurchaseBar")
-              .forEach((child) => content.append(child));
+            const siblings = Array.from(pageBody.children)
+              .filter((child) => child !== shell && child.id !== "mobilePurchaseBar");
+            const stopAt = pageBody.querySelector("#storeAdvantagesSection");
+            const stopIndex = stopAt ? siblings.indexOf(stopAt) : siblings.length;
+            // مزایای خرید و محصولات مشابه از این نقطه به بعد، تمام‌عرض و مانند
+            // قبل باقی می‌مانند؛ کارت خرید هم درست پیش از آن‌ها متوقف می‌شود.
+            siblings.slice(0, stopIndex).forEach((child) => content.append(child));
           }
           arrangeDesktopPurchaseRail();
 
