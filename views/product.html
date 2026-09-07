@@ -1170,13 +1170,20 @@
         .gallery-main svg,
         .gallery-main img {
           display: block;
-          max-height: 550px;
-          transform: none;
+          max-height: 590px;
+          transform: scale(1.06);
+          transform-origin: top center;
         }
         .gallery-main:hover svg,
         .gallery-main:hover img {
-          transform: scale(1.03);
+          transform: scale(1.09);
           transform-origin: top center;
+        }
+        .gallery-nav-prev {
+          right: 2px;
+        }
+        .gallery-nav-next {
+          left: 2px;
         }
         .gallery-thumbs {
           justify-content: center;
