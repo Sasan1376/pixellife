@@ -2127,12 +2127,18 @@
           font-size: 14px;
         }
         .desktop-purchase-unavailable-note {
-          margin: 16px 0 14px;
+          margin: 0 0 18px;
           color: #30355f;
-          font-size: 13px;
+          font-size: 13.5px;
           font-weight: 650;
-          line-height: 2;
+          line-height: 2.1;
           text-align: right;
+        }
+        .desktop-purchase-card.is-out-of-stock {
+          padding: 22px 16px;
+          background: #f8fafc;
+          border-color: #e5e7eb;
+          box-shadow: none;
         }
         .desktop-purchase-card.is-out-of-stock .desktop-purchase-price {
           display: none;
@@ -2144,7 +2150,7 @@
           margin: 0;
           border: 0;
           border-radius: 10px;
-          background: #d94e5a;
+          background: var(--blue);
           color: #fff;
           box-shadow: none;
           font-size: 13.5px;
@@ -2152,7 +2158,7 @@
         }
         .desktop-purchase-card.is-out-of-stock .btn-notify:hover {
           border-color: transparent;
-          background: #c94350;
+          background: var(--blue-dark);
           color: #fff;
         }
         .desktop-purchase-card.is-out-of-stock .btn-notify i {
@@ -6496,28 +6502,28 @@
               </div>
             </div>
             <aside class="desktop-purchase-card${product.outOfStock ? " is-out-of-stock" : ""}" aria-label="خرید محصول">
-              <div class="desktop-purchase-product">
-                <div class="desktop-purchase-image">${productImageHtml(product, 0, "thumb")}</div>
-                <div>
-                  <div class="desktop-purchase-name">${product.name}</div>
-                  <div class="desktop-purchase-variant" id="desktopPurchaseVariant"></div>
-                </div>
-              </div>
-              <div class="desktop-purchase-features">
-                <div class="desktop-purchase-feature"><i class="ti ti-store"></i><span>فروشنده: پیکسل لایف</span></div>
-                ${product.hasWarranty && product.warranties?.length ? '<div class="desktop-purchase-feature"><i class="ti ti-shield-check"></i><span id="desktopPurchaseWarranty"></span></div>' : ''}
-                <div class="desktop-purchase-feature"><i class="ti ti-package"></i><span id="desktopPurchaseAvailability">${product.outOfStock ? 'این کالا در حال حاضر ناموجود است' : 'موجود در انبار پیکسل لایف'}</span></div>
-              </div>
-              <div class="desktop-purchase-price"><span>${product.price > 0 ? product.price.toLocaleString("fa-IR") : "—"}</span><small>تومان</small></div>
-              ${product.outOfStock ? '<div class="desktop-purchase-unavailable-note">این کالا فعلاً موجود نیست، اما می‌توانید زنگوله را بزنید تا به محض موجود شدن، به شما خبر دهیم.</div>' : ''}
               ${product.outOfStock
-                ? '<button class="btn-notify" id="desktopNotifyBtn"><i class="ti ti-bell"></i> موجود شد خبرم کنید</button>'
-                : '<button class="btn-add-cart" id="desktopAddCartBtn"><i class="ti ti-shopping-cart-plus"></i> افزودن به سبد خرید</button>'}
-              <div class="desktop-purchase-trust">
-                <span><i class="ti ti-truck-delivery"></i> ارسال ۱ تا ۳ روزه</span>
-                <span><i class="ti ti-rotate"></i> ۷ روز ضمانت بازگشت</span>
-                <span><i class="ti ti-certificate"></i> ضمانت اصالت کالا</span>
-              </div>
+                ? `<div class="desktop-purchase-unavailable-note">این کالا فعلاً موجود نیست، اما می‌توانید زنگوله را بزنید تا به محض موجود شدن، به شما خبر دهیم.</div>
+                   <button class="btn-notify" id="desktopNotifyBtn"><i class="ti ti-bell"></i> موجود شد خبرم کنید</button>`
+                : `<div class="desktop-purchase-product">
+                    <div class="desktop-purchase-image">${productImageHtml(product, 0, "thumb")}</div>
+                    <div>
+                      <div class="desktop-purchase-name">${product.name}</div>
+                      <div class="desktop-purchase-variant" id="desktopPurchaseVariant"></div>
+                    </div>
+                  </div>
+                  <div class="desktop-purchase-features">
+                    <div class="desktop-purchase-feature"><i class="ti ti-store"></i><span>فروشنده: پیکسل لایف</span></div>
+                    ${product.hasWarranty && product.warranties?.length ? '<div class="desktop-purchase-feature"><i class="ti ti-shield-check"></i><span id="desktopPurchaseWarranty"></span></div>' : ''}
+                    <div class="desktop-purchase-feature"><i class="ti ti-package"></i><span id="desktopPurchaseAvailability">موجود در انبار پیکسل لایف</span></div>
+                  </div>
+                  <div class="desktop-purchase-price"><span>${product.price > 0 ? product.price.toLocaleString("fa-IR") : "—"}</span><small>تومان</small></div>
+                  <button class="btn-add-cart" id="desktopAddCartBtn"><i class="ti ti-shopping-cart-plus"></i> افزودن به سبد خرید</button>
+                  <div class="desktop-purchase-trust">
+                    <span><i class="ti ti-truck-delivery"></i> ارسال ۱ تا ۳ روزه</span>
+                    <span><i class="ti ti-rotate"></i> ۷ روز ضمانت بازگشت</span>
+                    <span><i class="ti ti-certificate"></i> ضمانت اصالت کالا</span>
+                  </div>`}
             </aside>
           </div>
 
