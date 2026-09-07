@@ -1905,6 +1905,118 @@
         height: 44px;
       }
 
+      /* کارت خرید دسکتاپ: کنترل خرید فقط یک‌بار و در ستون چسبان نمایش داده می‌شود. */
+      .desktop-purchase-card {
+        display: none;
+      }
+      @media (min-width: 769px) {
+        .product-layout {
+          grid-template-columns: minmax(280px, 1fr) minmax(340px, 1.28fr) minmax(250px, 0.82fr);
+          gap: 28px;
+        }
+        .desktop-purchase-card {
+          display: block;
+          position: sticky;
+          top: 132px;
+          align-self: start;
+          background: #fff;
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          padding: 16px;
+          box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+        }
+        .desktop-purchase-product {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding-bottom: 14px;
+          border-bottom: 1px solid var(--border);
+        }
+        .desktop-purchase-image {
+          width: 58px;
+          height: 58px;
+          flex: 0 0 58px;
+          display: grid;
+          place-items: center;
+          overflow: hidden;
+        }
+        .desktop-purchase-image img,
+        .desktop-purchase-image svg {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+        .desktop-purchase-name {
+          min-width: 0;
+          color: var(--text-1);
+          font-size: 13px;
+          font-weight: 750;
+          line-height: 1.9;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .desktop-purchase-variant {
+          margin-top: 3px;
+          color: var(--text-3);
+          font-size: 11.5px;
+        }
+        .desktop-purchase-features {
+          display: grid;
+          gap: 13px;
+          padding: 17px 0;
+          border-bottom: 1px solid var(--border);
+        }
+        .desktop-purchase-feature {
+          display: flex;
+          align-items: flex-start;
+          gap: 9px;
+          color: var(--text-2);
+          font-size: 12.5px;
+          font-weight: 650;
+          line-height: 1.7;
+        }
+        .desktop-purchase-feature i {
+          color: var(--blue);
+          font-size: 18px;
+          line-height: 1.45;
+          flex: 0 0 auto;
+        }
+        .desktop-purchase-price {
+          display: flex;
+          align-items: baseline;
+          justify-content: space-between;
+          gap: 8px;
+          padding: 17px 0 14px;
+          color: var(--text-1);
+          font-size: 21px;
+          font-weight: 850;
+        }
+        .desktop-purchase-price small {
+          color: var(--text-3);
+          font-size: 11px;
+          font-weight: 650;
+        }
+        .desktop-purchase-card .btn-add-cart,
+        .desktop-purchase-card .btn-notify {
+          width: 100%;
+          min-height: 52px;
+        }
+        .desktop-purchase-trust {
+          display: grid;
+          gap: 7px;
+          margin-top: 13px;
+          color: var(--text-3);
+          font-size: 11px;
+          font-weight: 650;
+        }
+        .desktop-purchase-trust span { display:flex; align-items:center; gap:6px; }
+        .desktop-purchase-trust i { color:var(--blue); font-size:15px; }
+        /* قیمت و دکمهٔ قبلی از ستون معرفی حذف می‌شوند؛ کارت کنار صفحه تنها محل خرید است. */
+        .product-info-col > .product-price-row { display: none; }
+      }
+
       /* Section shared heading style */
       .section-block {
         background: var(--white);
@@ -6218,7 +6330,7 @@
                   ${
                     product.outOfStock
                       ? '<button class="btn-notify" id="notifyBtn"><i class="ti ti-bell"></i> اطلاع‌رسانی هنگام موجود شدن</button>'
-                      : `<button class="btn-add-cart" id="addCartBtn"><i class="ti ti-shopping-cart-plus"></i> افزودن به سبد خرید</button>`
+                      : ""
                   }
                 </div>
                 <div class="trust-mini-row">
@@ -6228,6 +6340,29 @@
                 </div>
               </div>
             </div>
+            <aside class="desktop-purchase-card" aria-label="خرید محصول">
+              <div class="desktop-purchase-product">
+                <div class="desktop-purchase-image">${productImageHtml(product, 0, "thumb")}</div>
+                <div>
+                  <div class="desktop-purchase-name">${product.name}</div>
+                  <div class="desktop-purchase-variant" id="desktopPurchaseVariant"></div>
+                </div>
+              </div>
+              <div class="desktop-purchase-features">
+                <div class="desktop-purchase-feature"><i class="ti ti-store"></i><span>فروشنده: پیکسل لایف</span></div>
+                ${product.hasWarranty && product.warranties?.length ? '<div class="desktop-purchase-feature"><i class="ti ti-shield-check"></i><span id="desktopPurchaseWarranty"></span></div>' : ''}
+                <div class="desktop-purchase-feature"><i class="ti ti-package"></i><span id="desktopPurchaseAvailability">${product.outOfStock ? 'این کالا در حال حاضر ناموجود است' : 'موجود در انبار پیکسل لایف'}</span></div>
+              </div>
+              <div class="desktop-purchase-price"><span>${product.price > 0 ? product.price.toLocaleString("fa-IR") : "—"}</span><small>تومان</small></div>
+              ${product.outOfStock
+                ? '<button class="btn-notify" id="desktopNotifyBtn"><i class="ti ti-bell"></i> اطلاع‌رسانی هنگام موجود شدن</button>'
+                : '<button class="btn-add-cart" id="desktopAddCartBtn"><i class="ti ti-shopping-cart-plus"></i> افزودن به سبد خرید</button>'}
+              <div class="desktop-purchase-trust">
+                <span><i class="ti ti-truck-delivery"></i> ارسال ۱ تا ۳ روزه</span>
+                <span><i class="ti ti-rotate"></i> ۷ روز ضمانت بازگشت</span>
+                <span><i class="ti ti-certificate"></i> ضمانت اصالت کالا</span>
+              </div>
+            </aside>
           </div>
 
           <div class="mobile-purchase-bar${product.outOfStock ? " is-out-of-stock" : ""}" id="mobilePurchaseBar" role="region" aria-label="بخش خرید محصول">
@@ -6706,12 +6841,25 @@
           });
           window.addEventListener("pagehide", () => pauseProductVideos());
 
+          function syncDesktopPurchaseCard() {
+            const variant = document.getElementById("desktopPurchaseVariant");
+            const warranty = document.getElementById("desktopPurchaseWarranty");
+            if (variant) {
+              const parts = [];
+              if (selectedStorage) parts.push("حافظه " + selectedStorage);
+              if (selectedColor?.name) parts.push("رنگ " + selectedColor.name);
+              variant.textContent = parts.join(" · ");
+            }
+            if (warranty) warranty.textContent = selectedWarranty || "گارانتی ندارد";
+          }
+
           function syncVariantSelection(preferredStorage, preferredColorName) {
             if (!product.hasStorage) {
               selectedColor = product.colors.find((color) => color.name === preferredColorName) || selectedColor;
               const colorValue = document.getElementById("colorVal");
               if (colorValue) colorValue.textContent = selectedColor.name;
               document.querySelectorAll(".color-swatch").forEach((swatch) => swatch.classList.toggle("active", swatch.dataset.name === selectedColor.name));
+              syncDesktopPurchaseCard();
               return true;
             }
             const variants = Array.isArray(product.variants) ? product.variants.filter((variant) => variant.stock > 0) : [];
@@ -6722,6 +6870,7 @@
               document.getElementById("colorVal").textContent = selectedColor.name;
               document.querySelectorAll(".storage-chip").forEach((chip) => chip.classList.toggle("active", chip.dataset.val === selectedStorage));
               document.querySelectorAll(".color-swatch").forEach((swatch) => swatch.classList.toggle("active", swatch.dataset.name === selectedColor.name));
+              syncDesktopPurchaseCard();
               return true;
             }
             const selected = variants.find((variant) => variant.storage === preferredStorage && variant.color.name === preferredColorName)
@@ -6753,6 +6902,7 @@
             });
             const quantityHint = document.querySelector(".quantity-row")?.previousElementSibling?.querySelector(".selected-val");
             if (quantityHint) quantityHint.textContent = "(حداکثر " + maxQuantity.toLocaleString("fa-IR") + " عدد)";
+            syncDesktopPurchaseCard();
             return true;
           }
 
@@ -6789,6 +6939,7 @@
               selectedWarranty = btn.dataset.val;
               document.getElementById("warrantyVal").textContent =
                 selectedWarranty;
+              syncDesktopPurchaseCard();
             });
           }
 
@@ -7330,11 +7481,26 @@
             });
           }
 
+          const desktopAddCartBtn = document.getElementById("desktopAddCartBtn");
+          if (desktopAddCartBtn) {
+            desktopAddCartBtn.addEventListener("click", () => {
+              addCurrentToCart();
+              showToast("به سبد خرید اضافه شد");
+            });
+          }
+
           const mobileAddCartBtn = document.getElementById("mobileAddCartBtn");
           if (mobileAddCartBtn) {
             mobileAddCartBtn.addEventListener("click", () => {
               addCurrentToCart();
               showToast("به سبد خرید اضافه شد");
+            });
+          }
+
+          const desktopNotifyBtn = document.getElementById("desktopNotifyBtn");
+          if (desktopNotifyBtn) {
+            desktopNotifyBtn.addEventListener("click", () => {
+              showToast("به محض موجود شدن به شما اطلاع می‌دهیم");
             });
           }
 
