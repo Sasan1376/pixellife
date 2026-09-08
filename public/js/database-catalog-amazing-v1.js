@@ -270,6 +270,7 @@
   const requestedCategory = requestedParams.get("category");
   const requestedBrand = requestedParams.get("brand");
   const isApplePhoneCatalog = path === "/iphone" || path === "/mobile/apple";
+  const isConsoleCatalog = path === "/console";
   const params = new URLSearchParams({
     // فیلتر و مرتب‌سازی در مرورگر انجام می‌شود؛ بنابراین باید کل موجودی این
     // دسته دریافت شود تا محصولات قدیمی‌تر یا تخفیف‌خورده از فهرست حذف نشوند.
@@ -279,7 +280,7 @@
   // در داده‌های قدیمی بعضی آیفون‌ها با دستهٔ «آیفون» یا «عمومی» ثبت شده‌اند.
   // صفحهٔ اپل ابتدا همهٔ محصولات برند اپل را می‌گیرد و پایین‌تر فقط آیفون‌ها
   // را نگه می‌دارد تا محصول معتبر به‌خاطر دسته‌بندی قدیمی گم نشود.
-  if (categoryForRequest && !(isApplePhoneCatalog && !requestedCategory)) {
+  if (categoryForRequest && !(isApplePhoneCatalog && !requestedCategory) && !(isConsoleCatalog && !requestedCategory)) {
     params.set("category", categoryForRequest);
   }
   if ((requestedBrand || config.brand) && !(isApplePhoneCatalog && !requestedBrand)) {
@@ -287,6 +288,9 @@
   }
   if (isApplePhoneCatalog && !requestedCategory && !requestedBrand) {
     params.set("search", "iphone");
+  }
+  if (isConsoleCatalog && !requestedCategory && !requestedBrand) {
+    params.set("search", "console");
   }
 
   // دادهٔ قدیمیِ داخل HTML فقط نقش پشتیبان دارد. قبل از اولین رنگ‌کردن
