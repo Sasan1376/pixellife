@@ -363,3 +363,12 @@
   margin-left: auto !important;
   justify-content: flex-start !important;
 }
+
+/* حذف سراسری مرز و فاصله بین هدر جستجو و نوار دسته‌بندی */
+.header {
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+}
+.header + .navbar {
+  margin-top: -1px !important;
+}
