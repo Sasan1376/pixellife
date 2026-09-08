@@ -129,10 +129,22 @@ router.get("/", async (req, res) => {
 
     if (search) {
       const normalizedSearch = normalizeText(search);
-      const searchPattern = /^(?:iphone|آیفون|ایفون)$/i.test(normalizedSearch)
-        ? "iphone|آیفون|ایفون"
-        : normalizedSearch.replace(/[.*+?^$()|[\]\\]/g, "\\$&");
-      filter.name = { $regex: searchPattern, $options: "i" };
+      if (/^(?:console|کنسول|پلی[‌\s-]*استیشن|play\s*station)$/i.test(normalizedSearch)) {
+        // همانند صفحهٔ آیفون، برای کنسول به یک نام ثابت در پنل وابسته نیستیم.
+        // محصول ممکن است با برند سونی یا دستهٔ متفاوت ثبت شده باشد.
+        filter.$and = [{
+          $or: [
+            { name: { $regex: "کنسول|play\\s*station|پلی[‌\\s-]*استیشن|ps\\s*[45]", $options: "i" } },
+            { brand: { $regex: "سونی|sony|play\\s*station|پلی[‌\\s-]*استیشن", $options: "i" } },
+            { category: categoryPattern("کنسول بازی") },
+          ],
+        }];
+      } else {
+        const searchPattern = /^(?:iphone|آیفون|ایفون)$/i.test(normalizedSearch)
+          ? "iphone|آیفون|ایفون"
+          : normalizedSearch.replace(/[.*+?^$()|[\]\\]/g, "\\$&");
+        filter.name = { $regex: searchPattern, $options: "i" };
+      }
     }
 
     if (brand) {
@@ -153,12 +165,13 @@ router.get("/", async (req, res) => {
       if (normalizedCategory === "کنسول بازی") {
         // برخی محصولات قدیمی با دستهٔ آزاد ثبت شده‌اند، اما نامشان به‌وضوح
         // کنسول است. آن‌ها را نیز به صفحهٔ کنسول برگردان تا محصول پنل گم نشود.
-        filter.$and = [{
+        const consoleProducts = {
           $or: [
             { category: categoryPattern(category) },
             { name: { $regex: "کنسول|play\\s*station|پلی[‌\\s-]*استیشن|ps\\s*[45]", $options: "i" } },
           ],
-        }];
+        };
+        filter.$and = Array.isArray(filter.$and) ? [...filter.$and, consoleProducts] : [consoleProducts];
       } else {
         filter.category = categoryPattern(category);
       }
