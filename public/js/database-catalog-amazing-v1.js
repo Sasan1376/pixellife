@@ -285,6 +285,9 @@
   if ((requestedBrand || config.brand) && !(isApplePhoneCatalog && !requestedBrand)) {
     params.set("brand", requestedBrand || config.brand);
   }
+  if (isApplePhoneCatalog && !requestedCategory && !requestedBrand) {
+    params.set("search", "iphone");
+  }
 
   // دادهٔ قدیمیِ داخل HTML فقط نقش پشتیبان دارد. قبل از اولین رنگ‌کردن
   // صفحه پنهان می‌شود تا کاربر هرگز جابه‌جایی بین کارت‌های قدیمی و دیتابیس را نبیند.
