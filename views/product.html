@@ -8026,3 +8026,41 @@
   else decoratePurchasePrice();
 })();
 </script>
+
+<script id="apply-discount-to-product-price">
+(() => {
+  const toNumber = (value) => Number(String(value || "")
+    .replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit))
+    .replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit))
+    .replace(/[^0-9]/g, ""));
+  const format = (value) => Math.round(value).toLocaleString("fa-IR");
+  const applyDiscount = () => {
+    const source = document.querySelector(".product-info-col > .product-price-row");
+    const priceValue = source?.querySelector(".price-value");
+    const discountTag = source?.querySelector(".price-discount-tag");
+    if (!priceValue || !discountTag || priceValue.dataset.discountApplied) return;
+    const basePrice = toNumber(priceValue.textContent);
+    const discountPercent = toNumber(discountTag.textContent);
+    if (!basePrice || discountPercent <= 0 || discountPercent >= 100) return;
+    const finalPrice = Math.round(basePrice * (1 - discountPercent / 100));
+    priceValue.dataset.discountApplied = "true";
+    const priceText = Array.from(priceValue.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+    if (priceText) priceText.nodeValue = format(finalPrice) + " ";
+    const oldPrice = source.querySelector(".price-old");
+    if (oldPrice) oldPrice.textContent = format(basePrice);
+    const desktopCurrent = document.querySelector(".desktop-purchase-current-price");
+    if (desktopCurrent) desktopCurrent.textContent = format(finalPrice);
+    const desktopOld = document.querySelector(".desktop-purchase-old-price");
+    if (desktopOld) desktopOld.textContent = format(basePrice);
+    const mobileCurrent = document.querySelector(".mobile-purchase-current");
+    if (mobileCurrent) {
+      const mobileText = Array.from(mobileCurrent.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+      if (mobileText) mobileText.nodeValue = format(finalPrice);
+    }
+    const mobileOld = document.querySelector(".mobile-purchase-old");
+    if (mobileOld) mobileOld.textContent = format(basePrice);
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", applyDiscount, { once: true });
+  else applyDiscount();
+})();
+</script>
