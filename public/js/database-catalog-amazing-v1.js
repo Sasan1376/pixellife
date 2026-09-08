@@ -269,11 +269,17 @@
   const requestedCategory = requestedParams.get("category");
   const requestedBrand = requestedParams.get("brand");
   const params = new URLSearchParams({
-    category: requestedCategory || config.category,
     // فیلتر و مرتب‌سازی در مرورگر انجام می‌شود؛ بنابراین باید کل موجودی این
     // دسته دریافت شود تا محصولات قدیمی‌تر یا تخفیف‌خورده از فهرست حذف نشوند.
     limit: "100",
   });
+  const categoryForRequest = requestedCategory || config.category;
+  // در داده‌های قدیمی بعضی آیفون‌ها با دستهٔ «آیفون» یا «عمومی» ثبت شده‌اند.
+  // صفحهٔ اپل ابتدا همهٔ محصولات برند اپل را می‌گیرد و پایین‌تر فقط آیفون‌ها
+  // را نگه می‌دارد تا محصول معتبر به‌خاطر دسته‌بندی قدیمی گم نشود.
+  if (categoryForRequest && !(path === "/iphone" && !requestedCategory)) {
+    params.set("category", categoryForRequest);
+  }
   if (requestedBrand || config.brand) params.set("brand", requestedBrand || config.brand);
 
   // دادهٔ قدیمیِ داخل HTML فقط نقش پشتیبان دارد. قبل از اولین رنگ‌کردن
@@ -313,7 +319,15 @@
 
       // فقط همین مسیر اجازهٔ بازنویسی گرید را دارد؛ هیچ observer یا اسکریپت
       // موازی نباید دادهٔ قدیمی را دوباره برگرداند.
-      catalogFilters.setProducts(data.products);
+      const catalogProducts = path === "/iphone" && !requestedCategory
+        ? data.products.filter((product) => {
+            const name = String(product.name || "").trim();
+            const category = String(product.category || "").trim();
+            return /^(?:apple\s*)?iphone\b|^(?:آیفون|ایفون)/i.test(name) ||
+              /^(?:موبایل|mobile|گوشی موبایل|گوشی|phone|آیفون|ایفون|iphone)$/i.test(category);
+          })
+        : data.products;
+      catalogFilters.setProducts(catalogProducts);
       grid.dataset.databaseCatalog = "ready";
       const updateAmazingTimers = () => {
         let expired = false;
