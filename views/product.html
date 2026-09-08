@@ -8246,3 +8246,41 @@
   syncHighlights();
 })();
 </script>
+<style id="lock-main-product-gallery">
+  #galPrevBtn,
+  #galNextBtn {
+    display: none !important;
+  }
+
+  #galleryTrack {
+    transform: translate3d(0, 0, 0) !important;
+    transition: none !important;
+  }
+</style>
+<script id="lock-main-product-gallery-behavior">
+  (() => {
+    const lockMainGallery = () => {
+      const track = document.getElementById("galleryTrack");
+      const gallery = document.querySelector(".gallery-main");
+      if (!track) return false;
+
+      document.getElementById("galPrevBtn")?.remove();
+      document.getElementById("galNextBtn")?.remove();
+      track.style.setProperty("transform", "translate3d(0, 0, 0)", "important");
+      track.style.setProperty("transition", "none", "important");
+
+      if (gallery && !gallery.dataset.navigationLocked) {
+        const stopNavigation = (event) => event.stopImmediatePropagation();
+        ["pointerdown", "pointermove", "pointerup", "pointercancel"].forEach((type) => {
+          gallery.addEventListener(type, stopNavigation, true);
+        });
+        gallery.dataset.navigationLocked = "true";
+      }
+      return true;
+    };
+
+    lockMainGallery();
+    document.addEventListener("DOMContentLoaded", lockMainGallery, { once: true });
+  })();
+</script>
+
