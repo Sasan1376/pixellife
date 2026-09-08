@@ -8064,3 +8064,26 @@
   else applyDiscount();
 })();
 </script>
+
+<style id="desktop-purchase-discount-polish">
+@media (min-width: 769px) {
+  .desktop-purchase-discount {
+    background: #ef4444;
+    color: #fff;
+  }
+  .desktop-purchase-old-price {
+    font-size: 11px;
+    font-weight: 400;
+    color: #9ca3af;
+    text-decoration-thickness: 1px;
+  }
+}
+</style>
+<script id="desktop-purchase-discount-label">
+(() => {
+  const badge = document.querySelector(".desktop-purchase-discount");
+  if (!badge) return;
+  const percent = badge.textContent.match(/[۰-۹0-9]+\s*[%٪]/);
+  if (percent) badge.textContent = percent[0].replace(/\s/g, "");
+})();
+</script>
