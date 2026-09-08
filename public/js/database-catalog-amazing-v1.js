@@ -5,6 +5,7 @@
     "/smartwatches": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", category: "ساعت هوشمند", title: "ساعت هوشمند", noFallback: true },
     "/mobiles": { grid: ".grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", category: "موبایل", title: "همه محصولات موبایل", noFallback: true },
     "/iphone": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", brand: "اپل", category: "موبایل", noFallback: true },
+    "/mobile/apple": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", brand: "اپل", category: "موبایل", noFallback: true },
     "/samsung": { grid: ".samsung-grid", card: "samsung-card", name: "samsung-card-name", image: "samsung-card-image", body: "samsung-card-body", desc: "samsung-card-desc", brand: "سامسونگ", category: "موبایل", noFallback: true },
     "/xiaomi": { grid: ".xiaomi-grid", card: "xiaomi-card", name: "xiaomi-card-name", image: "xiaomi-card-image", body: "xiaomi-card-body", desc: "xiaomi-card-desc", brand: "شیائومی", category: "موبایل", noFallback: true },
     "/accessories": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", category: "لوازم جانبی موبایل", title: "همه لوازم جانبی موبایل", noFallback: true },
@@ -268,6 +269,7 @@
   const requestedParams = new URLSearchParams(window.location.search);
   const requestedCategory = requestedParams.get("category");
   const requestedBrand = requestedParams.get("brand");
+  const isApplePhoneCatalog = path === "/iphone" || path === "/mobile/apple";
   const params = new URLSearchParams({
     // فیلتر و مرتب‌سازی در مرورگر انجام می‌شود؛ بنابراین باید کل موجودی این
     // دسته دریافت شود تا محصولات قدیمی‌تر یا تخفیف‌خورده از فهرست حذف نشوند.
@@ -277,7 +279,7 @@
   // در داده‌های قدیمی بعضی آیفون‌ها با دستهٔ «آیفون» یا «عمومی» ثبت شده‌اند.
   // صفحهٔ اپل ابتدا همهٔ محصولات برند اپل را می‌گیرد و پایین‌تر فقط آیفون‌ها
   // را نگه می‌دارد تا محصول معتبر به‌خاطر دسته‌بندی قدیمی گم نشود.
-  if (categoryForRequest && !(path === "/iphone" && !requestedCategory)) {
+  if (categoryForRequest && !(isApplePhoneCatalog && !requestedCategory)) {
     params.set("category", categoryForRequest);
   }
   if (requestedBrand || config.brand) params.set("brand", requestedBrand || config.brand);
@@ -319,7 +321,7 @@
 
       // فقط همین مسیر اجازهٔ بازنویسی گرید را دارد؛ هیچ observer یا اسکریپت
       // موازی نباید دادهٔ قدیمی را دوباره برگرداند.
-      const catalogProducts = path === "/iphone" && !requestedCategory
+      const catalogProducts = isApplePhoneCatalog && !requestedCategory
         ? data.products.filter((product) => {
             const name = String(product.name || "").trim();
             const category = String(product.category || "").trim();
