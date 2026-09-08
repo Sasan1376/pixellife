@@ -905,6 +905,11 @@
         color: var(--text-1);
         font-weight: 600;
       }
+      /* نام کامل محصول در مسیر تکرار نمی‌شود؛ مسیر با دسته‌بندی پایان می‌یابد. */
+      .breadcrumb-product-separator,
+      .breadcrumb-product-name {
+        display: none;
+      }
 
       /* PAGE BODY */
       .page-body {
@@ -4400,8 +4405,8 @@
       <a href="/iphone" id="breadcrumbBrandLink">اپل</a>
       <i class="ti ti-chevron-left"></i>
       <a href="/iphone" id="breadcrumbCategoryLink">خرید آیفون</a>
-      <i class="ti ti-chevron-left"></i>
-      <span class="current" id="breadcrumbCurrent">جزئیات محصول</span>
+      <i class="ti ti-chevron-left breadcrumb-product-separator" aria-hidden="true"></i>
+      <span class="current breadcrumb-product-name" id="breadcrumbCurrent" aria-hidden="true">جزئیات محصول</span>
     </div>
 
     <main class="page-body" id="pageBody">
