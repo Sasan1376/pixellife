@@ -8087,3 +8087,45 @@
   if (percent) badge.textContent = percent[0].replace(/\s/g, "");
 })();
 </script>
+
+<script id="reliably-apply-product-discount">
+(() => {
+  const toNumber = (value) => Number(String(value || "")
+    .replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit))
+    .replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit))
+    .replace(/[^0-9]/g, ""));
+  const format = (value) => Math.round(value).toLocaleString("fa-IR");
+  const apply = () => {
+    const source = document.querySelector(".product-info-col > .product-price-row");
+    const value = source?.querySelector(".price-value");
+    const tag = source?.querySelector(".price-discount-tag");
+    if (!value || !tag) return false;
+    if (value.dataset.reliableDiscountApplied) return true;
+    const base = toNumber(value.textContent);
+    const percent = toNumber(tag.textContent);
+    if (!base || percent <= 0 || percent >= 100) return false;
+    const final = Math.round(base * (100 - percent) / 100);
+    const valueText = Array.from(value.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+    if (valueText) valueText.nodeValue = format(final) + " ";
+    const old = source.querySelector(".price-old");
+    if (old) old.textContent = format(base);
+    const desktopCurrent = document.querySelector(".desktop-purchase-current-price");
+    if (desktopCurrent) desktopCurrent.textContent = format(final);
+    const desktopOld = document.querySelector(".desktop-purchase-old-price");
+    if (desktopOld) desktopOld.textContent = format(base);
+    const mobileCurrent = document.querySelector(".mobile-purchase-current");
+    const mobileText = mobileCurrent && Array.from(mobileCurrent.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+    if (mobileText) mobileText.nodeValue = format(final);
+    const mobileOld = document.querySelector(".mobile-purchase-old");
+    if (mobileOld) mobileOld.textContent = format(base);
+    value.dataset.reliableDiscountApplied = "true";
+    return true;
+  };
+  let attempts = 0;
+  const timer = setInterval(() => {
+    attempts += 1;
+    if (apply() || attempts >= 80) clearInterval(timer);
+  }, 100);
+  apply();
+})();
+</script>
