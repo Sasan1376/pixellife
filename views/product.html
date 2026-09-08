@@ -7951,3 +7951,78 @@
   }
 }
 </style>
+
+<style id="desktop-purchase-price-design">
+@media (min-width: 769px) {
+  .desktop-purchase-price {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 17px 0 14px;
+  }
+  .desktop-purchase-price-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 28px;
+    direction: rtl;
+  }
+  .desktop-purchase-discount {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: #c2413b;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .desktop-purchase-old-price {
+    color: #a8adb7;
+    font-size: 13px;
+    font-weight: 650;
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+  }
+  .desktop-purchase-current-row {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    direction: rtl;
+    color: #202548;
+  }
+  .desktop-purchase-current-price {
+    font-size: 25px;
+    font-weight: 850;
+    line-height: 1.25;
+    letter-spacing: -0.4px;
+  }
+  .desktop-purchase-current-row small {
+    color: #202548;
+    font-size: 11px;
+    font-weight: 800;
+  }
+}
+</style>
+<script id="desktop-purchase-price-content">
+(() => {
+  const decoratePurchasePrice = () => {
+    const card = document.querySelector(".desktop-purchase-card:not(.is-out-of-stock)");
+    const price = card?.querySelector(".desktop-purchase-price");
+    if (!price || price.dataset.priceDesignApplied) return;
+    const current = price.querySelector("span")?.textContent.trim();
+    if (!current) return;
+    const source = document.querySelector(".product-info-col > .product-price-row");
+    const oldPrice = source?.querySelector(".price-old")?.textContent.trim();
+    const discount = source?.querySelector(".price-discount-tag")?.textContent.trim();
+    price.dataset.priceDesignApplied = "true";
+    price.innerHTML = `${oldPrice || discount ? `<div class="desktop-purchase-price-top">${discount ? `<span class="desktop-purchase-discount">${discount}</span>` : ""}${oldPrice ? `<span class="desktop-purchase-old-price">${oldPrice}</span>` : ""}</div>` : ""}<div class="desktop-purchase-current-row"><span class="desktop-purchase-current-price">${current}</span><small>تومان</small></div>`;
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", decoratePurchasePrice, { once: true });
+  else decoratePurchasePrice();
+})();
+</script>
