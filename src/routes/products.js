@@ -60,7 +60,18 @@ function normalizeText(value) {
 function categoryPattern(category) {
   const normalized = normalizeText(category);
   const aliases = {
-    "موبایل": ["موبایل", "mobile", "گوشی موبایل", "گوشی"],
+    "موبایل": [
+      "موبایل",
+      "mobile",
+      "گوشی موبایل",
+      "گوشی",
+      "phone",
+      "آیفون",
+      "ایفون",
+      "iphone",
+      "گوشی اپل",
+      "apple phone",
+    ],
     "تبلت": ["تبلت", "tablet"],
     "لوازم جانبی موبایل": ["لوازم جانبی موبایل", "mobile accessories", "accessories", "کابل، شارژر و آداپتور", "کابل شارژ و آداپتور", "کابل و شارژر", "chargers", "cables", "chargers and adapters"],
     "کابل، شارژر و آداپتور": ["کابل، شارژر و آداپتور", "کابل شارژ و آداپتور", "کابل و شارژر", "chargers", "cables", "chargers and adapters"],
