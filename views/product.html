@@ -6253,12 +6253,8 @@
         } catch (e) {
           console.warn("خطا در دریافت محصول از سرور:", e);
         }
-        if (!product) {
-          product = PRODUCTS[productId];
-          if (product) {
-            console.warn("fallback به داده استاتیک برای شناسه:", productId);
-          }
-        }
+        // دادهٔ نمونه نباید جای کالای حذف‌شده از پنل ادمین را بگیرد.
+        // اگر API محصولی برنگرداند، صفحهٔ «محصول یافت نشد» نمایش داده می‌شود.
         if (product) {
           product.hasStorage = product.hasStorage !== false;
           product.hasWarranty = product.hasWarranty !== false;
@@ -7605,7 +7601,7 @@
                   const mapped = data.products.map((d) => [
                     String(d._id),
                     mapDbProductToView(d),
-                  ]);
+                  ]).filter(([, relatedProduct]) => !relatedProduct.outOfStock);
                   // محصولات مشابهِ دریافت‌شده از API را نیز در منبع سبد خرید نگه می‌داریم.
                   // در غیر این صورت دکمه «افزودن» اطلاعات محصول را پیدا نمی‌کند.
                   mapped.forEach(([id, p]) => {
@@ -7620,30 +7616,41 @@
             } catch (e) {
               console.warn("محصولات مشابه از سرور دریافت نشد:", e);
             }
-            // fallback فقط وقتی سرور چیزی نداد
-            const relatedIds = Object.keys(PRODUCTS).filter(
-              (id) =>
-                id !== productId &&
-                (PRODUCTS[id].brand === product.brand ||
-                  !!PRODUCTS[id].isTablet === !!product.isTablet),
-            );
-            document.getElementById("relatedSlider").innerHTML = relatedIds
-              .slice(0, 8)
-              .map((id) => miniCard(id, PRODUCTS[id]))
-              .join("");
+            // در خطای API، کارت قدیمی یا حذف‌شده نمایش داده نمی‌شود.
+            document.getElementById("relatedSlider").innerHTML = "";
           }
           deferNonCriticalWork(loadRelatedProducts);
 
-          const recentIds = getRecentlyViewed().filter(
-            (id) => id !== productId && PRODUCTS[id],
-          );
-          if (recentIds.length) {
+          async function loadRecentlyViewedProducts() {
+            const recentIds = getRecentlyViewed()
+              .filter((id) => String(id) !== String(productId))
+              .slice(0, 8);
+            if (!recentIds.length) return;
+            const responses = await Promise.all(recentIds.map(async (id) => {
+              try {
+                const isMongoId = /^[a-f0-9]{24}$/i.test(String(id));
+                const response = await fetch(
+                  isMongoId ? `/api/products/id/${id}` : `/api/products/${encodeURIComponent(id)}`,
+                  { cache: "no-store" },
+                );
+                if (!response.ok) return null;
+                const data = await response.json();
+                return data.success && data.product ? [String(data.product._id), mapDbProductToView(data.product)] : null;
+              } catch (_) {
+                return null;
+              }
+            }));
+            const liveProducts = responses.filter(Boolean);
+            // شناسه‌های حذف‌شده از دادهٔ محلی نیز پاک می‌شوند.
+            localStorage.setItem("digishop_recently_viewed", JSON.stringify(liveProducts.map(([id]) => id)));
+            if (!liveProducts.length) return;
+            liveProducts.forEach(([id, recentProduct]) => { PRODUCTS[id] = recentProduct; });
             document.getElementById("recentlyViewedBlock").style.display = "";
-            document.getElementById("recentSlider").innerHTML = recentIds
-              .slice(0, 8)
-              .map((id) => miniCard(id, PRODUCTS[id]))
+            document.getElementById("recentSlider").innerHTML = liveProducts
+              .map(([id, recentProduct]) => miniCard(id, recentProduct))
               .join("");
           }
+          deferNonCriticalWork(loadRecentlyViewedProducts);
 
           // کارت‌های مشابه و بازدیدهای اخیر پس از آماده‌شدن صفحه ساخته می‌شوند.
           // بنابراین رویداد را روی document می‌گذاریم تا دکمه‌های جدید هم کار کنند.
