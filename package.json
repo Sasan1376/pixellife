@@ -9,7 +9,9 @@
     "next:build": "next build",
     "next:start": "next start",
     "express:dev": "nodemon src/app.js",
-    "express:start": "node src/app.js"
+    "express:start": "node src/app.js",
+    "test:product-page-contract": "node tests/product-page-contract.test.js",
+    "prestart": "npm run test:product-page-contract"
   },
   "dependencies": {
     "@adminjs/express": "^6.1.1",
