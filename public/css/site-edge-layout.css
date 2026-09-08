@@ -70,3 +70,8 @@
     padding-inline: 12px !important;
   }
 }
+
+/* حذف خط جداکننده بین هدر جستجو و نوار دسته‌بندی */
+.header {
+  border-bottom: 0 !important;
+}
