@@ -7913,3 +7913,22 @@
   }
 }
 </style>
+
+<style id="product-gallery-image-fit">
+@media (min-width: 769px) {
+  .gallery-main svg,
+  .gallery-main img {
+    max-width: 100% !important;
+    max-height: 720px !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    transform: none !important;
+    transform-origin: center center !important;
+  }
+  .gallery-main:hover svg,
+  .gallery-main:hover img {
+    transform: none !important;
+  }
+}
+</style>
