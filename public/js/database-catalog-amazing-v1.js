@@ -327,3 +327,32 @@
       grid.removeAttribute("aria-busy");
     });
 })();
+
+// کارت‌های فشردهٔ فهرست محصول در دسکتاپ
+(() => {
+  const compactCatalogStyle = document.createElement("style");
+  compactCatalogStyle.id = "compact-product-list-cards";
+  compactCatalogStyle.textContent = `
+    @media (min-width: 769px) {
+      .iphone-grid, .samsung-grid, .xiaomi-grid, .prod-grid, .xiaomitab-grid, .console-grid, .grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 0 !important;
+      }
+      .pl-catalog-card { padding: 10px !important; }
+      .pl-catalog-media, .pl-catalog-image, .pl-catalog-card .iphone-card-image, .pl-catalog-card .samsung-card-image, .pl-catalog-card .xiaomi-card-image, .pl-catalog-card .prod-card-image, .pl-catalog-card .xiaomitab-card-image, .pl-catalog-card .console-card-image {
+        height: 200px !important;
+        min-height: 200px !important;
+        flex-basis: 200px !important;
+        margin: 26px auto 8px !important;
+        padding: 4px !important;
+      }
+      .pl-catalog-brand { font-size: 11px !important; line-height: 16px !important; height: 16px !important; }
+      .pl-catalog-card .iphone-card-name, .pl-catalog-card .samsung-card-name, .pl-catalog-card .xiaomi-card-name, .pl-catalog-card .prod-card-name, .pl-catalog-card .xiaomitab-card-name, .pl-catalog-card .console-card-name, .pl-catalog-card .card-name {
+        font-size: 13px !important; line-height: 22px !important; height: 44px !important; min-height: 44px !important;
+      }
+      .pl-catalog-footer { min-height: 42px !important; gap: 2px !important; }
+      .pl-catalog-price, .pl-catalog-status { font-size: 12px !important; }
+    }
+  `;
+  document.head.appendChild(compactCatalogStyle);
+})();
