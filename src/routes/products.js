@@ -148,7 +148,21 @@ router.get("/", async (req, res) => {
       filter.brand = { $regex: brandAliases[requestedBrand] || normalizeText(brand), $options: "i" };
     }
 
-    if (category) filter.category = categoryPattern(category);
+    if (category) {
+      const normalizedCategory = normalizeText(category);
+      if (normalizedCategory === "کنسول بازی") {
+        // برخی محصولات قدیمی با دستهٔ آزاد ثبت شده‌اند، اما نامشان به‌وضوح
+        // کنسول است. آن‌ها را نیز به صفحهٔ کنسول برگردان تا محصول پنل گم نشود.
+        filter.$and = [{
+          $or: [
+            { category: categoryPattern(category) },
+            { name: { $regex: "کنسول|play\\s*station|پلی[‌\\s-]*استیشن|ps\\s*[45]", $options: "i" } },
+          ],
+        }];
+      } else {
+        filter.category = categoryPattern(category);
+      }
+    }
     if (featured !== undefined) filter.featured = toBoolean(featured);
     if (amazing !== undefined) {
       const amazingEnabled = toBoolean(amazing);
