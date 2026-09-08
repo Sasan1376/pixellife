@@ -6488,7 +6488,7 @@
               </div>` : ""}
 
               ${product.hasStorage ? `<div class="option-group">
-                <div class="option-label"><i class="ti ti-device-sd-card"></i> حافظه داخلی: <span class="selected-val" id="storageVal">${selectedStorage}</span></div>
+                <div class="option-label"><i class="ti ti-device-sd-card"></i> حافظه داخلی <span id="storageVal" hidden>${selectedStorage}</span></div>
                 <div class="storage-options" id="storageOptions">
                   ${product.storages
                     .map(
