@@ -1828,7 +1828,7 @@
         margin-right: 4px;
       }
       .price-old {
-        font-size: 11px;         font-weight: 400;         line-height: 1.35;
+        font-size: 15px;
         color: var(--text-4);
         text-decoration: line-through;
       }
@@ -1853,7 +1853,7 @@
         color: #fff;
         border: none;
         border-radius: var(--radius-sm);
-        font-size: 11px;         font-weight: 400;         line-height: 1.35;
+        font-size: 15px;
         font-weight: 700;
         display: flex;
         align-items: center;
@@ -2087,21 +2087,21 @@
           gap: 32px;
         }
         .desktop-product-shell > .desktop-purchase-card {
-          flex: 0 0 300px;
-          width: 300px !important;
-          max-width: 300px;
-          min-width: 300px;
+          flex: 0 0 270px;
+          width: 270px !important;
+          max-width: 270px;
+          min-width: 270px;
         }
         .desktop-purchase-card {
           display: block;
           position: sticky;
           top: 132px;
           align-self: start;
-          background: #f7f7f8;
-          border: 1px solid #e0e0e2;
+          background: #fff;
+          border: 1px solid var(--border);
           border-radius: 14px;
           padding: 16px;
-          box-shadow: none;
+          box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
         }
         .desktop-purchase-product {
           display: flex;
@@ -2975,18 +2975,11 @@
         margin-bottom: 6px;
       }
       .slider-card-price {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 2px;
         font-size: 13px;
-        font-weight: 700;
+        font-weight: 800;
         color: var(--text-1);
         margin-bottom: 10px;
       }
-      .slider-card-price-meta { display:flex;align-items:center;gap:6px; }
-      .slider-card-discount { padding:2px 6px;border-radius:999px;background:#ef4444;color:#fff;font-size:9px;font-weight:800;direction:ltr; }
-      .slider-card-old-price { color:#9ca3af;font-size:9px;font-weight:400;text-decoration:line-through;text-decoration-thickness:1px; }
       .slider-card-price .toman {
         font-size: 10px;
         font-weight: 600;
@@ -3572,7 +3565,7 @@
           bottom: env(safe-area-inset-bottom);
           left: 0;
           display: grid;
-          grid-template-columns: minmax(108px, 0.88fr) minmax(164px, 1.32fr);
+          grid-template-columns: minmax(148px, 0.9fr) minmax(120px, 1.1fr);
           align-items: center;
           gap: 10px;
           min-height: 92px;
@@ -3583,10 +3576,12 @@
           box-sizing: border-box;
         }
         .mobile-purchase-price {
+          grid-column: 2;
           min-width: 0;
           display: flex;
           flex-direction: column;
-          align-items: flex-start;
+          align-items: flex-end;
+          text-align: left;
           gap: 4px;
           color: #17233d;
         }
@@ -3626,23 +3621,18 @@
           font-weight: 700;
         }
         .mobile-purchase-add {
+          grid-column: 1;
           width: 100%;
-          min-height: 52px;
-          padding: 10px 8px;
+          min-height: 48px;
+          padding: 8px 7px;
           color: #fff;
           background: var(--primary, #2f6fed);
           border: 0;
           border-radius: 10px;
           font-family: inherit;
-          font-size: clamp(14px, 4vw, 17px);
+          font-size: clamp(13px, 3.7vw, 16px);
           font-weight: 850;
           cursor: pointer;
-          position: relative;
-          z-index: 1;
-          pointer-events: auto;
-          touch-action: manipulation;
-          -webkit-user-select: none;
-          user-select: none;
           -webkit-tap-highlight-color: transparent;
         }
         .mobile-purchase-add:active {
@@ -3996,7 +3986,7 @@
       }
       </style>
       <link rel="stylesheet" href="/css/shopping-assistant.css?v=4" />
-  <link rel="stylesheet" href="/css/site-edge-layout.css?v=1" />
+    <link rel="stylesheet" href="/css/site-edge-layout.css?v=1" />
   </head>
   <body>
     <!-- TOAST -->
@@ -4401,7 +4391,11 @@
     <div class="breadcrumb">
       <a href="/">خانه</a>
       <i class="ti ti-chevron-left"></i>
-      <a href="/mobiles" id="breadcrumbCategoryLink">گوشی موبایل</a>
+      <a href="/iphone" id="breadcrumbBrandLink">اپل</a>
+      <i class="ti ti-chevron-left"></i>
+      <a href="/iphone" id="breadcrumbCategoryLink">خرید آیفون</a>
+      <i class="ti ti-chevron-left"></i>
+      <span class="current" id="breadcrumbCurrent">جزئیات محصول</span>
     </div>
 
     <main class="page-body" id="pageBody">
@@ -5446,7 +5440,7 @@
             : 0;
         // اگر خود دیتابیس oldPrice/compareAtPrice داشت، همان معتبرتر است
         const oldPrice =
-          doc.oldPrice || doc.compareAtPrice || (doc.discount && Number(doc.discount) > 0 ? doc.price : oldPriceFromDiscount);
+          doc.oldPrice || doc.compareAtPrice || oldPriceFromDiscount;
 
         const hasStorage = doc.hasStorage !== false;
         const variants = hasStorage && Array.isArray(doc.variants)
@@ -5526,7 +5520,7 @@
           amazingOfferEndsAt: doc.amazingOfferEndsAt || null,
           stock: Math.max(0, Number(doc.stock) || 0),
           outOfStock: doc.availability === "out" || Number(doc.stock) <= 0,
-          price: doc.discount && Number(doc.discount) > 0 ? Math.round(Number(doc.price) * (1 - Number(doc.discount) / 100)) : doc.price,
+          price: doc.price,
           oldPrice: oldPrice,
           hasStorage: hasStorage,
           storages: storages,
@@ -6259,8 +6253,12 @@
         } catch (e) {
           console.warn("خطا در دریافت محصول از سرور:", e);
         }
-        // دادهٔ نمونه نباید جای کالای حذف‌شده از پنل ادمین را بگیرد.
-        // اگر API محصولی برنگرداند، صفحهٔ «محصول یافت نشد» نمایش داده می‌شود.
+        if (!product) {
+          product = PRODUCTS[productId];
+          if (product) {
+            console.warn("fallback به داده استاتیک برای شناسه:", productId);
+          }
+        }
         if (product) {
           product.hasStorage = product.hasStorage !== false;
           product.hasWarranty = product.hasWarranty !== false;
@@ -6327,6 +6325,9 @@
           </div>`;
         } else {
           document.title = product.name + " | پیکسل لایف";
+          document.getElementById("breadcrumbCurrent").textContent =
+            product.name;
+          const brandLink = document.getElementById("breadcrumbBrandLink");
           const categoryLink = document.getElementById(
             "breadcrumbCategoryLink",
           );
@@ -6336,27 +6337,20 @@
             اپل: { phone: "/iphone", tablet: "/ipad" },
           };
           const brandRoute = BRAND_ROUTES[product.brand];
-          const rawCategory = String(product.category || "");
-          let categoryLabel = "گوشی موبایل";
-          let categoryUrl = brandRoute ? brandRoute.phone : "/mobiles";
-          if (product.isTablet || /تبلت|tablet|ipad/i.test(rawCategory)) {
-            categoryLabel = "تبلت";
-            categoryUrl = brandRoute ? brandRoute.tablet : "/tablets";
-          } else if (/کنسول|console/i.test(rawCategory)) {
-            categoryLabel = "کنسول بازی";
-            categoryUrl = "/console";
-          } else if (/هدفون|هندزفری|headphone/i.test(rawCategory)) {
-            categoryLabel = "هدفون و هندزفری";
-            categoryUrl = "/headphones";
-          } else if (/ساعت هوشمند|smart\s*watch/i.test(rawCategory)) {
-            categoryLabel = "ساعت هوشمند";
-            categoryUrl = "/smartwatches";
-          } else if (/لوازم جانبی|accessor|کابل|شارژر|آداپتور/i.test(rawCategory)) {
-            categoryLabel = "لوازم جانبی موبایل";
-            categoryUrl = "/accessories";
+          if (brandRoute) {
+            const url = product.isTablet ? brandRoute.tablet : brandRoute.phone;
+            brandLink.href = url;
+            brandLink.textContent = product.brand;
+            categoryLink.href = url;
+            categoryLink.textContent = `${product.isTablet ? "تبلت" : "گوشی موبایل"} ${product.brand}`;
+          } else {
+            // برند ناشناخته/جدید از پنل ادمین — به‌جای فرض اشتباه "اپل"
+            const genericUrl = product.isTablet ? "/tablets" : "/mobiles";
+            brandLink.href = genericUrl;
+            brandLink.textContent = product.brand || "برند";
+            categoryLink.href = genericUrl;
+            categoryLink.textContent = `${product.isTablet ? "تبلت" : "گوشی موبایل"} ${product.brand || ""}`;
           }
-          categoryLink.href = categoryUrl;
-          categoryLink.textContent = categoryLabel;
 
           const firstAvailableVariant = Array.isArray(product.variants)
             ? product.variants.find((variant) => variant.stock > 0) || product.variants[0]
@@ -6494,7 +6488,7 @@
               </div>` : ""}
 
               ${product.hasStorage ? `<div class="option-group">
-                <div class="option-label"><i class="ti ti-device-sd-card"></i> حافظه داخلی <span id="storageVal" hidden>${selectedStorage}</span></div>
+                <div class="option-label"><i class="ti ti-device-sd-card"></i> حافظه داخلی: <span class="selected-val" id="storageVal">${selectedStorage}</span></div>
                 <div class="storage-options" id="storageOptions">
                   ${product.storages
                     .map(
@@ -6598,14 +6592,14 @@
             ${
               product.outOfStock
                 ? '<div class="mobile-purchase-unavailable">ناموجود</div>'
-                : `<div class="mobile-purchase-price">
+                : `<button type="button" class="mobile-purchase-add" id="mobileAddCartBtn">افزودن به سبد خرید</button>
+                  <div class="mobile-purchase-price">
                     <div class="mobile-purchase-old-row">
                       ${product.oldPrice > 0 && product.oldPrice > product.price ? `<span class="mobile-purchase-old">${product.oldPrice.toLocaleString("fa-IR")}</span>` : ""}
                       ${discountPct > 0 ? `<span class="mobile-purchase-discount">${discountPct}٪</span>` : ""}
                     </div>
                     <div class="mobile-purchase-current">${product.price > 0 ? product.price.toLocaleString("fa-IR") : "—"}<span>تومان</span></div>
-                  </div>
-                  <button type="button" class="mobile-purchase-add" id="mobileAddCartBtn">افزودن به سبد خرید</button>`
+                  </div>`
             }
           </div>
 
@@ -6768,7 +6762,7 @@
             </div>
           </div>
 
-          <div class="section-block" id="relatedProductsSection" style="display:none">
+          <div class="section-block" id="relatedProductsSection">
             <div class="section-heading"><i class="ti ti-apps"></i> محصولات مشابه</div>
             <div class="slider-wrap">
               <button class="slider-nav-btn slider-nav-prev" data-slider="relatedSlider"><i class="ti ti-chevron-right"></i></button>
@@ -7565,14 +7559,6 @@
           });
 
           function miniCard(id, p) {
-            const oldPrice = Math.max(0, Number(p.oldPrice) || 0);
-            const currentPrice = Math.max(0, Number(p.price) || 0);
-            const discountPercent = oldPrice > currentPrice && currentPrice > 0
-              ? Math.round(100 - (currentPrice / oldPrice) * 100)
-              : 0;
-            const discountMeta = discountPercent > 0
-              ? `<span class="slider-card-price-meta"><span class="slider-card-discount">${discountPercent.toLocaleString("fa-IR")}٪</span><span class="slider-card-old-price">${oldPrice.toLocaleString("fa-IR")}</span></span>`
-              : "";
             return `
             <div class="slider-card">
               <a href="/product?id=${id}" style="color:inherit">
@@ -7582,7 +7568,7 @@
                 <a href="/product?id=${id}" style="color:inherit">
                   <div class="slider-card-name">${p.name}</div>
                   <div class="stars">${starsHtml(p.rating)}</div>
-                  <div class="slider-card-price">${discountMeta}<span>${currentPrice > 0 ? currentPrice.toLocaleString("fa-IR") : "—"} <span class="toman">تومان</span></span></div>
+                  <div class="slider-card-price">${p.price > 0 ? p.price.toLocaleString("fa-IR") : "—"} <span class="toman">تومان</span></div>
                 </a>
                 <div class="slider-card-actions">
                   <button class="slider-add-btn" data-id="${id}"><i class="ti ti-shopping-cart-plus"></i> افزودن</button>
@@ -7593,70 +7579,59 @@
           }
 
           async function loadRelatedProducts() {
-            const section = document.getElementById("relatedProductsSection");
-            const slider = document.getElementById("relatedSlider");
-            const getLiveProducts = async (query) => {
-              const res = await fetch(`/api/products?${query}&exclude=${encodeURIComponent(productId)}&limit=8`, { cache: "no-store" });
-              if (!res.ok) return [];
-              const data = await res.json();
-              if (!data.success || !Array.isArray(data.products)) return [];
-              return data.products
-                .map((d) => [String(d._id), mapDbProductToView(d)])
-                .filter(([, relatedProduct]) => !relatedProduct.outOfStock);
-            };
             try {
-              let mapped = product.brand
-                ? await getLiveProducts(`brand=${encodeURIComponent(product.brand)}`)
-                : [];
-              // اگر محصول هم‌برند وجود نداشت، از کالاهای موجودِ همان دسته استفاده کن.
-              if (!mapped.length && product.category) {
-                mapped = await getLiveProducts(`category=${encodeURIComponent(product.category)}`);
-              }
-              if (mapped.length) {
-                mapped.forEach(([id, p]) => { PRODUCTS[id] = p; });
-                slider.innerHTML = mapped.map(([id, p]) => miniCard(id, p)).join("");
-                section.style.display = "block";
-                return;
+              const res = await fetch(
+                `/api/products?brand=${encodeURIComponent(product.brand)}&exclude=${productId}&limit=8`,
+              );
+              if (res.ok) {
+                const data = await res.json();
+                if (
+                  data.success &&
+                  Array.isArray(data.products) &&
+                  data.products.length
+                ) {
+                  const mapped = data.products.map((d) => [
+                    String(d._id),
+                    mapDbProductToView(d),
+                  ]);
+                  // محصولات مشابهِ دریافت‌شده از API را نیز در منبع سبد خرید نگه می‌داریم.
+                  // در غیر این صورت دکمه «افزودن» اطلاعات محصول را پیدا نمی‌کند.
+                  mapped.forEach(([id, p]) => {
+                    PRODUCTS[id] = p;
+                  });
+                  document.getElementById("relatedSlider").innerHTML = mapped
+                    .map(([id, p]) => miniCard(id, p))
+                    .join("");
+                  return;
+                }
               }
             } catch (e) {
               console.warn("محصولات مشابه از سرور دریافت نشد:", e);
             }
-            // در خطا یا نبود کالای مشابه، کادر و فلش‌های خالی نمایش داده نمی‌شوند.
-            slider.innerHTML = "";
-            section.style.display = "none";
+            // fallback فقط وقتی سرور چیزی نداد
+            const relatedIds = Object.keys(PRODUCTS).filter(
+              (id) =>
+                id !== productId &&
+                (PRODUCTS[id].brand === product.brand ||
+                  !!PRODUCTS[id].isTablet === !!product.isTablet),
+            );
+            document.getElementById("relatedSlider").innerHTML = relatedIds
+              .slice(0, 8)
+              .map((id) => miniCard(id, PRODUCTS[id]))
+              .join("");
           }
           deferNonCriticalWork(loadRelatedProducts);
 
-          async function loadRecentlyViewedProducts() {
-            const recentIds = getRecentlyViewed()
-              .filter((id) => String(id) !== String(productId))
-              .slice(0, 8);
-            if (!recentIds.length) return;
-            const responses = await Promise.all(recentIds.map(async (id) => {
-              try {
-                const isMongoId = /^[a-f0-9]{24}$/i.test(String(id));
-                const response = await fetch(
-                  isMongoId ? `/api/products/id/${id}` : `/api/products/${encodeURIComponent(id)}`,
-                  { cache: "no-store" },
-                );
-                if (!response.ok) return null;
-                const data = await response.json();
-                return data.success && data.product ? [String(data.product._id), mapDbProductToView(data.product)] : null;
-              } catch (_) {
-                return null;
-              }
-            }));
-            const liveProducts = responses.filter(Boolean);
-            // شناسه‌های حذف‌شده از دادهٔ محلی نیز پاک می‌شوند.
-            localStorage.setItem("digishop_recently_viewed", JSON.stringify(liveProducts.map(([id]) => id)));
-            if (!liveProducts.length) return;
-            liveProducts.forEach(([id, recentProduct]) => { PRODUCTS[id] = recentProduct; });
+          const recentIds = getRecentlyViewed().filter(
+            (id) => id !== productId && PRODUCTS[id],
+          );
+          if (recentIds.length) {
             document.getElementById("recentlyViewedBlock").style.display = "";
-            document.getElementById("recentSlider").innerHTML = liveProducts
-              .map(([id, recentProduct]) => miniCard(id, recentProduct))
+            document.getElementById("recentSlider").innerHTML = recentIds
+              .slice(0, 8)
+              .map((id) => miniCard(id, PRODUCTS[id]))
               .join("");
           }
-          deferNonCriticalWork(loadRecentlyViewedProducts);
 
           // کارت‌های مشابه و بازدیدهای اخیر پس از آماده‌شدن صفحه ساخته می‌شوند.
           // بنابراین رویداد را روی document می‌گذاریم تا دکمه‌های جدید هم کار کنند.
@@ -7786,19 +7761,10 @@
 
           const mobileAddCartBtn = document.getElementById("mobileAddCartBtn");
           if (mobileAddCartBtn) {
-            let lastMobileAddAt = 0;
-            const addFromMobilePurchaseBar = (event) => {
-              // روی لمس، قبل از آن‌که حرکت انگشت به اسکرول تبدیل شود عمل کن.
-              if (event.type === "pointerup") event.preventDefault();
-              const now = Date.now();
-              // pointerup و click می‌توانند پشت سر هم برسند؛ کالا فقط یک‌بار افزوده شود.
-              if (now - lastMobileAddAt < 450) return;
-              lastMobileAddAt = now;
+            mobileAddCartBtn.addEventListener("click", () => {
               addCurrentToCart();
               showToast("به سبد خرید اضافه شد");
-            };
-            mobileAddCartBtn.addEventListener("pointerup", addFromMobilePurchaseBar);
-            mobileAddCartBtn.addEventListener("click", addFromMobilePurchaseBar);
+            });
           }
 
           const desktopNotifyBtn = document.getElementById("desktopNotifyBtn");
@@ -7928,398 +7894,3 @@
       <script src="/js/product-ratings.js?v=2" defer></script>
   </body>
 </html>
-
-<style id="product-gallery-size-override">
-@media (min-width: 769px) {
-  .gallery-main svg,
-  .gallery-main img {
-    max-height: 720px;
-    transform: scale(1.1);
-  }
-  .gallery-main:hover svg,
-  .gallery-main:hover img {
-    transform: scale(1.13);
-  }
-}
-</style>
-
-<style id="product-gallery-thumbnail-spacing">
-@media (min-width: 769px) {
-  #galleryImgHolder {
-    margin-bottom: 24px;
-  }
-}
-</style>
-
-<style id="product-gallery-image-fit">
-@media (min-width: 769px) {
-  .gallery-main svg,
-  .gallery-main img {
-    max-width: 100% !important;
-    max-height: 720px !important;
-    width: auto !important;
-    height: auto !important;
-    object-fit: contain !important;
-    transform: none !important;
-    transform-origin: center center !important;
-  }
-  .gallery-main:hover svg,
-  .gallery-main:hover img {
-    transform: none !important;
-  }
-}
-</style>
-
-<style id="product-gallery-desktop-position">
-@media (min-width: 769px) {
-  .product-gallery {
-    transform: translateX(48px);
-  }
-  .gallery-actions {
-    right: -32px !important;
-  }
-}
-</style>
-
-<style id="product-gallery-actions-inset">
-@media (min-width: 769px) {
-  .gallery-actions {
-    right: 16px !important;
-  }
-}
-</style>
-
-<style id="desktop-purchase-price-design">
-@media (min-width: 769px) {
-  .desktop-purchase-price {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-    padding: 17px 0 14px;
-  }
-  .desktop-purchase-price-top {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 28px;
-    direction: rtl;
-  }
-  .desktop-purchase-discount {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 42px;
-    height: 28px;
-    padding: 0 8px;
-    border-radius: 999px;
-    background: #c2413b;
-    color: #fff;
-    font-size: 12px;
-    font-weight: 800;
-  }
-  .desktop-purchase-old-price {
-    color: #a8adb7;
-    font-size: 13px;
-    font-weight: 650;
-    text-decoration: line-through;
-    text-decoration-thickness: 1.5px;
-  }
-  .desktop-purchase-current-row {
-    display: flex;
-    align-items: baseline;
-    gap: 5px;
-    direction: rtl;
-    color: #202548;
-  }
-  .desktop-purchase-current-price {
-    font-size: 25px;
-    font-weight: 850;
-    line-height: 1.25;
-    letter-spacing: -0.4px;
-  }
-  .desktop-purchase-current-row small {
-    color: #202548;
-    font-size: 11px;
-    font-weight: 800;
-  }
-}
-</style>
-<script id="desktop-purchase-price-content">
-(() => {
-  const decoratePurchasePrice = () => {
-    const card = document.querySelector(".desktop-purchase-card:not(.is-out-of-stock)");
-    const price = card?.querySelector(".desktop-purchase-price");
-    if (!price || price.dataset.priceDesignApplied) return;
-    const current = price.querySelector("span")?.textContent.trim();
-    if (!current) return;
-    const source = document.querySelector(".product-info-col > .product-price-row");
-    const oldPrice = source?.querySelector(".price-old")?.textContent.trim();
-    const discount = source?.querySelector(".price-discount-tag")?.textContent.trim();
-    price.dataset.priceDesignApplied = "true";
-    price.innerHTML = `${oldPrice || discount ? `<div class="desktop-purchase-price-top">${discount ? `<span class="desktop-purchase-discount">${discount}</span>` : ""}${oldPrice ? `<span class="desktop-purchase-old-price">${oldPrice}</span>` : ""}</div>` : ""}<div class="desktop-purchase-current-row"><span class="desktop-purchase-current-price">${current}</span><small>تومان</small></div>`;
-  };
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", decoratePurchasePrice, { once: true });
-  else decoratePurchasePrice();
-})();
-</script>
-
-<script id="apply-discount-to-product-price">
-(() => {
-  const toNumber = (value) => Number(String(value || "")
-    .replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit))
-    .replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit))
-    .replace(/[^0-9]/g, ""));
-  const format = (value) => Math.round(value).toLocaleString("fa-IR");
-  const applyDiscount = () => { return;
-    const source = document.querySelector(".product-info-col > .product-price-row");
-    const priceValue = source?.querySelector(".price-value");
-    const discountTag = source?.querySelector(".price-discount-tag");
-    if (!priceValue || !discountTag || priceValue.dataset.discountApplied) return;
-    const basePrice = toNumber(priceValue.textContent);
-    const discountPercent = toNumber(discountTag.textContent);
-    if (!basePrice || discountPercent <= 0 || discountPercent >= 100) return;
-    const finalPrice = Math.round(basePrice * (1 - discountPercent / 100));
-    priceValue.dataset.discountApplied = "true";
-    const priceText = Array.from(priceValue.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
-    if (priceText) priceText.nodeValue = format(finalPrice) + " ";
-    const oldPrice = source.querySelector(".price-old");
-    if (oldPrice) oldPrice.textContent = format(basePrice);
-    const desktopCurrent = document.querySelector(".desktop-purchase-current-price");
-    if (desktopCurrent) desktopCurrent.textContent = format(finalPrice);
-    const desktopOld = document.querySelector(".desktop-purchase-old-price");
-    if (desktopOld) desktopOld.textContent = format(basePrice);
-    const mobileCurrent = document.querySelector(".mobile-purchase-current");
-    if (mobileCurrent) {
-      const mobileText = Array.from(mobileCurrent.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
-      if (mobileText) mobileText.nodeValue = format(finalPrice);
-    }
-    const mobileOld = document.querySelector(".mobile-purchase-old");
-    if (mobileOld) mobileOld.textContent = format(basePrice);
-  };
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", applyDiscount, { once: true });
-  else applyDiscount();
-})();
-</script>
-
-<style id="desktop-purchase-discount-polish">
-@media (min-width: 769px) {
-  .desktop-purchase-discount {
-    background: #ef4444;
-    color: #fff;
-  }
-  .desktop-purchase-old-price {
-    font-size: 11px;
-    font-weight: 400;
-    color: #9ca3af;
-    text-decoration-thickness: 1px;
-  }
-}
-</style>
-<script id="desktop-purchase-discount-label">
-(() => {
-  const badge = document.querySelector(".desktop-purchase-discount");
-  if (!badge) return;
-  const percent = badge.textContent.match(/[۰-۹0-9]+\s*[%٪]/);
-  if (percent) badge.textContent = percent[0].replace(/\s/g, "");
-})();
-</script>
-
-<script id="reliably-apply-product-discount">
-(() => {
-  const toNumber = (value) => Number(String(value || "")
-    .replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit))
-    .replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit))
-    .replace(/[^0-9]/g, ""));
-  const format = (value) => Math.round(value).toLocaleString("fa-IR");
-  const apply = () => { return true;
-    const source = document.querySelector(".product-info-col > .product-price-row");
-    const value = source?.querySelector(".price-value");
-    const tag = source?.querySelector(".price-discount-tag");
-    if (!value || !tag) return false;
-    if (value.dataset.reliableDiscountApplied) return true;
-    const base = toNumber(value.textContent);
-    const percent = toNumber(tag.textContent);
-    if (!base || percent <= 0 || percent >= 100) return false;
-    const final = Math.round(base * (100 - percent) / 100);
-    const valueText = Array.from(value.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
-    if (valueText) valueText.nodeValue = format(final) + " ";
-    const old = source.querySelector(".price-old");
-    if (old) old.textContent = format(base);
-    const desktopCurrent = document.querySelector(".desktop-purchase-current-price");
-    if (desktopCurrent) desktopCurrent.textContent = format(final);
-    const desktopOld = document.querySelector(".desktop-purchase-old-price");
-    if (desktopOld) desktopOld.textContent = format(base);
-    const mobileCurrent = document.querySelector(".mobile-purchase-current");
-    const mobileText = mobileCurrent && Array.from(mobileCurrent.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
-    if (mobileText) mobileText.nodeValue = format(final);
-    const mobileOld = document.querySelector(".mobile-purchase-old");
-    if (mobileOld) mobileOld.textContent = format(base);
-    value.dataset.reliableDiscountApplied = "true";
-    return true;
-  };
-  let attempts = 0;
-  const timer = setInterval(() => {
-    attempts += 1;
-    if (apply() || attempts >= 80) clearInterval(timer);
-  }, 100);
-  apply();
-})();
-</script>
-
-<style id="original-price-compact">
-.price-old,
-.desktop-purchase-old-price,
-.mobile-purchase-old {
-  font-size: 11px !important;
-  font-weight: 400 !important;
-  line-height: 1.35 !important;
-  color: #9ca3af !important;
-  text-decoration: line-through !important;
-  text-decoration-thickness: 1px !important;
-}
-</style>
-<style id="purchase-button-font-restore">
-@media (max-width: 768px) {
-  .btn-add-cart { font-size: 15px !important; }
-}
-</style>
-<script id="reliable-desktop-discount-card">
-(() => {
-  const digits = (v) => Number(String(v || "").replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[^0-9]/g, ""));
-  const fa = (n) => Math.round(n).toLocaleString("fa-IR");
-  const render = () => {
-    const card = document.querySelector(".desktop-purchase-card:not(.is-out-of-stock)");
-    const price = card?.querySelector(".desktop-purchase-price");
-    const source = document.querySelector(".product-info-col > .product-price-row");
-    const tag = source?.querySelector(".price-discount-tag");
-    if (!price || !tag) return false;
-    const percent = digits(tag.textContent);
-    const current = digits(source.querySelector(".price-value")?.textContent) || digits(price.textContent);
-    if (!percent || !current) return false;
-    const old = digits(source.querySelector(".price-old")?.textContent) || Math.round(current * 100 / (100 - percent));
-    price.innerHTML = `<div class="desktop-purchase-price-top"><span class="desktop-purchase-discount">${fa(percent)}٪</span><span class="desktop-purchase-old-price">${fa(old)}</span></div><div class="desktop-purchase-current-row"><span class="desktop-purchase-current-price">${fa(current)}</span><small>تومان</small></div>`;
-    return true;
-  };
-  let tries = 0;
-  const timer = setInterval(() => { if (render() || ++tries > 80) clearInterval(timer); }, 100);
-  render();
-})();
-</script>
-<style id="product-current-price-medium-weight">
-.price-value,
-.desktop-purchase-current-price,
-.mobile-purchase-current {
-  font-weight: 600 !important;
-}
-</style>
-<style id="product-current-price-normal-weight">
-.price-value,
-.desktop-purchase-current-price,
-.mobile-purchase-current {
-  font-weight: 400 !important;
-}
-</style>
-<script id="product-options-layout-order">
-(() => {
-  const arrange = () => {
-    const info = document.querySelector(".product-info-col");
-    const colors = document.getElementById("colorOptions")?.closest(".option-group");
-    const quantity = document.querySelector(".quantity-row")?.closest(".option-group");
-    const storage = document.getElementById("storageOptions")?.closest(".option-group");
-    const specs = info?.querySelector(".quick-specs-card");
-    const price = info?.querySelector(".product-price-row");
-    const warranty = document.getElementById("warrantyOptions")?.closest(".option-group");
-    if (!info || !colors || !price) return false;
-    warranty?.remove();
-    price.before(colors);
-    if (storage) colors.after(storage);
-    if (quantity) (storage || colors).after(quantity);
-    if (specs) (quantity || storage || colors).after(specs);
-    return true;
-  };
-  let tries = 0;
-  const timer = setInterval(() => { if (arrange() || ++tries > 80) clearInterval(timer); }, 100);
-  arrange();
-})();
-</script>
-<style id="compact-five-product-highlights">
-.quick-specs-card { margin-bottom: 18px !important; }
-.quick-specs-grid { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px !important; margin-bottom: 12px !important; }
-.quick-spec-item { min-width: 0 !important; min-height: 78px !important; padding: 10px 12px !important; border: 0 !important; border-radius: 12px !important; background: #f3f4f6 !important; display: flex !important; flex-direction: column !important; align-items: flex-start !important; justify-content: center !important; gap: 4px !important; }
-.quick-spec-item:hover { background: #eef0f2 !important; box-shadow: none !important; }
-.quick-spec-item > i { display: none !important; }
-.quick-spec-label { color: #81858b !important; font-size: 11.5px !important; font-weight: 400 !important; line-height: 1.5 !important; }
-.quick-spec-value { width: 100% !important; color: #334155 !important; font-size: 12.5px !important; font-weight: 500 !important; line-height: 1.6 !important; display: -webkit-box !important; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden !important; }
-@media (min-width: 769px) { .quick-specs-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
-</style>
-<script id="limit-product-highlights-to-five">
-(() => {
-  const syncHighlights = () => {
-    const grid = document.querySelector(".quick-specs-grid");
-    const rows = document.querySelectorAll("#specsTableWrap .specs-row");
-    if (!grid || !rows.length) return false;
-    const existing = new Set(Array.from(grid.querySelectorAll(".quick-spec-label")).map(el => el.textContent.trim()));
-    for (const row of rows) {
-      if (grid.children.length >= 5) break;
-      const label = row.querySelector(".specs-label")?.textContent.trim();
-      const value = row.querySelector(".specs-value")?.textContent.trim();
-      if (!label || !value || existing.has(label)) continue;
-      const item = document.createElement("div");
-      item.className = "quick-spec-item";
-      const labelEl = document.createElement("div");
-      labelEl.className = "quick-spec-label";
-      labelEl.textContent = label;
-      const valueEl = document.createElement("div");
-      valueEl.className = "quick-spec-value";
-      valueEl.textContent = value;
-      item.append(labelEl, valueEl);
-      grid.append(item);
-      existing.add(label);
-    }
-    while (grid.children.length > 5) grid.lastElementChild.remove();
-    return true;
-  };
-  let tries = 0;
-  const timer = setInterval(() => { if (syncHighlights() || ++tries > 80) clearInterval(timer); }, 100);
-  syncHighlights();
-})();
-</script>
-<style id="lock-main-product-gallery">
-  #galPrevBtn,
-  #galNextBtn {
-    display: none !important;
-  }
-
-  #galleryTrack {
-    transform: translate3d(0, 0, 0) !important;
-    transition: none !important;
-  }
-</style>
-<script id="lock-main-product-gallery-behavior">
-  (() => {
-    const lockMainGallery = () => {
-      const track = document.getElementById("galleryTrack");
-      const gallery = document.querySelector(".gallery-main");
-      if (!track) return false;
-
-      document.getElementById("galPrevBtn")?.remove();
-      document.getElementById("galNextBtn")?.remove();
-      track.style.setProperty("transform", "translate3d(0, 0, 0)", "important");
-      track.style.setProperty("transition", "none", "important");
-
-      if (gallery && !gallery.dataset.navigationLocked) {
-        const stopNavigation = (event) => event.stopImmediatePropagation();
-        ["pointerdown", "pointermove", "pointerup", "pointercancel"].forEach((type) => {
-          gallery.addEventListener(type, stopNavigation, true);
-        });
-        gallery.dataset.navigationLocked = "true";
-      }
-      return true;
-    };
-
-    lockMainGallery();
-    document.addEventListener("DOMContentLoaded", lockMainGallery, { once: true });
-  })();
-</script>
-
