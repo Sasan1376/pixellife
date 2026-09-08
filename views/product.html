@@ -6762,7 +6762,7 @@
             </div>
           </div>
 
-          <div class="section-block" id="relatedProductsSection">
+          <div class="section-block" id="relatedProductsSection" style="display:none">
             <div class="section-heading"><i class="ti ti-apps"></i> محصولات مشابه</div>
             <div class="slider-wrap">
               <button class="slider-nav-btn slider-nav-prev" data-slider="relatedSlider"><i class="ti ti-chevron-right"></i></button>
@@ -7587,37 +7587,37 @@
           }
 
           async function loadRelatedProducts() {
+            const section = document.getElementById("relatedProductsSection");
+            const slider = document.getElementById("relatedSlider");
+            const getLiveProducts = async (query) => {
+              const res = await fetch(`/api/products?${query}&exclude=${encodeURIComponent(productId)}&limit=8`, { cache: "no-store" });
+              if (!res.ok) return [];
+              const data = await res.json();
+              if (!data.success || !Array.isArray(data.products)) return [];
+              return data.products
+                .map((d) => [String(d._id), mapDbProductToView(d)])
+                .filter(([, relatedProduct]) => !relatedProduct.outOfStock);
+            };
             try {
-              const res = await fetch(
-                `/api/products?brand=${encodeURIComponent(product.brand)}&exclude=${productId}&limit=8`,
-              );
-              if (res.ok) {
-                const data = await res.json();
-                if (
-                  data.success &&
-                  Array.isArray(data.products) &&
-                  data.products.length
-                ) {
-                  const mapped = data.products.map((d) => [
-                    String(d._id),
-                    mapDbProductToView(d),
-                  ]).filter(([, relatedProduct]) => !relatedProduct.outOfStock);
-                  // محصولات مشابهِ دریافت‌شده از API را نیز در منبع سبد خرید نگه می‌داریم.
-                  // در غیر این صورت دکمه «افزودن» اطلاعات محصول را پیدا نمی‌کند.
-                  mapped.forEach(([id, p]) => {
-                    PRODUCTS[id] = p;
-                  });
-                  document.getElementById("relatedSlider").innerHTML = mapped
-                    .map(([id, p]) => miniCard(id, p))
-                    .join("");
-                  return;
-                }
+              let mapped = product.brand
+                ? await getLiveProducts(`brand=${encodeURIComponent(product.brand)}`)
+                : [];
+              // اگر محصول هم‌برند وجود نداشت، از کالاهای موجودِ همان دسته استفاده کن.
+              if (!mapped.length && product.category) {
+                mapped = await getLiveProducts(`category=${encodeURIComponent(product.category)}`);
+              }
+              if (mapped.length) {
+                mapped.forEach(([id, p]) => { PRODUCTS[id] = p; });
+                slider.innerHTML = mapped.map(([id, p]) => miniCard(id, p)).join("");
+                section.style.display = "block";
+                return;
               }
             } catch (e) {
               console.warn("محصولات مشابه از سرور دریافت نشد:", e);
             }
-            // در خطای API، کارت قدیمی یا حذف‌شده نمایش داده نمی‌شود.
-            document.getElementById("relatedSlider").innerHTML = "";
+            // در خطا یا نبود کالای مشابه، کادر و فلش‌های خالی نمایش داده نمی‌شوند.
+            slider.innerHTML = "";
+            section.style.display = "none";
           }
           deferNonCriticalWork(loadRelatedProducts);
 
