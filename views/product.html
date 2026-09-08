@@ -6368,7 +6368,7 @@
             product.oldPrice && product.price
               ? Math.round(100 - (product.price / product.oldPrice) * 100)
               : 0;
-          const shouldShowColors = !product.outOfStock || product.hideColorsWhenOutOfStock === false;
+          const shouldShowColors = Array.isArray(product.colors) && product.colors.length > 0;
           const reviewArticle = Array.isArray(product.reviewSections)
             ? product.reviewSections
                 .filter((section) => section && section.enabled !== false && (section.title || section.content || section.images?.length))
@@ -7892,5 +7892,405 @@
     </script>
       <script src="/js/shopping-assistant.js?v=13" defer></script>
       <script src="/js/product-ratings.js?v=2" defer></script>
-  </body>
+  <style id="product-gallery-size-override">
+@media (min-width: 769px) {
+  .gallery-main svg,
+  .gallery-main img {
+    max-height: 720px;
+    transform: scale(1.1);
+  }
+  .gallery-main:hover svg,
+  .gallery-main:hover img {
+    transform: scale(1.13);
+  }
+}
+</style>
+
+<style id="product-gallery-thumbnail-spacing">
+@media (min-width: 769px) {
+  #galleryImgHolder {
+    margin-bottom: 24px;
+  }
+}
+</style>
+
+<style id="product-gallery-image-fit">
+@media (min-width: 769px) {
+  .gallery-main svg,
+  .gallery-main img {
+    max-width: 100% !important;
+    max-height: 720px !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    transform: none !important;
+    transform-origin: center center !important;
+  }
+  .gallery-main:hover svg,
+  .gallery-main:hover img {
+    transform: none !important;
+  }
+}
+</style>
+
+<style id="product-gallery-desktop-position">
+@media (min-width: 769px) {
+  .product-gallery {
+    transform: translateX(48px);
+  }
+  .gallery-actions {
+    right: -32px !important;
+  }
+}
+</style>
+
+<style id="product-gallery-actions-inset">
+@media (min-width: 769px) {
+  .gallery-actions {
+    right: 16px !important;
+  }
+}
+</style>
+
+<style id="desktop-purchase-price-design">
+@media (min-width: 769px) {
+  .desktop-purchase-price {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 17px 0 14px;
+  }
+  .desktop-purchase-price-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 28px;
+    direction: rtl;
+  }
+  .desktop-purchase-discount {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: #c2413b;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .desktop-purchase-old-price {
+    color: #a8adb7;
+    font-size: 13px;
+    font-weight: 650;
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+  }
+  .desktop-purchase-current-row {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    direction: rtl;
+    color: #202548;
+  }
+  .desktop-purchase-current-price {
+    font-size: 25px;
+    font-weight: 850;
+    line-height: 1.25;
+    letter-spacing: -0.4px;
+  }
+  .desktop-purchase-current-row small {
+    color: #202548;
+    font-size: 11px;
+    font-weight: 800;
+  }
+}
+</style>
+<script id="desktop-purchase-price-content">
+(() => {
+  const decoratePurchasePrice = () => {
+    const card = document.querySelector(".desktop-purchase-card:not(.is-out-of-stock)");
+    const price = card?.querySelector(".desktop-purchase-price");
+    if (!price || price.dataset.priceDesignApplied) return;
+    const current = price.querySelector("span")?.textContent.trim();
+    if (!current) return;
+    const source = document.querySelector(".product-info-col > .product-price-row");
+    const oldPrice = source?.querySelector(".price-old")?.textContent.trim();
+    const discount = source?.querySelector(".price-discount-tag")?.textContent.trim();
+    price.dataset.priceDesignApplied = "true";
+    price.innerHTML = `${oldPrice || discount ? `<div class="desktop-purchase-price-top">${discount ? `<span class="desktop-purchase-discount">${discount}</span>` : ""}${oldPrice ? `<span class="desktop-purchase-old-price">${oldPrice}</span>` : ""}</div>` : ""}<div class="desktop-purchase-current-row"><span class="desktop-purchase-current-price">${current}</span><small>تومان</small></div>`;
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", decoratePurchasePrice, { once: true });
+  else decoratePurchasePrice();
+})();
+</script>
+
+<script id="apply-discount-to-product-price">
+(() => {
+  const toNumber = (value) => Number(String(value || "")
+    .replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit))
+    .replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit))
+    .replace(/[^0-9]/g, ""));
+  const format = (value) => Math.round(value).toLocaleString("fa-IR");
+  const applyDiscount = () => { return;
+    const source = document.querySelector(".product-info-col > .product-price-row");
+    const priceValue = source?.querySelector(".price-value");
+    const discountTag = source?.querySelector(".price-discount-tag");
+    if (!priceValue || !discountTag || priceValue.dataset.discountApplied) return;
+    const basePrice = toNumber(priceValue.textContent);
+    const discountPercent = toNumber(discountTag.textContent);
+    if (!basePrice || discountPercent <= 0 || discountPercent >= 100) return;
+    const finalPrice = Math.round(basePrice * (1 - discountPercent / 100));
+    priceValue.dataset.discountApplied = "true";
+    const priceText = Array.from(priceValue.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+    if (priceText) priceText.nodeValue = format(finalPrice) + " ";
+    const oldPrice = source.querySelector(".price-old");
+    if (oldPrice) oldPrice.textContent = format(basePrice);
+    const desktopCurrent = document.querySelector(".desktop-purchase-current-price");
+    if (desktopCurrent) desktopCurrent.textContent = format(finalPrice);
+    const desktopOld = document.querySelector(".desktop-purchase-old-price");
+    if (desktopOld) desktopOld.textContent = format(basePrice);
+    const mobileCurrent = document.querySelector(".mobile-purchase-current");
+    if (mobileCurrent) {
+      const mobileText = Array.from(mobileCurrent.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+      if (mobileText) mobileText.nodeValue = format(finalPrice);
+    }
+    const mobileOld = document.querySelector(".mobile-purchase-old");
+    if (mobileOld) mobileOld.textContent = format(basePrice);
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", applyDiscount, { once: true });
+  else applyDiscount();
+})();
+</script>
+
+<style id="desktop-purchase-discount-polish">
+@media (min-width: 769px) {
+  .desktop-purchase-discount {
+    background: #ef4444;
+    color: #fff;
+  }
+  .desktop-purchase-old-price {
+    font-size: 11px;
+    font-weight: 400;
+    color: #9ca3af;
+    text-decoration-thickness: 1px;
+  }
+}
+</style>
+<script id="desktop-purchase-discount-label">
+(() => {
+  const badge = document.querySelector(".desktop-purchase-discount");
+  if (!badge) return;
+  const percent = badge.textContent.match(/[۰-۹0-9]+\s*[%٪]/);
+  if (percent) badge.textContent = percent[0].replace(/\s/g, "");
+})();
+</script>
+
+<script id="reliably-apply-product-discount">
+(() => {
+  const toNumber = (value) => Number(String(value || "")
+    .replace(/[۰-۹]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹".indexOf(digit))
+    .replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit))
+    .replace(/[^0-9]/g, ""));
+  const format = (value) => Math.round(value).toLocaleString("fa-IR");
+  const apply = () => { return true;
+    const source = document.querySelector(".product-info-col > .product-price-row");
+    const value = source?.querySelector(".price-value");
+    const tag = source?.querySelector(".price-discount-tag");
+    if (!value || !tag) return false;
+    if (value.dataset.reliableDiscountApplied) return true;
+    const base = toNumber(value.textContent);
+    const percent = toNumber(tag.textContent);
+    if (!base || percent <= 0 || percent >= 100) return false;
+    const final = Math.round(base * (100 - percent) / 100);
+    const valueText = Array.from(value.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+    if (valueText) valueText.nodeValue = format(final) + " ";
+    const old = source.querySelector(".price-old");
+    if (old) old.textContent = format(base);
+    const desktopCurrent = document.querySelector(".desktop-purchase-current-price");
+    if (desktopCurrent) desktopCurrent.textContent = format(final);
+    const desktopOld = document.querySelector(".desktop-purchase-old-price");
+    if (desktopOld) desktopOld.textContent = format(base);
+    const mobileCurrent = document.querySelector(".mobile-purchase-current");
+    const mobileText = mobileCurrent && Array.from(mobileCurrent.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+    if (mobileText) mobileText.nodeValue = format(final);
+    const mobileOld = document.querySelector(".mobile-purchase-old");
+    if (mobileOld) mobileOld.textContent = format(base);
+    value.dataset.reliableDiscountApplied = "true";
+    return true;
+  };
+  let attempts = 0;
+  const timer = setInterval(() => {
+    attempts += 1;
+    if (apply() || attempts >= 80) clearInterval(timer);
+  }, 100);
+  apply();
+})();
+</script>
+
+<style id="original-price-compact">
+.price-old,
+.desktop-purchase-old-price,
+.mobile-purchase-old {
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  line-height: 1.35 !important;
+  color: #9ca3af !important;
+  text-decoration: line-through !important;
+  text-decoration-thickness: 1px !important;
+}
+</style>
+<style id="purchase-button-font-restore">
+@media (max-width: 768px) {
+  .btn-add-cart { font-size: 15px !important; }
+}
+</style>
+<script id="reliable-desktop-discount-card">
+(() => {
+  const digits = (v) => Number(String(v || "").replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[^0-9]/g, ""));
+  const fa = (n) => Math.round(n).toLocaleString("fa-IR");
+  const render = () => {
+    const card = document.querySelector(".desktop-purchase-card:not(.is-out-of-stock)");
+    const price = card?.querySelector(".desktop-purchase-price");
+    const source = document.querySelector(".product-info-col > .product-price-row");
+    const tag = source?.querySelector(".price-discount-tag");
+    if (!price || !tag) return false;
+    const percent = digits(tag.textContent);
+    const current = digits(source.querySelector(".price-value")?.textContent) || digits(price.textContent);
+    if (!percent || !current) return false;
+    const old = digits(source.querySelector(".price-old")?.textContent) || Math.round(current * 100 / (100 - percent));
+    price.innerHTML = `<div class="desktop-purchase-price-top"><span class="desktop-purchase-discount">${fa(percent)}٪</span><span class="desktop-purchase-old-price">${fa(old)}</span></div><div class="desktop-purchase-current-row"><span class="desktop-purchase-current-price">${fa(current)}</span><small>تومان</small></div>`;
+    return true;
+  };
+  let tries = 0;
+  const timer = setInterval(() => { if (render() || ++tries > 80) clearInterval(timer); }, 100);
+  render();
+})();
+</script>
+<style id="product-current-price-medium-weight">
+.price-value,
+.desktop-purchase-current-price,
+.mobile-purchase-current {
+  font-weight: 600 !important;
+}
+</style>
+<style id="product-current-price-normal-weight">
+.price-value,
+.desktop-purchase-current-price,
+.mobile-purchase-current {
+  font-weight: 400 !important;
+}
+</style>
+<script id="product-options-layout-order">
+(() => {
+  const arrange = () => {
+    const info = document.querySelector(".product-info-col");
+    const colors = document.getElementById("colorOptions")?.closest(".option-group");
+    const quantity = document.querySelector(".quantity-row")?.closest(".option-group");
+    const storage = document.getElementById("storageOptions")?.closest(".option-group");
+    const specs = info?.querySelector(".quick-specs-card");
+    const price = info?.querySelector(".product-price-row");
+    const warranty = document.getElementById("warrantyOptions")?.closest(".option-group");
+    if (!info) return false;
+    warranty?.remove();
+    if (colors) {
+      if (price) {
+        price.before(colors);
+      } else {
+        const firstOption = info.querySelector(".option-group");
+        if (firstOption && firstOption !== colors) firstOption.before(colors);
+      }
+      if (storage) colors.after(storage);
+      if (quantity) (storage || colors).after(quantity);
+      if (specs) (quantity || storage || colors).after(specs);
+    }
+    return true;
+  };
+  let tries = 0;
+  const timer = setInterval(() => { if (arrange() || ++tries > 80) clearInterval(timer); }, 100);
+  arrange();
+})();
+</script>
+<style id="compact-five-product-highlights">
+.quick-specs-card { margin-bottom: 18px !important; }
+.quick-specs-grid { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px !important; margin-bottom: 12px !important; }
+.quick-spec-item { min-width: 0 !important; min-height: 78px !important; padding: 10px 12px !important; border: 0 !important; border-radius: 12px !important; background: #f3f4f6 !important; display: flex !important; flex-direction: column !important; align-items: flex-start !important; justify-content: center !important; gap: 4px !important; }
+.quick-spec-item:hover { background: #eef0f2 !important; box-shadow: none !important; }
+.quick-spec-item > i { display: none !important; }
+.quick-spec-label { color: #81858b !important; font-size: 11.5px !important; font-weight: 400 !important; line-height: 1.5 !important; }
+.quick-spec-value { width: 100% !important; color: #334155 !important; font-size: 12.5px !important; font-weight: 500 !important; line-height: 1.6 !important; display: -webkit-box !important; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden !important; }
+@media (min-width: 769px) { .quick-specs-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
+</style>
+<script id="limit-product-highlights-to-five">
+(() => {
+  const syncHighlights = () => {
+    const grid = document.querySelector(".quick-specs-grid");
+    const rows = document.querySelectorAll("#specsTableWrap .specs-row");
+    if (!grid || !rows.length) return false;
+    const existing = new Set(Array.from(grid.querySelectorAll(".quick-spec-label")).map(el => el.textContent.trim()));
+    for (const row of rows) {
+      if (grid.children.length >= 5) break;
+      const label = row.querySelector(".specs-label")?.textContent.trim();
+      const value = row.querySelector(".specs-value")?.textContent.trim();
+      if (!label || !value || existing.has(label)) continue;
+      const item = document.createElement("div");
+      item.className = "quick-spec-item";
+      const labelEl = document.createElement("div");
+      labelEl.className = "quick-spec-label";
+      labelEl.textContent = label;
+      const valueEl = document.createElement("div");
+      valueEl.className = "quick-spec-value";
+      valueEl.textContent = value;
+      item.append(labelEl, valueEl);
+      grid.append(item);
+      existing.add(label);
+    }
+    while (grid.children.length > 5) grid.lastElementChild.remove();
+    return true;
+  };
+  let tries = 0;
+  const timer = setInterval(() => { if (syncHighlights() || ++tries > 80) clearInterval(timer); }, 100);
+  syncHighlights();
+})();
+</script>
+<style id="lock-main-product-gallery">
+  #galPrevBtn,
+  #galNextBtn {
+    display: none !important;
+  }
+
+  #galleryTrack {
+    transform: translate3d(0, 0, 0) !important;
+    transition: none !important;
+  }
+</style>
+<script id="lock-main-product-gallery-behavior">
+  (() => {
+    const lockMainGallery = () => {
+      const track = document.getElementById("galleryTrack");
+      const gallery = document.querySelector(".gallery-main");
+      if (!track) return false;
+
+      document.getElementById("galPrevBtn")?.remove();
+      document.getElementById("galNextBtn")?.remove();
+      track.style.setProperty("transform", "translate3d(0, 0, 0)", "important");
+      track.style.setProperty("transition", "none", "important");
+
+      if (gallery && !gallery.dataset.navigationLocked) {
+        const stopNavigation = (event) => event.stopImmediatePropagation();
+        ["pointerdown", "pointermove", "pointerup", "pointercancel"].forEach((type) => {
+          gallery.addEventListener(type, stopNavigation, true);
+        });
+        gallery.dataset.navigationLocked = "true";
+      }
+      return true;
+    };
+
+    lockMainGallery();
+    document.addEventListener("DOMContentLoaded", lockMainGallery, { once: true });
+  })();
+</script>
+</body>
 </html>
