@@ -331,7 +331,9 @@
             const name = String(product.name || "").trim();
             const brand = String(product.brand || "").trim();
             const category = String(product.category || "").trim();
-            const isIphoneName = /^(?:apple\s*)?iphone\b|^(?:آیفون|ایفون)/i.test(name);
+            // نام کامل فروشگاهی معمولاً با «گوشی موبایل اپل مدل» شروع می‌شود؛
+            // وجود iPhone/آیفون در هر بخش نام برای شناسایی محصول کافی است.
+            const isIphoneName = /iphone|آیفون|ایفون/i.test(name);
             const isAppleBrand = /(?:^|\s)(?:اپل|apple)(?:\s|$)/i.test(brand);
             const isMobileCategory = /^(?:موبایل|mobile|گوشی موبایل|گوشی|phone|آیفون|ایفون|iphone)$/i.test(category);
             return isIphoneName || (isAppleBrand && isMobileCategory);
