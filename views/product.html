@@ -8147,3 +8147,25 @@
   .btn-add-cart { font-size: 15px !important; }
 }
 </style>
+<script id="reliable-desktop-discount-card">
+(() => {
+  const digits = (v) => Number(String(v || "").replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[^0-9]/g, ""));
+  const fa = (n) => Math.round(n).toLocaleString("fa-IR");
+  const render = () => {
+    const card = document.querySelector(".desktop-purchase-card:not(.is-out-of-stock)");
+    const price = card?.querySelector(".desktop-purchase-price");
+    const source = document.querySelector(".product-info-col > .product-price-row");
+    const tag = source?.querySelector(".price-discount-tag");
+    if (!price || !tag) return false;
+    const percent = digits(tag.textContent);
+    const current = digits(source.querySelector(".price-value")?.textContent) || digits(price.textContent);
+    if (!percent || !current) return false;
+    const old = digits(source.querySelector(".price-old")?.textContent) || Math.round(current * 100 / (100 - percent));
+    price.innerHTML = `<div class="desktop-purchase-price-top"><span class="desktop-purchase-discount">${fa(percent)}٪</span><span class="desktop-purchase-old-price">${fa(old)}</span></div><div class="desktop-purchase-current-row"><span class="desktop-purchase-current-price">${fa(current)}</span><small>تومان</small></div>`;
+    return true;
+  };
+  let tries = 0;
+  const timer = setInterval(() => { if (render() || ++tries > 80) clearInterval(timer); }, 100);
+  render();
+})();
+</script>
