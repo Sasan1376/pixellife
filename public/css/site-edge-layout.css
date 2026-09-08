@@ -75,3 +75,7 @@
 .header {
   border-bottom: 0 !important;
 }
+/* حذف سایهٔ باقی‌ماندهٔ میان هدر و دسته‌بندی */
+.header {
+  box-shadow: none !important;
+}
