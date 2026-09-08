@@ -5437,7 +5437,7 @@
             : 0;
         // اگر خود دیتابیس oldPrice/compareAtPrice داشت، همان معتبرتر است
         const oldPrice =
-          doc.oldPrice || doc.compareAtPrice || oldPriceFromDiscount;
+          doc.oldPrice || doc.compareAtPrice || (doc.discount && Number(doc.discount) > 0 ? doc.price : oldPriceFromDiscount);
 
         const hasStorage = doc.hasStorage !== false;
         const variants = hasStorage && Array.isArray(doc.variants)
@@ -5517,7 +5517,7 @@
           amazingOfferEndsAt: doc.amazingOfferEndsAt || null,
           stock: Math.max(0, Number(doc.stock) || 0),
           outOfStock: doc.availability === "out" || Number(doc.stock) <= 0,
-          price: doc.price,
+          price: doc.discount && Number(doc.discount) > 0 ? Math.round(Number(doc.price) * (1 - Number(doc.discount) / 100)) : doc.price,
           oldPrice: oldPrice,
           hasStorage: hasStorage,
           storages: storages,
@@ -8034,7 +8034,7 @@
     .replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit))
     .replace(/[^0-9]/g, ""));
   const format = (value) => Math.round(value).toLocaleString("fa-IR");
-  const applyDiscount = () => {
+  const applyDiscount = () => { return;
     const source = document.querySelector(".product-info-col > .product-price-row");
     const priceValue = source?.querySelector(".price-value");
     const discountTag = source?.querySelector(".price-discount-tag");
@@ -8095,7 +8095,7 @@
     .replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit))
     .replace(/[^0-9]/g, ""));
   const format = (value) => Math.round(value).toLocaleString("fa-IR");
-  const apply = () => {
+  const apply = () => { return true;
     const source = document.querySelector(".product-info-col > .product-price-row");
     const value = source?.querySelector(".price-value");
     const tag = source?.querySelector(".price-discount-tag");
