@@ -6488,7 +6488,7 @@
               </div>` : ""}
 
               ${product.hasStorage ? `<div class="option-group">
-                <div class="option-label"><i class="ti ti-device-sd-card"></i> حافظه داخلی: <span class="selected-val" id="storageVal">${selectedStorage}</span></div>
+                <div class="option-label"><i class="ti ti-device-sd-card"></i> حافظه داخلی <span id="storageVal" hidden>${selectedStorage}</span></div>
                 <div class="storage-options" id="storageOptions">
                   ${product.storages
                     .map(
@@ -8218,9 +8218,9 @@
     if (!info || !colors || !price) return false;
     warranty?.remove();
     price.before(colors);
-    if (quantity) colors.after(quantity);
-    if (storage) (quantity || colors).after(storage);
-    if (specs) (storage || quantity || colors).after(specs);
+    if (storage) colors.after(storage);
+    if (quantity) (storage || colors).after(quantity);
+    if (specs) (quantity || storage || colors).after(specs);
     return true;
   };
   let tries = 0;
