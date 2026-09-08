@@ -8183,3 +8183,24 @@
   font-weight: 400 !important;
 }
 </style>
+<script id="product-options-layout-order">
+(() => {
+  const arrange = () => {
+    const info = document.querySelector(".product-info-col");
+    const colors = document.getElementById("colorOptions")?.closest(".option-group");
+    const quantity = document.querySelector(".quantity-row")?.closest(".option-group");
+    const specs = info?.querySelector(".quick-specs-card");
+    const price = info?.querySelector(".product-price-row");
+    const warranty = document.getElementById("warrantyOptions")?.closest(".option-group");
+    if (!info || !colors || !price) return false;
+    warranty?.remove();
+    price.before(colors);
+    if (quantity) colors.after(quantity);
+    if (specs) (quantity || colors).after(specs);
+    return true;
+  };
+  let tries = 0;
+  const timer = setInterval(() => { if (arrange() || ++tries > 80) clearInterval(timer); }, 100);
+  arrange();
+})();
+</script>
