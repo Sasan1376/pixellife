@@ -8204,3 +8204,45 @@
   arrange();
 })();
 </script>
+<style id="compact-five-product-highlights">
+.quick-specs-card { margin-bottom: 18px !important; }
+.quick-specs-grid { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px !important; margin-bottom: 12px !important; }
+.quick-spec-item { min-width: 0 !important; min-height: 78px !important; padding: 10px 12px !important; border: 0 !important; border-radius: 12px !important; background: #f3f4f6 !important; display: flex !important; flex-direction: column !important; align-items: flex-start !important; justify-content: center !important; gap: 4px !important; }
+.quick-spec-item:hover { background: #eef0f2 !important; box-shadow: none !important; }
+.quick-spec-item > i { display: none !important; }
+.quick-spec-label { color: #81858b !important; font-size: 11.5px !important; font-weight: 400 !important; line-height: 1.5 !important; }
+.quick-spec-value { width: 100% !important; color: #334155 !important; font-size: 12.5px !important; font-weight: 500 !important; line-height: 1.6 !important; display: -webkit-box !important; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden !important; }
+@media (min-width: 769px) { .quick-specs-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
+</style>
+<script id="limit-product-highlights-to-five">
+(() => {
+  const syncHighlights = () => {
+    const grid = document.querySelector(".quick-specs-grid");
+    const rows = document.querySelectorAll("#specsTableWrap .specs-row");
+    if (!grid || !rows.length) return false;
+    const existing = new Set(Array.from(grid.querySelectorAll(".quick-spec-label")).map(el => el.textContent.trim()));
+    for (const row of rows) {
+      if (grid.children.length >= 5) break;
+      const label = row.querySelector(".specs-label")?.textContent.trim();
+      const value = row.querySelector(".specs-value")?.textContent.trim();
+      if (!label || !value || existing.has(label)) continue;
+      const item = document.createElement("div");
+      item.className = "quick-spec-item";
+      const labelEl = document.createElement("div");
+      labelEl.className = "quick-spec-label";
+      labelEl.textContent = label;
+      const valueEl = document.createElement("div");
+      valueEl.className = "quick-spec-value";
+      valueEl.textContent = value;
+      item.append(labelEl, valueEl);
+      grid.append(item);
+      existing.add(label);
+    }
+    while (grid.children.length > 5) grid.lastElementChild.remove();
+    return true;
+  };
+  let tries = 0;
+  const timer = setInterval(() => { if (syncHighlights() || ++tries > 80) clearInterval(timer); }, 100);
+  syncHighlights();
+})();
+</script>
