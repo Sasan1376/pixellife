@@ -109,7 +109,15 @@ router.get("/image/:id", (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const filter = {};
-    const { brand, category, featured, amazing, exclude, limit, sort } = req.query;
+    const { brand, category, featured, amazing, exclude, limit, sort, search } = req.query;
+
+    if (search) {
+      const normalizedSearch = normalizeText(search);
+      const searchPattern = /^(?:iphone|آیفون|ایفون)$/i.test(normalizedSearch)
+        ? "iphone|آیفون|ایفون"
+        : normalizedSearch.replace(/[.*+?^$()|[\]\\]/g, "\\$&");
+      filter.name = { $regex: searchPattern, $options: "i" };
+    }
 
     if (brand) {
       const brandAliases = {
