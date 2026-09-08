@@ -79,3 +79,7 @@
 .header {
   box-shadow: none !important;
 }
+/* اتصال بدون فاصلهٔ هدر و نوار دسته‌بندی */
+.header + .navbar {
+  margin-top: -1px !important;
+}
