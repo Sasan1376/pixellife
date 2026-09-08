@@ -4395,11 +4395,7 @@
     <div class="breadcrumb">
       <a href="/">خانه</a>
       <i class="ti ti-chevron-left"></i>
-      <a href="/iphone" id="breadcrumbBrandLink">اپل</a>
-      <i class="ti ti-chevron-left"></i>
-      <a href="/iphone" id="breadcrumbCategoryLink">خرید آیفون</a>
-      <i class="ti ti-chevron-left"></i>
-      <span class="current" id="breadcrumbCurrent">جزئیات محصول</span>
+      <a href="/mobiles" id="breadcrumbCategoryLink">گوشی موبایل</a>
     </div>
 
     <main class="page-body" id="pageBody">
@@ -6329,9 +6325,6 @@
           </div>`;
         } else {
           document.title = product.name + " | پیکسل لایف";
-          document.getElementById("breadcrumbCurrent").textContent =
-            product.name;
-          const brandLink = document.getElementById("breadcrumbBrandLink");
           const categoryLink = document.getElementById(
             "breadcrumbCategoryLink",
           );
@@ -6341,20 +6334,27 @@
             اپل: { phone: "/iphone", tablet: "/ipad" },
           };
           const brandRoute = BRAND_ROUTES[product.brand];
-          if (brandRoute) {
-            const url = product.isTablet ? brandRoute.tablet : brandRoute.phone;
-            brandLink.href = url;
-            brandLink.textContent = product.brand;
-            categoryLink.href = url;
-            categoryLink.textContent = `${product.isTablet ? "تبلت" : "گوشی موبایل"} ${product.brand}`;
-          } else {
-            // برند ناشناخته/جدید از پنل ادمین — به‌جای فرض اشتباه "اپل"
-            const genericUrl = product.isTablet ? "/tablets" : "/mobiles";
-            brandLink.href = genericUrl;
-            brandLink.textContent = product.brand || "برند";
-            categoryLink.href = genericUrl;
-            categoryLink.textContent = `${product.isTablet ? "تبلت" : "گوشی موبایل"} ${product.brand || ""}`;
+          const rawCategory = String(product.category || "");
+          let categoryLabel = "گوشی موبایل";
+          let categoryUrl = brandRoute ? brandRoute.phone : "/mobiles";
+          if (product.isTablet || /تبلت|tablet|ipad/i.test(rawCategory)) {
+            categoryLabel = "تبلت";
+            categoryUrl = brandRoute ? brandRoute.tablet : "/tablets";
+          } else if (/کنسول|console/i.test(rawCategory)) {
+            categoryLabel = "کنسول بازی";
+            categoryUrl = "/console";
+          } else if (/هدفون|هندزفری|headphone/i.test(rawCategory)) {
+            categoryLabel = "هدفون و هندزفری";
+            categoryUrl = "/headphones";
+          } else if (/ساعت هوشمند|smart\s*watch/i.test(rawCategory)) {
+            categoryLabel = "ساعت هوشمند";
+            categoryUrl = "/smartwatches";
+          } else if (/لوازم جانبی|accessor|کابل|شارژر|آداپتور/i.test(rawCategory)) {
+            categoryLabel = "لوازم جانبی موبایل";
+            categoryUrl = "/accessories";
           }
+          categoryLink.href = categoryUrl;
+          categoryLink.textContent = categoryLabel;
 
           const firstAvailableVariant = Array.isArray(product.variants)
             ? product.variants.find((variant) => variant.stock > 0) || product.variants[0]
