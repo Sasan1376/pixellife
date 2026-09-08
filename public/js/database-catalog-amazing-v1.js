@@ -19,7 +19,9 @@
     "/xiaomitab": { grid: ".xiaomitab-grid", card: "xiaomitab-card", name: "xiaomitab-card-name", image: "xiaomitab-card-image", body: "xiaomitab-card-body", desc: "xiaomitab-card-desc", brand: "شیائومی", category: "تبلت", noFallback: true },
     // دسته‌ای که پنل ادمین برای کنسول‌ها ذخیره می‌کند «کنسول بازی» است.
     // نبودن تطابق دقیق باعث نمایش کارت‌های نمونهٔ ناقص می‌شد.
-    "/console": { grid: ".console-grid", card: "console-card", name: "console-card-name", image: "console-card-image", body: "console-card-body", desc: "console-card-desc", category: "کنسول بازی", noFallback: true },
+    // مسیر /console با قالب مشترک iphone.html رندر می‌شود؛ بنابراین باید
+    // همان گرید و کلاس‌های آن قالب را هدف بگیرد، نه .console-grid قدیمی.
+    "/console": { grid: ".iphone-grid", card: "iphone-card", name: "iphone-card-name", image: "iphone-card-image", body: "iphone-card-body", desc: "iphone-card-desc", category: "کنسول بازی", noFallback: true },
   };
 
   const config = configs[path];
