@@ -3637,6 +3637,12 @@
           font-size: clamp(14px, 4vw, 17px);
           font-weight: 850;
           cursor: pointer;
+          position: relative;
+          z-index: 1;
+          pointer-events: auto;
+          touch-action: manipulation;
+          -webkit-user-select: none;
+          user-select: none;
           -webkit-tap-highlight-color: transparent;
         }
         .mobile-purchase-add:active {
@@ -7780,10 +7786,19 @@
 
           const mobileAddCartBtn = document.getElementById("mobileAddCartBtn");
           if (mobileAddCartBtn) {
-            mobileAddCartBtn.addEventListener("click", () => {
+            let lastMobileAddAt = 0;
+            const addFromMobilePurchaseBar = (event) => {
+              // روی لمس، قبل از آن‌که حرکت انگشت به اسکرول تبدیل شود عمل کن.
+              if (event.type === "pointerup") event.preventDefault();
+              const now = Date.now();
+              // pointerup و click می‌توانند پشت سر هم برسند؛ کالا فقط یک‌بار افزوده شود.
+              if (now - lastMobileAddAt < 450) return;
+              lastMobileAddAt = now;
               addCurrentToCart();
               showToast("به سبد خرید اضافه شد");
-            });
+            };
+            mobileAddCartBtn.addEventListener("pointerup", addFromMobilePurchaseBar);
+            mobileAddCartBtn.addEventListener("click", addFromMobilePurchaseBar);
           }
 
           const desktopNotifyBtn = document.getElementById("desktopNotifyBtn");
