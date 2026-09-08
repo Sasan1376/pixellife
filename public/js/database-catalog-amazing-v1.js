@@ -43,6 +43,13 @@
     document.head.appendChild(style);
   }
 
+  if (!document.getElementById("database-catalog-discount-price-style")) {
+    const style = document.createElement("style");
+    style.id = "database-catalog-discount-price-style";
+    style.textContent = ".pl-catalog-prices{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:3px!important;max-width:100%!important}.pl-catalog-price-meta{display:flex!important;align-items:center!important;gap:7px!important;min-height:20px!important}.pl-catalog-price-badge{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:34px!important;padding:3px 7px!important;border-radius:999px!important;background:#ef4444!important;color:#fff!important;font:800 11px Vazirmatn,Tahoma,sans-serif!important;direction:ltr!important}.pl-catalog-old-price{color:#9ca3af!important;font-size:11px!important;font-weight:400!important;line-height:1.4!important;text-decoration:line-through!important;text-decoration-thickness:1px!important;white-space:nowrap!important}.pl-catalog-price{font-weight:700!important}@media(max-width:640px){.pl-catalog-prices{gap:2px!important}.pl-catalog-price-meta{gap:5px!important;min-height:18px!important}.pl-catalog-price-badge{min-width:30px!important;padding:2px 6px!important;font-size:10px!important}.pl-catalog-old-price{font-size:10px!important}}";
+    document.head.appendChild(style);
+  }
+
   if (!document.getElementById("database-catalog-coming-soon-style")) {
     const style = document.createElement("style");
     style.id = "database-catalog-coming-soon-style";
@@ -81,7 +88,21 @@
   function isOutOfStock(product) {
     return product.availability === "out" || Number(product.stock) <= 0;
   }
-  const price = (product) => Number(product.price).toLocaleString("fa-IR") + " تومان";
+  function priceInfo(product) {
+    const original = Math.max(0, Number(product.price) || 0);
+    const percent = Math.min(99, Math.max(0, Number(product.discountPercent ?? product.discount) || 0));
+    const final = percent > 0 ? Math.round(original * (100 - percent) / 100) : original;
+    return { original, percent, final };
+  }
+
+  function priceMarkup(product) {
+    const info = priceInfo(product);
+    const current = info.final.toLocaleString("fa-IR") + " تومان";
+    if (!info.percent) return '<div class="pl-catalog-prices"><span class="pl-catalog-price">' + current + '</span></div>';
+    return '<div class="pl-catalog-prices"><div class="pl-catalog-price-meta"><span class="pl-catalog-price-badge">' +
+      info.percent.toLocaleString("fa-IR") + '٪</span><span class="pl-catalog-old-price">' +
+      info.original.toLocaleString("fa-IR") + '</span></div><span class="pl-catalog-price">' + current + '</span></div>';
+  }
 
   function imageMarkup(product, name) {
     // mainImage اولویت دارد، ولی اگر یک فایل قدیمی/حذف‌شده باشد، تمام عکس‌های
@@ -126,7 +147,7 @@
         '</span>';
     const priceHtml = outOfStock
       ? ""
-      : '<span class="pl-catalog-price">' + price(product) + '</span>';
+      : priceMarkup(product);
     const imageClass = config.image || "pl-catalog-media";
     const bodyClass = config.body
       ? config.body + (config.body.includes("pl-catalog-body") ? "" : " pl-catalog-body")
@@ -141,12 +162,8 @@
     const amazingTimer = amazingActive && product.amazingOfferEndsAt
       ? '<div class="pl-amazing-timer"><i class="ti ti-clock"></i><span data-amazing-end="' + escapeHtml(product.amazingOfferEndsAt) + '"></span></div>'
       : "";
-    const discountPercent = Math.max(0, Number(product.discountPercent || product.discount || 0));
-    const discountBadge = amazingActive && discountPercent > 0
-      ? '<span class="pl-catalog-discount">' + discountPercent + '%</span>'
-      : "";
     // نام برند فقط یک‌بار، بالای مدل محصول نمایش داده می‌شود.
-    return `<a href="${href}" class="${config.card} pl-catalog-card" data-stock="${stock}" style="color:inherit;text-decoration:none;position:relative">${amazingRibbon}${discountBadge}${comingSoonBadge}<div class="${imageClass}">${colorDots(product, outOfStock)}${imageMarkup(product, name)}</div><div class="${bodyClass}"><div class="pl-catalog-brand">${escapeHtml(product.brand || "")}</div><div class="${config.name}">${name}</div>${amazingTimer ? '<div class="pl-amazing-timer-slot">' + amazingTimer + '</div>' : ''}<div class="pl-catalog-footer"><div class="pl-catalog-stock">${status}</div>${priceHtml}</div></div></a>`;
+    return `<a href="${href}" class="${config.card} pl-catalog-card" data-stock="${stock}" style="color:inherit;text-decoration:none;position:relative">${amazingRibbon}${comingSoonBadge}<div class="${imageClass}">${colorDots(product, outOfStock)}${imageMarkup(product, name)}</div><div class="${bodyClass}"><div class="pl-catalog-brand">${escapeHtml(product.brand || "")}</div><div class="${config.name}">${name}</div>${amazingTimer ? '<div class="pl-amazing-timer-slot">' + amazingTimer + '</div>' : ''}<div class="pl-catalog-footer"><div class="pl-catalog-stock">${status}</div>${priceHtml}</div></div></a>`;
   }
 
   function uniqueValues(products, valueFor) {
@@ -207,7 +224,7 @@
       const productColors = (product.colors || []).map((c) => String(typeof c === "string" ? c : c?.name || "").trim());
       const productStorages = [...(product.storages || []), ...(product.variants || []).map((v) => v?.storage)].map((v) => String(v || "").trim());
       const stock = Math.max(0, Number(product.stock) || 0);
-      const productPrice = Number(product.price) || 0;
+      const productPrice = priceInfo(product).final;
       return (!selected.inStock || (!isOutOfStock(product) && stock > 0)) &&
         (!selected.min || productPrice >= normalizeNumber(selected.min)) &&
         (!selected.max || productPrice <= normalizeNumber(selected.max)) &&
@@ -217,8 +234,8 @@
     }
     function render() {
       const products = allProducts.filter(matches).sort((a, b) => {
-        if (selected.sort === "price-asc") return Number(a.price || 0) - Number(b.price || 0);
-        if (selected.sort === "price-desc") return Number(b.price || 0) - Number(a.price || 0);
+        if (selected.sort === "price-asc") return priceInfo(a).final - priceInfo(b).final;
+        if (selected.sort === "price-desc") return priceInfo(b).final - priceInfo(a).final;
         if (selected.sort === "rating") return Number(b.rating || 0) - Number(a.rating || 0);
         return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
       });

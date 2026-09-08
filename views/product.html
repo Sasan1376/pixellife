@@ -2975,11 +2975,18 @@
         margin-bottom: 6px;
       }
       .slider-card-price {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
         font-size: 13px;
-        font-weight: 800;
+        font-weight: 700;
         color: var(--text-1);
         margin-bottom: 10px;
       }
+      .slider-card-price-meta { display:flex;align-items:center;gap:6px; }
+      .slider-card-discount { padding:2px 6px;border-radius:999px;background:#ef4444;color:#fff;font-size:9px;font-weight:800;direction:ltr; }
+      .slider-card-old-price { color:#9ca3af;font-size:9px;font-weight:400;text-decoration:line-through;text-decoration-thickness:1px; }
       .slider-card-price .toman {
         font-size: 10px;
         font-weight: 600;
@@ -7556,6 +7563,14 @@
           });
 
           function miniCard(id, p) {
+            const oldPrice = Math.max(0, Number(p.oldPrice) || 0);
+            const currentPrice = Math.max(0, Number(p.price) || 0);
+            const discountPercent = oldPrice > currentPrice && currentPrice > 0
+              ? Math.round(100 - (currentPrice / oldPrice) * 100)
+              : 0;
+            const discountMeta = discountPercent > 0
+              ? `<span class="slider-card-price-meta"><span class="slider-card-discount">${discountPercent.toLocaleString("fa-IR")}٪</span><span class="slider-card-old-price">${oldPrice.toLocaleString("fa-IR")}</span></span>`
+              : "";
             return `
             <div class="slider-card">
               <a href="/product?id=${id}" style="color:inherit">
@@ -7565,7 +7580,7 @@
                 <a href="/product?id=${id}" style="color:inherit">
                   <div class="slider-card-name">${p.name}</div>
                   <div class="stars">${starsHtml(p.rating)}</div>
-                  <div class="slider-card-price">${p.price > 0 ? p.price.toLocaleString("fa-IR") : "—"} <span class="toman">تومان</span></div>
+                  <div class="slider-card-price">${discountMeta}<span>${currentPrice > 0 ? currentPrice.toLocaleString("fa-IR") : "—"} <span class="toman">تومان</span></span></div>
                 </a>
                 <div class="slider-card-actions">
                   <button class="slider-add-btn" data-id="${id}"><i class="ti ti-shopping-cart-plus"></i> افزودن</button>

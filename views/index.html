@@ -1624,16 +1624,24 @@
         min-height: 40px;
       }
       .product-price {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
         font-size: 15px;
-        font-weight: 800;
+        font-weight: 700;
         color: var(--text-1);
-        direction: ltr;
+        direction: rtl;
       }
       .product-price span {
         font-size: 11px;
         font-weight: 500;
         color: var(--text-3);
       }
+      .product-price-meta { display:flex;align-items:center;gap:7px;min-height:20px; }
+      .product-price-discount { background:#ef4444;color:#fff!important;border-radius:999px;padding:3px 7px;font-size:10px!important;font-weight:800!important;direction:ltr; }
+      .product-price-old { color:#9ca3af!important;font-size:10px!important;font-weight:400!important;text-decoration:line-through;text-decoration-thickness:1px; }
+      .product-price-current { color:var(--text-1)!important;font-size:15px!important;font-weight:700!important; }
 
 
       /* ═══ PIXELLIFE AMAZING OFFERS ═══ */
@@ -1649,7 +1657,7 @@
       .amazing-card:hover{transform:translateY(-4px);box-shadow:0 12px 20px rgba(15,23,42,.25)}
       .amazing-card img{width:100%;height:125px;object-fit:contain;display:block;margin-bottom:9px}
       .amazing-card h3{font-size:12px;line-height:1.75;font-weight:650;height:42px;overflow:hidden;margin:0 0 7px}
-      .amazing-card-price{font-size:14px;font-weight:800;direction:ltr;text-align:right}.amazing-card-price span{font-size:10px;color:var(--text-3);font-weight:500}
+      .amazing-card-price{display:flex;flex-direction:column;align-items:flex-start;gap:3px;font-size:14px;font-weight:700;direction:rtl;text-align:right}.amazing-card-price span{font-size:10px;color:var(--text-3);font-weight:500}
       .amazing-card-discount{position:absolute;top:10px;right:10px;background:#ef4444;color:#fff;border-radius:8px;padding:3px 7px;font-size:11px;font-weight:800}
       .amazing-empty{align-self:center;font-size:13px;color:rgba(255,255,255,.85);padding:28px}
       @media(max-width:768px){.amazing-offers{margin:20px 0 30px;border-radius:16px}.amazing-offers-inner{grid-template-columns:1fr}.amazing-offers-brand{min-height:108px;padding:16px;flex-direction:row;gap:12px;border-left:0;border-bottom:1px solid rgba(255,255,255,.2);text-align:right}.amazing-offers-brand .bolt{font-size:34px}.amazing-offers-brand h2{font-size:18px;margin:0}.amazing-offers-list{padding:12px;gap:10px}.amazing-card{flex-basis:155px}.amazing-card img{height:105px}}
@@ -3592,6 +3600,21 @@
         return div.innerHTML;
       }
 
+      function productPriceInfo(product) {
+        const original = Math.max(0, Number(product.price) || 0);
+        const discount = Math.min(99, Math.max(0, Number(product.discountPercent ?? product.discount) || 0));
+        const final = discount > 0 ? Math.round(original * (100 - discount) / 100) : original;
+        return { original, discount, final };
+      }
+
+      function productPriceMarkup(product, className = "product-price") {
+        const info = productPriceInfo(product);
+        const meta = info.discount > 0
+          ? `<span class="product-price-meta"><span class="product-price-discount">${info.discount.toLocaleString("fa-IR")}٪</span><span class="product-price-old">${info.original.toLocaleString("fa-IR")}</span></span>`
+          : "";
+        return `<div class="${className}">${meta}<span class="product-price-current">${info.final.toLocaleString("fa-IR")} <small>تومان</small></span></div>`;
+      }
+
 
       /* ══ شگفت‌انگیزهای PixelLife (حداکثر ۷ محصول فعال) ══ */
       async function loadAmazingOffers() {
@@ -3609,12 +3632,11 @@
             const image = escapeHtml(p.mainImage || (p.images && p.images[0]) || "/images/product-placeholder.svg");
             const name = escapeHtml(p.name);
             const slug = escapeHtml(p.slug);
-            const price = Number(p.price || 0).toLocaleString("fa-IR");
             const discount = Math.max(0, Number(p.discountPercent || p.discount || 0));
             return '<a class="amazing-card" href="/product/' + slug + '">' +
               (discount ? '<span class="amazing-card-discount">' + discount.toLocaleString("fa-IR") + '%</span>' : '<span class="amazing-card-discount"><i class="ti ti-bolt"></i> ویژه</span>') +
               '<img src="' + image + '" alt="' + name + '" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'/images/product-placeholder.svg\';">' +
-              '<h3>' + name + '</h3><div class="amazing-card-price">' + price + ' <span>تومان</span></div></a>';
+              '<h3>' + name + '</h3>' + productPriceMarkup(p, "amazing-card-price") + '</a>';
           }).join("");
           section.hidden = false;
           section.addEventListener("click", (event) => {
@@ -3650,7 +3672,6 @@
                 (p.images || []).find((image) => image && image !== rawImg) || "";
               const img = escapeHtml(rawImg || "/images/product-placeholder.svg");
               const fallbackImg = escapeHtml(rawFallback);
-              const price = Number(p.price).toLocaleString("fa-IR");
               const name = escapeHtml(p.name);
               const slug = escapeHtml(p.slug);
               return `
@@ -3658,7 +3679,7 @@
                   ${p.comingSoon ? '<span class="product-card-coming-soon"><i class="ti ti-clock"></i> به‌زودی</span>' : ""}
                   <img src="${img}" data-fallback="${fallbackImg}" alt="${name}" loading="lazy" decoding="async" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.onerror=null;this.src='/images/product-placeholder.svg';}">
                   <h3>${name}</h3>
-                  <div class="product-price">${price} <span>تومان</span></div>
+                  ${productPriceMarkup(p)}
                 </a>`;
             })
             .join("");
@@ -3694,7 +3715,6 @@
                 (p.images || []).find((image) => image && image !== rawImg) || "";
               const img = escapeHtml(rawImg || "/images/product-placeholder.svg");
               const fallbackImg = escapeHtml(rawFallback);
-              const price = Number(p.price).toLocaleString("fa-IR");
               const name = escapeHtml(p.name);
               const slug = escapeHtml(p.slug);
               return `
@@ -3702,7 +3722,7 @@
                   ${p.comingSoon ? '<span class="product-card-coming-soon"><i class="ti ti-clock"></i> به‌زودی</span>' : ""}
                   <img src="${img}" data-fallback="${fallbackImg}" alt="${name}" loading="lazy" decoding="async" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.onerror=null;this.src='/images/product-placeholder.svg';}">
                   <h3>${name}</h3>
-                  <div class="product-price">${price} <span>تومان</span></div>
+                  ${productPriceMarkup(p)}
                 </a>`;
             })
             .join("");
