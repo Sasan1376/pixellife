@@ -8211,6 +8211,7 @@
     const info = document.querySelector(".product-info-col");
     const colors = document.getElementById("colorOptions")?.closest(".option-group");
     const quantity = document.querySelector(".quantity-row")?.closest(".option-group");
+    const storage = document.getElementById("storageOptions")?.closest(".option-group");
     const specs = info?.querySelector(".quick-specs-card");
     const price = info?.querySelector(".product-price-row");
     const warranty = document.getElementById("warrantyOptions")?.closest(".option-group");
@@ -8218,7 +8219,8 @@
     warranty?.remove();
     price.before(colors);
     if (quantity) colors.after(quantity);
-    if (specs) (quantity || colors).after(specs);
+    if (storage) (quantity || colors).after(storage);
+    if (specs) (storage || quantity || colors).after(specs);
     return true;
   };
   let tries = 0;
