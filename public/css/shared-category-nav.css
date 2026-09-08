@@ -354,3 +354,12 @@
   margin-inline: 0 !important;
   justify-content: space-between !important;
 }
+
+/* Preserve the original compact menu and anchor the whole group to the right. */
+.navbar-inner {
+  width: auto !important;
+  max-width: 1200px !important;
+  margin-right: 0 !important;
+  margin-left: auto !important;
+  justify-content: flex-start !important;
+}
