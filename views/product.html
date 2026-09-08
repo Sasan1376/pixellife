@@ -7891,3 +7891,17 @@
       <script src="/js/product-ratings.js?v=2" defer></script>
   </body>
 </html>
+
+<style id="product-gallery-size-override">
+@media (min-width: 769px) {
+  .gallery-main svg,
+  .gallery-main img {
+    max-height: 720px;
+    transform: scale(1.1);
+  }
+  .gallery-main:hover svg,
+  .gallery-main:hover img {
+    transform: scale(1.13);
+  }
+}
+</style>
