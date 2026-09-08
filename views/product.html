@@ -2087,21 +2087,21 @@
           gap: 32px;
         }
         .desktop-product-shell > .desktop-purchase-card {
-          flex: 0 0 270px;
-          width: 270px !important;
-          max-width: 270px;
-          min-width: 270px;
+          flex: 0 0 300px;
+          width: 300px !important;
+          max-width: 300px;
+          min-width: 300px;
         }
         .desktop-purchase-card {
           display: block;
           position: sticky;
           top: 132px;
           align-self: start;
-          background: #fff;
-          border: 1px solid var(--border);
+          background: #f7f7f8;
+          border: 1px solid #e0e0e2;
           border-radius: 14px;
           padding: 16px;
-          box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+          box-shadow: none;
         }
         .desktop-purchase-product {
           display: flex;
@@ -3634,6 +3634,12 @@
           font-weight: 850;
           cursor: pointer;
           -webkit-tap-highlight-color: transparent;
+          position: relative;
+          z-index: 1;
+          pointer-events: auto;
+          touch-action: manipulation;
+          -webkit-user-select: none;
+          user-select: none;
         }
         .mobile-purchase-add:active {
           transform: scale(0.98);
@@ -6762,7 +6768,7 @@
             </div>
           </div>
 
-          <div class="section-block" id="relatedProductsSection">
+          <div class="section-block" id="relatedProductsSection" style="display:none">
             <div class="section-heading"><i class="ti ti-apps"></i> محصولات مشابه</div>
             <div class="slider-wrap">
               <button class="slider-nav-btn slider-nav-prev" data-slider="relatedSlider"><i class="ti ti-chevron-right"></i></button>
@@ -7579,59 +7585,67 @@
           }
 
           async function loadRelatedProducts() {
+            const section = document.getElementById("relatedProductsSection");
+            const slider = document.getElementById("relatedSlider");
+            const getLiveProducts = async (query) => {
+              const res = await fetch(`/api/products?${query}&exclude=${encodeURIComponent(productId)}&limit=8`, { cache: "no-store" });
+              if (!res.ok) return [];
+              const data = await res.json();
+              if (!data.success || !Array.isArray(data.products)) return [];
+              return data.products
+                .map((d) => [String(d._id), mapDbProductToView(d)])
+                .filter(([, relatedProduct]) => !relatedProduct.outOfStock);
+            };
             try {
-              const res = await fetch(
-                `/api/products?brand=${encodeURIComponent(product.brand)}&exclude=${productId}&limit=8`,
-              );
-              if (res.ok) {
-                const data = await res.json();
-                if (
-                  data.success &&
-                  Array.isArray(data.products) &&
-                  data.products.length
-                ) {
-                  const mapped = data.products.map((d) => [
-                    String(d._id),
-                    mapDbProductToView(d),
-                  ]);
-                  // محصولات مشابهِ دریافت‌شده از API را نیز در منبع سبد خرید نگه می‌داریم.
-                  // در غیر این صورت دکمه «افزودن» اطلاعات محصول را پیدا نمی‌کند.
-                  mapped.forEach(([id, p]) => {
-                    PRODUCTS[id] = p;
-                  });
-                  document.getElementById("relatedSlider").innerHTML = mapped
-                    .map(([id, p]) => miniCard(id, p))
-                    .join("");
-                  return;
-                }
+              let mapped = product.brand
+                ? await getLiveProducts(`brand=${encodeURIComponent(product.brand)}`)
+                : [];
+              if (!mapped.length && product.category) {
+                mapped = await getLiveProducts(`category=${encodeURIComponent(product.category)}`);
+              }
+              if (mapped.length) {
+                mapped.forEach(([id, p]) => { PRODUCTS[id] = p; });
+                slider.innerHTML = mapped.map(([id, p]) => miniCard(id, p)).join("");
+                section.style.display = "block";
+                return;
               }
             } catch (e) {
               console.warn("محصولات مشابه از سرور دریافت نشد:", e);
             }
-            // fallback فقط وقتی سرور چیزی نداد
-            const relatedIds = Object.keys(PRODUCTS).filter(
-              (id) =>
-                id !== productId &&
-                (PRODUCTS[id].brand === product.brand ||
-                  !!PRODUCTS[id].isTablet === !!product.isTablet),
-            );
-            document.getElementById("relatedSlider").innerHTML = relatedIds
-              .slice(0, 8)
-              .map((id) => miniCard(id, PRODUCTS[id]))
-              .join("");
+            slider.innerHTML = "";
+            section.style.display = "none";
           }
           deferNonCriticalWork(loadRelatedProducts);
 
-          const recentIds = getRecentlyViewed().filter(
-            (id) => id !== productId && PRODUCTS[id],
-          );
-          if (recentIds.length) {
+          async function loadRecentlyViewedProducts() {
+            const recentIds = getRecentlyViewed()
+              .filter((id) => String(id) !== String(productId))
+              .slice(0, 8);
+            if (!recentIds.length) return;
+            const responses = await Promise.all(recentIds.map(async (id) => {
+              try {
+                const isMongoId = /^[a-f0-9]{24}$/i.test(String(id));
+                const response = await fetch(
+                  isMongoId ? `/api/products/id/${id}` : `/api/products/${encodeURIComponent(id)}`,
+                  { cache: "no-store" },
+                );
+                if (!response.ok) return null;
+                const data = await response.json();
+                return data.success && data.product ? [String(data.product._id), mapDbProductToView(data.product)] : null;
+              } catch (_) {
+                return null;
+              }
+            }));
+            const liveProducts = responses.filter(Boolean);
+            localStorage.setItem("digishop_recently_viewed", JSON.stringify(liveProducts.map(([id]) => id)));
+            if (!liveProducts.length) return;
+            liveProducts.forEach(([id, recentProduct]) => { PRODUCTS[id] = recentProduct; });
             document.getElementById("recentlyViewedBlock").style.display = "";
-            document.getElementById("recentSlider").innerHTML = recentIds
-              .slice(0, 8)
-              .map((id) => miniCard(id, PRODUCTS[id]))
+            document.getElementById("recentSlider").innerHTML = liveProducts
+              .map(([id, recentProduct]) => miniCard(id, recentProduct))
               .join("");
           }
+          deferNonCriticalWork(loadRecentlyViewedProducts);
 
           // کارت‌های مشابه و بازدیدهای اخیر پس از آماده‌شدن صفحه ساخته می‌شوند.
           // بنابراین رویداد را روی document می‌گذاریم تا دکمه‌های جدید هم کار کنند.
@@ -7761,10 +7775,17 @@
 
           const mobileAddCartBtn = document.getElementById("mobileAddCartBtn");
           if (mobileAddCartBtn) {
-            mobileAddCartBtn.addEventListener("click", () => {
+            let lastMobileAddAt = 0;
+            const addFromMobilePurchaseBar = (event) => {
+              if (event.type === "pointerup") event.preventDefault();
+              const now = Date.now();
+              if (now - lastMobileAddAt < 450) return;
+              lastMobileAddAt = now;
               addCurrentToCart();
               showToast("به سبد خرید اضافه شد");
-            });
+            };
+            mobileAddCartBtn.addEventListener("pointerup", addFromMobilePurchaseBar);
+            mobileAddCartBtn.addEventListener("click", addFromMobilePurchaseBar);
           }
 
           const desktopNotifyBtn = document.getElementById("desktopNotifyBtn");
