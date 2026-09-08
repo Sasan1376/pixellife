@@ -7,7 +7,7 @@ const viewCache = new Map();
 
 // با هر انتشار، URL فایل‌های CSS و JS عوض می‌شود تا مرورگری که نسخهٔ
 // قدیمی را با قانون کش قبلی نگه داشته نیز ناچار به دریافت نسخهٔ تازه باشد.
-const ASSET_REVISION = "20260908-related-products-fallback";
+const ASSET_REVISION = "20260908-storage-before-quantity";
 
 function injectAssetRevision(html) {
   return html.replace(
