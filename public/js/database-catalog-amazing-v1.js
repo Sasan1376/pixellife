@@ -282,7 +282,9 @@
   if (categoryForRequest && !(isApplePhoneCatalog && !requestedCategory)) {
     params.set("category", categoryForRequest);
   }
-  if (requestedBrand || config.brand) params.set("brand", requestedBrand || config.brand);
+  if ((requestedBrand || config.brand) && !(isApplePhoneCatalog && !requestedBrand)) {
+    params.set("brand", requestedBrand || config.brand);
+  }
 
   // دادهٔ قدیمیِ داخل HTML فقط نقش پشتیبان دارد. قبل از اولین رنگ‌کردن
   // صفحه پنهان می‌شود تا کاربر هرگز جابه‌جایی بین کارت‌های قدیمی و دیتابیس را نبیند.
@@ -324,9 +326,12 @@
       const catalogProducts = isApplePhoneCatalog && !requestedCategory
         ? data.products.filter((product) => {
             const name = String(product.name || "").trim();
+            const brand = String(product.brand || "").trim();
             const category = String(product.category || "").trim();
-            return /^(?:apple\s*)?iphone\b|^(?:آیفون|ایفون)/i.test(name) ||
-              /^(?:موبایل|mobile|گوشی موبایل|گوشی|phone|آیفون|ایفون|iphone)$/i.test(category);
+            const isIphoneName = /^(?:apple\s*)?iphone\b|^(?:آیفون|ایفون)/i.test(name);
+            const isAppleBrand = /(?:^|\s)(?:اپل|apple)(?:\s|$)/i.test(brand);
+            const isMobileCategory = /^(?:موبایل|mobile|گوشی موبایل|گوشی|phone|آیفون|ایفون|iphone)$/i.test(category);
+            return isIphoneName || (isAppleBrand && isMobileCategory);
           })
         : data.products;
       catalogFilters.setProducts(catalogProducts);
