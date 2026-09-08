@@ -270,7 +270,9 @@
   const requestedBrand = requestedParams.get("brand");
   const params = new URLSearchParams({
     category: requestedCategory || config.category,
-    limit: "24",
+    // فیلتر و مرتب‌سازی در مرورگر انجام می‌شود؛ بنابراین باید کل موجودی این
+    // دسته دریافت شود تا محصولات قدیمی‌تر یا تخفیف‌خورده از فهرست حذف نشوند.
+    limit: "100",
   });
   if (requestedBrand || config.brand) params.set("brand", requestedBrand || config.brand);
 
