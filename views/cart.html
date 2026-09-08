@@ -2190,6 +2190,12 @@
       .btn-checkout:active {
         transform: translateY(0);
       }
+      /* موقت تا زمان آماده‌شدن درگاه زرین‌پال؛ جریان پرداخت موبایل حفظ می‌شود. */
+      @media (min-width: 769px) {
+        #checkoutBtn {
+          display: none !important;
+        }
+      }
       .btn-continue-shopping {
         display: flex;
         align-items: center;
