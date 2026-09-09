@@ -616,6 +616,10 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       variants,
       showReview,
       reviewSections,
+      reviewPros,
+      reviewCons,
+      reviewVerdict,
+      reviewVerdictScore,
       mainImage: mainImageSelection,
     } = req.body;
 
@@ -665,7 +669,11 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       hasStorage: storageEnabled,
       showReview: parseEnabled(showReview, false),
       reviewSections: parseReviewSections(reviewSections, uploadedReviewImages),
-      warranties: warrantyEnabled ? parseList(warranties) || [] : [],
+      reviewPros: parseList(reviewPros) || [],
+      reviewCons: parseList(reviewCons) || [],
+      reviewVerdict: String(reviewVerdict || "").trim(),
+      reviewVerdictScore: Number.isFinite(Number(reviewVerdictScore)) ? Math.min(10, Math.max(0, Number(reviewVerdictScore))) : null,
+      warranties: warrantyEnabled ? parseList(warranties) || [],
       hasWarranty: warrantyEnabled,
     }, variantInventory, availability));
 
@@ -707,6 +715,10 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       variants,
       showReview,
       reviewSections,
+      reviewPros,
+      reviewCons,
+      reviewVerdict,
+      reviewVerdictScore,
       mainImage: mainImageSelection,
       removeImages,
     } = req.body;
@@ -790,6 +802,13 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
     const newImages = await Promise.all(uploadedFiles(req, "images").map(saveProductImage));
     const uploadedReviewImages = await Promise.all(uploadedFiles(req, "reviewImages").map(saveProductImage));
     if (reviewSections !== undefined) product.reviewSections = parseReviewSections(reviewSections, uploadedReviewImages);
+    if (reviewPros !== undefined) product.reviewPros = parseList(reviewPros) || [];
+    if (reviewCons !== undefined) product.reviewCons = parseList(reviewCons) || [];
+    if (reviewVerdict !== undefined) product.reviewVerdict = String(reviewVerdict || "").trim();
+    if (reviewVerdictScore !== undefined) {
+      const score = Number(reviewVerdictScore);
+      product.reviewVerdictScore = Number.isFinite(score) ? Math.min(10, Math.max(0, score)) : null;
+    }
     product.images = [...remainingImages, ...newImages];
     await Promise.all([...removed].map(removeProductImage));
 
