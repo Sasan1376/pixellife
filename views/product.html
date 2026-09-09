@@ -5508,6 +5508,7 @@
 
         return {
           brand: doc.brand || "نامشخص",
+          category: String(doc.category || "").trim(),
           brandLogo,
           name: doc.name,
           // به‌جای هاردکد صفر، اگر سرور rating/reviewCount می‌فرستد از همان استفاده کن
@@ -6270,12 +6271,8 @@
         } catch (e) {
           console.warn("خطا در دریافت محصول از سرور:", e);
         }
-        if (!product) {
-          product = PRODUCTS[productId];
-          if (product) {
-            console.warn("fallback به داده استاتیک برای شناسه:", productId);
-          }
-        }
+        // فقط محصولی که از API زنده دریافت شده معتبر است؛
+        // کالای حذف‌شده نباید از داده‌های قدیمی مرورگر بازگردد.
         if (product) {
           product.hasStorage = product.hasStorage !== false;
           product.hasWarranty = product.hasWarranty !== false;
@@ -7597,33 +7594,46 @@
           async function loadRelatedProducts() {
             const section = document.getElementById("relatedProductsSection");
             const slider = document.getElementById("relatedSlider");
-            const getLiveProducts = async (query) => {
-              const res = await fetch(`/api/products?${query}&exclude=${encodeURIComponent(productId)}&limit=8`, { cache: "no-store" });
+            const hide = () => { slider.innerHTML = ""; section.style.display = "none"; };
+            const getLiveProducts = async ({ category, brand = "" }) => {
+              if (!category) return [];
+              const query = new URLSearchParams({
+                category,
+                exclude: String(productId),
+                limit: "12",
+              });
+              if (brand) query.set("brand", brand);
+              const res = await fetch(`/api/products?${query.toString()}`, { cache: "no-store" });
               if (!res.ok) return [];
               const data = await res.json();
               if (!data.success || !Array.isArray(data.products)) return [];
               return data.products
-                .map((d) => [String(d._id), mapDbProductToView(d)])
+                .map((doc) => [String(doc._id), mapDbProductToView(doc)])
                 .filter(([, relatedProduct]) => !relatedProduct.outOfStock);
             };
             try {
-              let mapped = product.brand
-                ? await getLiveProducts(`brand=${encodeURIComponent(product.brand)}`)
+              const category = String(product.category || "").trim();
+              if (!category) { hide(); return; }
+              // ابتدا کالاهای هم‌دسته و هم‌برند، سپس فقط کالاهای همان دسته.
+              // محصول خارج از دستهٔ فعلی هرگز در این بخش نشان داده نمی‌شود.
+              const sameBrand = product.brand
+                ? await getLiveProducts({ category, brand: product.brand })
                 : [];
-              if (!mapped.length && product.category) {
-                mapped = await getLiveProducts(`category=${encodeURIComponent(product.category)}`);
-              }
-              if (mapped.length) {
-                mapped.forEach(([id, p]) => { PRODUCTS[id] = p; });
-                slider.innerHTML = mapped.map(([id, p]) => miniCard(id, p)).join("");
-                section.style.display = "block";
-                return;
-              }
-            } catch (e) {
-              console.warn("محصولات مشابه از سرور دریافت نشد:", e);
+              const sameCategory = sameBrand.length >= 8
+                ? []
+                : await getLiveProducts({ category });
+              const seen = new Set();
+              const mapped = [...sameBrand, ...sameCategory]
+                .filter(([id]) => id !== String(productId) && !seen.has(id) && seen.add(id))
+                .slice(0, 8);
+              if (!mapped.length) { hide(); return; }
+              mapped.forEach(([id, relatedProduct]) => { PRODUCTS[id] = relatedProduct; });
+              slider.innerHTML = mapped.map(([id, relatedProduct]) => miniCard(id, relatedProduct)).join("");
+              section.style.display = "block";
+            } catch (error) {
+              console.warn("محصولات مشابه از سرور دریافت نشد:", error);
+              hide();
             }
-            slider.innerHTML = "";
-            section.style.display = "none";
           }
           deferNonCriticalWork(loadRelatedProducts);
 
