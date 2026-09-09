@@ -13,6 +13,11 @@ const requiredMarkers = [
   "async function loadRecentlyViewedProducts",
   'id="storageVal" hidden',
   "breadcrumb-product-name",
+  "reviewPros:",
+  "reviewCons:",
+  "reviewVerdict:",
+  "id=\"rev-sec-pros-cons\"",
+  "id=\"rev-sec-verdict\"",
 ];
 
 const missing = requiredMarkers.filter((marker) => !productPage.includes(marker));
