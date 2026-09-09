@@ -129,6 +129,11 @@ const productSchema = new mongoose.Schema(
       // اندازهٔ نمایش هر عکس، با همان ترتیب آرایهٔ images ذخیره می‌شود.
       imageSizes: [{ type: String, enum: ["small", "medium", "large", "full"], default: "large" }],
     }],
+    // محتوای اختصاصی بخش نقاط قوت/ضعف و جمع‌بندی بررسی تخصصی.
+    reviewPros: [{ type: String, trim: true }],
+    reviewCons: [{ type: String, trim: true }],
+    reviewVerdict: { type: String, trim: true, default: "" },
+    reviewVerdictScore: { type: Number, min: 0, max: 10, default: null },
     rating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
     comingSoon: { type: Boolean, default: false },
