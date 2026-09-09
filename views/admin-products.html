@@ -507,6 +507,26 @@
                       <button type="button" class="btn btn-outline-primary btn-sm" id="addReviewSectionBtn"><i class="ti ti-plus"></i> افزودن بخش بررسی</button>
                     </div>
                     <div class="form-hint mt-2">هر بخش عنوان، توضیح، عکس و سوییچ مستقل دارد. فقط بخش‌های روشن در سایت نمایش داده می‌شوند.</div>
+                    <div class="row g-3 mt-1">
+                      <div class="col-md-6">
+                        <label class="form-label" for="fReviewPros">نقاط قوت</label>
+                        <textarea class="form-control" id="fReviewPros" rows="5" placeholder="هر مورد در یک خط&#10;نمایشگر روشن و باکیفیت&#10;باتری بادوام"></textarea>
+                        <div class="form-hint">این موارد در کارت «نقاط قوت» صفحهٔ بررسی تخصصی نمایش داده می‌شوند.</div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label" for="fReviewCons">نقاط ضعف</label>
+                        <textarea class="form-control" id="fReviewCons" rows="5" placeholder="هر مورد در یک خط&#10;نداشتن شارژر در جعبه&#10;قیمت بالاتر از برخی رقبا"></textarea>
+                        <div class="form-hint">این موارد در کارت «نقاط ضعف» صفحهٔ بررسی تخصصی نمایش داده می‌شوند.</div>
+                      </div>
+                      <div class="col-12">
+                        <label class="form-label" for="fReviewVerdict">جمع‌بندی نهایی</label>
+                        <textarea class="form-control" id="fReviewVerdict" rows="4" placeholder="متن جمع‌بندی اختصاصی این محصول را وارد کنید."></textarea>
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label" for="fReviewVerdictScore">امتیاز جمع‌بندی (اختیاری، از ۱۰)</label>
+                        <input class="form-control" type="number" id="fReviewVerdictScore" min="0" max="10" step="0.1" placeholder="مثلاً ۸.۵" />
+                      </div>
+                    </div>
                     <div id="reviewSectionsEditor"></div>
                   </div>
                 </div>
@@ -617,8 +637,6 @@
         "طراحی و کیفیت ساخت",
         "ویژگی‌ها و عملکرد",
         "کیفیت و تجربه استفاده",
-        "نقاط قوت و ضعف",
-        "جمع‌بندی نهایی",
       ].map((title) => ({ enabled: true, title, content: "", images: [] }));
 
       function showToast(msg) {
@@ -1102,6 +1120,10 @@
           input.value = reviewVideoUrls[index] || "";
         });
         document.getElementById("fShowReview").checked = p.showReview === true;
+        document.getElementById("fReviewPros").value = formatList(p.reviewPros);
+        document.getElementById("fReviewCons").value = formatList(p.reviewCons);
+        document.getElementById("fReviewVerdict").value = p.reviewVerdict || "";
+        document.getElementById("fReviewVerdictScore").value = p.reviewVerdictScore ?? "";
         document.getElementById("fHideColorsWhenOutOfStock").checked = p.hideColorsWhenOutOfStock !== false;
         renderReviewSections(Array.isArray(p.reviewSections) ? p.reviewSections : []);
         document.getElementById("fSpecs").value = p.specs || "";
@@ -1298,6 +1320,10 @@
           fd.append("hasWarranty", hasWarranty);
           fd.append("showSpecs", showSpecs);
           fd.append("showReview", document.getElementById("fShowReview").checked);
+          fd.append("reviewPros", document.getElementById("fReviewPros").value);
+          fd.append("reviewCons", document.getElementById("fReviewCons").value);
+          fd.append("reviewVerdict", document.getElementById("fReviewVerdict").value);
+          fd.append("reviewVerdictScore", document.getElementById("fReviewVerdictScore").value);
           fd.append(
             "description",
             document.getElementById("fDescription").value,
