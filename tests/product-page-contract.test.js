@@ -10,7 +10,7 @@ const requiredMarkers = [
   "reliable-desktop-discount-card",
   "addFromMobilePurchaseBar",
   "getLiveProducts = async",
-  "category: String(doc.category || \"\").trim()",
+  'category: String(doc.category || "").trim()',
   "async function loadRecentlyViewedProducts",
   'id="storageVal" hidden',
   "breadcrumb-product-name",
