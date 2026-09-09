@@ -18,6 +18,7 @@ const requiredMarkers = [
   "reviewVerdict:",
   "id=\"rev-sec-pros-cons\"",
   "id=\"rev-sec-verdict\"",
+  "hideColorsWhenOutOfStock",
 ];
 
 const missing = requiredMarkers.filter((marker) => !productPage.includes(marker));
