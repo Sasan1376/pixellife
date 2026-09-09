@@ -5541,6 +5541,8 @@
               ? []
               : (Array.isArray(doc.warranties) ? doc.warranties : []),
           colors: colors,
+          // گزینهٔ پنل ادمین تعیین می‌کند که رنگ کالای ناموجود دیده شود یا نه.
+          hideColorsWhenOutOfStock: doc.hideColorsWhenOutOfStock !== false,
           variants: variants,
           // شکل SVG بر اساس دسته‌بندی واقعی، نه همیشه گوشی
           svg: isTablet
@@ -6383,7 +6385,9 @@
             product.oldPrice && product.price
               ? Math.round(100 - (product.price / product.oldPrice) * 100)
               : 0;
-          const shouldShowColors = Array.isArray(product.colors) && product.colors.length > 0;
+          const shouldShowColors = Array.isArray(product.colors)
+            && product.colors.length > 0
+            && !(product.outOfStock && product.hideColorsWhenOutOfStock);
           const reviewArticle = Array.isArray(product.reviewSections)
             ? product.reviewSections
                 .filter((section) => section && section.enabled !== false && (section.title || section.content || section.images?.length))
