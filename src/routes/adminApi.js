@@ -673,7 +673,7 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       reviewCons: parseList(reviewCons) || [],
       reviewVerdict: String(reviewVerdict || "").trim(),
       reviewVerdictScore: Number.isFinite(Number(reviewVerdictScore)) ? Math.min(10, Math.max(0, Number(reviewVerdictScore))) : null,
-      warranties: warrantyEnabled ? parseList(warranties) || [],
+      warranties: warrantyEnabled ? parseList(warranties) || [] : [],
       hasWarranty: warrantyEnabled,
     }, variantInventory, availability));
 
