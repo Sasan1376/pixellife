@@ -5558,6 +5558,10 @@
           reviewImages: Array.isArray(doc.reviewImages) ? doc.reviewImages : [],
           showReview: doc.showReview === true,
           reviewSections: Array.isArray(doc.reviewSections) ? doc.reviewSections : [],
+          reviewPros: Array.isArray(doc.reviewPros) ? doc.reviewPros.map((item) => String(item || "").trim()).filter(Boolean) : [],
+          reviewCons: Array.isArray(doc.reviewCons) ? doc.reviewCons.map((item) => String(item || "").trim()).filter(Boolean) : [],
+          reviewVerdict: String(doc.reviewVerdict || "").trim(),
+          reviewVerdictScore: Number.isFinite(Number(doc.reviewVerdictScore)) ? Number(doc.reviewVerdictScore) : null,
           isTablet: isTablet,
           showSpecs: doc.showSpecs !== false,
           specs: doc.showSpecs === false ? {} : specs,
@@ -6390,6 +6394,11 @@
                   images: Array.isArray(section.images) ? section.images.map((src, index) => ({ src, size: ["small", "medium", "large", "full"].includes(section.imageSizes?.[index]) ? section.imageSizes[index] : "large" })) : [],
                 }))
             : [];
+          const reviewPros = Array.isArray(product.reviewPros) ? product.reviewPros.filter(Boolean) : [];
+          const reviewCons = Array.isArray(product.reviewCons) ? product.reviewCons.filter(Boolean) : [];
+          const reviewVerdict = String(product.reviewVerdict || "").trim();
+          const reviewVerdictScore = Number.isFinite(product.reviewVerdictScore) ? product.reviewVerdictScore : null;
+          const hasReviewContent = reviewArticle.length || reviewPros.length || reviewCons.length || reviewVerdict;
           let demoReviews = [];
           // تابع دریافت نظرات از سرور واقعی
           async function fetchReviews() {
@@ -6639,7 +6648,7 @@
             }
           </div>` : ""}
 
-          <div class="section-block" id="productReviewSection" style="display:${product.showReview && reviewArticle.length ? "" : "none"}">
+          <div class="section-block" id="productReviewSection" style="display:${product.showReview && hasReviewContent ? "" : "none"}">
             <div class="section-heading"><i class="ti ti-article"></i> بررسی تخصصی ${product.name}</div>
             <div class="review-article-nav review-article-nav--collapsed" id="reviewArticleNav">
               ${reviewArticle.map((s, i) => `<a class="review-nav-chip" href="#rev-sec-${i}">${s.title}</a>`).join("")}
@@ -6663,37 +6672,29 @@
                           .join("")}
             ${reviewArticle.length > 1 ? `<button type="button" class="review-article-toggle" id="reviewArticleToggle" aria-expanded="false"><i class="ti ti-chevron-down"></i> بررسی کامل محصول</button>` : ""}
 
-            <div class="review-section" style="display:none">
+            ${(reviewPros.length || reviewCons.length) ? `
+            <div class="review-section" id="rev-sec-pros-cons">
               <div class="review-section-title"><i class="ti ti-thumb-up"></i> نقاط قوت و ضعف</div>
               <div class="pros-cons-grid">
-                <div class="pros-card">
+                ${reviewPros.length ? `<div class="pros-card">
                   <div class="pros-cons-title"><i class="ti ti-circle-check"></i> نقاط قوت</div>
-                  <ul class="pros-cons-list">
-                    <li><i class="ti ti-check"></i> کیفیت ساخت و مواد اولیه بسیار خوب</li>
-                    <li><i class="ti ti-check"></i> عملکرد روان در استفاده روزمره</li>
-                    <li><i class="ti ti-check"></i> کیفیت دوربین قابل قبول در رده قیمتی خود</li>
-                    <li><i class="ti ti-check"></i> باتری بادوام و شارژ سریع</li>
-                  </ul>
-                </div>
-                <div class="cons-card">
+                  <ul class="pros-cons-list">${reviewPros.map((item) => `<li><i class="ti ti-check"></i>${escapeCartText(item)}</li>`).join("")}</ul>
+                </div>` : ""}
+                ${reviewCons.length ? `<div class="cons-card">
                   <div class="pros-cons-title"><i class="ti ti-circle-x"></i> نقاط ضعف</div>
-                  <ul class="pros-cons-list">
-                    <li><i class="ti ti-x"></i> عدم وجود جک هدفون ۳.۵ میلی‌متری</li>
-                    <li><i class="ti ti-x"></i> قیمت نسبتاً بالا نسبت به برخی رقبا</li>
-                    <li><i class="ti ti-x"></i> عدم ارائه آداپتور شارژر در جعبه</li>
-                  </ul>
-                </div>
+                  <ul class="pros-cons-list">${reviewCons.map((item) => `<li><i class="ti ti-x"></i>${escapeCartText(item)}</li>`).join("")}</ul>
+                </div>` : ""}
               </div>
-            </div>
+            </div>` : ""}
 
-            <div class="review-section" id="rev-sec-verdict" style="display:none">
+            ${reviewVerdict ? `
+            <div class="review-section" id="rev-sec-verdict">
               <div class="review-section-title"><i class="ti ti-award"></i> جمع‌بندی نهایی</div>
               <div class="verdict-box">
-                <div class="verdict-score">${(parseFloat(product.rating.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d))) * 2).toFixed(1)}</div>
-                <div class="verdict-text">${product.name} گزینه‌ای متعادل با کیفیت ساخت بالا، عملکرد روان و دوربین قابل اعتماد است که آن را به انتخابی مناسب در رده قیمتی خود تبدیل می‌کند.</div>
+                ${reviewVerdictScore !== null ? `<div class="verdict-score">${reviewVerdictScore.toLocaleString("fa-IR")}</div>` : ""}
+                <div class="verdict-text">${escapeCartText(reviewVerdict).replace(/\n/g, "<br>")}</div>
               </div>
-            </div>
-          </div>
+            </div>` : ""}
 
           <div class="section-block" id="storeAdvantagesSection">
             <div class="section-heading"><i class="ti ti-shield-star"></i> مزایای خرید از پیکسل لایف</div>
