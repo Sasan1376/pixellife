@@ -6212,23 +6212,20 @@
 
       function pushRecentlyViewed(id) {
         try {
-          let list = JSON.parse(
-            localStorage.getItem("digishop_recently_viewed") || "[]",
-          );
-          list = list.filter((x) => x !== id);
-          list.unshift(id);
-          list = list.slice(0, 10);
-          localStorage.setItem(
-            "digishop_recently_viewed",
-            JSON.stringify(list),
-          );
+          const currentId = String(id || "").trim();
+          if (!currentId) return;
+          const saved = JSON.parse(localStorage.getItem("digishop_recently_viewed") || "[]");
+          const list = Array.isArray(saved) ? saved.map((item) => String(item || "").trim()).filter(Boolean) : [];
+          // همیشه شناسهٔ یکتای سرور ذخیره می‌شود؛ لینک‌های قدیمی یا تکراری یک کارت نمی‌سازند.
+          const next = [currentId, ...list.filter((item) => item !== currentId)];
+          localStorage.setItem("digishop_recently_viewed", JSON.stringify(next.slice(0, 20)));
         } catch (e) {}
       }
       function getRecentlyViewed() {
         try {
-          return JSON.parse(
-            localStorage.getItem("digishop_recently_viewed") || "[]",
-          );
+          const saved = JSON.parse(localStorage.getItem("digishop_recently_viewed") || "[]");
+          if (!Array.isArray(saved)) return [];
+          return [...new Set(saved.map((item) => String(item || "").trim()).filter(Boolean))];
         } catch (e) {
           return [];
         }
@@ -7608,8 +7605,8 @@
               const data = await res.json();
               if (!data.success || !Array.isArray(data.products)) return [];
               return data.products
-                .map((doc) => [String(doc._id), mapDbProductToView(doc)])
-                .filter(([, relatedProduct]) => !relatedProduct.outOfStock);
+                // ناموجودبودن دلیل حذفِ کالای مشابه نیست؛ فقط خرید آن غیرفعال می‌ماند.
+                .map((doc) => [String(doc._id), mapDbProductToView(doc)]);
             };
             try {
               const category = String(product.category || "").trim();
@@ -7619,12 +7616,16 @@
               const sameBrand = product.brand
                 ? await getLiveProducts({ category, brand: product.brand })
                 : [];
-              const sameCategory = sameBrand.length >= 8
-                ? []
-                : await getLiveProducts({ category });
+              // همیشه کل دسته هم خوانده می‌شود تا اگر هم‌برند کم بود، یک محصول تکراری ثابت نماند.
+              const sameCategory = await getLiveProducts({ category });
               const seen = new Set();
               const mapped = [...sameBrand, ...sameCategory]
-                .filter(([id]) => id !== String(productId) && !seen.has(id) && seen.add(id))
+                .filter(([id]) => {
+                  const normalizedId = String(id);
+                  if (normalizedId === String(productId) || seen.has(normalizedId)) return false;
+                  seen.add(normalizedId);
+                  return true;
+                })
                 .slice(0, 8);
               if (!mapped.length) { hide(); return; }
               mapped.forEach(([id, relatedProduct]) => { PRODUCTS[id] = relatedProduct; });
@@ -7638,10 +7639,16 @@
           deferNonCriticalWork(loadRelatedProducts);
 
           async function loadRecentlyViewedProducts() {
+            const section = document.getElementById("recentlyViewedBlock");
+            const slider = document.getElementById("recentSlider");
             const recentIds = getRecentlyViewed()
               .filter((id) => String(id) !== String(productId))
-              .slice(0, 8);
-            if (!recentIds.length) return;
+              .slice(0, 12);
+            if (!recentIds.length) {
+              slider.innerHTML = "";
+              section.style.display = "none";
+              return;
+            }
             const responses = await Promise.all(recentIds.map(async (id) => {
               try {
                 const isMongoId = /^[a-f0-9]{24}$/i.test(String(id));
@@ -7656,14 +7663,23 @@
                 return null;
               }
             }));
-            const liveProducts = responses.filter(Boolean);
+            const seen = new Set();
+            // پاسخ سرور با شناسهٔ نهایی یکتا می‌شود تا یک محصول با لینک قدیمی/جدید دوبار دیده نشود.
+            const liveProducts = responses.filter(Boolean).filter(([id]) => {
+              const normalizedId = String(id);
+              if (seen.has(normalizedId)) return false;
+              seen.add(normalizedId);
+              return true;
+            });
             localStorage.setItem("digishop_recently_viewed", JSON.stringify(liveProducts.map(([id]) => id)));
-            if (!liveProducts.length) return;
+            if (!liveProducts.length) {
+              slider.innerHTML = "";
+              section.style.display = "none";
+              return;
+            }
             liveProducts.forEach(([id, recentProduct]) => { PRODUCTS[id] = recentProduct; });
-            document.getElementById("recentlyViewedBlock").style.display = "";
-            document.getElementById("recentSlider").innerHTML = liveProducts
-              .map(([id, recentProduct]) => miniCard(id, recentProduct))
-              .join("");
+            section.style.display = "";
+            slider.innerHTML = liveProducts.map(([id, recentProduct]) => miniCard(id, recentProduct)).join("");
           }
           deferNonCriticalWork(loadRecentlyViewedProducts);
 
