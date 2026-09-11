@@ -5453,7 +5453,9 @@
         const oldPrice =
           doc.oldPrice || doc.compareAtPrice || oldPriceFromDiscount;
 
-        const hasStorage = doc.hasStorage !== false;
+        // کالای ناموجود هیچ انتخاب خریدی (حافظه/رنگ/تنوع) ندارد.
+        const outOfStock = doc.availability === "out" || Number(doc.stock) <= 0;
+        const hasStorage = doc.hasStorage !== false && !outOfStock;
         const variants = hasStorage && Array.isArray(doc.variants)
           ? doc.variants.map((variant) => ({
               storage: String(variant?.storage || "").trim(),
@@ -5531,17 +5533,17 @@
           amazingOffer: !!doc.amazingOffer,
           amazingOfferEndsAt: doc.amazingOfferEndsAt || null,
           stock: Math.max(0, Number(doc.stock) || 0),
-          outOfStock: doc.availability === "out" || Number(doc.stock) <= 0,
+          outOfStock: outOfStock,
           price: doc.price,
           oldPrice: oldPrice,
           hasStorage: hasStorage,
           storages: storages,
-          hasWarranty: doc.hasWarranty !== false,
+          hasWarranty: doc.hasWarranty !== false && !outOfStock,
           warranties:
-            doc.hasWarranty === false
+            doc.hasWarranty === false || outOfStock
               ? []
               : (Array.isArray(doc.warranties) ? doc.warranties : []),
-          colors: colors,
+          colors: outOfStock ? [] : colors,
           // گزینهٔ پنل ادمین تعیین می‌کند که رنگ کالای ناموجود دیده شود یا نه.
           hideColorsWhenOutOfStock: doc.hideColorsWhenOutOfStock !== false,
           variants: variants,
