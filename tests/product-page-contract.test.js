@@ -24,6 +24,8 @@ const requiredMarkers = [
   "URLSearchParams({",
   "ناموجودبودن دلیل حذفِ کالای مشابه نیست",
   "پاسخ سرور با شناسهٔ نهایی یکتا می‌شود",
+  "کالای ناموجود هیچ انتخاب خریدی",
+  "hasWarranty: doc.hasWarranty !== false && !outOfStock",
 ];
 
 const missing = requiredMarkers.filter((marker) => !productPage.includes(marker));
