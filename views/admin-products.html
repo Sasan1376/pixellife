@@ -725,7 +725,7 @@
                       </div>
                       <span class="selected-color-code" id="fColorHex">#334155</span>
                       <button type="button" class="btn btn-primary btn-sm" id="addProductColorBtn"><i class="ti ti-plus"></i> افزودن رنگ</button>
-                      <button type="button" class="btn btn-outline-secondary btn-sm" id="addVariantColorBtn"><i class="ti ti-list-plus"></i> افزودن به تنوع</button>
+                      <button type="button" class="btn btn-outline-secondary btn-sm" id="addVariantColorBtn"><i class="ti ti-list-plus"></i> انتخاب برای تنوع</button>
                     </div>
                     <div class="admin-color-palette" id="adminColorPalette" aria-label="رنگ‌های ثبت‌شده محصول"></div>
                     <div class="product-options-admin-section__divider"></div>
@@ -1344,6 +1344,7 @@
         syncWarrantyField();
         syncSpecsField();
         renderColorPalette();
+        renderVariantBuilderOptions();
         editingImages = Array.isArray(p.images) ? p.images : [];
         renderImagePreview("existingImagesPreview", editingImages, true);
         setMainImageOptions(
@@ -1486,11 +1487,15 @@
         const name = document.getElementById("fColorName").value.trim();
         const hex = document.getElementById("fColorPicker").value.toUpperCase();
         if (!name) return showToast("ابتدا نام رنگ را وارد کنید");
-        const field = document.getElementById("fVariants");
-        field.value = (field.value.trim() ? field.value.trim() + "\n" : "") + "حافظه را وارد کنید | " + name + " | " + hex + " | ۰";
-        syncVariantInventoryInputs();
-        renderVariantInventoryEditor();
-        showToast("رنگ به ردیف تنوع افزوده شد؛ فقط حافظه و تعداد را کامل کنید");
+        const colors = parseAdminColors();
+        if (!colors.some((color) => color.name === name)) {
+          colors.push({ name, hex });
+          document.getElementById("fColors").value = colors.map((color) => color.name + " | " + color.hex).join("\n");
+        }
+        renderColorPalette();
+        renderVariantBuilderOptions();
+        document.getElementById("variantBuilderColor").value = name;
+        showToast("رنگ انتخاب شد؛ حالا حافظه و تعداد را وارد و «افزودن تنوع» را بزنید");
       });
 
       document.getElementById("fImages").addEventListener("change", (event) => {
