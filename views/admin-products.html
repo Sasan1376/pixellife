@@ -248,6 +248,11 @@
         opacity: .55;
         filter: grayscale(.18);
       }
+      [data-availability-dependent]:disabled {
+        opacity: .58 !important;
+        cursor: not-allowed !important;
+        background-color: #edf2f7 !important;
+      }
       @media (max-width:575.98px) {
         .availability-control-card { align-items:stretch; flex-direction:column; }
       }
@@ -936,11 +941,15 @@
         // فقط اجزای فروش/تنوع قفل می‌شوند؛ توضیحات، بررسی‌ها، مشخصات، عکس و ویدیو عمداً خارج از این دامنه‌اند.
         document.querySelectorAll("[data-availability-dependent]").forEach((element) => {
           element.disabled = outOfStock;
+          if (element.matches('input[type="text"], input[type="number"], textarea')) element.readOnly = outOfStock;
+          element.setAttribute("aria-disabled", String(outOfStock));
         });
         document.querySelectorAll("[data-availability-dependent-panel]").forEach((panel) => {
           panel.classList.toggle("availability-locked", outOfStock);
           panel.querySelectorAll("input, textarea, select, button").forEach((element) => {
             element.disabled = outOfStock;
+            if (element.matches('input[type="text"], input[type="number"], textarea')) element.readOnly = outOfStock;
+            element.setAttribute("aria-disabled", String(outOfStock));
           });
         });
         // سوییچ وضعیت باید همیشه قابل تغییر باشد.
@@ -1457,9 +1466,14 @@
           renderNewReviewImageOptions(section);
         }
       });
-      document.getElementById("fAvailability").addEventListener("change", () => {
+      const availabilityControl = document.getElementById("fAvailability");
+      const enforceAvailabilityLock = () => {
         syncAvailabilityDependentFields();
-      });
+        // بعضی همگام‌سازی‌های موجودی بعد از change اجرا می‌شوند؛ قفل را در چرخهٔ بعدی هم تثبیت کن.
+        setTimeout(syncAvailabilityDependentFields, 0);
+      };
+      availabilityControl.addEventListener("change", enforceAvailabilityLock);
+      availabilityControl.addEventListener("input", enforceAvailabilityLock);
       document.getElementById("fHasStorage").addEventListener("change", () => {
         syncStorageFields();
         syncVariantInventoryInputs();
