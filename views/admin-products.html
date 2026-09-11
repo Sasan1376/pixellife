@@ -530,7 +530,7 @@
                   <input
                     type="number"
                     class="form-control"
-                    id="fPrice"
+                    id="fPrice" data-availability-dependent
                     required
                     min="0"
                   />
@@ -540,7 +540,7 @@
                   <input
                     type="number"
                     class="form-control"
-                    id="fDiscount"
+                    id="fDiscount" data-availability-dependent
                     min="0"
                     max="100"
                     value="0"
@@ -564,7 +564,7 @@
                     <input
                       class="form-check-input"
                       type="checkbox"
-                      id="fFeatured"
+                      id="fFeatured" data-availability-dependent
                     />
                     <label class="form-check-label" for="fFeatured"
                       >محصول منتخب (صفحه اصلی)</label
@@ -576,7 +576,7 @@
                     <input
                       class="form-check-input"
                       type="checkbox"
-                      id="fComingSoon"
+                      id="fComingSoon" data-availability-dependent
                     />
                     <label class="form-check-label" for="fComingSoon"
                       >به‌زودی (نمایش روی کارت محصول)</label
@@ -585,13 +585,13 @@
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="fAmazingOffer" />
+                    <input class="form-check-input" type="checkbox" id="fAmazingOffer" data-availability-dependent />
                     <label class="form-check-label text-danger fw-bold" for="fAmazingOffer">پیشنهاد شگفت‌انگیز</label>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <label class="form-label">پایان پیشنهاد شگفت‌انگیز</label>
-                  <input type="text" inputmode="numeric" class="form-control" id="fAmazingOfferEndsAt" placeholder="۱۴۰۵/۰۶/۰۶ ۱۸:۳۰" dir="ltr" />
+                  <input type="text" inputmode="numeric" class="form-control" id="fAmazingOfferEndsAt" data-availability-dependent placeholder="۱۴۰۵/۰۶/۰۶ ۱۸:۳۰" dir="ltr" />
                   <div class="form-hint">تاریخ و ساعت شمسی به وقت تهران</div>
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
