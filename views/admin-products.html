@@ -480,14 +480,14 @@
                   <input type="text" class="form-control" id="fName" required />
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">برند *</label>
+                  <label class="form-label">برند</label>
                   <input
                     type="text"
                     class="form-control"
                     id="fBrand"
-                    required
                     placeholder="مثلاً Apple، Samsung"
                   />
+                  <div class="form-hint">برای کالای ناموجود اختیاری است.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label">دسته‌بندی</label>
@@ -532,14 +532,14 @@
                   </div>
                 </div>
                 <div class="col-md-3">
-                  <label class="form-label">قیمت (تومان) *</label>
+                  <label class="form-label">قیمت (تومان)</label>
                   <input
                     type="number"
                     class="form-control"
                     id="fPrice" data-availability-dependent
-                    required
                     min="0"
                   />
+                  <div class="form-hint">برای کالای ناموجود اختیاری است.</div>
                 </div>
                 <div class="col-md-3">
                   <label class="form-label">تخفیف (٪)</label>
@@ -1630,6 +1630,13 @@
           const hasStorage = document.getElementById("fHasStorage").checked;
           const hasWarranty = document.getElementById("fHasWarranty").checked;
           const showSpecs = document.getElementById("fShowSpecs").checked;
+          const availability = document.getElementById("fAvailability").value;
+          const brand = document.getElementById("fBrand").value.trim();
+          const price = document.getElementById("fPrice").value.trim();
+          if (availability === "in" && (!brand || price === "" || Number(price) <= 0)) {
+            showToast("برای کالای موجود، برند و قیمتِ بیشتر از صفر را وارد کنید");
+            return;
+          }
           const technicalSpecs = readTechnicalSpecsEditor();
           if (showSpecs && technicalSpecs.some((group) => !group.title || !group.items.length || group.items.some((item) => !item.label || !item.value))) {
             showToast("عنوان بخش و همهٔ ویژگی‌ها و مقدارهای مشخصات فنی را کامل کنید");
