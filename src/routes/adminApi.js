@@ -623,10 +623,17 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       mainImage: mainImageSelection,
     } = req.body;
 
-    if (!name || !brand || !price) {
+    const requestedAvailability = availability === "out" ? "out" : "in";
+    const normalizedPrice = Number(price);
+    if (!name) {
       return res
         .status(400)
-        .json({ success: false, message: "نام، برند و قیمت الزامی هستند" });
+        .json({ success: false, message: "نام محصول الزامی است" });
+    }
+    if (requestedAvailability === "in" && (!String(brand || "").trim() || !Number.isFinite(normalizedPrice) || normalizedPrice <= 0)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "برای کالای موجود، برند و قیمتِ بیشتر از صفر الزامی هستند" });
     }
 
     const uploadedImages = await Promise.all(
@@ -643,9 +650,9 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
     const normalizedVideoUrls = parseVideoUrls(videoUrls || videoUrl);
     const product = new Product(applyVariantInventory({
       name,
-      brand,
+      brand: String(brand || "").trim() || "نامشخص",
       category: category || "عمومی",
-      price: Number(price),
+      price: Number.isFinite(normalizedPrice) && normalizedPrice >= 0 ? normalizedPrice : 0,
       discount: Number(discount) || 0,
       description,
       attentionNote: String(attentionNote || "").trim(),
