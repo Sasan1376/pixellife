@@ -6376,7 +6376,7 @@
             ? product.variants.find((variant) => variant.stock > 0) || product.variants[0]
             : null;
           selectedStorage = product.hasStorage ? firstAvailableVariant?.storage || product.storages[0] : "";
-          selectedColor = firstAvailableVariant?.color || product.colors[0];
+          selectedColor = firstAvailableVariant?.color || product.colors[0] || null;
           selectedWarranty = product.warranties ? product.warranties[0] : null;
           const galleryTotal = galleryCount(product);
           let maxQuantity = firstAvailableVariant
@@ -7148,6 +7148,11 @@
           }
 
           function syncVariantSelection(preferredStorage, preferredColorName) {
+            // کالای ناموجود رنگ/حافظه ندارد؛ هیچ انتخابی برای همگام‌سازی وجود ندارد.
+            if (!selectedColor) {
+              syncDesktopPurchaseCard();
+              return true;
+            }
             if (!product.hasStorage) {
               selectedColor = product.colors.find((color) => color.name === preferredColorName) || selectedColor;
               const colorValue = document.getElementById("colorVal");
@@ -7200,19 +7205,19 @@
             return true;
           }
 
-          syncVariantSelection(selectedStorage, selectedColor.name);
+          syncVariantSelection(selectedStorage, selectedColor?.name || "");
 
           document
             .getElementById("storageOptions")
             ?.addEventListener("click", (e) => {
               const btn = e.target.closest(".storage-chip");
               if (!btn || btn.disabled) return;
-              syncVariantSelection(btn.dataset.val, selectedColor.name);
+              syncVariantSelection(btn.dataset.val, selectedColor?.name || "");
             });
 
           document
             .getElementById("colorOptions")
-            .addEventListener("click", (e) => {
+            ?.addEventListener("click", (e) => {
               const sw = e.target.closest(".color-swatch");
               if (!sw || sw.getAttribute("aria-disabled") === "true") {
                 if (sw) showToast("این رنگ با حافظه انتخاب‌شده ناموجود است");
@@ -7949,6 +7954,17 @@
           }, 120);
         }));
       })();
+    </script>
+    <script id="product-page-render-failsafe">
+      // حتی اگر یک اسکریپت فرعی خطا داد، بدنهٔ صفحه هرگز پنهان نمی‌ماند.
+      window.setTimeout(() => {
+        const pageBody = document.getElementById("pageBody");
+        if (pageBody?.classList.contains("product-page-pending")) {
+          pageBody.classList.remove("product-page-pending");
+          pageBody.classList.add("product-page-ready");
+          pageBody.setAttribute("aria-busy", "false");
+        }
+      }, 1200);
     </script>
     <button type="button" class="product-scroll-top" id="productScrollTop" aria-label="بازگشت به ابتدای صفحه" title="بازگشت به بالا">
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
