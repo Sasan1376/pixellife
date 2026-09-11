@@ -1258,10 +1258,14 @@
               const imageCell = img
                 ? `<img src="${img}" data-fallback="${fallbackImage}" class="prod-thumb" alt="" onerror="if(this.dataset.fallback && this.src !== new URL(this.dataset.fallback, location.origin).href){this.src=this.dataset.fallback;this.dataset.fallback='';}else{this.closest('td').innerHTML='<span class=\\'no-product-image\\'>بدون عکس</span>';}">`
                 : '<span class="no-product-image">بدون عکس</span>';
+              const isOutOfStock = p.availability === "out" || Number(p.stock) <= 0;
+              const availabilityBadge = isOutOfStock
+                ? '<span class="badge bg-danger ms-2">ناموجود</span>'
+                : '<span class="badge bg-success ms-2">موجود</span>';
               return `
                 <tr data-id="${p._id}">
                   <td>${imageCell}</td>
-                  <td>${p.name}${p.comingSoon ? '<span class="badge bg-info text-dark ms-2">به‌زودی</span>' : ""}</td>
+                  <td>${p.name}${availabilityBadge}${p.comingSoon ? '<span class="badge bg-info text-dark ms-2">به‌زودی</span>' : ""}</td>
                   <td>${p.brand}</td>
                   <td>${toPersianPrice(p.price)}</td>
                   <td>${toPersianPrice(p.stock)}</td>
