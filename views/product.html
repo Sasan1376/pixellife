@@ -5543,7 +5543,9 @@
             doc.hasWarranty === false || outOfStock
               ? []
               : (Array.isArray(doc.warranties) ? doc.warranties : []),
-          colors: outOfStock ? [] : colors,
+          // دادهٔ رنگ حفظ می‌شود تا رندرهای داخلی مقدار معتبر داشته باشند؛
+          // اما پایین‌تر برای محصول ناموجود اصلاً نمایش داده نمی‌شود.
+          colors: colors,
           // گزینهٔ پنل ادمین تعیین می‌کند که رنگ کالای ناموجود دیده شود یا نه.
           hideColorsWhenOutOfStock: doc.hideColorsWhenOutOfStock !== false,
           variants: variants,
@@ -6381,9 +6383,9 @@
             product.oldPrice && product.price
               ? Math.round(100 - (product.price / product.oldPrice) * 100)
               : 0;
-          const shouldShowColors = Array.isArray(product.colors)
-            && product.colors.length > 0
-            && !(product.outOfStock && product.hideColorsWhenOutOfStock);
+          const shouldShowColors = !product.outOfStock
+            && Array.isArray(product.colors)
+            && product.colors.length > 0;
           const reviewArticle = Array.isArray(product.reviewSections)
             ? product.reviewSections
                 .filter((section) => section && section.enabled !== false && (section.title || section.content || section.images?.length))
