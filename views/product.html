@@ -3523,7 +3523,14 @@
           max-width: 100%;
         }
       }
-    </style>
+          /* جلوگیری از نمایش لحظه‌ای دادهٔ موقت پیش از تثبیت پاسخ زندهٔ محصول */
+      #pageBody.product-page-pending {
+        visibility: hidden;
+      }
+      #pageBody.product-page-ready {
+        visibility: visible;
+      }
+</style>
     <style>
       /* Product detail: open layout inspired by Digikala - فقط برای دسکتاپ */
       @media (min-width: 861px) {
@@ -4409,7 +4416,7 @@
       <span class="current breadcrumb-product-name" id="breadcrumbCurrent" aria-hidden="true">جزئیات محصول</span>
     </div>
 
-    <main class="page-body" id="pageBody">
+    <main class="page-body product-page-pending" id="pageBody" aria-busy="true">
       <!-- Content injected by JS -->
     </main>
 
@@ -7931,6 +7938,16 @@
           // بارگذاری نظرات ذخیره‌شده پس از آماده‌شدن صفحه
           deferNonCriticalWork(fetchReviews);
         }
+
+        // تا پاسخ زنده و اسکریپت‌های چیدمان در دو فریم متوالی تثبیت نشوند،
+        // صفحه نمایش داده نمی‌شود؛ از فلش مشخصات/گزینه‌های قدیمی جلوگیری می‌کند.
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          window.setTimeout(() => {
+            pageBody.classList.remove("product-page-pending");
+            pageBody.classList.add("product-page-ready");
+            pageBody.setAttribute("aria-busy", "false");
+          }, 120);
+        }));
       })();
     </script>
     <button type="button" class="product-scroll-top" id="productScrollTop" aria-label="بازگشت به ابتدای صفحه" title="بازگشت به بالا">
