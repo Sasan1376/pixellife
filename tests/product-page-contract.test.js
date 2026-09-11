@@ -22,6 +22,8 @@ const requiredMarkers = [
   "hideColorsWhenOutOfStock",
   "product-page-pending",
   "pageBody.classList.add(\"product-page-ready\")",
+  "product-page-render-failsafe",
+  "کالای ناموجود رنگ/حافظه ندارد",
   "محصول خارج از دستهٔ فعلی",
   "URLSearchParams({",
   "ناموجودبودن دلیل حذفِ کالای مشابه نیست",
