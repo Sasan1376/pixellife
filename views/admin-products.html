@@ -114,6 +114,55 @@
       .variant-inventory-color { display:flex; align-items:center; gap:6px; color:#475569; }
       .variant-inventory-dot { width:12px; height:12px; border-radius:50%; border:1px solid #cbd5e1; flex:none; }
       .variant-inventory-row input { text-align:center; }
+
+      /* گروه‌بندی فرم افزودن/ویرایش محصول */
+      .product-form-section {
+        border: 1px solid #dbe4f0;
+        border-radius: 12px;
+        padding: 16px;
+        background: linear-gradient(180deg, #fbfdff 0%, #f8fafc 100%);
+      }
+      .product-form-section + .product-form-section { margin-top: 4px; }
+      .product-form-section__heading {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0 0 14px;
+        padding-bottom: 11px;
+        border-bottom: 1px solid #e2e8f0;
+        color: #1e3a8a;
+        font-size: 15px;
+        font-weight: 800;
+      }
+      .product-form-section__heading i {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        border-radius: 8px;
+        background: #dbeafe;
+        color: #2563eb;
+        font-size: 17px;
+      }
+      .product-form-section__heading small {
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .product-form-section .form-label { font-weight: 700; color: #334155; }
+      .product-form-section .form-check {
+        width: 100%;
+        min-height: 42px;
+        padding: 10px 42px 10px 10px;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        background: #fff;
+      }
+      .product-form-section .form-check-input { margin-right: -30px; }
+      @media (max-width: 575.98px) {
+        .product-form-section { padding: 13px; }
+        .product-form-section__heading { align-items: flex-start; flex-wrap: wrap; }
+      }
       .review-editor { border:1px solid #dbe4f0; border-radius:10px; padding:12px; background:#f8fafc; }
       .review-editor[hidden] { display:none!important; }
       .review-section-editor { border:1px solid #dbe4f0; border-radius:8px; padding:12px; background:#fff; margin-top:10px; }
@@ -324,6 +373,14 @@
             <div class="modal-body">
               <input type="hidden" id="productId" />
               <div class="row g-3">
+                <div class="col-12">
+                  <section class="product-form-section" aria-labelledby="initialProductInfoHeading">
+                    <h6 class="product-form-section__heading" id="initialProductInfoHeading">
+                      <i class="ti ti-package"></i>
+                      مقدار اولیه محصول
+                      <small>نام، برند و دسته‌بندی</small>
+                    </h6>
+                    <div class="row g-3">
                 <div class="col-md-6">
                   <label class="form-label">نام محصول *</label>
                   <input type="text" class="form-control" id="fName" required />
@@ -357,6 +414,17 @@
                     <option value="کنسول بازی"></option>
                   </datalist>
                 </div>
+                    </div>
+                  </section>
+                </div>
+                <div class="col-12">
+                  <section class="product-form-section" aria-labelledby="salesInventoryHeading">
+                    <h6 class="product-form-section__heading" id="salesInventoryHeading">
+                      <i class="ti ti-chart-bar"></i>
+                      فروش و موجودی
+                      <small>قیمت، تعداد، وضعیت و نمایش محصول</small>
+                    </h6>
+                    <div class="row g-3">
                 <div class="col-md-3">
                   <label class="form-label">قیمت (تومان) *</label>
                   <input
@@ -437,6 +505,9 @@
                     <input class="form-check-input" type="checkbox" id="fHasStorage" checked />
                     <label class="form-check-label" for="fHasStorage">نمایش انتخاب حافظه در صفحه محصول</label>
                   </div>
+                </div>
+                    </div>
+                  </section>
                 </div>
                 <div class="col-12">
                   <label class="form-label">توضیحات</label>
