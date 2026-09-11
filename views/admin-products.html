@@ -110,7 +110,8 @@
       .variant-stock-summary.error { background:#fff1f2; color:#be123c; }
       .variant-inventory-editor { margin-top:10px; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden; }
       .variant-inventory-title { padding:8px 10px; background:#f8fafc; font-size:12px; font-weight:700; color:#334155; }
-      .variant-inventory-row { display:grid; grid-template-columns:1.2fr 1fr 96px; gap:8px; align-items:center; padding:8px 10px; border-top:1px solid #edf2f7; font-size:12px; }
+      .variant-inventory-row { display:grid; grid-template-columns:1.2fr 1fr 96px 36px; gap:8px; align-items:center; padding:8px 10px; border-top:1px solid #edf2f7; font-size:12px; }
+      .variant-remove-btn { width:32px; height:32px; padding:0; display:grid; place-items:center; border-radius:7px; }
       .variant-inventory-color { display:flex; align-items:center; gap:6px; color:#475569; }
       .variant-inventory-dot { width:12px; height:12px; border-radius:50%; border:1px solid #cbd5e1; flex:none; }
       .variant-inventory-row input { text-align:center; }
@@ -1146,7 +1147,7 @@
           editor.innerHTML = '<div class="variant-inventory-title">برای ویرایش سریع موجودی، ابتدا یک تنوع حافظه و رنگ اضافه کنید.</div>';
           return;
         }
-        editor.innerHTML = '<div class="variant-inventory-title">ویرایش سریع تعداد موجودی هر تنوع</div>' + rows.map((row) => '<div class="variant-inventory-row"><strong>' + escapeText(row.storage) + '</strong><span class="variant-inventory-color"><i class="variant-inventory-dot" style="background:' + row.hex + '"></i>' + escapeText(row.color) + '</span><input type="text" inputmode="numeric" class="form-control form-control-sm" data-variant-stock-index="' + row.index + '" value="' + escapeText(row.stock) + '" aria-label="تعداد موجودی ' + escapeText(row.storage + " " + row.color) + '"></div>').join("");
+        editor.innerHTML = '<div class="variant-inventory-title">ویرایش سریع تعداد موجودی هر تنوع</div>' + rows.map((row) => '<div class="variant-inventory-row"><strong>' + escapeText(row.storage) + '</strong><span class="variant-inventory-color"><i class="variant-inventory-dot" style="background:' + row.hex + '"></i>' + escapeText(row.color) + '</span><input type="text" inputmode="numeric" class="form-control form-control-sm" data-variant-stock-index="' + row.index + '" value="' + escapeText(row.stock) + '" aria-label="تعداد موجودی ' + escapeText(row.storage + " " + row.color) + '"><button type="button" class="btn btn-outline-danger btn-sm variant-remove-btn" data-remove-variant-index="' + row.index + '" title="حذف این تنوع" aria-label="حذف تنوع ' + escapeText(row.storage + " " + row.color) + '"><i class="ti ti-trash"></i></button></div>').join("");
       }
 
       function formatVariants(variants) {
@@ -1528,6 +1529,18 @@
         lines[Number(input.dataset.variantStockIndex)] = parts.join(" | ");
         document.getElementById("fVariants").value = lines.join("\n");
         syncVariantInventoryInputs();
+      });
+      document.getElementById("variantInventoryEditor").addEventListener("click", (event) => {
+        const removeButton = event.target.closest("[data-remove-variant-index]");
+        if (!removeButton) return;
+        const index = Number(removeButton.dataset.removeVariantIndex);
+        const lines = document.getElementById("fVariants").value.split(/\r?\n/);
+        if (!Number.isInteger(index) || index < 0 || index >= lines.length) return;
+        lines.splice(index, 1);
+        document.getElementById("fVariants").value = lines.filter((line) => line.trim()).join("\n");
+        syncVariantInventoryInputs();
+        renderVariantInventoryEditor();
+        showToast("تنوع حذف شد");
       });
       document.getElementById("adminColorPalette").addEventListener("click", (event) => {
         const dot = event.target.closest("[data-color-hex]");
