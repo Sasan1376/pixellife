@@ -22,6 +22,8 @@ const requiredMarkers = [
   "hideColorsWhenOutOfStock",
   "محصول خارج از دستهٔ فعلی",
   "URLSearchParams({",
+  "ناموجودبودن دلیل حذفِ کالای مشابه نیست",
+  "پاسخ سرور با شناسهٔ نهایی یکتا می‌شود",
 ];
 
 const missing = requiredMarkers.filter((marker) => !productPage.includes(marker));
