@@ -2990,6 +2990,10 @@
         font-weight: 600;
         color: var(--text-3);
       }
+      .slider-card-price.is-unavailable {
+        color: var(--red);
+        font-size: 12px;
+      }
       .slider-card-actions {
         display: flex;
         gap: 6px;
@@ -7578,6 +7582,15 @@
           });
 
           function miniCard(id, p) {
+            // دادهٔ زندهٔ API ملاک است؛ برای کالای ناموجود نه قیمت نمایش می‌دهیم
+            // و نه دکمهٔ افزودن به سبد را، حتی اگر قیمت قدیمی در رکورد باقی مانده باشد.
+            const unavailable = p.outOfStock || p.availability === "out" || Number(p.stock) <= 0;
+            const priceMarkup = unavailable
+              ? '<div class="slider-card-price is-unavailable">ناموجود</div>'
+              : '<div class="slider-card-price">' + (p.price > 0 ? p.price.toLocaleString("fa-IR") : "—") + ' <span class="toman">تومان</span></div>';
+            const actions = unavailable
+              ? '<button class="slider-wish-btn slider-wish-btn--full" data-id="' + id + '"><i class="ti ti-heart"></i> افزودن به علاقه‌مندی‌ها</button>'
+              : '<button class="slider-add-btn" data-id="' + id + '"><i class="ti ti-shopping-cart-plus"></i> افزودن</button><button class="slider-wish-btn" data-id="' + id + '"><i class="ti ti-heart"></i></button>';
             return `
             <div class="slider-card">
               <a href="/product?id=${id}" style="color:inherit">
@@ -7587,12 +7600,9 @@
                 <a href="/product?id=${id}" style="color:inherit">
                   <div class="slider-card-name">${p.name}</div>
                   <div class="stars">${starsHtml(p.rating)}</div>
-                  <div class="slider-card-price">${p.price > 0 ? p.price.toLocaleString("fa-IR") : "—"} <span class="toman">تومان</span></div>
+                  ${priceMarkup}
                 </a>
-                <div class="slider-card-actions">
-                  <button class="slider-add-btn" data-id="${id}"><i class="ti ti-shopping-cart-plus"></i> افزودن</button>
-                  <button class="slider-wish-btn" data-id="${id}"><i class="ti ti-heart"></i></button>
-                </div>
+                <div class="slider-card-actions">${actions}</div>
               </div>
             </div>`;
           }
