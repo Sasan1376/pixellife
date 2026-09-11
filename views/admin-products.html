@@ -660,8 +660,11 @@
                     <label class="form-check-label" for="fShowSpecs">نمایش مشخصات فنی در صفحه محصول</label>
                   </div>
                   <div id="technicalSpecsEditor" class="vstack gap-3"></div>
-                  <button type="button" class="btn btn-outline-primary btn-sm mt-3" id="addTechnicalSpecGroupBtn"><i class="ti ti-plus"></i> افزودن بخش مشخصات</button>
-                  <div class="form-hint mt-2">برای نمونه، یک بخش «نمایشگر» بسازید و روبه‌روی هر ویژگی مقدار آن را وارد کنید.</div>
+                  <div class="d-flex flex-wrap gap-2 mt-3">
+                    <button type="button" class="btn btn-primary btn-sm" id="applyMobileSpecsTemplateBtn"><i class="ti ti-device-mobile"></i> قالب کامل مشخصات گوشی</button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="addTechnicalSpecGroupBtn"><i class="ti ti-plus"></i> افزودن بخش مشخصات</button>
+                  </div>
+                  <div class="form-hint mt-2">قالب گوشی، همهٔ بخش‌های جدول مشخصات را با عنوان ویژگی‌ها می‌سازد؛ فقط مقدار هر ردیف را وارد کنید. در صورت وجود مشخصات قبلی، با تأیید شما جایگزین می‌شود.</div>
                   <details class="mt-3">
                     <summary class="small text-secondary">مشخصات سادهٔ قبلی</summary>
                     <textarea class="form-control mt-2" id="fSpecs" rows="4" placeholder="نمایش: ۶.۹ اینچ&#10;پردازنده: A19 Pro&#10;حافظه: ۲۵۶ گیگابایت"></textarea>
@@ -984,6 +987,25 @@
         document.getElementById("technicalSpecsEditor").closest(".col-12").classList.toggle("opacity-50", !enabled);
         document.getElementById("addTechnicalSpecGroupBtn").disabled = !enabled;
         document.querySelectorAll("#technicalSpecsEditor input, #technicalSpecsEditor button").forEach((element) => { element.disabled = !enabled; });
+      }
+
+      const mobileTechnicalSpecTemplate = [
+        { title: "مشخصات کلی", items: ["برند", "مدل", "ریجن", "دسته‌بندی", "زمان معرفی", "نوع گوشی موبایل"] },
+        { title: "حافظه و عملکرد", items: ["حافظه داخلی", "مقدار RAM", "تراشه", "پردازنده مرکزی", "پردازنده گرافیکی"] },
+        { title: "نمایشگر", items: ["فناوری صفحه‌نمایش", "اندازه", "رزولوشن", "نرخ نوسازی تصویر", "حداکثر روشنایی"] },
+        { title: "دوربین", items: ["رزولوشن دوربین اصلی", "تعداد دوربین پشت", "دوربین سلفی", "قابلیت‌های دوربین", "کیفیت فیلم‌برداری"] },
+        { title: "ارتباطات و شبکه", items: ["تعداد سیم‌کارت", "فناوری ارتباطی", "شبکه‌های ارتباطی", "Wi‑Fi", "بلوتوث", "NFC", "موقعیت‌یاب"] },
+        { title: "باتری و شارژ", items: ["نوع باتری", "ظرفیت باتری", "درگاه شارژ", "توان شارژ", "قابلیت شارژ بی‌سیم"] },
+        { title: "طراحی و بدنه", items: ["ابعاد", "وزن", "جنس بدنه", "مقاومت در برابر آب و گردوغبار", "رنگ"] },
+        { title: "نرم‌افزار و امکانات", items: ["سیستم عامل", "نسخه سیستم عامل", "حسگرها", "اسپیکر", "جک ۳.۵ میلی‌متری"] },
+      ];
+
+      function createMobileTechnicalSpecTemplate() {
+        return mobileTechnicalSpecTemplate.map((group) => ({
+          title: group.title,
+          subtitle: "",
+          items: group.items.map((label) => ({ label, value: "" })),
+        }));
       }
 
       function legacySpecsToGroups(specs) {
@@ -1486,6 +1508,14 @@
       });
       document.getElementById("fHasWarranty").addEventListener("change", syncWarrantyField);
       document.getElementById("fShowSpecs").addEventListener("change", syncSpecsField);
+      document.getElementById("applyMobileSpecsTemplateBtn").addEventListener("click", () => {
+        const existingGroups = readTechnicalSpecsEditor();
+        if (existingGroups.length && !confirm("مشخصات فعلی با قالب کامل مشخصات گوشی جایگزین شود؟")) return;
+        document.getElementById("fShowSpecs").checked = true;
+        renderTechnicalSpecsEditor(createMobileTechnicalSpecTemplate());
+        syncSpecsField();
+        showToast("قالب کامل مشخصات گوشی آماده شد؛ مقدار هر ردیف را وارد کنید");
+      });
       document.getElementById("addTechnicalSpecGroupBtn").addEventListener("click", () => {
         const groups = readTechnicalSpecsEditor();
         groups.push({ title: "", subtitle: "", items: [{ label: "", value: "" }] });
