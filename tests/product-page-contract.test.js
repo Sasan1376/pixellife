@@ -20,6 +20,8 @@ const requiredMarkers = [
   "id=\"rev-sec-pros-cons\"",
   "id=\"rev-sec-verdict\"",
   "hideColorsWhenOutOfStock",
+  "product-page-pending",
+  "pageBody.classList.add(\"product-page-ready\")",
   "محصول خارج از دستهٔ فعلی",
   "URLSearchParams({",
   "ناموجودبودن دلیل حذفِ کالای مشابه نیست",
