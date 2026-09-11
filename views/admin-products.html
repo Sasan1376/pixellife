@@ -230,6 +230,27 @@
       .variant-quick-builder .form-label { margin-bottom:5px; font-size:12px; }
       @media (max-width:767.98px) { .variant-quick-builder { grid-template-columns:1fr 1fr; } .variant-quick-builder .variant-quick-builder__button { grid-column:1 / -1; } }
       @media (max-width:420px) { .storage-preset-grid, .variant-quick-builder { grid-template-columns:1fr; } }
+
+      /* وضعیت موجودی همیشه در ابتدای تنظیمات فروش دیده می‌شود */
+      .availability-control-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 12px 14px;
+        border: 1px solid #bfdbfe;
+        border-radius: 10px;
+        background: #eff6ff;
+      }
+      .availability-control-card__title { color:#1e3a8a; font-weight:800; }
+      .availability-control-card__hint { margin-top:3px; color:#64748b; font-size:12px; }
+      [data-availability-dependent-panel].availability-locked {
+        opacity: .55;
+        filter: grayscale(.18);
+      }
+      @media (max-width:575.98px) {
+        .availability-control-card { align-items:stretch; flex-direction:column; }
+      }
       .review-editor { border:1px solid #dbe4f0; border-radius:10px; padding:12px; background:#f8fafc; }
       .review-editor[hidden] { display:none!important; }
       .review-section-editor { border:1px solid #dbe4f0; border-radius:8px; padding:12px; background:#fff; margin-top:10px; }
@@ -492,6 +513,18 @@
                       <small>قیمت، تعداد، وضعیت و نمایش محصول</small>
                     </h6>
                     <div class="row g-3">
+                <div class="col-12">
+                  <div class="availability-control-card">
+                    <div>
+                      <div class="availability-control-card__title"><i class="ti ti-package"></i> وضعیت موجودی</div>
+                      <div class="availability-control-card__hint">با انتخاب «ناموجود»، فقط تنظیمات فروش و تنوع قفل می‌شوند؛ متن‌ها، بررسی‌ها، عکس و ویدیو قابل ویرایش می‌مانند.</div>
+                    </div>
+                    <select class="form-select" id="fAvailability" style="max-width: 180px" aria-label="وضعیت موجودی">
+                      <option value="in">موجود</option>
+                      <option value="out">ناموجود</option>
+                    </select>
+                  </div>
+                </div>
                 <div class="col-md-3">
                   <label class="form-label">قیمت (تومان) *</label>
                   <input
@@ -520,17 +553,11 @@
                     inputmode="numeric"
                     class="form-control"
                     id="fStock"
+                    data-availability-dependent
                     value="0"
                     placeholder="مثلاً ۱۰"
                   />
                   <div class="form-hint" id="stockFieldHint">عدد فارسی یا انگلیسی پذیرفته می‌شود.</div>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">وضعیت موجودی</label>
-                  <select class="form-select" id="fAvailability">
-                    <option value="in">موجود</option>
-                    <option value="out">ناموجود</option>
-                  </select>
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
                   <div class="form-check form-switch">
@@ -569,7 +596,7 @@
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="fHasStorage" checked />
+                    <input class="form-check-input" type="checkbox" id="fHasStorage" data-availability-dependent checked />
                     <label class="form-check-label" for="fHasStorage">نمایش انتخاب حافظه در صفحه محصول</label>
                   </div>
                 </div>
@@ -669,7 +696,7 @@
                   </div>
                 </div>
                 <div class="col-12">
-                  <section class="product-options-admin-section" aria-labelledby="productOptionsHeading">
+                  <section class="product-options-admin-section" data-availability-dependent-panel aria-labelledby="productOptionsHeading">
                     <h6 class="product-options-admin-section__heading" id="productOptionsHeading">
                       <i class="ti ti-adjustments-horizontal"></i>
                       گزینه‌های محصول
@@ -700,7 +727,7 @@
                   </section>
                 </div>
                 <div class="col-12">
-                  <section class="product-options-admin-section product-options-admin-section--colors" aria-labelledby="productColorsHeading">
+                  <section class="product-options-admin-section product-options-admin-section--colors" data-availability-dependent-panel aria-labelledby="productColorsHeading">
                     <h6 class="product-options-admin-section__heading" id="productColorsHeading">
                       <i class="ti ti-palette"></i>
                       رنگ‌های محصول
@@ -736,7 +763,7 @@
                   </section>
                 </div>
                 <div class="col-12" id="variantFieldGroup">
-                  <section class="product-options-admin-section" aria-labelledby="productVariantsHeading">
+                  <section class="product-options-admin-section" data-availability-dependent-panel aria-labelledby="productVariantsHeading">
                     <h6 class="product-options-admin-section__heading" id="productVariantsHeading">
                       <i class="ti ti-layers-subtract"></i>
                       تنوع‌های قابل فروش
@@ -902,6 +929,22 @@
         color.innerHTML = '<option value="">انتخاب رنگ</option>' + colors.map((item) => '<option value="' + escapeText(item.name) + '" data-hex="' + item.hex + '">' + escapeText(item.name) + '</option>').join("");
         storage.value = storages.includes(previousStorage) ? previousStorage : "";
         color.value = colors.some((item) => item.name === previousColor) ? previousColor : "";
+      }
+
+      function syncAvailabilityDependentFields() {
+        const outOfStock = document.getElementById("fAvailability").value === "out";
+        // فقط اجزای فروش/تنوع قفل می‌شوند؛ توضیحات، بررسی‌ها، مشخصات، عکس و ویدیو عمداً خارج از این دامنه‌اند.
+        document.querySelectorAll("[data-availability-dependent]").forEach((element) => {
+          element.disabled = outOfStock;
+        });
+        document.querySelectorAll("[data-availability-dependent-panel]").forEach((panel) => {
+          panel.classList.toggle("availability-locked", outOfStock);
+          panel.querySelectorAll("input, textarea, select, button").forEach((element) => {
+            element.disabled = outOfStock;
+          });
+        });
+        // سوییچ وضعیت باید همیشه قابل تغییر باشد.
+        document.getElementById("fAvailability").disabled = false;
       }
 
       function syncStorageFields() {
@@ -1293,6 +1336,7 @@
         syncSpecsField();
         syncVariantInventoryInputs();
         renderVariantInventoryEditor();
+        syncAvailabilityDependentFields();
       }
 
       function openEditModal(p) {
@@ -1354,6 +1398,7 @@
         );
         syncVariantInventoryInputs();
         renderVariantInventoryEditor();
+        syncAvailabilityDependentFields();
         productModal.show();
       }
 
@@ -1411,6 +1456,9 @@
           event.target.value = "";
           renderNewReviewImageOptions(section);
         }
+      });
+      document.getElementById("fAvailability").addEventListener("change", () => {
+        syncAvailabilityDependentFields();
       });
       document.getElementById("fHasStorage").addEventListener("change", () => {
         syncStorageFields();
