@@ -4016,6 +4016,7 @@
       }
       </style>
       <link rel="stylesheet" href="/css/shopping-assistant.css?v=4" />
+      <link rel="stylesheet" href="/css/mobile-product-details-sheet.css?v=1" />
     <link rel="stylesheet" href="/css/site-edge-layout.css?v=1" />
   </head>
   <body>
@@ -7887,7 +7888,10 @@
             const sectionBlocks = Array.from(pageBody.children).filter(
               (child) => child.classList?.contains("section-block"),
             );
-            if (sectionBlocks.length) {
+            // در موبایل، مشخصات و بررسی تخصصی در پنل مستقل باز می‌شوند.
+            // ناوبری قدیمی با اسکرول صفحه، کاربر را به دیدگاه‌ها و فوتر می‌برد.
+            const usesMobileDetailsSheet = Boolean(document.querySelector('link[href^="/css/mobile-product-details-sheet.css"]'));
+            if (sectionBlocks.length && !usesMobileDetailsSheet) {
               const sectionNav = document.createElement("nav");
               sectionNav.className = "mobile-product-section-nav";
               sectionNav.setAttribute("aria-label", "بخش‌های محصول");
@@ -7984,6 +7988,7 @@
     </script>
       <script src="/js/shopping-assistant.js?v=13" defer></script>
       <script src="/js/product-ratings.js?v=2" defer></script>
+      <script src="/js/mobile-product-details-sheet.js?v=1"></script>
   <style id="product-gallery-size-override">
 @media (min-width: 769px) {
   .gallery-main svg,
