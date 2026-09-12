@@ -609,8 +609,13 @@
                     </div>
                   </section>
                 </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="fIntroTitle">عنوان بخش معرفی کالا</label>
+                  <input type="text" class="form-control" id="fIntroTitle" maxlength="120" placeholder="معرفی کالا" />
+                  <div class="form-hint">این عنوان مستقل از نام محصول در پنل معرفی موبایل نمایش داده می‌شود.</div>
+                </div>
                 <div class="col-12">
-                  <label class="form-label">توضیحات</label>
+                  <label class="form-label">توضیحات معرفی کالا</label>
                   <textarea
                     class="form-control"
                     id="fDescription"
@@ -679,6 +684,11 @@
                         <label class="form-check-label" for="fShowReview">نمایش بررسی تخصصی این محصول در سایت</label>
                       </div>
                       <button type="button" class="btn btn-outline-primary btn-sm" id="addReviewSectionBtn"><i class="ti ti-plus"></i> افزودن بخش بررسی</button>
+                    </div>
+                    <div class="mt-3">
+                      <label class="form-label" for="fReviewTitle">عنوان بخش بررسی تخصصی</label>
+                      <input type="text" class="form-control" id="fReviewTitle" maxlength="120" placeholder="بررسی تخصصی" />
+                      <div class="form-hint">این عنوان مستقل است و نام محصول به آن اضافه نمی‌شود.</div>
                     </div>
                     <div class="form-hint mt-2">هر بخش عنوان، توضیح، عکس و سوییچ مستقل دارد. فقط بخش‌های روشن در سایت نمایش داده می‌شوند.</div>
                     <div class="row g-3 mt-1">
@@ -1356,6 +1366,8 @@
         setMainImageOptions();
         setPickerColor("", "#334155");
         document.getElementById("fShowReview").checked = false;
+        document.getElementById("fIntroTitle").value = "معرفی کالا";
+        document.getElementById("fReviewTitle").value = "بررسی تخصصی";
         document.getElementById("fHideColorsWhenOutOfStock").checked = true;
         document.getElementById("fComingSoon").checked = false;
         document.getElementById("fAmazingOffer").checked = false;
@@ -1394,7 +1406,9 @@
         document.getElementById("fHasStorage").checked = p.hasStorage !== false;
         document.getElementById("fHasWarranty").checked = p.hasWarranty !== false;
         document.getElementById("fShowSpecs").checked = p.showSpecs !== false;
+        document.getElementById("fIntroTitle").value = p.introTitle || "معرفی کالا";
         document.getElementById("fDescription").value = p.description || "";
+        document.getElementById("fReviewTitle").value = p.reviewTitle || "بررسی تخصصی";
         document.getElementById("fAttentionNote").value = p.attentionNote || "";
         const videoUrls = Array.isArray(p.videoUrls) && p.videoUrls.length
           ? p.videoUrls
@@ -1664,6 +1678,8 @@
           fd.append("hasWarranty", hasWarranty);
           fd.append("showSpecs", showSpecs);
           fd.append("showReview", document.getElementById("fShowReview").checked);
+          fd.append("introTitle", document.getElementById("fIntroTitle").value);
+          fd.append("reviewTitle", document.getElementById("fReviewTitle").value);
           fd.append("reviewPros", document.getElementById("fReviewPros").value);
           fd.append("reviewCons", document.getElementById("fReviewCons").value);
           fd.append("reviewVerdict", document.getElementById("fReviewVerdict").value);
