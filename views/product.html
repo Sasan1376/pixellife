@@ -7715,10 +7715,17 @@
           async function loadRecentlyViewedProducts() {
             const section = document.getElementById("recentlyViewedBlock");
             const slider = document.getElementById("recentSlider");
+            const currentProductId = String(productId || "").trim();
+            // حداکثر ۱۹ بازدید قبلی خوانده می‌شود تا همراه محصول فعلی،
+            // تاریخچهٔ ۲۰تایی کامل بماند. محصول فعلی فقط در همین صفحه نمایش داده نمی‌شود.
             const recentIds = getRecentlyViewed()
-              .filter((id) => String(id) !== String(productId))
-              .slice(0, 12);
+              .filter((id) => String(id) !== currentProductId)
+              .slice(0, 19);
             if (!recentIds.length) {
+              localStorage.setItem(
+                "digishop_recently_viewed",
+                JSON.stringify(currentProductId ? [currentProductId] : []),
+              );
               slider.innerHTML = "";
               section.style.display = "none";
               return;
@@ -7737,23 +7744,33 @@
                 return null;
               }
             }));
-            const seen = new Set();
-            // پاسخ سرور با شناسهٔ نهایی یکتا می‌شود تا یک محصول با لینک قدیمی/جدید دوبار دیده نشود.
+            const seen = new Set(currentProductId ? [currentProductId] : []);
+            // شناسه‌های قدیمی (slug/legacyId) به شناسهٔ نهایی تبدیل می‌شوند؛
+            // محصول فعلی و کارت‌های تکراری نیز از فهرست نمایشی حذف می‌شوند.
             const liveProducts = responses.filter(Boolean).filter(([id]) => {
               const normalizedId = String(id);
               if (seen.has(normalizedId)) return false;
               seen.add(normalizedId);
               return true;
             });
-            localStorage.setItem("digishop_recently_viewed", JSON.stringify(liveProducts.map(([id]) => id)));
-            if (!liveProducts.length) {
+
+            // بازنویسی تاریخچه باید محصول فعلی را نگه دارد؛ نسخهٔ قبلی دقیقاً
+            // در این نقطه آن را حذف می‌کرد و تاریخچه روی یک کالای قدیمی ثابت می‌ماند.
+            const canonicalHistory = [
+              ...(currentProductId ? [currentProductId] : []),
+              ...liveProducts.map(([id]) => id),
+            ].slice(0, 20);
+            localStorage.setItem("digishop_recently_viewed", JSON.stringify(canonicalHistory));
+
+            const visibleProducts = liveProducts.slice(0, 12);
+            if (!visibleProducts.length) {
               slider.innerHTML = "";
               section.style.display = "none";
               return;
             }
-            liveProducts.forEach(([id, recentProduct]) => { PRODUCTS[id] = recentProduct; });
+            visibleProducts.forEach(([id, recentProduct]) => { PRODUCTS[id] = recentProduct; });
             section.style.display = "";
-            slider.innerHTML = liveProducts.map(([id, recentProduct]) => miniCard(id, recentProduct)).join("");
+            slider.innerHTML = visibleProducts.map(([id, recentProduct]) => miniCard(id, recentProduct)).join("");
           }
           deferNonCriticalWork(loadRecentlyViewedProducts);
 
