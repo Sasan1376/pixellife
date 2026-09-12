@@ -7745,8 +7745,8 @@
               }
             }));
             const seen = new Set(currentProductId ? [currentProductId] : []);
-            // شناسه‌های قدیمی (slug/legacyId) به شناسهٔ نهایی تبدیل می‌شوند؛
-            // محصول فعلی و کارت‌های تکراری نیز از فهرست نمایشی حذف می‌شوند.
+            // پاسخ سرور با شناسهٔ نهایی یکتا می‌شود؛ شناسه‌های قدیمی
+            // (slug/legacyId)، محصول فعلی و کارت‌های تکراری از نمایش حذف می‌شوند.
             const liveProducts = responses.filter(Boolean).filter(([id]) => {
               const normalizedId = String(id);
               if (seen.has(normalizedId)) return false;
