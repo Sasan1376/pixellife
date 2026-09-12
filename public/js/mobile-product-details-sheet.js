@@ -70,7 +70,7 @@
       if (id === "intro") {
         const title = document.createElement("h3");
         title.className = "mobile-product-details-sheet__intro-title";
-        title.textContent = productInfo.querySelector(".product-title")?.textContent?.trim() || "معرفی کالا";
+        title.textContent = productInfo.dataset.introTitle?.trim() || "معرفی کالا";
         const text = document.createElement("p");
         text.className = "mobile-product-details-sheet__intro-text";
         text.textContent = productInfo.querySelector(".product-desc")?.textContent?.trim() || "توضیحی برای این کالا ثبت نشده است.";
