@@ -6684,7 +6684,7 @@
                 <div class="review-section-title"><i class="ti ${s.icon}"></i> ${s.title}</div>
                 <div class="review-section-body">${s.body}</div>
                 ${
-                  s.images?.map((image) => `<img src="${image.src}" alt="${s.title}" class="review-section-img review-section-img--${image.size}${i === 0 ? " review-section-img--collapsed" : ""}" />`).join("") || ""
+                  s.images?.map((image) => `<img src="${image.src}" alt="${s.title}" class="review-section-img review-section-img--${image.size}${i === 0 && reviewArticle.length > 1 ? " review-section-img--collapsed" : ""}" />`).join("") || ""
                 }
                 ${
                   i === 6
