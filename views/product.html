@@ -4422,9 +4422,9 @@
     <div class="breadcrumb">
       <a href="/">خانه</a>
       <i class="ti ti-chevron-left"></i>
-      <a href="/iphone" id="breadcrumbBrandLink">اپل</a>
+      <a href="/categories" id="breadcrumbBrandLink">برند</a>
       <i class="ti ti-chevron-left"></i>
-      <a href="/iphone" id="breadcrumbCategoryLink">خرید آیفون</a>
+      <a href="/categories" id="breadcrumbCategoryLink">دسته‌بندی محصول</a>
       <i class="ti ti-chevron-left breadcrumb-product-separator" aria-hidden="true"></i>
       <span class="current breadcrumb-product-name" id="breadcrumbCurrent" aria-hidden="true">جزئیات محصول</span>
     </div>
@@ -6368,26 +6368,62 @@
           const categoryLink = document.getElementById(
             "breadcrumbCategoryLink",
           );
+          const normalizedCategory = String(product.category || "")
+            .trim()
+            .replace(/[يى]/g, "ی")
+            .replace(/[ك]/g, "ک")
+            .toLowerCase();
+
+          function getBreadcrumbCategory() {
+            if (/هدفون|هندزفری|headphone|earphone|airpod/.test(normalizedCategory)) {
+              return { route: "/headphones", label: "هدفون و هندزفری", type: "headphones" };
+            }
+            if (/ساعت|watch/.test(normalizedCategory)) {
+              return { route: "/smartwatches", label: "ساعت هوشمند", type: "watch" };
+            }
+            if (/کنسول|پلی.?استیشن|play\s*station|console|ps[45]/.test(normalizedCategory)) {
+              return { route: "/console", label: "کنسول بازی", type: "console" };
+            }
+            if (/کابل|شارژر|آداپتور|charger|adapter|cable/.test(normalizedCategory)) {
+              return { route: "/accessories/chargers", label: "کابل، شارژر و آداپتور", type: "accessories" };
+            }
+            if (/لوازم جانبی|accessor/.test(normalizedCategory)) {
+              return { route: "/accessories", label: "لوازم جانبی موبایل", type: "accessories" };
+            }
+            if (product.isTablet || /تبلت|tablet|ipad/.test(normalizedCategory)) {
+              return { route: "/tablets", label: "تبلت", type: "tablet" };
+            }
+            if (/موبایل|گوشی|phone|iphone/.test(normalizedCategory) || !normalizedCategory) {
+              return { route: "/mobiles", label: "گوشی موبایل", type: "phone" };
+            }
+            return {
+              route: "/categories",
+              label: String(product.category || "دسته‌بندی محصول").trim(),
+              type: "other",
+            };
+          }
+
+          const categoryMeta = getBreadcrumbCategory();
+          const brandName = String(product.brand || "").trim();
           const BRAND_ROUTES = {
             سامسونگ: { phone: "/samsung", tablet: "/samsungtab" },
             شیائومی: { phone: "/xiaomi", tablet: "/xiaomitab" },
             اپل: { phone: "/iphone", tablet: "/ipad" },
           };
-          const brandRoute = BRAND_ROUTES[product.brand];
-          if (brandRoute) {
-            const url = product.isTablet ? brandRoute.tablet : brandRoute.phone;
-            brandLink.href = url;
-            brandLink.textContent = product.brand;
-            categoryLink.href = url;
-            categoryLink.textContent = `${product.isTablet ? "تبلت" : "گوشی موبایل"} ${product.brand}`;
-          } else {
-            // برند ناشناخته/جدید از پنل ادمین — به‌جای فرض اشتباه "اپل"
-            const genericUrl = product.isTablet ? "/tablets" : "/mobiles";
-            brandLink.href = genericUrl;
-            brandLink.textContent = product.brand || "برند";
-            categoryLink.href = genericUrl;
-            categoryLink.textContent = `${product.isTablet ? "تبلت" : "گوشی موبایل"} ${product.brand || ""}`;
-          }
+          const knownBrandRoute = BRAND_ROUTES[brandName];
+          const dedicatedBrandUrl =
+            knownBrandRoute && (categoryMeta.type === "phone" || categoryMeta.type === "tablet")
+              ? knownBrandRoute[categoryMeta.type]
+              : "";
+          const filteredCategoryUrl = brandName && categoryMeta.route !== "/categories"
+            ? categoryMeta.route + "?brand=" + encodeURIComponent(brandName)
+            : categoryMeta.route;
+          const relevantUrl = dedicatedBrandUrl || filteredCategoryUrl;
+
+          brandLink.href = relevantUrl;
+          brandLink.textContent = brandName || "برند";
+          categoryLink.href = relevantUrl;
+          categoryLink.textContent = [categoryMeta.label, brandName].filter(Boolean).join(" ");
 
           const firstAvailableVariant = Array.isArray(product.variants)
             ? product.variants.find((variant) => variant.stock > 0) || product.variants[0]
