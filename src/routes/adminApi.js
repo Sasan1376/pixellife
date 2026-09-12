@@ -594,6 +594,8 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       price,
       discount,
       description,
+      introTitle,
+      reviewTitle,
       attentionNote,
       videoUrl,
       videoUrls,
@@ -655,6 +657,8 @@ router.post("/products", upload.fields([{ name: "images", maxCount: 5 }, { name:
       price: Number.isFinite(normalizedPrice) && normalizedPrice >= 0 ? normalizedPrice : 0,
       discount: Number(discount) || 0,
       description,
+      introTitle: String(introTitle || "").trim() || "معرفی کالا",
+      reviewTitle: String(reviewTitle || "").trim() || "بررسی تخصصی",
       attentionNote: String(attentionNote || "").trim(),
       videoUrl: normalizedVideoUrls[0] || "",
       videoUrls: normalizedVideoUrls,
@@ -700,6 +704,8 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
       price,
       discount,
       description,
+      introTitle,
+      reviewTitle,
       attentionNote,
       videoUrl,
       videoUrls,
@@ -743,6 +749,8 @@ router.put("/products/:id", upload.fields([{ name: "images", maxCount: 5 }, { na
     if (price) product.price = Number(price);
     if (discount !== undefined) product.discount = Number(discount) || 0;
     if (description !== undefined) product.description = description;
+    if (introTitle !== undefined) product.introTitle = String(introTitle || "").trim() || "معرفی کالا";
+    if (reviewTitle !== undefined) product.reviewTitle = String(reviewTitle || "").trim() || "بررسی تخصصی";
     if (attentionNote !== undefined) product.attentionNote = String(attentionNote || "").trim();
     if (videoUrls !== undefined || videoUrl !== undefined) {
       const normalizedVideoUrls = parseVideoUrls(videoUrls !== undefined ? videoUrls : videoUrl);
