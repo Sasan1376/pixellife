@@ -3608,29 +3608,130 @@
       function cartImage(item) {
         return item.image || item.mainImage || item.images?.[0] || CART_IMAGE_FALLBACK;
       }
-      async function enrichCartImages() {
-        // برای کالاهای قدیمیِ بدون موجودی نیز اطلاعات جدید محصول دریافت می‌شود.
-        const missing = cartData.filter((item) => (!item.image || item.stock === undefined) && item.id);
-        if (!missing.length) return;
-        await Promise.all(missing.map(async (item) => {
-          try {
-            const id = String(item.id);
-            const url = /^[a-f0-9]{24}$/i.test(id) ? "/api/products/id/" + encodeURIComponent(id) : "/api/products/" + encodeURIComponent(id);
-            const response = await fetch(url, { cache: "no-store" });
-            const data = await response.json();
-            if (!response.ok || !data.success || !data.product) return;
-            const product = data.product;
-            item.image = product.mainImage || product.images?.[0] || CART_IMAGE_FALLBACK;
-            item.brand = item.brand || product.brand || "";
-            if (item.stock === undefined) {
-              item.stock = Math.max(0, Number(product.stock) || 0);
+      function normalizeVariantValue(value) {
+        const normalized = String(value || "")
+          .trim()
+          .replace(/[يى]/g, "ی")
+          .replace(/[ك]/g, "ک")
+          .replace(/\s+/g, " ")
+          .toLowerCase();
+        return normalized === "—" || normalized === "-" ? "" : normalized;
+      }
+
+      function findLiveVariant(product, item) {
+        const variants = Array.isArray(product?.variants) ? product.variants : [];
+        if (!variants.length) return null;
+
+        const selectedStorage = normalizeVariantValue(item.storage || item.variant);
+        const selectedColor = normalizeVariantValue(item.color);
+        if (!selectedStorage && !selectedColor) return null;
+
+        return variants.find((variant) => {
+          const variantStorage = normalizeVariantValue(variant?.storage);
+          const variantColor = normalizeVariantValue(variant?.color?.name || variant?.color);
+          return (!selectedStorage || variantStorage === selectedStorage) &&
+            (!selectedColor || variantColor === selectedColor);
+        }) || null;
+      }
+
+      let inventorySyncPromise = null;
+      let lastInventorySyncAt = 0;
+
+      // اطلاعات همهٔ آیتم‌ها در هر بار ورود به سبد از سرور خوانده می‌شود؛
+      // localStorage فقط انتخاب کاربر را نگه می‌دارد و مرجع موجودی نیست.
+      async function syncCartInventory({ render = true } = {}) {
+        if (inventorySyncPromise) return inventorySyncPromise;
+
+        inventorySyncPromise = (async () => {
+          if (!cartData.length) return true;
+
+          const productRequests = new Map();
+          const getLiveProduct = (rawId) => {
+            const id = String(rawId || "").trim();
+            if (!id) return Promise.resolve({ status: "missing", product: null });
+            if (!productRequests.has(id)) {
+              const url = /^[a-f0-9]{24}$/i.test(id)
+                ? "/api/products/id/" + encodeURIComponent(id)
+                : "/api/products/" + encodeURIComponent(id);
+              productRequests.set(id, (async () => {
+                const response = await fetch(url, {
+                  cache: "no-store",
+                  headers: { "Cache-Control": "no-cache" },
+                });
+                if (response.status === 404) return { status: "missing", product: null };
+                const data = await response.json();
+                if (!response.ok || !data.success || !data.product) {
+                  throw new Error(data.message || "دریافت موجودی ناموفق بود");
+                }
+                return { status: "ok", product: data.product };
+              })());
             }
-            normalizeCartItem(item);
-          } catch (_) {}
-        }));
-        saveCart();
-        renderCartItems();
-        updateCartBadge();
+            return productRequests.get(id);
+          };
+
+          let allVerified = true;
+          await Promise.all(cartData.map(async (item) => {
+            try {
+              const result = await getLiveProduct(item.id);
+              if (result.status === "missing") {
+                item.stock = 0;
+                item.available = false;
+                item.inventoryStatus = "unavailable";
+                return;
+              }
+
+              const product = result.product;
+              const variants = Array.isArray(product.variants) ? product.variants : [];
+              const hasVariantSelection = Boolean(
+                normalizeVariantValue(item.storage || item.variant) ||
+                normalizeVariantValue(item.color),
+              );
+              const liveVariant = findLiveVariant(product, item);
+              const productIsUnavailable =
+                String(product.availability || "").toLowerCase() === "out" ||
+                Math.max(0, Number(product.stock) || 0) < 1;
+
+              let liveStock = 0;
+              if (!productIsUnavailable) {
+                if (variants.length && hasVariantSelection) {
+                  liveStock = liveVariant ? Math.max(0, Number(liveVariant.stock) || 0) : 0;
+                } else {
+                  liveStock = Math.max(0, Number(product.stock) || 0);
+                }
+              }
+
+              item.stock = Math.floor(liveStock);
+              item.available = item.stock > 0;
+              item.inventoryStatus = item.available ? "available" : "unavailable";
+              item.image = product.mainImage || product.images?.[0] || item.image || CART_IMAGE_FALLBACK;
+              item.name = product.name || item.name;
+              item.brand = product.brand || item.brand || "";
+
+              const quantity = getCartQuantity(item);
+              if (item.available) {
+                item.quantity = Math.min(quantity, item.stock);
+                item.qty = item.quantity;
+              }
+            } catch (_) {
+              // در خطای شبکه خرید با موجودی قدیمی مجاز نیست؛ پس وضعیت موقتاً تأییدنشده است.
+              allVerified = false;
+              item.available = false;
+              item.inventoryStatus = "unverified";
+            }
+          }));
+
+          lastInventorySyncAt = Date.now();
+          saveCart();
+          if (render) renderCartItems();
+          updateCartBadge();
+          return allVerified;
+        })();
+
+        try {
+          return await inventorySyncPromise;
+        } finally {
+          inventorySyncPromise = null;
+        }
       }
 
 
@@ -3729,7 +3830,11 @@
           let stockClass = "in-stock";
           let stockText = hasStock ? `موجود در انبار (${toPersian(item.stock)} عدد)` : "در حال بررسی موجودی";
           let stockIcon = hasStock ? "ti-circle-check" : "ti-refresh";
-          if (!item.available) {
+          if (item.inventoryStatus === "unverified") {
+            stockClass = "out-of-stock";
+            stockText = "امکان بررسی موجودی نیست؛ دوباره تلاش کنید";
+            stockIcon = "ti-alert-circle";
+          } else if (!item.available) {
             stockClass = "out-of-stock";
             stockText = "ناموجود";
             stockIcon = "ti-circle-x";
@@ -3991,19 +4096,27 @@
       }
 
       /* ═══ لودینگ اولیه ═══ */
-      function initCartPage() {
+      async function initCartPage() {
         loadCheckoutAddress();
-        setTimeout(() => {
-          document.getElementById("cartSkeleton").style.display = "none";
-          if (cartData.length > 0) {
-            document.getElementById("cartContent").style.display = "block";
-            renderCartItems();
-            enrichCartImages();
-          } else {
-            showEmptyState();
-          }
-        }, 1200);
+        await Promise.all([
+          syncCartInventory({ render: false }),
+          new Promise((resolve) => setTimeout(resolve, 300)),
+        ]);
+        document.getElementById("cartSkeleton").style.display = "none";
+        if (cartData.length > 0) {
+          document.getElementById("cartContent").style.display = "block";
+          renderCartItems();
+        } else {
+          showEmptyState();
+        }
       }
+
+      async function refreshVisibleCartInventory() {
+        if (document.visibilityState === "hidden" || Date.now() - lastInventorySyncAt < 5000) return;
+        await syncCartInventory();
+      }
+      window.addEventListener("focus", refreshVisibleCartInventory);
+      document.addEventListener("visibilitychange", refreshVisibleCartInventory);
 
       /* ═══ ریسپانسیو: نوار موبایل ═══ */
       window.addEventListener("resize", () => {
@@ -4025,14 +4138,19 @@
 
       /* ═══ دکمه تکمیل سفارش ═══ */
       document.getElementById("checkoutBtn").addEventListener("click", async () => {
-        const availableItems = cartData.filter((i) => i.available);
-        if (availableItems.length === 0) {
-          showToast("سبد خرید شما خالی است");
-          return;
-        }
         const button = document.getElementById("checkoutBtn");
         button.disabled = true;
         try {
+          const inventoryVerified = await syncCartInventory();
+          if (!inventoryVerified) {
+            showToast("بررسی موجودی انجام نشد؛ اتصال اینترنت را بررسی و دوباره تلاش کنید");
+            return;
+          }
+          const availableItems = cartData.filter((i) => i.available);
+          if (availableItems.length === 0) {
+            showToast("کالاهای سبد خرید در حال حاضر ناموجود هستند");
+            return;
+          }
           if (!checkoutAddress) await loadCheckoutAddress();
           if (!checkoutAddress) {
             window.location.href = "/profile/addresses";
