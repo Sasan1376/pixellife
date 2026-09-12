@@ -38,6 +38,18 @@ const productSchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    introTitle: {
+      type: String,
+      trim: true,
+      maxlength: 120,
+      default: "معرفی کالا",
+    },
+    reviewTitle: {
+      type: String,
+      trim: true,
+      maxlength: 120,
+      default: "بررسی تخصصی",
+    },
     attentionNote: {
       type: String,
       trim: true,
