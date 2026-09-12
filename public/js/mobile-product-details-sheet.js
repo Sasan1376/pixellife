@@ -114,6 +114,18 @@
       const tab = event.target.closest("[data-product-sheet-tab]");
       if (tab) open(tab.dataset.productSheetTab);
     });
+    // نسخه‌های قبلی صفحه یک ناوبری اسکرولی با data-section-target ساخته بودند.
+    // این شنونده آن ناوبری را هم به پنل مستقل هدایت می‌کند تا هیچ لمسِ «بررسی تخصصی»
+    // کاربر را به دیدگاه‌ها، مزایای خرید یا فوتر نبرد.
+    document.addEventListener("click", (event) => {
+      const legacyReviewTab = event.target.closest(
+        '.mobile-product-section-tab[data-section-target="productReviewSection"]',
+      );
+      if (!legacyReviewTab) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      open("review");
+    }, true);
     // هر کنترل «مشخصات بیشتر/نمایش کامل مشخصات» در هر بخش از صفحه باید
     // به‌جای باز کردن ردیف‌ها در همان صفحه، پنل کشویی را روی جدول کامل باز کند.
     document.addEventListener("click", (event) => {
