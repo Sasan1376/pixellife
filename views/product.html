@@ -4600,7 +4600,7 @@
           {
             icon: "ti-list-details",
             title: "معرفی کلی",
-            body: `${p.name} یکی از محصولات به‌روز و پرطرفدار در رده قیمتی خود است. ${p.desc} در این بررسی تخصصی، قصد داریم به تمام جزئیات این دستگاه از طراحی گرفته تا عملکرد سخت‌افزاری و دوربین بپردازیم تا با دیدی بازتر تصمیم به خرید بگیرید.`,
+            body: `این محصول یکی از گزینه‌های به‌روز و پرطرفدار در ردهٔ خود است. ${p.desc} در این بررسی تخصصی، تمام جزئیات دستگاه از طراحی گرفته تا عملکرد سخت‌افزاری و دوربین بررسی می‌شود تا با دیدی بازتر تصمیم به خرید بگیرید.`,
             // خواندن عکس اول از آرایه محصول
             img:
               imgs[0] ||
@@ -5537,6 +5537,8 @@
           rating: doc.rating ? String(doc.rating) : "۰",
           reviews: doc.reviewCount != null ? toFaDigits(doc.reviewCount) : "۰",
           desc: doc.description || "",
+          introTitle: String(doc.introTitle || "").trim() || "معرفی کالا",
+          reviewTitle: String(doc.reviewTitle || "").trim() || "بررسی تخصصی",
           attentionNote: String(doc.attentionNote || "").trim(),
           videoUrls: (() => {
             const values = Array.isArray(doc.videoUrls) && doc.videoUrls.length
@@ -6492,7 +6494,7 @@
                   .join("")}
               </div>
             </div>
-            <div class="product-info-col${product.amazingOffer ? " is-amazing-offer" : ""}">
+            <div class="product-info-col${product.amazingOffer ? " is-amazing-offer" : ""}" data-intro-title="${escapeCartText(product.introTitle || "معرفی کالا")}">
               ${product.amazingOffer ? '<div class="mobile-amazing-ribbon"><i class="ti ti-discount-2"></i>فروش ویژه</div>' : ""}
               <div class="product-brand-row">
                 <div class="product-brand-badge">${product.brandLogo === "SAMSUNG_LOGO_SVG" ? SAMSUNG_LOGO_SVG : product.brandLogo === "XIAOMI_LOGO_SVG" ? XIAOMI_LOGO_SVG : product.brandLogo === "REDMI_LOGO_SVG" ? REDMI_LOGO_SVG : product.brandLogo === "APPLE_LOGO_SVG" ? APPLE_LOGO_SVG : ""}<span>${product.brand || ""}</span></div>
@@ -6671,7 +6673,7 @@
           </div>` : ""}
 
           <div class="section-block" id="productReviewSection" style="display:${product.showReview && hasReviewContent ? "" : "none"}">
-            <div class="section-heading"><i class="ti ti-article"></i> بررسی تخصصی ${product.name}</div>
+            <div class="section-heading"><i class="ti ti-article"></i> ${escapeCartText(product.reviewTitle || "بررسی تخصصی")}</div>
             <div class="review-article-nav review-article-nav--collapsed" id="reviewArticleNav">
               ${reviewArticle.map((s, i) => `<a class="review-nav-chip" href="#rev-sec-${i}">${s.title}</a>`).join("")}
              </div>
